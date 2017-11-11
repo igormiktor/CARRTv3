@@ -23,12 +23,11 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
-#include <stdexcept>
 
-#include <unistd.h>			//Needed for I2C port
-#include <fcntl.h>			//Needed for I2C port
-#include <sys/ioctl.h>			//Needed for I2C port
-#include <linux/i2c-dev.h>		//Needed for I2C port
+#include <unistd.h>                     //Needed for I2C port
+#include <fcntl.h>                      //Needed for I2C port
+#include <sys/ioctl.h>                  //Needed for I2C port
+#include <linux/i2c-dev.h>              //Needed for I2C port
 
 using namespace std;
 
@@ -38,50 +37,41 @@ namespace I2c
 
     const char* sI2cDeviceName = "/dev/i2c-1";
 
-    // Utility class
+    int openI2cConnection( uint8_t address );
 
-    class I2cConnection
-    {
-    public:
-        I2cConnection( uint8_t address );
-        ~I2cConnection();
-        int fd() const { return mI2cFd; }
-
-    private:
-        uint8_t mI2cFd;
-    };
-
-
-    I2cConnection::I2cConnection( uint8_t address )
-    {
-        mI2cFd = open( sI2cDeviceName, O_RDWR );
-
-        if ( mI2cFd < 0 )
-        {
-            //ERROR HANDLING: you can check errno to see what went wrong
-            printf( "Failed to open the i2c bus\n" );
-            throw I2cError( "i2c open err" );;
-        }
-
-        int err = ioctl( mI2cFd, I2C_SLAVE, address );
-        if ( err < 0 )
-        {
-            printf( "Failed to acquire bus access and/or talk to slave\n" );
-            //ERROR HANDLING; you can check errno to see what went wrong
-            throw I2cError( "i2c slave err" );
-        }
-
-    }
-
-
-    I2cConnection::~I2cConnection()
-    {
-        close( mI2cFd );
-    }
-
+    void closeI2cConnection( int fd );
 
 };
 
+
+
+
+int I2c::openI2cConnection( uint8_t address )
+{
+    int fd = open( sI2cDeviceName, O_RDWR );
+
+    if ( fd < 0 )
+    {
+        std::cerr << "Failed to open the i2c bus" << std::endl;
+        return -1;
+    }
+
+    if ( ioctl( fd, I2C_SLAVE, address ) < 0 )
+    {
+        std:;cerr << "Failed to acquire bus access and/or talk to slave" << std::end;
+        close ( fd );
+        return -1;
+    }
+
+    return fd;
+}
+
+
+
+void I2c::closeI2cConnection( int fd )
+{
+    close( fd );
+}
 
 
 
@@ -89,105 +79,146 @@ namespace I2c
 
 int I2c::write( uint8_t address, uint8_t registerAddress )
 {
-    I2cConnection i2c( address );
+    int fd = openI2cConnection i2c( address );
+    if ( fd < 0 )
+    {
+        return -1;
+    }
 
-    return i2c_smbus_write_byte( i2c.fd(), registerAddress );
+    int ret = i2c_smbus_write_byte( i2c.fd(), registerAddress );
+    closeI2cConnection( fd );
+
+    return ret;
 }
 
 
 
 int I2c::write( uint8_t address, uint8_t registerAddress, uint8_t data )
 {
-    I2cConnection i2c( address );
+    int fd = openI2cConnection i2c( address );
+    if ( fd < 0 )
+    {
+        return -1;
+    }
 
-    return i2c_smbus_write_byte_data( i2c.fd(), registerAddress, data );
+    int ret = i2c_smbus_write_byte_data( fd, registerAddress, data );
+    closeI2cConnection( fd );
+
+    return ret;
 }
 
 
 
 int I2c::write( uint8_t address, uint8_t registerAddress, uint16_t data )
 {
-    I2cConnection i2c( address );
+    int fd = openI2cConnection i2c( address );
+    if ( fd < 0 )
+    {
+        return -1;
+    }
 
-    return i2c_smbus_write_word_data( i2c.fd(), registerAddress, data );
+    int ret = i2c_smbus_write_word_data( fd, registerAddress, data );
+    closeI2cConnection( fd );
+
+    return ret;
 }
 
 
 
 int I2c::write( uint8_t address, uint8_t registerAddress, const char* data )
 {
-    I2cConnection i2c( address );
+    int fd = openI2cConnection i2c( address );
+    if ( fd < 0 )
+    {
+        return -1;
+    }
 
     int len = strlen( data );
     if ( len > 32 )
     {
-        printf( "i2c message longer than 32 bytes\n" );
-        throw I2cError( "i2c long msg" );
+        // Intentionally fail (partially) silently
+        len = 32
     }
-    else
-    {
-        return i2c_smbus_write_i2c_block_data( i2c.fd(), registerAddress, len, reinterpret_cast<const uint8_t*>( data ) );
-    }
+
+    int ret = i2c_smbus_write_i2c_block_data( fd, registerAddress, len, reinterpret_cast<const uint8_t*>( data ) );
+    closeI2cConnection( fd );
+
+    return ret;
 }
 
 
 int I2c::write( uint8_t address, uint8_t registerAddress, uint8_t* data, uint8_t numberBytes )
 {
-    I2cConnection i2c( address );
+    int fd = openI2cConnection i2c( address );
+    if ( fd < 0 )
+    {
+        return -1;
+    }
 
     if ( numberBytes > 32 )
     {
-        printf( "i2c message longer than 32 bytes" );
-        throw I2cError( "i2c long msg" );
+        // Intentionally fail (partially) silently
+        numberBytes = 32
     }
-    else
-    {
-        return i2c_smbus_write_i2c_block_data( i2c.fd(), registerAddress, numberBytes, data );
-    }
+
+    int ret = i2c_smbus_write_i2c_block_data( fd, registerAddress, numberBytes, data );
+    closeI2cConnection( fd );
+
+    return ret;
 }
 
 
 int I2c::read( uint8_t address, uint8_t registerAddress, uint8_t* value )
 {
-    I2cConnection i2c( address );
-
-    int ret = i2c_smbus_read_byte_data( i2c.fd(), registerAddress );
-    if ( ret < 0 )
+    int fd = openI2cConnection i2c( address );
+    if ( fd < 0 )
     {
         return -1;
     }
-    else
+
+    int ret = i2c_smbus_read_byte_data( fd, registerAddress );
+    if ( ret >=0 )
     {
-        *value = ret;
-        return 0;
+        *value = static_cast<uint8_t>( ret );
     }
+    closeI2cConnection( fd );
+
+    return ret;
 }
 
 
 
 int I2c::read( uint8_t address, uint8_t registerAddress, uint16_t* value )
 {
-    I2cConnection i2c( address );
-
-    int ret = i2c_smbus_read_word_data( i2c.fd(), registerAddress );
-    if ( ret < 0 )
+    int fd = openI2cConnection i2c( address );
+    if ( fd < 0 )
     {
         return -1;
     }
-    else
+
+    int ret = i2c_smbus_read_word_data( fd, registerAddress );
+    if ( ret >= 0 )
     {
-        *value = ret;
-        return 0;
+        *value = static_cast<uint16_t>( ret );
     }
+    closeI2cConnection( fd );
+
+    return ret;
 }
 
 
 int I2c::read( uint8_t address, uint8_t registerAddress, uint8_t numberBytes, uint8_t* destination )
 {
-    I2cConnection i2c( address );
+    int fd = openI2cConnection i2c( address );
+    if ( fd < 0 )
+    {
+        return -1;
+    }
 
-    int ret = i2c_smbus_read_i2c_block_data( i2c.fd(), registerAddress, numberBytes, destination );
-    return ( ret < 0 ? -1 : 0 );
+    int ret = i2c_smbus_read_i2c_block_data( fd, registerAddress, numberBytes, destination );
+    closeI2cConnection( fd );
+
+    return ret;
 }
 
 

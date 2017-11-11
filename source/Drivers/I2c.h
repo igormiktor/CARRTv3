@@ -40,10 +40,6 @@
 #include <cstdint>
 
 
-#include <stdexcept>
-
-
-
 
 /*!
  * \brief This namespace bundles the I2C-protocol-based interface to the TWI hardware.  It provides logical cohesion
@@ -78,14 +74,6 @@
 
 namespace I2c
 {
-
-    class I2cError : public std::runtime_error
-    {
-    public:
-        I2cError( const char* errMsg )
-            : runtime_error( errMsg ) {}
-    };
-
 
     /*!
     * \brief This enum lists I2C bus speed configurations.
