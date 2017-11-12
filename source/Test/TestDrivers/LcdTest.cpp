@@ -31,7 +31,7 @@ int main()
     Lcd::displayOn();
     Lcd::setBacklight( Lcd::kBacklight_White );
 
-    for ( int i = 0; i < 10; ++i )
+    for ( int i = 0; i < 2; ++i )
     {
         Lcd::displayTopRow( "ABCDEFGHIJKLMNOP" );
         Lcd::displayBottomRow( "abcdefghijklmnop" );
