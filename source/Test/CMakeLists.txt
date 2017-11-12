@@ -14,6 +14,7 @@ include_directories( ".." )
 set( DriverSrcs
         ../Drivers/Clock.cpp
         ../Drivers/I2c.cpp
+        ../Drivers/Keypad.cpp
         ../Drivers/Lcd.cpp
     )
 
@@ -24,5 +25,5 @@ set( CarrtSrcs
 
 add_executable( LcdTest TestDrivers/LcdTest.cpp ${CarrtSrcs} ${DriverSrcs}  )
 
-#add_executable( KeypadTest TestDrivers/KeypadTest.cpp ${CarrtSrcs} ${DriverSrcs}  )
+add_executable( KeypadTest TestDrivers/KeypadTest.cpp ${CarrtSrcs} ${DriverSrcs}  )
 
