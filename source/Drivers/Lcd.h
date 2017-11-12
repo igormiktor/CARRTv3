@@ -21,13 +21,22 @@
 #define Lcd_h
 
 #include <cstdint>
-
+#include <sstream>
 
 
 
 
 namespace Lcd
 {
+
+    enum IntegerOutputBase
+    {
+        kOct    = 8,        //!< Produce an octal representation of integers (e.g, 11 is output as 013)
+        kDec    = 10,       //!< Produce a decimal representation of integers (e.g., 11 is output as 11
+        kHex    = 16        //!< Produce a hexadecimal representation of integers (e.g., 11 is output as 0x0b)
+    };
+
+
 
     /*!
      *  These constants are used to identify the five buttons.
@@ -47,6 +56,7 @@ namespace Lcd
      */
     enum
     {
+        kBacklight_Off      = 0x0,
         kBacklight_Red      = 0x1,        //!< Backlight red            \hideinitializer
         kBacklight_Yellow   = 0x3,        //!< Backlight yellow         \hideinitializer
         kBacklight_Green    = 0x2,        //!< Backlight green          \hideinitializer
@@ -251,6 +261,35 @@ namespace Lcd
      */
     std::size_t write( const std::uint8_t* buffer, std::size_t size );
 
+
+
+    template< typename T > void print( T x )
+    {
+        std::stringstream tmp;
+        tmp << x;
+        write( tmp.str().c_str() );
+    }
+
+
+    template< typename T > void print( T x, Lcd::IntegerOutputBase base )
+    {
+        std::stringstream tmp;
+        switch ( base )
+        {
+             case kOct:
+                tmp << std::oct << std::showbase;
+                break;
+
+            case kHex:
+                tmp << std::hex << std::showbase;
+                break;
+
+            default:
+                break;
+        }
+        tmp << x;
+        write( tmp.str().c_str() );
+    }
 
 };
 
