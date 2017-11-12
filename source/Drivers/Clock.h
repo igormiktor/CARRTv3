@@ -35,10 +35,10 @@ namespace Clock
     void delayMilliseconds( long ms );
 
 
-    unsigned long micros();
+    long micros();
 
 
-    unsigned long millis();
+    long millis();
 }
 
 

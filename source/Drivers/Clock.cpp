@@ -26,19 +26,58 @@
 
 
 
+namespace Clock
+{
+
+    const long kMilliSecsPerSec = 1000L;
+    const long kNanoSecsPerMilliSec = 1000000L;
+
+    const long kMicroSecsPerSec = 1000000L;
+    const long kNanoSecsPerMicroSec = 1000L;
+
+
+    struct timespec sProgramStartTime;
+
+
+    long elaspedMicroSeconds( struct timespec t1, struct timespec t0 );
+    long elapsedMilliSeconds( struct timespec t1, struct timespec t0 );
+
+}
+
+
+
+
+long Clock::elaspedMicroSeconds( struct timespec t1, struct timespec t0 )
+{
+    long secDiff = t1.tv_sec - t0.tv_sec;
+    long nanoSecDiff = t1.tv_nsec - t0.tv_sec;
+
+    return secDiff * kMicroSecsPerSec  +  nanoSecDiff / kNanoSecsPerMicroSec;
+}
+
+
+
+long Clock::elapsedMilliSeconds( struct timespec t1, struct timespec t0 )
+{
+    long secDiff = t1.tv_sec - t0.tv_sec;
+    long nanoSecDiff = t1.tv_nsec - t0.tv_sec;
+
+    return secDiff * kMilliSecsPerSec  +  nanoSecDiff / kNanoSecsPerMilliSec;
+}
+
+
 
 void Clock::initSystemClock()
 {
+    clock_gettime( CLOCK_MONOTONIC, &sProgramStartTime );
 }
 
 
 
 void Clock::delayMicroseconds( long us )
 {
-    const long kMicroSecsPerSec = 1000000L;
-    const long kNanoSecsPerMicroSec = 1000L;
-
-    struct timespec req, rem;
+    struct timespec req;
+    struct timespec rem;
 
     if ( us >= kMicroSecsPerSec )
     {
@@ -56,9 +95,6 @@ void Clock::delayMicroseconds( long us )
 
 void Clock::delayMilliseconds( long ms )
 {
-    const long kMilliSecsPerSec = 1000L;
-    const long kNanoSecsPerMilliSec = 1000000L;
-
     struct timespec req, rem;
 
     if ( ms >= kMilliSecsPerSec )
@@ -77,14 +113,22 @@ void Clock::delayMilliseconds( long ms )
 
 
 
-unsigned long Clock::micros()
+long Clock::micros()
 {
+    struct timespec now;
+
+    clock_gettime( CLOCK_MONOTONIC, &now );
+    return elaspedMicroSeconds( now, sProgramStartTime );
 }
 
 
 
-unsigned long Clock::millis()
+long Clock::millis()
 {
+    struct timespec now;
+
+    clock_gettime( CLOCK_MONOTONIC, &now );
+    return elapsedMilliSeconds( now, sProgramStartTime );
 }
 
 
