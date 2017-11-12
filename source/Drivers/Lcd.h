@@ -212,7 +212,7 @@ namespace Lcd
      * "and" the return value with kButton_Right, kButton_Left, kButton_Down, kButton_Up, or
      * kButton_Select to determine which buttons have been pressed.
      */
-    std::uint8_t readButtons();
+    int readButtons();
 
 
 

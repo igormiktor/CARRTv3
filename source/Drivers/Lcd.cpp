@@ -713,7 +713,7 @@ int Lcd::setBacklight( uint8_t status )
 
 
 
-uint8_t Lcd::readButtons()
+int Lcd::readButtons()
 {
     // Buttons on all on GPIOA; they are bits 0 thru 4
     uint8_t gpioA;
@@ -721,7 +721,7 @@ uint8_t Lcd::readButtons()
 
     // Buttons have pullups, so gpio bits record the inverse of button state
     // 0b00011111 = 0x1F; 0b10000000 = 0x80; 0b11100000 = 0xE0
-    return ( err ? 0x80 : ( static_cast<uint8_t>(~gpioA) & 0x1F ) );
+    return ( err ? 0x080 : ( static_cast<uint8_t>(~gpioA) & 0x1F ) );
 }
 
 
