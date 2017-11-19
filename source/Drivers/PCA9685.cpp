@@ -1,4 +1,4 @@
-*
+/*
     PCA9685.cpp - Driver for PCA9685-based PWM IC for CARRTv3.
     Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
@@ -23,6 +23,7 @@
 
 
 #include <cinttypes>
+#include <cmath>
 
 #include "Clock.h"
 #include "I2c.h"
@@ -138,17 +139,7 @@ namespace PCA9685
     const uint8_t kMode1_Sub3           = 1;
     const uint8_t kMode1_AllCallBit     = 0;
 
-    // Mode 2 bits
-
-    const uint8_t kMode1_Restart        = 7;
-    const uint8_t kMode1_ExtClk         = 6;
-    const uint8_t kMode1_AutoIncr       = 5;
-    const uint8_t kMode1_Sleep          = 4;
-    const uint8_t kMode1_Sub1           = 3;
-    const uint8_t kMode1_Sub2           = 2;
-    const uint8_t kMode1_Sub3           = 1;
-    const uint8_t kMode1_AllCallBit     = 0;
-
+    // Other
 
     const uint16_t kFullOn          = 0x1000;
     const uint16_t kFullOff         = 0x1000;
@@ -228,13 +219,13 @@ int PCA9685::setPwmDutyOnCycle( std::uint8_t address, uint8_t pinNbr, float onRa
     {
        on = kFullOn;
     }
-    else if ( onRation <= 0 )
+    else if ( onRatio <= 0 )
     {
         off = kFullOff;
     }
     else
     {
-        off = static_cast<uint16_t>( 4095 * onRation + 0.5 );
+        off = static_cast<uint16_t>( 4095 * onRatio + 0.5 );
     }
 
 
@@ -252,10 +243,10 @@ int PCA9685::setPWMFreq( std::uint8_t address, float freq )
     prescaleValue /= 4096;
     prescaleValue /= freq;
     prescaleValue -= 1;
-    uint8_t prescaler = floor( prescaleValue + 0.5 );
+    uint8_t prescaler = std::floor( prescaleValue + 0.5 );
 
     uint8_t originalMode;
-    int err = I2c::readByte( address, kMode1, &originalMode );
+    int err = I2c::read( address, kMode1, &originalMode );
     if ( !err )
     {
         uint8_t sleepMode = ( originalMode & 0x7F ) | 0x10;
@@ -264,7 +255,7 @@ int PCA9685::setPWMFreq( std::uint8_t address, float freq )
         err = I2c::write( address, kMode1, sleepMode );
         if ( !err )
         {
-            err = I2c::write( address, kPrescale, prescaler );
+            err = I2c::write( address, kPreScale, prescaler );
         }
 
         // Restore the original mode
@@ -275,7 +266,7 @@ int PCA9685::setPWMFreq( std::uint8_t address, float freq )
     }
 
     // Set the MODE1 registor to clear restart
-    err = I2c::writeByte( kPMode1, originalMode | (1 << kMode1_Restart) );
+    err = I2c::write( address, kMode1, static_cast<uint8_t>( originalMode | (1 << kMode1_Restart) ) );
 
     return err;
 }

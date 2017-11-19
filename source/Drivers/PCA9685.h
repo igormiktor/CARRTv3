@@ -1,4 +1,4 @@
-*
+/*
     PCA9685.h - Driver for PCA9685-based PWM IC for CARRTv3.
     Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
@@ -29,18 +29,21 @@
 namespace PCA9685
 {
 
-    int PCA9685::init( std::uint8_t address );
+    int init( std::uint8_t address );
 
     int reset( std::uint8_t address );
 
 
-    int PCA9685::setPWMFreq( std::uint8_t address, float freq );
+    int setPWMFreq( std::uint8_t address, float freq );
 
 
-    int PCA9685::setAllPwm( std::uint8_t address, std::uint16_t on, std::uint16_t off );
+    int setAllPwm( std::uint8_t address, std::uint16_t on, std::uint16_t off );
 
-    int PCA9685::setPwm( std::uint8_t address, uint8_t pinNbr, std::uint16_t on, std::uint16_t off );
+    int setPwm( std::uint8_t address, uint8_t pinNbr, std::uint16_t on, std::uint16_t off );
 
-    int PCA9685::setPwmDutyOnCycle( std::uint8_t address, uint8_t pinNbr, float onRatio );
+    int setPwmDutyOnCycle( std::uint8_t address, uint8_t pinNbr, float onRatio );
 
 };
+
+
+#endif  // PCA9685_h

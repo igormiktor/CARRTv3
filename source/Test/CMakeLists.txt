@@ -16,6 +16,7 @@ set( DriverSrcs
         ../Drivers/I2c.cpp
         ../Drivers/Keypad.cpp
         ../Drivers/Lcd.cpp
+        ../Drivers/PCA9685.cpp
     )
 
 
