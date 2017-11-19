@@ -213,7 +213,7 @@ int PCA9685::setPwm( std::uint8_t address, uint8_t pinNbr, std::uint16_t on, std
 
 int PCA9685::setOff( std::uint8_t address, uint8_t pinNbr )
 {
-    return setPvm( address, pinNbr, 0, kFullOff );
+    return setPwm( address, pinNbr, 0, kFullOff );
 }
 
 
@@ -221,7 +221,7 @@ int PCA9685::setOff( std::uint8_t address, uint8_t pinNbr )
 
 int PCA9685::setOn( std::uint8_t address, uint8_t pinNbr )
 {
-    return setPvm( address, pinNbr, kFullOn, 0 );
+    return setPwm( address, pinNbr, kFullOn, 0 );
 }
 
 
