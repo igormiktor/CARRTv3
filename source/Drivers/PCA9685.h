@@ -43,6 +43,10 @@ namespace PCA9685
 
     int setPwmDutyOnCycle( std::uint8_t address, uint8_t pinNbr, float onRatio );
 
+    int setOff( std::uint8_t address, uint8_t pinNbr );
+
+    int setOn( std::uint8_t address, uint8_t pinNbr );
+
 };
 
 
