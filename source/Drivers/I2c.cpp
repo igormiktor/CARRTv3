@@ -23,7 +23,6 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
-#include <cstring>
 
 #include <unistd.h>                     //Needed for I2C port
 #include <fcntl.h>                      //Needed for I2C port
@@ -53,16 +52,14 @@ int I2c::openI2cConnection( uint8_t address )
 
     if ( fd < 0 )
     {
-        printf( "Failed to open the i2c bus\n" );
-//        std::cerr << "Failed to open the i2c bus" << std::endl;
+        std::cerr << "Failed to open the i2c bus" << std::endl;
         return -1;
     }
 
     int err = ioctl( fd, I2C_SLAVE, address );
     if ( err < 0 )
     {
-        printf( "Failed to acquire bus access and/or talk to slave\n" );
-//        std::cerr << "Failed to acquire bus access and/or talk to slave" << std::endl;
+        std::cerr << "Failed to acquire bus access and/or talk to slave" << std::endl;
         close ( fd );
         return -1;
     }
