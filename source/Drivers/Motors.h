@@ -33,16 +33,16 @@ namespace Motors
     const uint8_t kFullSpeed = 255;
     const uint8_t kHalfSpeed = 200;
 
-    void init();
+    int init();
 
-    void setSpeedAllMotors( uint8_t speed );
+    int setSpeedAllMotors( uint8_t speed );
 
-    void goForward();
-    void goBackward();
-    void stop();
+    int goForward();
+    int goBackward();
+    int stop();
 
-    void rotateLeft();
-    void rotateRight();
+    int rotateLeft();
+    int rotateRight();
 
 
     enum MotorCmd
@@ -53,19 +53,15 @@ namespace Motors
         kCmdRelease
     };
 
-#if CARRT_TEST_INDIVIDUAL_MOTORS
+    int setRearRightMotorSpeed( uint8_t s );
+    int setFrontRightMotorSpeed( uint8_t s );
+    int setFrontLeftMotorSpeed( uint8_t s );
+    int setRearLeftMotorSpeed( uint8_t s );
 
-    void setRearRightMotorSpeed( uint8_t s );
-    void setFrontRightMotorSpeed( uint8_t s );
-    void setFrontLeftMotorSpeed( uint8_t s );
-    void setRearLeftMotorSpeed( uint8_t s );
-
-    void runRearRightMotor( uint8_t cmd );
-    void runRearLeftMotor( uint8_t cmd );
-    void runFrontRightMotor( uint8_t cmd );
-    void runFrontLeftMotor( uint8_t cmd );
-
-#endif
+    int runRearRightMotor( MotorCmd cmd );
+    int runRearLeftMotor( MotorCmd cmd );
+    int runFrontRightMotor( MotorCmd cmd );
+    int runFrontLeftMotor( MotorCmd cmd );
 
 };
 

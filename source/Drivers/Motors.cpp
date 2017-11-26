@@ -50,6 +50,7 @@ namespace Motors
     {
     public:
         Motor( uint8_t pwmPin, uint8_t pinA, uint8_t pinB );
+        ~Motor();
 
         int goForward();
         { return motorCommand( Motors::kCmdForward ); }
@@ -87,6 +88,12 @@ namespace Motors
 Motors::Motor::Motor( uint8_t pwmPin, uint8_t pinA, uint8_t pinB )
 : mPwmPin( pwmPin ), mPinA( pinA ), mPinB( pinB )
 {
+}
+
+
+Motors::Motor::~Motor()
+{
+    stop();
 }
 
 
@@ -128,19 +135,19 @@ int Motors::Motor::setSpeed( uint8_t speed )
 
 
 
-void Motors::init()
+int Motors::init()
 {
     mMotor[0] = new Motor( 8, 9, 10 );
     mMotor[1] = new Motor( 13, 12, 11 );
     mMotor[2] = new Motor( 2, 3, 4 );
     mMotor[3] = new Motor( 7, 6, 5 );
 
-    setSpeedAllMotors( Motors::kFullSpeed );
+    return setSpeedAllMotors( Motors::kFullSpeed );
 }
 
 
 
-void Motors::setSpeedAllMotors( uint8_t speed )
+int Motors::setSpeedAllMotors( uint8_t speed )
 {
     int err = 0;
     for ( int i = 0; i < kNbrMotors; ++i )
@@ -154,7 +161,7 @@ void Motors::setSpeedAllMotors( uint8_t speed )
 
 
 
-void Motors::goForward()
+int Motors::goForward()
 {
     int err = 0;
     for ( int i = 0; i < kNbrMotors; ++i )
@@ -170,7 +177,7 @@ void Motors::goForward()
 
 
 
-void Motors::goBackward()
+int Motors::goBackward()
 {
     int err = 0;
     for ( int i = 0; i < kNbrMotors; ++i )
@@ -186,7 +193,7 @@ void Motors::goBackward()
 
 
 
-void Motors::stop()
+int Motors::stop()
 {
     int err = 0;
     for ( int i = 0; i < kNbrMotors; ++i )
@@ -202,7 +209,7 @@ void Motors::stop()
 
 
 
-void Motors::rotateLeft()
+int Motors::rotateLeft()
 {
     // Right side goes forward
     int err = mMotors[Motors::kRightFrontMotorNbr]->goForward() || ;
@@ -217,7 +224,7 @@ void Motors::rotateLeft()
 
 
 
-void Motors::rotateRight()
+int Motors::rotateRight()
 {
     // Right side goes backward
     int err = mMotors[Motors::kRightFrontMotorNbr]->goBackward() ||
@@ -234,94 +241,58 @@ void Motors::rotateRight()
 
 
 
-#if CARRT_TEST_INDIVIDUAL_MOTORS
-
-
 // cppcheck-suppress unusedFunction
-void Motors::setRearRightMotorSpeed( uint8_t s )
+int Motors::setRearRightMotorSpeed( uint8_t s )
 {
-    // Use PWM on Arduino pin 11; on arduino mega, pin 11 is PB5 (OC1A)
-    OCR1A = s;
+    return mMotors[Motors::kRightRearMotorNbr]->setSpeed( s );
 }
 
 
 // cppcheck-suppress unusedFunction
-void Motors::setFrontRightMotorSpeed( uint8_t s )
+int Motors::setFrontRightMotorSpeed( uint8_t s )
 {
-    // Use PWM on Arduino pin 3; on arduino mega, pin 3 is PE5 (OC3C)
-    OCR3C = s;
+    return mMotors[Motors::kRightFrontMotorNbr]->setSpeed( s );
 }
 
 
 // cppcheck-suppress unusedFunction
-void Motors::setFrontLeftMotorSpeed( uint8_t s )
+int Motors::setFrontLeftMotorSpeed( uint8_t s )
 {
-    // Use PWM on Arduino pin 6; on arduino mega, pin 6 is PH3 (OC4A)
-    OCR4A = s;
+    return mMotors[Motors::kLeftFrontMotorNbr]->setSpeed( s );
 }
 
 
 // cppcheck-suppress unusedFunction
-void Motors::setRearLeftMotorSpeed( uint8_t s )
+int Motors::setRearLeftMotorSpeed( uint8_t s )
 {
-    // Use PWM on Arduino pin 5; on arduino mega, pin 5 is PE3 (OC3A)
-    OCR3A = s;
+    return mMotors[Motors::kLeftRearMotorNbr]->setSpeed( s );
 }
 
 
 // cppcheck-suppress unusedFunction
-void Motors::runRearRightMotor( uint8_t cmd )
+int Motors::runRearRightMotor( Motors::MotorCmd cmd )
 {
-    motorCommand( kMotor1_A, kMotor1_B, cmd );
+    return mMotors[Motors::kRightRearMotorNbr]->motorCommand( cmd );
 }
 
 // cppcheck-suppress unusedFunction
-void Motors::runFrontRightMotor( uint8_t cmd )
+int Motors::runFrontRightMotor( Motors::MotorCmd cmd )
 {
-    motorCommand( kMotor2_A, kMotor2_B, cmd );
+    return mMotors[Motors::kRightFrontMotorNbr]->motorCommand( cmd );
 }
 
 // cppcheck-suppress unusedFunction
-void Motors::runFrontLeftMotor( uint8_t cmd )
+int Motors::runFrontLeftMotor( Motors::MotorCmd cmd )
 {
-    motorCommand( kMotor3_A, kMotor3_B, cmd );
+    return mMotors[Motors::kLeftFrontMotorNbr]->motorCommand( cmd );
 }
 
 // cppcheck-suppress unusedFunction
-void Motors::runRearLeftMotor( uint8_t cmd )
+int Motors::runRearLeftMotor( Motors::MotorCmd cmd )
 {
-    motorCommand( kMotor4_A, kMotor4_B, cmd );
+    return mMotors[Motors::kLeftRearMotorNbr]->motorCommand( cmd );
 }
 
-
-void Motors::motorCommand( uint8_t motorA, uint8_t motorB, uint8_t cmd )
-{
-    switch ( cmd )
-    {
-        case kCmdForward:
-            sLatchState |=  _BV( motorA );
-            sLatchState &= ~_BV( motorB );
-            transmitLatch();
-            break;
-
-        case kCmdBackward:
-            sLatchState &= ~_BV( motorA );
-            sLatchState |=  _BV( motorB );
-            transmitLatch();
-            break;
-
-        case kCmdBrake:
-        case kCmdRelease:
-            // A and B both low
-            sLatchState &= ~_BV( motorA );
-            sLatchState &= ~_BV( motorB );
-            transmitLatch();
-            break;
-    }
-}
-
-
-#endif
 
 
 
