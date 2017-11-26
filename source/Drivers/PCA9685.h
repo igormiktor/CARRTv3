@@ -47,6 +47,8 @@ namespace PCA9685
 
     int setOn( std::uint8_t address, uint8_t pinNbr );
 
+    int setPin( std::uint8_t address, uint8_t pinNbr, bool val );
+
 };
 
 

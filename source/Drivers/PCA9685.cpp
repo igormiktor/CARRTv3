@@ -227,6 +227,21 @@ int PCA9685::setOn( std::uint8_t address, uint8_t pinNbr )
 
 
 
+int PCA9685::setPin( std::uint8_t address, uint8_t pinNbr, bool value )
+{
+    if ( value )
+    {
+        return setPwm( address, pinNbr, kFullOn, 0 );
+    }
+    else
+    {
+        return setPwm( address, pinNbr, 0, kFullOff );
+    }
+}
+
+
+
+
 int PCA9685::setPwmDutyOnCycle( std::uint8_t address, uint8_t pinNbr, float onRatio )
 {
     uint16_t on = 0;
