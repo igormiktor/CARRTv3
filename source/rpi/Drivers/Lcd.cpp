@@ -213,20 +213,20 @@ namespace Lcd
         kWriteFourBitsSendCommand = 1
     };
 
-    int initMCP23017();
-    int initHD44780U();
+    void initMCP23017();
+    void initHD44780U();
     size_t write( uint8_t value );
-    int writeFourBitsToLcd( uint8_t value, uint8_t gpioB );
-    int sendCharOrCmdToLcd( uint8_t value, bool isCommand );
+    void writeFourBitsToLcd( uint8_t value, uint8_t gpioB );
+    void sendCharOrCmdToLcd( uint8_t value, bool isCommand );
 
-    int sendCommand( uint8_t cmd )
+    void sendCommand( uint8_t cmd )
     {
-        return sendCharOrCmdToLcd( cmd, kWriteFourBitsSendCommand );
+        sendCharOrCmdToLcd( cmd, kWriteFourBitsSendCommand );
     }
 
-    int sendCharToDisplay( uint8_t value )
+    void sendCharToDisplay( uint8_t value )
     {
-        return sendCharOrCmdToLcd( value, kWriteFourBitsSendChar );
+        sendCharOrCmdToLcd( value, kWriteFourBitsSendChar );
     }
 
     uint8_t             mDisplayControl;
@@ -238,30 +238,23 @@ namespace Lcd
 
 
 
-int Lcd::init()
+void Lcd::init()
 {
     mDisplayControl = 0;
     mDisplayMode = 0;
     mCurrLine = 0;
 
-    int err = initMCP23017();
+    initMCP23017();
 
-    if ( !err )
-    {
-        err = setBacklight( 0x07 );
-        if ( !err )
-        {
-            err = initHD44780U();
-        }
-    }
+    setBacklight( 0x07 );
 
-    return err;
+    initHD44780U();
 }
 
 
 
 
-int Lcd::initMCP23017()
+void Lcd::initMCP23017()
 {
     // Set output and input modes correctly
     // Pins 0, 1, 2, 3, 4, 5, 6, 7 (GPIO B):  output mode
@@ -281,7 +274,7 @@ int Lcd::initMCP23017()
 
     // Experimentally observed a set-up timing issue: need to make sure this
     // next transmission to MCP23017 completes before proceeding to the next one.
-    int err = I2c::write( MCP23017_ADDRESS, MCP23017_IODIRA, data.word );
+    I2c::write( MCP23017_ADDRESS, MCP23017_IODIRA, data.word );
 
     // Set pullups
     union
@@ -294,18 +287,13 @@ int Lcd::initMCP23017()
     // Pins 1-7, GPIOB, 0b00000000 = 0x00
     data2.pullups[1] = 0x00;
 
-    if ( !err )
-    {
-        err = I2c::write( MCP23017_ADDRESS, MCP23017_GPPUA, data2.word );
-    }
-
-    return err;
+    I2c::write( MCP23017_ADDRESS, MCP23017_GPPUA, data2.word );
 }
 
 
 
 
-int Lcd::initHD44780U()
+void Lcd::initHD44780U()
 {
 /*
     ** Initialize and configure the HD44780U/LCD **
@@ -341,68 +329,53 @@ int Lcd::initHD44780U()
 
     // Pull RS, R/W, and Enable low to begin commands:  0b00000001 = 0x01
     uint8_t gpioB = 0x01;
-    uint8_t err = I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
+    I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
 
-    if ( !err )
-    {
-        // Put the LCD into 4 bit mode; see Hitachi HD44780U datasheet p. 46, fig. 24
-        // HD44780U starts in 8-bit mode
+    // Put the LCD into 4 bit mode; see Hitachi HD44780U datasheet p. 46, fig. 24
+    // HD44780U starts in 8-bit mode
 
-        // First write
-        err = writeFourBitsToLcd( 0x03, gpioB );
-        if ( !err )
-        {
-            // Datasheet says to wait at least 4.1ms
-            delayMicroseconds( 4500 );
+    // First write
+    writeFourBitsToLcd( 0x03, gpioB );
 
-            // Second write
-            err = writeFourBitsToLcd( 0x03, gpioB );
-            if ( !err )
-            {
-                // Datasheet says to wait at least 4.1ms
-                delayMicroseconds( 4500 );
+    // Datasheet says to wait at least 4.1ms
+    delayMicroseconds( 4500 );
 
-                // Third write
-                err = writeFourBitsToLcd( 0x03, gpioB );
-                if ( !err )
-                {
-                    // Datasheet says to wait at least 100ms
-                    delayMicroseconds( 150 );
+    // Second write
+    writeFourBitsToLcd( 0x03, gpioB );
 
-                    // Now can enter 4-bit mode
-                    err = writeFourBitsToLcd( 0x02, gpioB );
-                    if ( !err )
-                    {
-                        // Now configure the number of lines, font size, etc.
-                        err = sendCommand( LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS );
-                        if ( !err )
-                        {
-                            // Turn the display on with no cursor or blinking default
-                            mDisplayControl = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
-                            displayOn();
-                            clear();
+    // Datasheet says to wait at least 4.1ms
+    delayMicroseconds( 4500 );
 
-                            mCurrLine = 0;
+    // Third write
+    writeFourBitsToLcd( 0x03, gpioB );
 
-                            // Initialize to default text direction
-                            mDisplayMode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
-                            // Set the entry mode
-                            sendCommand( LCD_ENTRYMODESET | mDisplayMode );
-                        }
-                    }
-                }
-            }
-        }
-    }
+    // Datasheet says to wait at least 100ms
+    delayMicroseconds( 150 );
 
-    return err;
+    // Now can enter 4-bit mode
+    writeFourBitsToLcd( 0x02, gpioB );
+
+    // Now configure the number of lines, font size, etc.
+    sendCommand( LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS );
+
+    // Turn the display on with no cursor or blinking default
+    mDisplayControl = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
+    displayOn();
+    clear();
+
+    mCurrLine = 0;
+
+    // Initialize to default text direction
+    mDisplayMode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
+    // Set the entry mode
+    sendCommand( LCD_ENTRYMODESET | mDisplayMode );
 }
 
 
 
 
 
-int Lcd::writeFourBitsToLcd( uint8_t value, uint8_t gpioB )
+void Lcd::writeFourBitsToLcd( uint8_t value, uint8_t gpioB )
 {
     // Use the lower 4 bits of value
     gpioB &= ~( ( 1 << kByteLcdD4 ) | ( 1 << kByteLcdD5 ) | ( 1 << kByteLcdD6 ) | ( 1 << kByteLcdD7 ) );
@@ -414,63 +387,47 @@ int Lcd::writeFourBitsToLcd( uint8_t value, uint8_t gpioB )
     // Set enable low
     gpioB &= ~( 1 << kByteLcdEnable );
 
-    int err = I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
+    I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
 
     //  HD44780U requires us to pulse the enable pin for values to be read
-    if ( !err )
-    {
-        delayMicroseconds( 1 );
-        // Set enable high
-        gpioB |= ( 1 <<  kByteLcdEnable );
-        err = I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
+    delayMicroseconds( 1 );
+    // Set enable high
+    gpioB |= ( 1 <<  kByteLcdEnable );
+    I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
 
-        if ( !err )
-        {
-            delayMicroseconds( 1 );
-            // Set enable low
-            gpioB &= ~( 1 <<  kByteLcdEnable );
-            err = I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
-            delayMicroseconds( 100 );
-        }
-    }
-
-    return err;
+    delayMicroseconds( 1 );
+    // Set enable low
+    gpioB &= ~( 1 <<  kByteLcdEnable );
+    I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
+    delayMicroseconds( 100 );
 }
 
 
 
 
-int Lcd::sendCharOrCmdToLcd( uint8_t value, bool isCommand )
+void Lcd::sendCharOrCmdToLcd( uint8_t value, bool isCommand )
 {
     // Sending characters or command to the LCD involves only GPIOB pins
     uint8_t gpioB;
-    int err = I2c::read( MCP23017_ADDRESS, MCP23017_OLATB, &gpioB );
+    I2c::read( MCP23017_ADDRESS, MCP23017_OLATB, &gpioB );
 
-    if ( !err )
+    // Clear the RW bit to write to the HD44780U
+    gpioB &= ~(1 << kByteLcdRW);
+    if ( isCommand )
     {
-        // Clear the RW bit to write to the HD44780U
-        gpioB &= ~(1 << kByteLcdRW);
-        if ( isCommand )
-        {
-            // Clear the RS bit to send a command
-            gpioB &= ~(1 << kByteLcdRS);
-        }
-        else
-        {
-            // Set the RS bit to send a character
-            gpioB |= (1 << kByteLcdRS);
-        }
-
-        // Send the high bits
-        err = writeFourBitsToLcd( (value >> 4), gpioB );
-        if (!err )
-        {
-            // Send the low bits
-            err = writeFourBitsToLcd( (value & 0b00001111), gpioB );
-        }
+        // Clear the RS bit to send a command
+        gpioB &= ~(1 << kByteLcdRS);
+    }
+    else
+    {
+        // Set the RS bit to send a character
+        gpioB |= (1 << kByteLcdRS);
     }
 
-    return err;
+    // Send the high bits
+    writeFourBitsToLcd( (value >> 4), gpioB );
+    // Send the low bits
+    writeFourBitsToLcd( (value & 0b00001111), gpioB );
 }
 
 
@@ -624,8 +581,8 @@ void Lcd::clearBottomRow()
 
 size_t Lcd::write( uint8_t value )
 {
-    int err = sendCharToDisplay( value );
-    return ( err ? 0 : 1 );
+    sendCharToDisplay( value );
+    return 1;
 }
 
 
@@ -633,8 +590,8 @@ size_t Lcd::write( uint8_t value )
 
 size_t Lcd::write( char value )
 {
-    int err = sendCharToDisplay( static_cast<uint8_t>( value ) );
-    return ( err ? 0 : 1 );
+    sendCharToDisplay( static_cast<uint8_t>( value ) );
+    return 1;
 }
 
 
@@ -645,10 +602,9 @@ size_t Lcd::write( const char* str )
     size_t n = 0;
     if ( str )
     {
-        int err = 0;
-        while ( *str && !err )
+        while ( *str )
         {
-            err = sendCharToDisplay( static_cast<uint8_t>( *str++ ) );
+            sendCharToDisplay( static_cast<uint8_t>( *str++ ) );
             ++n;
         }
     }
@@ -669,10 +625,9 @@ size_t Lcd::write( const uint8_t* buffer, size_t size )
     size_t n = 0;
     if ( buffer )
     {
-        int err = 0;
-        while ( n < size && !err )
+        while ( n < size )
         {
-             err = sendCharToDisplay( *buffer++ );
+             sendCharToDisplay( *buffer++ );
             ++n;
         }
     }
@@ -682,7 +637,7 @@ size_t Lcd::write( const uint8_t* buffer, size_t size )
 
 
 
-int Lcd::setBacklight( uint8_t status )
+void Lcd::setBacklight( uint8_t status )
 {
     // Use pins 0, 14, 15; means we have to touch both GPIO A & B
 
@@ -692,23 +647,18 @@ int Lcd::setBacklight( uint8_t status )
         uint8_t gpio[2];
         uint16_t byte;
     } data;
-    int err = I2c::read( MCP23017_ADDRESS, MCP23017_OLATA, &data.byte );
+    I2c::read( MCP23017_ADDRESS, MCP23017_OLATA, &data.byte );
 
-    if ( !err )
-    {
-        // Clear pins 14 & 15 (GPIOA 6 & 7)
-        data.gpio[0] &= ~( ( 1 << kByteLcdGreen ) | ( 1 << kByteLcdRed ) );
-        // Set pins 14 & 15 (GPIOA 6 & 7) as appropriate
-        data.gpio[0] |= ( (~(status >> 1) & 0x01) << kByteLcdGreen ) | ( (~status & 0x01) << kByteLcdRed );
+    // Clear pins 14 & 15 (GPIOA 6 & 7)
+    data.gpio[0] &= ~( ( 1 << kByteLcdGreen ) | ( 1 << kByteLcdRed ) );
+    // Set pins 14 & 15 (GPIOA 6 & 7) as appropriate
+    data.gpio[0] |= ( (~(status >> 1) & 0x01) << kByteLcdGreen ) | ( (~status & 0x01) << kByteLcdRed );
 
-        // Clear pin 0 (GPIOB 0), set it as needed, and write the new GPIO
-        data.gpio[1] &= ~0x01;
-        data.gpio[1] |= ~(status >> 2) & 0x01;
+    // Clear pin 0 (GPIOB 0), set it as needed, and write the new GPIO
+    data.gpio[1] &= ~0x01;
+    data.gpio[1] |= ~(status >> 2) & 0x01;
 
-        err = I2c::write( MCP23017_ADDRESS, MCP23017_GPIOA, data.byte );
-    }
-
-    return err;
+    I2c::write( MCP23017_ADDRESS, MCP23017_GPIOA, data.byte );
 }
 
 
@@ -717,11 +667,9 @@ int Lcd::readButtons()
 {
     // Buttons on all on GPIOA; they are bits 0 thru 4
     uint8_t gpioA;
-    int err = I2c::read( MCP23017_ADDRESS, MCP23017_GPIOA, &gpioA );
+    I2c::read( MCP23017_ADDRESS, MCP23017_GPIOA, &gpioA );
 
     // Buttons have pullups, so gpio bits record the inverse of button state
     // 0b00011111 = 0x1F; 0b10000000 = 0x80; 0b11100000 = 0xE0
-    return ( err ? 0x080 : ( static_cast<uint8_t>(~gpioA) & 0x1F ) );
+    return static_cast<uint8_t>(~gpioA) & 0x1F;
 }
-
-

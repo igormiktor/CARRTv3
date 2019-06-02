@@ -29,12 +29,14 @@ set( DriverSrcs
         ../Drivers/PCA9685.cpp
     )
 
+set( UtilsSrcs
+    )
 
 set( CarrtSrcs
     )
 
 
-add_executable( LcdTest TestDrivers/LcdTest.cpp ${CarrtSrcs} ${DriverSrcs}  )
+add_executable( LcdTest TestDrivers/LcdTest.cpp ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs}  )
 set_target_properties( LcdTest PROPERTIES COMPILE_FLAGS "-std=c++11" )
 
-add_executable( KeypadTest TestDrivers/KeypadTest.cpp ${CarrtSrcs} ${DriverSrcs}  )
+add_executable( KeypadTest TestDrivers/KeypadTest.cpp ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs} )

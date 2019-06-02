@@ -148,35 +148,30 @@ namespace PCA9685
 
 
 
-int PCA9685::reset( std::uint8_t address )
+void PCA9685::reset( std::uint8_t address )
 {
     uint8_t desiredMode = (1 << kMode1_AutoIncr) | (1 << kMode1_AllCallBit);
-    int err = I2c::write( address, kMode1, desiredMode );
+    I2c::write( address, kMode1, desiredMode );
 
     // Oscillator needs time to settle
     Clock::delayMicroseconds( 500 );
 
-    if ( !err )
-    {
-        err = setAllPwm( address, 0, kFullOff );
-    }
-
-    return err;
+    setAllPwm( address, 0, kFullOff );
 }
 
 
 
 
 
-int PCA9685::init( std::uint8_t address )
+void PCA9685::init( std::uint8_t address )
 {
-    return reset( address );
+    reset( address );
 }
 
 
 
 
-int PCA9685::setAllPwm( std::uint8_t address, std::uint16_t on, std::uint16_t off )
+void PCA9685::setAllPwm( std::uint8_t address, std::uint16_t on, std::uint16_t off )
 {
     uint8_t data[4];
 
@@ -185,15 +180,13 @@ int PCA9685::setAllPwm( std::uint8_t address, std::uint16_t on, std::uint16_t of
     data[2] = off;
     data[3] = off >> 8;
 
-    int err = I2c::write( address, kAllLedOnLo, data, 4 );
-
-    return err;
+    I2c::write( address, kAllLedOnLo, data, 4 );
 }
 
 
 
 
-int PCA9685::setPwm( std::uint8_t address, uint8_t pinNbr, std::uint16_t on, std::uint16_t off )
+void PCA9685::setPwm( std::uint8_t address, uint8_t pinNbr, std::uint16_t on, std::uint16_t off )
 {
     uint8_t data[4];
 
@@ -202,47 +195,45 @@ int PCA9685::setPwm( std::uint8_t address, uint8_t pinNbr, std::uint16_t on, std
     data[2] = off;
     data[3] = off >> 8;
 
-    int err = I2c::write( address, (kLed00OnLo + 4*pinNbr), data, 4 );
-
-    return err;
+    I2c::write( address, (kLed00OnLo + 4*pinNbr), data, 4 );
 }
 
 
 
 
 
-int PCA9685::setOff( std::uint8_t address, uint8_t pinNbr )
+void PCA9685::setOff( std::uint8_t address, uint8_t pinNbr )
 {
-    return setPwm( address, pinNbr, 0, kFullOff );
+    setPwm( address, pinNbr, 0, kFullOff );
 }
 
 
 
 
-int PCA9685::setOn( std::uint8_t address, uint8_t pinNbr )
+void PCA9685::setOn( std::uint8_t address, uint8_t pinNbr )
 {
-    return setPwm( address, pinNbr, kFullOn, 0 );
+    setPwm( address, pinNbr, kFullOn, 0 );
 }
 
 
 
 
-int PCA9685::setPin( std::uint8_t address, uint8_t pinNbr, bool value )
+void PCA9685::setPin( std::uint8_t address, uint8_t pinNbr, bool value )
 {
     if ( value )
     {
-        return setPwm( address, pinNbr, kFullOn, 0 );
+        setPwm( address, pinNbr, kFullOn, 0 );
     }
     else
     {
-        return setPwm( address, pinNbr, 0, kFullOff );
+        setPwm( address, pinNbr, 0, kFullOff );
     }
 }
 
 
 
 
-int PCA9685::setPwmDutyOnCycle( std::uint8_t address, uint8_t pinNbr, float onRatio )
+void PCA9685::setPwmDutyOnCycle( std::uint8_t address, uint8_t pinNbr, float onRatio )
 {
     uint16_t on = 0;
     uint16_t off = 0;
@@ -260,15 +251,14 @@ int PCA9685::setPwmDutyOnCycle( std::uint8_t address, uint8_t pinNbr, float onRa
         off = static_cast<uint16_t>( 4095 * onRatio + 0.5 );
     }
 
-
-    return setPwm( address, pinNbr, on, off );
+    setPwm( address, pinNbr, on, off );
 }
 
 
 
 
 
-int PCA9685::setPWMFreq( std::uint8_t address, float freq )
+void PCA9685::setPWMFreq( std::uint8_t address, float freq )
 {
     // Calculate the appropriate prescaler
     float prescaleValue = 25000000;
@@ -278,28 +268,21 @@ int PCA9685::setPWMFreq( std::uint8_t address, float freq )
     uint8_t prescaler = std::floor( prescaleValue + 0.5 );
 
     uint8_t originalMode;
-    int err = I2c::read( address, kMode1, &originalMode );
-    if ( !err )
-    {
-        uint8_t sleepMode = ( originalMode & 0x7F ) | 0x10;
+    I2c::read( address, kMode1, &originalMode );
 
-        // Set the PCA9685 to sleep so we can set the prescaler
-        err = I2c::write( address, kMode1, sleepMode );
-        if ( !err )
-        {
-            err = I2c::write( address, kPreScale, prescaler );
-        }
+    uint8_t sleepMode = ( originalMode & 0x7F ) | 0x10;
 
-        // Restore the original mode
-        I2c::write( address, kMode1, originalMode );
+    // Set the PCA9685 to sleep so we can set the prescaler
+    I2c::write( address, kMode1, sleepMode );
+    I2c::write( address, kPreScale, prescaler );
 
-        // Oscillator needs time to settle
-        Clock::delayMicroseconds( 500 );
-    }
+
+    // Restore the original mode
+    I2c::write( address, kMode1, originalMode );
+
+    // Oscillator needs time to settle
+    Clock::delayMicroseconds( 500 );
 
     // Set the MODE1 registor to clear restart
-    err = I2c::write( address, kMode1, static_cast<uint8_t>( originalMode | (1 << kMode1_Restart) ) );
-
-    return err;
+    I2c::write( address, kMode1, static_cast<uint8_t>( originalMode | (1 << kMode1_Restart) ) );
 }
-

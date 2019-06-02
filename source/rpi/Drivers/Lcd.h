@@ -74,7 +74,7 @@ namespace Lcd
      *
      * The LCD display is initialized in 16-column, 2-row mode.
      */
-    int init();
+    void init();
 
 
     /*!
@@ -194,7 +194,7 @@ namespace Lcd
      * \arg \c color the color to set the backlight.  Pass one of kBacklight_Red, kBacklight_Yellow,
      *  kBacklight_Green, kBacklight_Teal, kBacklight_Blue, kBacklight_Violet, or kBacklight_White.
      */
-    int setBacklight( std::uint8_t color );
+    void setBacklight( std::uint8_t color );
 
 
     /*!

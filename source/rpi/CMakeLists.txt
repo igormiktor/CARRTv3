@@ -28,10 +28,12 @@ set( DriverSrcs
         Drivers/PCA9685.cpp
     )
 
+set( UtilsSrcs
+    )
 
 set( CarrtSrcs
     )
 
 
-add_executable( Carrt3 ${CarrtSrcs} ${DriverSrcs}  )
+add_executable( Carrt3 ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs} )
 set_target_properties( Carrt3 PROPERTIES COMPILE_FLAGS "-std=c++11" )
