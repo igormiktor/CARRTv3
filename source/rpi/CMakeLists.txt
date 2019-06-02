@@ -1,4 +1,3 @@
-
 cmake_minimum_required( VERSION 3.7 )
 
 
@@ -14,7 +13,7 @@ else( ${SYS_NAME} MATCHES "carrt" )
 endif( ${SYS_NAME} MATCHES "carrt" )
 
 
-project( TestCARRT3 )
+project( CARRT3 )
 
 set( CMAKE_BUILD_TYPE Release )
 
@@ -22,11 +21,11 @@ include_directories( ".." )
 
 
 set( DriverSrcs
-        ../Drivers/Clock.cpp
-        ../Drivers/I2c.cpp
-        ../Drivers/Keypad.cpp
-        ../Drivers/Lcd.cpp
-        ../Drivers/PCA9685.cpp
+        Drivers/Clock.cpp
+        Drivers/I2c.cpp
+        Drivers/Keypad.cpp
+        Drivers/Lcd.cpp
+        Drivers/PCA9685.cpp
     )
 
 
@@ -34,7 +33,5 @@ set( CarrtSrcs
     )
 
 
-add_executable( LcdTest TestDrivers/LcdTest.cpp ${CarrtSrcs} ${DriverSrcs}  )
-set_target_properties( LcdTest PROPERTIES COMPILE_FLAGS "-std=c++11" )
-
-add_executable( KeypadTest TestDrivers/KeypadTest.cpp ${CarrtSrcs} ${DriverSrcs}  )
+add_executable( Carrt3 ${CarrtSrcs} ${DriverSrcs}  )
+set_target_properties( Carrt3 PROPERTIES COMPILE_FLAGS "-std=c++11" )
