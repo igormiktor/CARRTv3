@@ -18,91 +18,106 @@
 */
 
 
-
+#include <iostream>
 
 #include "Drivers/Lcd.h"
 #include "Drivers/Clock.h"
 
+#include "Utils/CarrtError.h"
+
 
 int main()
 {
-    Lcd::init();
-
-    Lcd::displayOn();
-    Lcd::setBacklight( Lcd::kBacklight_White );
-
-    for ( int i = 0; i < 2; ++i )
+    try
     {
-        Lcd::displayTopRow( "ABCDEFGHIJKLMNOP" );
-        Lcd::displayBottomRow( "abcdefghijklmnop" );
+        Lcd::init();
 
-        Clock::delayMilliseconds( 5000 );
+        Lcd::displayOn();
+        Lcd::setBacklight( Lcd::kBacklight_White );
 
-        Lcd::clearTopRow();
-        Clock::delayMilliseconds( 1000 );
-        Lcd::clearBottomRow();
-        Clock::delayMilliseconds( 3000 );
+        for ( int i = 0; i < 2; ++i )
+        {
+            Lcd::displayTopRow( "ABCDEFGHIJKLMNOP" );
+            Lcd::displayBottomRow( "abcdefghijklmnop" );
 
-        Lcd::displayTopRow( "01234567890ABCDE" );
-        Lcd::setCursor( 1, 0 );
-        Lcd::print( "abcdefghijklmnop" );
+            Clock::delayMilliseconds( 2500 );
 
-        Clock::delayMilliseconds( 5000 );
+            Lcd::clearTopRow();
+            Clock::delayMilliseconds( 1000 );
+            Lcd::clearBottomRow();
+            Clock::delayMilliseconds( 1000 );
 
-        Lcd::clearTopRow();
-        Lcd::setCursor( 0, 8 );
-        Lcd::print( 'Z' );
-        Lcd::displayBottomRow( "01234567890ABCDE" );
+            Lcd::displayTopRow( "01234567890ABCDE" );
+            Lcd::setCursor( 1, 0 );
+            Lcd::print( "abcdefghijklmnop" );
 
-        Clock::delayMilliseconds( 5000 );
+            Clock::delayMilliseconds( 2500 );
 
-        Lcd::clear();
-        Lcd::displayTopRow( "255 base 10" );
-        Lcd::setCursor( 1, 0 );
-        Lcd::print( 255 );
+            Lcd::clearTopRow();
+            Lcd::setCursor( 0, 8 );
+            Lcd::print( 'Z' );
+            Lcd::displayBottomRow( "01234567890ABCDE" );
 
-        Clock::delayMilliseconds( 5000 );
+            Clock::delayMilliseconds( 2500 );
 
-        Clock::delayMilliseconds( 5000 );
+            Lcd::clear();
+            Lcd::displayTopRow( "255 base 10" );
+            Lcd::setCursor( 1, 0 );
+            Lcd::print( 255 );
 
-        Lcd::clear();
-        Lcd::displayTopRow( "255 base 8" );
-        Lcd::setCursor( 1, 0 );
-        Lcd::print( 255, Lcd::kOct );
+            Clock::delayMilliseconds( 2500 );
 
-        Clock::delayMilliseconds( 5000 );
+            Lcd::clear();
+            Lcd::displayTopRow( "255 base 8" );
+            Lcd::setCursor( 1, 0 );
+            Lcd::print( 255, Lcd::kOct );
 
-        Lcd::clear();
-        Lcd::displayTopRow( "255 base 16" );
-        Lcd::setCursor( 1, 0 );
-        Lcd::print( 255, Lcd::kHex );
-        Clock::delayMilliseconds( 5000 );
+            Clock::delayMilliseconds( 2500 );
 
-        Lcd::clear();
-        Lcd::displayTopRow( "-123456789L" );
-        Lcd::setCursor( 1, 0 );
-        Lcd::print( -123456789L );
+            Lcd::clear();
+            Lcd::displayTopRow( "255 base 16" );
+            Lcd::setCursor( 1, 0 );
+            Lcd::print( 255, Lcd::kHex );
+            Clock::delayMilliseconds( 2500 );
 
-        Clock::delayMilliseconds( 5000 );
+            Lcd::clear();
+            Lcd::displayTopRow( "-123456789L" );
+            Lcd::setCursor( 1, 0 );
+            Lcd::print( -123456789L );
 
-        Lcd::clear();
-        Lcd::displayTopRow( "123456789UL" );
-        Lcd::setCursor( 1, 0 );
-        Lcd::print( 123456789UL );
+            Clock::delayMilliseconds( 2500 );
 
-        Clock::delayMilliseconds( 5000 );
+            Lcd::clear();
+            Lcd::displayTopRow( "123456789UL" );
+            Lcd::setCursor( 1, 0 );
+            Lcd::print( 123456789UL );
 
-        Lcd::clear();
-        Lcd::displayTopRow( "2.7182818289" );
-        Lcd::setCursor( 1, 0 );
-        Lcd::print( 2.7182818289 );
+            Clock::delayMilliseconds( 2500 );
 
-        Clock::delayMilliseconds( 5000 );
+            Lcd::clear();
+            Lcd::displayTopRow( "2.7182818289" );
+            Lcd::setCursor( 1, 0 );
+            Lcd::print( 2.7182818289 );
+
+            Clock::delayMilliseconds( 2500 );
+        }
+
+        Lcd::setBacklight( Lcd::kBacklight_Off );
+        Lcd::displayOff();
     }
 
-    Lcd::setBacklight( Lcd::kBacklight_Off );
-    Lcd::displayOff();
+    catch ( const CarrtError& err )
+    {
+        std::cerr << "Error: " << err.errorCode() << ", " << err.what() << std::endl;
+    }
+
+    catch ( const std::exception& err )
+    {
+        std::cerr << "Error: " << err.what() << std::endl;
+    }
+
+    catch (...)
+    {
+        std::cerr << "Error of unknown type." << std::endl;
+    }
 }
-
-
-

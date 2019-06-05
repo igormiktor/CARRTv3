@@ -18,88 +18,112 @@
 */
 
 
-
+#include <iostream>
 
 #include "Drivers/Clock.h"
 #include "Drivers/Keypad.h"
 #include "Drivers/Lcd.h"
 
+#include "Utils/CarrtError.h"
+
+
+const long kThreeMinutesInMillis = 3 * 60 *1000L;
+
 
 int main()
 {
-    Lcd::init();
-
-    Lcd::displayOn();
-    Lcd::setBacklight( Lcd::kBacklight_White );
-
-    const int kMinTimeBetweenButtonChecks = 250;        // milliseconds
-    unsigned long sNextTimeButtonClickAccepted = 0;
-
-    Lcd::displayTopRow( "Button hit:" );
-
-    while ( 1 )
+    try
     {
+        Lcd::init();
 
-        uint8_t buttonHit = Keypad::readButtons();
+        Lcd::displayOn();
+        Lcd::setBacklight( Lcd::kBacklight_White );
 
-        if ( buttonHit && Clock::millis() > sNextTimeButtonClickAccepted )
+        const int kMinTimeBetweenButtonChecks = 250;        // milliseconds
+        unsigned long sNextTimeButtonClickAccepted = 0;
+
+        Lcd::displayTopRow( "Button hit:" );
+
+        long endTime = Clock::millis() + kThreeMinutesInMillis;
+        while ( 1 && Clock::millis() < endTime )
         {
-            // Accept the button click
 
-            // Rollover happens in about 50 days, so don't worry about it
-            sNextTimeButtonClickAccepted = Clock::millis() + kMinTimeBetweenButtonChecks;
+            uint8_t buttonHit = Keypad::readButtons();
 
-            Lcd::clearBottomRow();
-
-            switch ( buttonHit )
+            if ( buttonHit && Clock::millis() > sNextTimeButtonClickAccepted )
             {
-                case Keypad::kButton_Select:
-                    Lcd::displayBottomRow( "Select" );
-                    break;
+                // Accept the button click
 
-                case Keypad::kButton_Right:
-                    Lcd::displayBottomRow( "Right" );
-                    break;
+                // Rollover happens in about 50 days, so don't worry about it
+                sNextTimeButtonClickAccepted = Clock::millis() + kMinTimeBetweenButtonChecks;
 
-                case Keypad::kButton_Down:
-                    Lcd::displayBottomRow( "Down" );
-                    break;
+                Lcd::clearBottomRow();
 
-                case Keypad::kButton_Up:
-                    Lcd::displayBottomRow( "Up" );
-                    break;
+                switch ( buttonHit )
+                {
+                    case Keypad::kButton_Select:
+                        Lcd::displayBottomRow( "Select" );
+                        break;
 
-                case Keypad::kButton_Left:
-                    Lcd::displayBottomRow( "Left" );
-                    break;
+                    case Keypad::kButton_Right:
+                        Lcd::displayBottomRow( "Right" );
+                        break;
 
-                case Keypad::kChord_Reset:
-                    Lcd::displayBottomRow( "Reset (chord)" );
-                    break;
+                    case Keypad::kButton_Down:
+                        Lcd::displayBottomRow( "Down" );
+                        break;
 
-               case Keypad::kChord_Pause:
-                    Lcd::displayBottomRow( "Pause (chord)" );
-                    break;
+                    case Keypad::kButton_Up:
+                        Lcd::displayBottomRow( "Up" );
+                        break;
 
-                case Keypad::kChord_Continue:
-                    Lcd::displayBottomRow( "Continue (chord)" );
-                    break;
+                    case Keypad::kButton_Left:
+                        Lcd::displayBottomRow( "Left" );
+                        break;
 
-                case Keypad::kChord_A:
-                    Lcd::displayBottomRow( "A (chord)" );
-                    break;
+                    case Keypad::kChord_Reset:
+                        Lcd::displayBottomRow( "Reset (chord)" );
+                        break;
 
-                case Keypad::kChord_B:
-                    Lcd::displayBottomRow( "B (chord)" );
-                    break;
+                   case Keypad::kChord_Pause:
+                        Lcd::displayBottomRow( "Pause (chord)" );
+                        break;
 
-                 default:
-                    Lcd::displayBottomRow( "???" );
-                    break;
+                    case Keypad::kChord_Continue:
+                        Lcd::displayBottomRow( "Continue (chord)" );
+                        break;
+
+                    case Keypad::kChord_A:
+                        Lcd::displayBottomRow( "A (chord)" );
+                        break;
+
+                    case Keypad::kChord_B:
+                        Lcd::displayBottomRow( "B (chord)" );
+                        break;
+
+                     default:
+                        Lcd::displayBottomRow( "???" );
+                        break;
+                }
             }
         }
+
+        Lcd::setBacklight( Lcd::kBacklight_Off );
+        Lcd::displayOff();
+    }
+
+    catch ( const CarrtError& err )
+    {
+        std::cerr << "Error: " << err.errorCode() << ", " << err.what() << std::endl;
+    }
+
+    catch ( const std::exception& err )
+    {
+        std::cerr << "Error: " << err.what() << std::endl;
+    }
+
+    catch (...)
+    {
+        std::cerr << "Error of unknown type." << std::endl;
     }
 }
-
-
-
