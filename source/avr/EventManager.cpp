@@ -5,7 +5,7 @@
  * An event handling system for Arduino.
  *
  * Author: igormt@alumni.caltech.edu
- * Copyright (c) 2017 Igor Mikolic-Torreira
+ * Copyright (c) 2019 Igor Mikolic-Torreira
  *
  * Inspired by and adapted from the
  * Arduino Event System library by

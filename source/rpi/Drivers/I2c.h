@@ -2,7 +2,7 @@
     I2c.h - An I2C master library
     For Raspberry Pi (secifically, Pi Zero W).
 
-    Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

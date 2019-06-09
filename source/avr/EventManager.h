@@ -5,7 +5,7 @@
  * An event handling system for avr microcontrollers.
  *
  * Author: igormt@alumni.caltech.edu
- * Copyright (c) 2017 Igor Mikolic-Torreira
+ * Copyright (c) 2019 Igor Mikolic-Torreira
  *
  * This library is free software; you can redistribute it
  * and/or modify it under the terms of the GNU Lesser

@@ -1,6 +1,6 @@
 /*
     Lcd.cpp - Driver for  an I2C-based LCD for CARRTv3.
-    Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
 
     Inspired by the Adafruit library written by Limor Fried/Ladyada
     for Adafruit Industries, but this is a very different implementation.

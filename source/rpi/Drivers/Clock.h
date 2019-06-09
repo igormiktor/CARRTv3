@@ -1,7 +1,7 @@
 /*
     Clock.h - Functions to initialize and use a clock
     for CARRTv3 on Raspberry Pi Zero W.
-    Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
