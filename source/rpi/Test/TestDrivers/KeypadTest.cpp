@@ -1,7 +1,7 @@
 /*
     KeypadTest.cpp - Testing harness for the keypad driver.
 
-    Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@ int main()
 {
     try
     {
+        Clock::initSystemClock();
+
         Lcd::init();
 
         Lcd::displayOn();
@@ -110,6 +112,8 @@ int main()
 
         Lcd::setBacklight( Lcd::kBacklight_Off );
         Lcd::displayOff();
+
+        std::cout << "Test complete" << std::endl;
     }
 
     catch ( const CarrtError& err )
