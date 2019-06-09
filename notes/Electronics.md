@@ -1,8 +1,6 @@
 # Electronics
 
-## Empirical Measurements
-
-### Power Voltages
+## Power Voltages
 
 | Point of Measurement | Voltage |
 | :--- | :---: |
@@ -13,7 +11,7 @@
 | RPI 0W Output (3V) | 3.318 V |
 | Motor Hat Input | 9.89 V |
 
-### Drive Motor Operations
+## Drive Motor Operations
 
 | Operation     | Current           |
 | :------------ | :-----------:     |
@@ -23,9 +21,15 @@
 | All motor start     | 1.2 - 2.5 A |
 | All motor run       | 0.8 - 0.9 A |
 
-### Trinket (ATMega328p) Operations
+* Required switching transistor:  TIP120
+* Required transistor base resistor:  3.3 KOhms
+
+### Trinket (ATMega328p @ 3.3V, 12 MHz) Operations
 | Operation     | Current    |
 | :------------ | :--------: |
 | Idle          | 6 mA       |
 | Start up      | 15 mA      |
 | Max possible  | 200 mA     |
+
+* Required switching transistor:  2N2222
+* Required transistor base resistor:  2.2 KOhms
