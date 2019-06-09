@@ -1,7 +1,7 @@
 /*
-    Motors.h - Functions for controlling CARRTv3's drive motors
+    Motors.h - Functions for controlling CARRT3's drive motors
 
-    Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,25 +24,38 @@
 #ifndef Motors_h
 #define Motors_h
 
-#include <inttypes.h>
+
+
+#include "Utils/CarrtError.h"
+
+
+
+class MotorError : public CarrtError
+{
+public:
+    explicit MotorError( int errCode, const std::string& what )
+        : CarrtError( errCode, what ) {}
+
+    explicit MotorError( int errCode, const char* what )
+        : CarrtError( errCode, what ) {}
+};
 
 
 namespace Motors
 {
+    const int kFullSpeed = 255;
+    const int kHalfSpeed = 200;
 
-    const uint8_t kFullSpeed = 255;
-    const uint8_t kHalfSpeed = 200;
+    void init();
 
-    int init();
+    void setSpeedAllMotors( int speed );
 
-    int setSpeedAllMotors( uint8_t speed );
+    void goForward();
+    void goBackward();
+    void stop();
 
-    int goForward();
-    int goBackward();
-    int stop();
-
-    int rotateLeft();
-    int rotateRight();
+    void rotateLeft();
+    void rotateRight();
 
 
     enum MotorCmd
@@ -53,15 +66,15 @@ namespace Motors
         kCmdRelease
     };
 
-    int setRearRightMotorSpeed( uint8_t s );
-    int setFrontRightMotorSpeed( uint8_t s );
-    int setFrontLeftMotorSpeed( uint8_t s );
-    int setRearLeftMotorSpeed( uint8_t s );
+    void setRearRightMotorSpeed( int s );
+    void setFrontRightMotorSpeed( int s );
+    void setFrontLeftMotorSpeed( int s );
+    void setRearLeftMotorSpeed( int s );
 
-    int runRearRightMotor( MotorCmd cmd );
-    int runRearLeftMotor( MotorCmd cmd );
-    int runFrontRightMotor( MotorCmd cmd );
-    int runFrontLeftMotor( MotorCmd cmd );
+    void runRearRightMotor( MotorCmd cmd );
+    void runRearLeftMotor( MotorCmd cmd );
+    void runFrontRightMotor( MotorCmd cmd );
+    void runFrontLeftMotor( MotorCmd cmd );
 
 };
 
