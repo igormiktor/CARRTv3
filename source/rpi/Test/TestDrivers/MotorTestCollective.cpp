@@ -30,7 +30,10 @@
 
 int main()
 {
-    const long kThreeMinutesInMillis = 3 * 60 *1000L;
+    const long kThreeMinutesInMillis    = 3 * 60 *1000L;
+
+    const int kRunTimeInMillis          = 5000;
+    const int kPauseTimeInMillis        = 3000;
 
     try
     {
@@ -38,34 +41,34 @@ int main()
 
         Motors::init();
 
-        Clock::delayMilliseconds(1000);
+        Clock::delayMilliseconds( 2*kPauseTimeInMillis );
 
         long endTime = Clock::millis() + kThreeMinutesInMillis;
         while ( 1 && Clock::millis() < endTime )
         {
             Motors::goForward();
-            Clock::delayMilliseconds( 5000 );
+            Clock::delayMilliseconds( kRunTimeInMillis );
 
             Motors::stop();
-            Clock::delayMilliseconds( 1000 );
+            Clock::delayMilliseconds( kPauseTimeInMillis );
 
             Motors::goBackward();
-            Clock::delayMilliseconds( 5000 );
+            Clock::delayMilliseconds( kRunTimeInMillis );
 
             Motors::stop();
-            Clock::delayMilliseconds( 1000 );
+            Clock::delayMilliseconds( kPauseTimeInMillis );
 
             Motors::rotateLeft();
-            Clock::delayMilliseconds( 5000 );
+            Clock::delayMilliseconds( kRunTimeInMillis );
 
             Motors::stop();
-            Clock::delayMilliseconds( 1000 );
+            Clock::delayMilliseconds( kPauseTimeInMillis );
 
             Motors::rotateRight();
-            Clock::delayMilliseconds( 5000 );
+            Clock::delayMilliseconds( kRunTimeInMillis );
 
             Motors::stop();
-            Clock::delayMilliseconds( 1000 );
+            Clock::delayMilliseconds( kPauseTimeInMillis );
         }
 
         std::cout << "Test complete" << std::endl;
