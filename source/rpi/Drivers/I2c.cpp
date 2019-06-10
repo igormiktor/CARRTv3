@@ -20,6 +20,8 @@
 
 #include "I2c.h"
 
+#include <pigpio.h>
+
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -63,20 +65,14 @@ namespace I2c
 
 I2c::I2cConnection::I2cConnection( uint8_t address )
 {
-    mFd = open( sI2cDeviceName, O_RDWR );
+    int fd = i2cOpen( 1, address, 0 );
 
-    if ( mFd < 0 )
+    if ( fd < 0 )
     {
         throw I2cError( 100, "Failed to open the i2c bus" );
     }
 
-    int err = ioctl( mFd, I2C_SLAVE, address );
-    if ( err < 0 )
-    {
-        close ( mFd );
-        mFd = -1;
-        throw I2cError( 101, "Failed to acquire i2c bus access and/or talk to slave" );
-    }
+    mFd = static_cast<unsigned>( fd );
 }
 
 
@@ -85,7 +81,7 @@ I2c::I2cConnection::~I2cConnection()
 {
     if ( mFd >= 0 )
     {
-        close( mFd );
+        i2cClose( mFd );
     }
 }
 
@@ -97,7 +93,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress )
 {
     I2cConnection i2c( address );
 
-    int ret = i2c_smbus_write_byte( i2c.getFd(), registerAddress );
+    int ret = i2cWriteByte( i2c.getFd(), registerAddress );
 
     if ( ret < 0 )
     {
@@ -111,7 +107,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t data )
 {
     I2cConnection i2c( address );
 
-    int ret = i2c_smbus_write_byte_data( i2c.getFd(), registerAddress, data );
+    int ret = i2cWriteByteData( i2c.getFd(), registerAddress, data );
 
     if ( ret < 0 )
     {
@@ -125,7 +121,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint16_t data )
 {
     I2cConnection i2c( address );
 
-    int ret = i2c_smbus_write_word_data( i2c.getFd(), registerAddress, data );
+    int ret = i2cWriteWordData( i2c.getFd(), registerAddress, data );
 
     if ( ret < 0 )
     {
@@ -137,8 +133,6 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint16_t data )
 
 void I2c::write( uint8_t address, uint8_t registerAddress, const char* data )
 {
-    I2cConnection i2c( address );
-
     int len = strlen( data );
     if ( len > 32 )
     {
@@ -146,7 +140,9 @@ void I2c::write( uint8_t address, uint8_t registerAddress, const char* data )
         len = 32;
     }
 
-    int ret = i2c_smbus_write_i2c_block_data( i2c.getFd(), registerAddress, len, reinterpret_cast<const uint8_t*>( data ) );
+    I2cConnection i2c( address );
+
+    int ret = i2cWriteBlockData( i2c.getFd(), registerAddress, const_cast<char*>( data ), len );
 
     if ( ret < 0 )
     {
@@ -157,15 +153,15 @@ void I2c::write( uint8_t address, uint8_t registerAddress, const char* data )
 
 void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t* data, uint8_t numberBytes )
 {
-    I2cConnection i2c( address );
-
     if ( numberBytes > 32 )
     {
         // Intentionally fail (partially) silently
         numberBytes = 32;
     }
 
-    int ret = i2c_smbus_write_i2c_block_data( i2c.getFd(), registerAddress, numberBytes, data );
+    I2cConnection i2c( address );
+
+    int ret = i2cWriteBlockData( i2c.getFd(), registerAddress, reinterpret_cast<char*>( data ), numberBytes );
 
     if ( ret < 0 )
     {
@@ -178,11 +174,11 @@ void I2c::read( uint8_t address, uint8_t registerAddress, uint8_t* value )
 {
     I2cConnection i2c( address );
 
-    int ret = i2c_smbus_read_byte_data( i2c.getFd(), registerAddress );
+    int ret = i2cReadByteData( i2c.getFd(), registerAddress );
 
     if ( ret < 0 )
     {
-        throw I2cError( 102, "Error writing to i2c bus" );
+        throw I2cError( 102, "Error reading from i2c bus" );
     }
 
     *value = static_cast<uint8_t>( ret );
@@ -194,11 +190,11 @@ void I2c::read( uint8_t address, uint8_t registerAddress, uint16_t* value )
 {
     I2cConnection i2c( address );
 
-    int ret = i2c_smbus_read_word_data( i2c.getFd(), registerAddress );
+    int ret = i2cReadWordData( i2c.getFd(), registerAddress );
 
     if ( ret < 0 )
     {
-        throw I2cError( 102, "Error writing to i2c bus" );
+        throw I2cError( 102, "Error reading from i2c bus" );
     }
 
     *value = static_cast<uint16_t>( ret );
@@ -209,10 +205,10 @@ void I2c::read( uint8_t address, uint8_t registerAddress, uint8_t numberBytes, u
 {
     I2cConnection i2c( address );
 
-    int ret = i2c_smbus_read_i2c_block_data( i2c.getFd(), registerAddress, numberBytes, destination );
+    int ret = i2cReadBlockData( i2c.getFd(), registerAddress, reinterpret_cast<char*>( destination ) );
 
-    if ( ret < 0 )
+    if ( ret < 0 || ret > numberBytes )
     {
-        throw I2cError( 102, "Error writing to i2c bus" );
+        throw I2cError( 102, "Error reading from i2c bus" );
     }
 }

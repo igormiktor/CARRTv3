@@ -20,6 +20,8 @@
 
 #include <iostream>
 
+#include <pigpio.h>
+
 #include "Drivers/Clock.h"
 #include "Drivers/Keypad.h"
 #include "Drivers/Lcd.h"
@@ -34,6 +36,8 @@ int main()
 {
     try
     {
+        gpioInitialise();
+
         Clock::initSystemClock();
 
         Lcd::init();
@@ -130,4 +134,6 @@ int main()
     {
         std::cerr << "Error of unknown type." << std::endl;
     }
+
+    gpioTerminate();
 }

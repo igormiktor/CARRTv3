@@ -22,6 +22,8 @@
 
 #include <iostream>
 
+#include <pigpio.h>
+
 #include "Drivers/Clock.h"
 #include "Utils/CarrtError.h"
 
@@ -37,6 +39,8 @@ int main()
 
     try
     {
+        gpioInitialise();
+
         Clock::initSystemClock();
 
         Motors::init();
@@ -88,4 +92,6 @@ int main()
     {
         std::cerr << "Error of unknown type." << std::endl;
     }
+
+    gpioTerminate();
 }
