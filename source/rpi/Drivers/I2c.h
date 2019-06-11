@@ -72,7 +72,7 @@ namespace I2c
 
     void read( std::uint8_t address, std::uint8_t registerAddress, std::uint16_t* destination );
 
-    void read( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, std::uint8_t* destination );
+    int read( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, std::uint8_t* destination );
 
 };
 

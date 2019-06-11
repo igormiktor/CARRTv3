@@ -161,7 +161,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t* data, uint8_
 
     I2cConnection i2c( address );
 
-    int ret = i2cWriteBlockData( i2c.getFd(), registerAddress, reinterpret_cast<char*>( data ), numberBytes );
+    int ret = i2cWriteI2CBlockData( i2c.getFd(), registerAddress, reinterpret_cast<char*>( data ), numberBytes );
 
     if ( ret < 0 )
     {
@@ -201,14 +201,16 @@ void I2c::read( uint8_t address, uint8_t registerAddress, uint16_t* value )
 }
 
 
-void I2c::read( uint8_t address, uint8_t registerAddress, uint8_t numberBytes, uint8_t* destination )
+int I2c::read( uint8_t address, uint8_t registerAddress, uint8_t numberBytes, uint8_t* destination )
 {
     I2cConnection i2c( address );
 
-    int ret = i2cReadBlockData( i2c.getFd(), registerAddress, reinterpret_cast<char*>( destination ) );
+    int ret = i2cReadI2CBlockData( i2c.getFd(), registerAddress, reinterpret_cast<char*>( destination ), numberBytes );
 
     if ( ret < 0 || ret > numberBytes )
     {
         throw I2cError( 102, "Error reading from i2c bus" );
     }
+
+    return ret;
 }
