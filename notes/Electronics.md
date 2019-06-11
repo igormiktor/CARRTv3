@@ -25,6 +25,7 @@
 * Required transistor base resistor:  3.3 KOhms
 
 ### Trinket (ATMega328p @ 3.3V, 12 MHz) Operations
+
 | Operation     | Current    |
 | :------------ | :--------: |
 | Idle          | 6 mA       |
