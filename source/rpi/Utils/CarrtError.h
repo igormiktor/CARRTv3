@@ -48,4 +48,15 @@ private:
 };
 
 
+
+// Error code scheme....
+
+const int kFunctionIdIncrement      = -1000;
+
+const int kI2cError                 = -100000;
+
+
+
+
+
 #endif  // CarrtError_h

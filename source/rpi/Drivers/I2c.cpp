@@ -37,8 +37,6 @@ using namespace std;
 namespace I2c
 {
 
-    const char* sI2cDeviceName = "/dev/i2c-1";
-
     class I2cConnection
     {
     public:
@@ -69,7 +67,7 @@ I2c::I2cConnection::I2cConnection( uint8_t address )
 
     if ( fd < 0 )
     {
-        throw I2cError( 100, "Failed to open the i2c bus" );
+        throw I2cError( kI2cError + 1*kFunctionIdIncrement + fd, "Failed to open the i2c bus" );
     }
 
     mFd = static_cast<unsigned>( fd );
@@ -97,7 +95,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress )
 
     if ( ret < 0 )
     {
-        throw I2cError( 102, "Error writing to i2c bus" );
+        throw I2cError( kI2cError + 2*kFunctionIdIncrement + ret, "Error writing to i2c bus" );
     }
 }
 
@@ -111,7 +109,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t data )
 
     if ( ret < 0 )
     {
-        throw I2cError( 102, "Error writing to i2c bus" );
+        throw I2cError( kI2cError + 3*kFunctionIdIncrement + ret, "Error writing to i2c bus" );
     }
 }
 
@@ -125,7 +123,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint16_t data )
 
     if ( ret < 0 )
     {
-        throw I2cError( 102, "Error writing to i2c bus" );
+        throw I2cError( kI2cError + 4*kFunctionIdIncrement + ret, "Error writing to i2c bus" );
     }
 }
 
@@ -146,7 +144,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, const char* data )
 
     if ( ret < 0 )
     {
-        throw I2cError( 102, "Error writing to i2c bus" );
+        throw I2cError( kI2cError + 5*kFunctionIdIncrement + ret, "Error writing to i2c bus" );
     }
 }
 
@@ -165,7 +163,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t* data, uint8_
 
     if ( ret < 0 )
     {
-        throw I2cError( 102, "Error writing to i2c bus" );
+        throw I2cError( kI2cError + 6*kFunctionIdIncrement + ret, "Error writing to i2c bus" );
     }
 }
 
@@ -178,7 +176,7 @@ void I2c::read( uint8_t address, uint8_t registerAddress, uint8_t* value )
 
     if ( ret < 0 )
     {
-        throw I2cError( 102, "Error reading from i2c bus" );
+        throw I2cError( kI2cError + 7*kFunctionIdIncrement + ret, "Error reading from i2c bus" );
     }
 
     *value = static_cast<uint8_t>( ret );
@@ -194,7 +192,7 @@ void I2c::read( uint8_t address, uint8_t registerAddress, uint16_t* value )
 
     if ( ret < 0 )
     {
-        throw I2cError( 102, "Error reading from i2c bus" );
+        throw I2cError( kI2cError + 8*kFunctionIdIncrement + ret, "Error reading from i2c bus" );
     }
 
     *value = static_cast<uint16_t>( ret );
@@ -209,7 +207,7 @@ int I2c::read( uint8_t address, uint8_t registerAddress, uint8_t numberBytes, ui
 
     if ( ret < 0 || ret > numberBytes )
     {
-        throw I2cError( 102, "Error reading from i2c bus" );
+        throw I2cError( kI2cError + 9*kFunctionIdIncrement + ret, "Error reading from i2c bus" );
     }
 
     return ret;
