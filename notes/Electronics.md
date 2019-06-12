@@ -24,7 +24,7 @@
 * Required switching transistor:  TIP120
 * Required transistor base resistor:  3.3 KOhms
 
-### Trinket (ATMega328p @ 3.3V, 12 MHz) Operations
+## Trinket (ATMega328p @ 3.3V, 12 MHz) Operations
 
 | Operation     | Current    |
 | :------------ | :--------: |
