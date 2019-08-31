@@ -508,9 +508,13 @@ int EventManager::ListenerList::removeListener( EventListener listener )
     {
         for ( int i = k; i < mNumListeners - 1; i++ )
         {
+            #pragma GCC diagnostic push
+            #pragma GCC diagnostic ignored "-Warray-bounds"
+            // Code is correct even though it triggers a compiler warning
             mListeners[ i ].callback  = mListeners[ i + 1 ].callback;
             mListeners[ i ].eventCode = mListeners[ i + 1 ].eventCode;
             mListeners[ i ].enabled   = mListeners[ i + 1 ].enabled;
+            #pragma GCC diagnostic pop
         }
         mNumListeners--;
         removed++;

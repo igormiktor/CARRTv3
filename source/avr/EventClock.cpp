@@ -84,8 +84,13 @@ ISR( TIMER2_OVF_vect )
 {
     // 1/8 second = 183 interrupts + count only 27 on the last interrupt
 
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Woverflow"
+
     static uint8_t interruptCount = -183;           // Yes, this does the right thing
     static uint8_t eighthSecCount = 0;
+
+    #pragma GCC diagnostic pop
 
     ++interruptCount;
 
@@ -97,8 +102,13 @@ ISR( TIMER2_OVF_vect )
     }
     else if ( interruptCount == 1 )
     {
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Woverflow"
+
         // Hit an eighth second
-        interruptCount = -183;       // Reset the count of interrupts
+        interruptCount = -183;       // Reset the count of interrupts (does the right thing)
+
+        #pragma GCC diagnostic pop
 
 #if 0
 
@@ -160,6 +170,8 @@ ISR( TIMER2_OVF_vect )
 
     }
 }
+
+
 
 
 #endif
