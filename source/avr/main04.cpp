@@ -115,7 +115,9 @@ int main()
     initSystem();
     initSystemClock();
 
-    USART0::start( 115200 );
+    Serial0 out;
+
+    out.start( 115200 );
 
     EventManager::addListener( EventManager::kEighthSecondTimerEvent, eighthSecondHandler );
     EventManager::addListener( EventManager::kQuarterSecondTimerEvent, quarterSecondHandler );
@@ -165,9 +167,9 @@ int main()
 
         delayMilliseconds( 200 );
 
-        if ( USART0::available() )
+        if ( out.available() )
         {
-            int got = USART0::read();
+            int got = out.read();
 
             if ( got == 'G' )
             {
@@ -179,7 +181,7 @@ int main()
     setGpioPinLow( pPin03 );
     setGpioPinLow( pPin12 );
 
-    USART0::write( "Trinket got the GO\n" );
+    out.write( "Trinket got the GO\n" );
 
     EventClock::init();
 
@@ -190,9 +192,9 @@ int main()
         if ( USART0::available() )
         {
             int got = USART0::read();
-            USART0::write( "Rcvd: " );
-            USART0::write( static_cast<char>( got ) );
-            USART0::write( '\n' );
+            out.write( "Rcvd: " );
+            out.write( static_cast<char>( got ) );
+            out.write( '\n' );
 
             switch ( got )
             {
@@ -210,6 +212,3 @@ int main()
         }
     }
 }
-
-
-

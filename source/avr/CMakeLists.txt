@@ -23,7 +23,7 @@ include_directories( "." )
 
 
 set( TestSrcs
-        main04.cpp
+        SerialResponderMain.cpp
         EventClock.cpp
         EventManager.cpp
     )
@@ -56,4 +56,4 @@ set( AvrUtilsSrcs
     )
 
 
-add_avr_executable( Test ${TestSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( TrinketTest ${TestSrcs} ${AvrUtilsSrcs} )
