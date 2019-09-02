@@ -48,3 +48,6 @@ target_link_libraries( MotorTestIndividual -lpigpio -lpthread )
 
 add_executable( MotorTestCollective TestDrivers/MotorTestCollective.cpp ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs} )
 target_link_libraries( MotorTestCollective -lpigpio -lpthread )
+
+add_executable( CommsToTrinketTest SerialToTrinketTest/SerialCommsToTrinketTest ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs} )
+target_link_libraries( CommsToTrinketTest -lpigpio -lpthread )
