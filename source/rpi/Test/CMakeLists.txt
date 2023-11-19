@@ -1,23 +1,4 @@
 
-cmake_minimum_required( VERSION 3.7 )
-
-
-execute_process(COMMAND "uname" "-n" OUTPUT_VARIABLE SYS_NAME )
-
-message( STATUS "The system is ${SYS_NAME}" )
-
-if( ${SYS_NAME} MATCHES "carrt" )
-    message( STATUS "Compiling on carrt, no cross-compiler required" )
-else( ${SYS_NAME} MATCHES "carrt" )
-    message( STATUS "Not compiling on carrt, assume cross-compiler required" )
-    set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/rpiw-toolchain.cmake )
-endif( ${SYS_NAME} MATCHES "carrt" )
-
-
-project( TestCARRT3 )
-
-set( CMAKE_BUILD_TYPE Release )
-
 include_directories( ".." )
 
 
@@ -37,6 +18,9 @@ set( CarrtSrcs
     )
 
 
+add_executable( LcdOff TestDrivers/LcdOff.cpp ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs}  )
+target_link_libraries( LcdOff -lpigpio -lpthread )
+    
 add_executable( LcdTest TestDrivers/LcdTest.cpp ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs}  )
 target_link_libraries( LcdTest -lpigpio -lpthread )
 
@@ -48,6 +32,3 @@ target_link_libraries( MotorTestIndividual -lpigpio -lpthread )
 
 add_executable( MotorTestCollective TestDrivers/MotorTestCollective.cpp ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs} )
 target_link_libraries( MotorTestCollective -lpigpio -lpthread )
-
-add_executable( CommsToTrinketTest SerialToTrinketTest/SerialCommsToTrinketTest ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs} )
-target_link_libraries( CommsToTrinketTest -lpigpio -lpthread )
