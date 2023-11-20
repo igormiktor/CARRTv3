@@ -1,39 +1,15 @@
-cmake_minimum_required( VERSION 3.7 )
+cmake_minimum_required(VERSION 3.0.0)
 
 
-execute_process(COMMAND "uname" "-n" OUTPUT_VARIABLE SYS_NAME )
+project(rpiCarrt VERSION 0.1.0 LANGUAGES ASM C CXX)
 
-message( STATUS "The system is ${SYS_NAME}" )
+include(CTest)
+enable_testing()
 
-if( ${SYS_NAME} MATCHES "carrt" )
-    message( STATUS "Compiling on carrt, no cross-compiler required" )
-else( ${SYS_NAME} MATCHES "carrt" )
-    message( STATUS "Not compiling on carrt, assume cross-compiler required" )
-    set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/rpiw-toolchain.cmake )
-endif( ${SYS_NAME} MATCHES "carrt" )
+add_executable(rpiCarrt main.cpp)
 
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+include(CPack)
 
-project( CARRT3 )
-
-set( CMAKE_BUILD_TYPE Release )
-
-include_directories( ".." )
-
-
-set( DriverSrcs
-        Drivers/Clock.cpp
-        Drivers/I2c.cpp
-        Drivers/Keypad.cpp
-        Drivers/Lcd.cpp
-        Drivers/PCA9685.cpp
-    )
-
-set( UtilsSrcs
-    )
-
-set( CarrtSrcs
-    )
-
-
-add_executable( Carrt3 ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs} )
-set_target_properties( Carrt3 PROPERTIES COMPILE_FLAGS "-std=c++11" )
+add_subdirectory(Test)
