@@ -1,3 +1,5 @@
+#include "EventManager.h"
+
 #include <iostream>
 #include "pico/stdlib.h"
 #include "pico/util/queue.h"
@@ -14,32 +16,35 @@
 #define I2C_SDA 8
 #define I2C_SCL 9
 
-bool timerCallback( repeating_timer_t *rt ) 
+EventManager gEvtMgr;
+
+
+bool timerCallback( repeating_timer_t* ) 
 {
-    static uint8_t eighthSecCount = 0;
+    static int eighthSecCount = 0;
 
     ++eighthSecCount;
     eighthSecCount %= 64;
 
     // Queue nav update events every 1/8 second
     // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-    // EventManager::queueEvent( EventManager::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
+    gEvtMgr.queueEvent( EventManager::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
 
     if ( ( eighthSecCount % 2 ) == 0 )
     {
         // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        // EventManager::queueEvent( EventManager::kQuarterSecondTimerEvent, (eighthSecCount % 8) / 2 );
+        gEvtMgr.queueEvent( EventManager::kQuarterSecondTimerEvent, (eighthSecCount % 8) / 2 );
     }
 
     if ( ( eighthSecCount % 8 ) == 0 )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        // EventManager::queueEvent( EventManager::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
+        gEvtMgr.queueEvent( EventManager::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
     }
 
     if ( eighthSecCount == 0 )
     {
-        // EventManager::queueEvent( EventManager::kEightSecondTimerEvent, 0 );
+        gEvtMgr.queueEvent( EventManager::kEightSecondTimerEvent, 0 );
     }
 
     return true;
@@ -63,27 +68,54 @@ int main()
 
     repeating_timer_t timer;
     // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
-    if ( !add_repeating_timer_us( -125, timerCallback, NULL, &timer ) ) 
+    if ( !add_repeating_timer_ms( -125, timerCallback, NULL, &timer ) ) 
     {
         std::cout << "Failed to add timer\n" << std::endl;
         return 1;
     }
 
     // puts("This is CARRT Pico!");
-    std::cout << "This is CARRT Pico" << std::endl;
+    std::cout << "This is CARRT Pico: event queue test" << std::endl;
 
     const uint LED_PIN = PICO_DEFAULT_LED_PIN;
     gpio_init( LED_PIN );
     gpio_set_dir( LED_PIN, GPIO_OUT );
 
+    bool ledState = false;
     while ( true ) 
     {
-        gpio_put( LED_PIN, 1 );
-        sleep_ms( 250 );
-        gpio_put( LED_PIN, 0 );
-        sleep_ms( 500 );
-        std::cout << "Hello from CARRT Pico! LED is about to flash on." << std::endl;
-        sleep_ms(500);
+        int eventCode;
+        int eventParam;
+
+        if ( gEvtMgr.getNextEvent( &eventCode, &eventParam ) )
+        {
+            switch ( eventCode )
+            {
+                case EventManager::kNavUpdateEvent:
+                    std::cout << "Nav " << eventParam << std::endl;
+                    break;
+                    
+                case EventManager::kQuarterSecondTimerEvent:
+                    std::cout << "1/4 " << eventParam << std::endl;
+                    break;
+                    
+                case EventManager::kOneSecondTimerEvent:
+                    std::cout << "1 s " << eventParam << std::endl;
+                    break;
+                    
+                case EventManager::kEightSecondTimerEvent:
+                    std::cout << "8 s " << eventParam << std::endl;
+                    break;
+            }
+            if ( gEvtMgr.hasEventQueueOverflowed() )
+            {
+                std::cout << "Event queue overflowed" << std::endl;
+                gEvtMgr.resetEventQueueOverflowFlag();
+            }
+        }
+        gpio_put( LED_PIN, ledState );
+        ledState = !ledState;
+        sleep_ms( 25 );
     }
 
     return 0;
