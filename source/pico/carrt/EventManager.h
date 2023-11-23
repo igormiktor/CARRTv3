@@ -55,6 +55,9 @@ public:
         // Keypad events
         kKeypadButtonHitEvent,
 
+        // Debugging events
+        kIdentifyCoreEvent,
+
         kLastEvent
     };
 

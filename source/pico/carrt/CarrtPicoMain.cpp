@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "pico/stdlib.h"
+#include "pico/multicore.h"
 #include "pico/util/queue.h"
 #include "hardware/i2c.h"
 #include "hardware/timer.h"
@@ -17,6 +18,7 @@
 #define I2C_SCL 9
 
 EventManager gEvtMgr;
+
 
 
 bool timerCallback( repeating_timer_t* ) 
@@ -40,6 +42,9 @@ bool timerCallback( repeating_timer_t* )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
         gEvtMgr.queueEvent( EventManager::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
+
+
+        gEvtMgr.queueEvent( EventManager::kIdentifyCoreEvent, get_core_num() );
     }
 
     if ( eighthSecCount == 0 )
@@ -52,8 +57,31 @@ bool timerCallback( repeating_timer_t* )
 
 
 
-int main()
+void startCore1() 
+{
+    std::cout << "Started Code " << get_core_num() << std::endl;
 
+    alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
+
+    repeating_timer_t timer;
+    // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
+    if ( !alarm_pool_add_repeating_timer_ms( core1AlarmPool, -125, timerCallback, NULL, &timer ) ) 
+    {
+        std::cout << "Failed to add timer\n" << std::endl;
+    }
+
+    while ( 1 )
+    {
+        // tight_loop_contents();
+        sleep_ms( 100 );
+    }
+        
+
+}
+
+
+
+int main()
 {
     stdio_init_all();
 
@@ -65,7 +93,7 @@ int main()
     gpio_pull_up(I2C_SDA);
     gpio_pull_up(I2C_SCL);
 
-
+#if 0
     repeating_timer_t timer;
     // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
     if ( !add_repeating_timer_ms( -125, timerCallback, NULL, &timer ) ) 
@@ -73,13 +101,18 @@ int main()
         std::cout << "Failed to add timer\n" << std::endl;
         return 1;
     }
+#endif // 0
+
 
     // puts("This is CARRT Pico!");
     std::cout << "This is CARRT Pico: event queue test" << std::endl;
+    std::cout << "This is core " << get_core_num() << std::endl;
 
     const uint LED_PIN = PICO_DEFAULT_LED_PIN;
     gpio_init( LED_PIN );
     gpio_set_dir( LED_PIN, GPIO_OUT );
+
+    multicore_launch_core1( startCore1 );
 
     bool ledState = false;
     while ( true ) 
@@ -101,11 +134,16 @@ int main()
                     
                 case EventManager::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
+                    gpio_put( LED_PIN, ledState );
+                    ledState = !ledState;
                     break;
                     
                 case EventManager::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
                     break;
+
+                case EventManager::kIdentifyCoreEvent:
+                    std::cout << "Core " << eventParam << std::endl;
             }
             if ( gEvtMgr.hasEventQueueOverflowed() )
             {
@@ -113,8 +151,6 @@ int main()
                 gEvtMgr.resetEventQueueOverflowFlag();
             }
         }
-        gpio_put( LED_PIN, ledState );
-        ledState = !ledState;
         sleep_ms( 25 );
     }
 

@@ -11,6 +11,7 @@ pico_enable_stdio_usb(CarrtPico 0)
 
 # Add the standard library to the build
 target_link_libraries(CarrtPico
+        pico_multicore
         pico_stdlib)
 
 # Add the standard include files to the build
