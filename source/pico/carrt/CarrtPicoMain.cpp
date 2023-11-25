@@ -4,18 +4,26 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "pico/util/queue.h"
+#include "hardware/clocks.h"
 #include "hardware/i2c.h"
 #include "hardware/timer.h"
-#include "hardware/clocks.h"
+#include "hardware/uart.h"
+
+
+// UART defines
+#define UART_DATA           uart1
+#define UART_DATA_BAUD_RATE 115200
+#define UART_DATA_TX_PIN    4
+#define UART_DATA_RX_PIN    5
 
 
 
 // I2C defines
 // This example will use I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
 // Pins can be changed, see the GPIO function select table in the datasheet for information on GPIO assignments
-#define I2C_PORT i2c0
-#define I2C_SDA 8
-#define I2C_SCL 9
+#define I2C_PORT    i2c0
+#define I2C_SDA     8
+#define I2C_SCL     9
 
 EventManager gEvtMgr;
 
@@ -75,10 +83,15 @@ void startCore1()
         // tight_loop_contents();
         sleep_ms( 100 );
     }
-        
-
 }
 
+
+union Transfer
+{
+    char    c[4];
+    int     i;
+    float   f;
+};
 
 
 int main()
@@ -88,10 +101,18 @@ int main()
     // I2C Initialisation. Using it at 400Khz.
     i2c_init(I2C_PORT, 400*1000);
     
-    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
-    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
-    gpio_pull_up(I2C_SDA);
-    gpio_pull_up(I2C_SCL);
+    gpio_set_function( I2C_SDA, GPIO_FUNC_I2C ) ;
+    gpio_set_function( I2C_SCL, GPIO_FUNC_I2C );
+    gpio_pull_up( I2C_SDA );
+    gpio_pull_up( I2C_SCL );
+
+
+    // Initialise UART for data
+    uart_init( UART_DATA, UART_DATA_BAUD_RATE );
+    // Set the GPIO pin mux to the UART
+    gpio_set_function( UART_DATA_TX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( UART_DATA_RX_PIN, GPIO_FUNC_UART );
+
 
 #if 0
     repeating_timer_t timer;
@@ -149,6 +170,88 @@ int main()
             {
                 std::cout << "Event queue overflowed" << std::endl;
                 gEvtMgr.resetEventQueueOverflowFlag();
+            }
+        }
+
+        if ( uart_is_readable( UART_DATA ) )
+        {
+            Transfer t;
+            char cmd = uart_getc( UART_DATA );
+
+            switch( cmd )
+            {
+                case 'T':
+                case 't':
+                    uart_putc_raw( UART_DATA, 'T' );
+                    //uart_putc_raw( UART_DATA, '\r' );
+                    //uart_putc_raw( UART_DATA, '\n' );
+                    break;
+
+                case 'F':
+                case 'f':
+                    uart_putc_raw( UART_DATA, 'F' );
+                    t.f = 2.71828;
+                    for ( int i = 0; i < 4; ++i )
+                    {
+                        uart_putc_raw( UART_DATA, t.c[i] );
+                    }
+                    //uart_putc_raw( UART_DATA, '\r' );
+                    //uart_putc_raw( UART_DATA, '\n' );
+                    break;
+
+                case 'K':
+                case 'k':
+                    uart_putc_raw( UART_DATA, 'K' );
+                    t.i = 660327733;
+                    for ( int i = 0; i < 4; ++i )
+                    {
+                        uart_putc_raw( UART_DATA, t.c[i] );
+                    }
+                    //uart_putc_raw( UART_DATA, '\r' );
+                    //uart_putc_raw( UART_DATA, '\n' );
+                    break;
+
+                case 'I':
+                case 'i':
+                    uart_putc_raw( UART_DATA, 'I' );
+                    t.i = 123456789;
+                    for ( int i = 0; i < 4; ++i )
+                    {
+                        uart_putc_raw( UART_DATA, t.c[i] );
+                    }
+                    //uart_putc_raw( UART_DATA, '\r' );
+                    //uart_putc_raw( UART_DATA, '\n' );
+                    break;
+
+                case 'J':
+                case 'j':
+                    uart_putc_raw( UART_DATA, 'J' );
+                    t.i = -123456789;
+                    for ( int i = 0; i < 4; ++i )
+                    {
+                        uart_putc_raw( UART_DATA, t.c[i] );
+                    }
+                    //uart_putc_raw( UART_DATA, '\r' );
+                    //uart_putc_raw( UART_DATA, '\n' );
+                    break;
+
+                case 'N':
+                case 'n':
+                    uart_putc_raw( UART_DATA, '\r' );
+                    uart_putc_raw( UART_DATA, '\n' );
+                    break;
+
+                default:
+                    uart_putc_raw( UART_DATA, '[' );
+                    if ( cmd == '\r' || cmd == '\n' )
+                    {
+                        cmd = '*';
+                    }
+                    uart_putc_raw( UART_DATA, cmd );
+                    uart_putc_raw( UART_DATA, ']' );
+                    uart_putc_raw( UART_DATA, '\r' );
+                    uart_putc_raw( UART_DATA, '\n' );
+                    break;
             }
         }
         sleep_ms( 25 );
