@@ -25,7 +25,7 @@
 #define I2C_SDA     8
 #define I2C_SCL     9
 
-EventManager gEvtMgr;
+// EventManager gEvtMgr;
 
 
 
@@ -38,26 +38,26 @@ bool timerCallback( repeating_timer_t* )
 
     // Queue nav update events every 1/8 second
     // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-    gEvtMgr.queueEvent( EventManager::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
+    Events().queueEvent( EventManager::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
 
     if ( ( eighthSecCount % 2 ) == 0 )
     {
         // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        gEvtMgr.queueEvent( EventManager::kQuarterSecondTimerEvent, (eighthSecCount % 8) / 2 );
+        Events().queueEvent( EventManager::kQuarterSecondTimerEvent, (eighthSecCount % 8) / 2 );
     }
 
     if ( ( eighthSecCount % 8 ) == 0 )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        gEvtMgr.queueEvent( EventManager::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
+        Events().queueEvent( EventManager::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
 
 
-        gEvtMgr.queueEvent( EventManager::kIdentifyCoreEvent, get_core_num() );
+        Events().queueEvent( EventManager::kIdentifyCoreEvent, get_core_num() );
     }
 
     if ( eighthSecCount == 0 )
     {
-        gEvtMgr.queueEvent( EventManager::kEightSecondTimerEvent, 0 );
+        Events().queueEvent( EventManager::kEightSecondTimerEvent, 0 );
     }
 
     return true;
@@ -141,7 +141,7 @@ int main()
         int eventCode;
         int eventParam;
 
-        if ( gEvtMgr.getNextEvent( &eventCode, &eventParam ) )
+        if ( Events().getNextEvent( &eventCode, &eventParam ) )
         {
             switch ( eventCode )
             {
@@ -166,10 +166,10 @@ int main()
                 case EventManager::kIdentifyCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
             }
-            if ( gEvtMgr.hasEventQueueOverflowed() )
+            if ( Events().hasEventQueueOverflowed() )
             {
                 std::cout << "Event queue overflowed" << std::endl;
-                gEvtMgr.resetEventQueueOverflowFlag();
+                Events().resetEventQueueOverflowFlag();
             }
         }
 

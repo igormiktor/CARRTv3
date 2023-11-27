@@ -118,4 +118,13 @@ private:
 };
 
 
+
+inline EventManager& Events()
+{
+    extern EventManager gEventManagerInstance;
+
+    return gEventManagerInstance;
+}
+
+
 #endif

@@ -59,6 +59,12 @@
 
 
 
+// Global EventManger (shared by core0 and core1)
+// Accessed through function Events()
+
+EventManager gEventManagerInstance;
+
+
 
 
 EventManager::~EventManager()
