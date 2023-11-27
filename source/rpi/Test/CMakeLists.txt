@@ -1,6 +1,7 @@
 
 include_directories( ".." )
 
+add_subdirectory( SerialTest1 )
 
 set( DriverSrcs
         ../Drivers/Clock.cpp
