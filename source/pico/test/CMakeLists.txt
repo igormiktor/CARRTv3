@@ -1,2 +1,4 @@
-add_subdirectory(helloCarrt)
-add_subdirectory(multicore)
+add_subdirectory( helloCarrt )
+add_subdirectory( multicore )
+add_subdirectory( SerialTest1 )
+add_subdirectory( SerialTest2 )
