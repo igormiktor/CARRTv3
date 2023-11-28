@@ -1,5 +1,7 @@
 #include "EventManager.h"
 
+#include "shared/SerialCommand.h"
+
 #include <iostream>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -25,8 +27,6 @@
 #define I2C_SDA     8
 #define I2C_SCL     9
 
-// EventManager gEvtMgr;
-
 
 
 bool timerCallback( repeating_timer_t* ) 
@@ -50,9 +50,11 @@ bool timerCallback( repeating_timer_t* )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
         Events().queueEvent( EventManager::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
-
-
         Events().queueEvent( EventManager::kIdentifyCoreEvent, get_core_num() );
+
+        // Test sending UART from core 1
+        uart_putc_raw( UART_DATA, SerialCommand::kIdentifyCore );
+        uart_putc_raw( UART_DATA, 1 );
     }
 
     if ( eighthSecCount == 0 )
@@ -114,17 +116,6 @@ int main()
     gpio_set_function( UART_DATA_RX_PIN, GPIO_FUNC_UART );
 
 
-#if 0
-    repeating_timer_t timer;
-    // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
-    if ( !add_repeating_timer_ms( -125, timerCallback, NULL, &timer ) ) 
-    {
-        std::cout << "Failed to add timer\n" << std::endl;
-        return 1;
-    }
-#endif // 0
-
-
     // puts("This is CARRT Pico!");
     std::cout << "This is CARRT Pico: event queue test" << std::endl;
     std::cout << "This is core " << get_core_num() << std::endl;
@@ -147,24 +138,35 @@ int main()
             {
                 case EventManager::kNavUpdateEvent:
                     std::cout << "Nav " << eventParam << std::endl;
+                    uart_putc_raw( UART_DATA, SerialCommand::kTimerNavUpdate );
+                    uart_putc_raw( UART_DATA, static_cast<char>( eventParam ) );
                     break;
                     
                 case EventManager::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
+                    uart_putc_raw( UART_DATA, SerialCommand::kTimer1_4s );
+                    uart_putc_raw( UART_DATA, static_cast<char>( eventParam ) );
                     break;
                     
                 case EventManager::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
+                    uart_putc_raw( UART_DATA, SerialCommand::kTimer1s );
+                    uart_putc_raw( UART_DATA, static_cast<char>( eventParam ) );
                     gpio_put( LED_PIN, ledState );
                     ledState = !ledState;
                     break;
                     
                 case EventManager::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
+                    uart_putc_raw( UART_DATA, SerialCommand::kTimer8s );
+                    uart_putc_raw( UART_DATA, static_cast<char>( eventParam ) );
                     break;
 
                 case EventManager::kIdentifyCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
+                    uart_putc_raw( UART_DATA, SerialCommand::kIdentifyCore );
+                    uart_putc_raw( UART_DATA, 0 );
+                    break;
             }
             if ( Events().hasEventQueueOverflowed() )
             {
