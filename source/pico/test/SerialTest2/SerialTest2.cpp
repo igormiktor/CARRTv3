@@ -13,10 +13,10 @@
 
 
 // UART defines
-#define UART_DATA           uart1
-#define UART_DATA_BAUD_RATE 115200
-#define UART_DATA_TX_PIN    4
-#define UART_DATA_RX_PIN    5
+#define UART_DATA               uart1
+#define UART_DATA_BAUD_RATE     115200
+#define UART_DATA_TX_PIN        4
+#define UART_DATA_RX_PIN        5
 
 
 
