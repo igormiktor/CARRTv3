@@ -54,7 +54,6 @@ int main()
         long endTime = Clock::millis() + kThreeMinutesInMillis;
         while ( 1 && Clock::millis() < endTime )
         {
-
             try
             {
                 uint8_t buttonHit = Keypad::readButtons();
@@ -95,7 +94,7 @@ int main()
                             Lcd::displayBottomRow( "Reset (chord)" );
                             break;
 
-                    case Keypad::kChord_Pause:
+                        case Keypad::kChord_Pause:
                             Lcd::displayBottomRow( "Pause (chord)" );
                             break;
 
@@ -128,11 +127,13 @@ int main()
                 Clock::delayMilliseconds( 25 );
 
             }
+
             catch( const I2c::I2cError& e )
             {
                 if ( e.errorCode() % 100 == -82 || e.errorCode() % 100 == -83 )
                 {
                     // Just continue
+                    std::cerr << "Continuing... Error: " << err.errorCode() << ", " << err.what() << std::endl;
                 }
                 else
                 {
@@ -140,11 +141,6 @@ int main()
                 }
             }
         }
-
-//        Lcd::setBacklight( Lcd::kBacklight_Off );
-//        Lcd::displayOff();
-
-//        std::cout << "Test complete" << std::endl;
     }
 
     catch ( const CarrtError& err )
@@ -161,7 +157,6 @@ int main()
     {
         std::cerr << "Error of unknown type." << std::endl;
     }
-
 
     Lcd::setBacklight( Lcd::kBacklight_Off );
     Lcd::displayOff();
