@@ -128,9 +128,9 @@ int main()
 
             }
 
-            catch( const I2c::I2cError& e )
+            catch( const I2c::I2cError& err )
             {
-                if ( e.errorCode() % 100 == -82 || e.errorCode() % 100 == -83 )
+                if ( err.errorCode() % 100 == -82 || err.errorCode() % 100 == -83 )
                 {
                     // Just continue
                     std::cerr << "Continuing... Error: " << err.errorCode() << ", " << err.what() << std::endl;
