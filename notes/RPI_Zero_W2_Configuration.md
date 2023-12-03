@@ -39,3 +39,28 @@ and then **_add_** the following line to `/etc/rc.local`:
 ```bash
 /usr/bin/tvservice -o
 ```
+
+## Provide a Linux shutdown button
+
+To provide a button to trigger a controlled Linux shutdown, I configured GPIO 16 to trigger a controlled
+shutdown by adding the following line to `/boot/config.txt` under section `[all]`: 
+
+```bash
+dtoverlay=gpio-shutdown,gpio_pin=16,active_low=1,gpio_pull=up
+```
+
+And then make sure that in file `/etc/systemd/logind.conf` the line for HandlePowerKey appears as follows:
+
+```bash
+HandlePowerKey=poweroff
+```
+
+If it is not, the best solution is to create the directory `/etc/systemd/logind.conf.d` and then in that directory
+create a file (such as `handlePowerKey.conf` or `poweroff.conf`) containing:
+
+```bash
+[Login]
+HandlePowerKey=poweroff
+```
+
+Note that the default GPIO for poweroff (GPIO 3) is needed for I2C, so it can't be used for the shutdown function.
