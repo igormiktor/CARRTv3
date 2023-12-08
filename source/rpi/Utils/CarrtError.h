@@ -58,5 +58,10 @@ const int kI2cError                 = -100000;
 
 
 
+inline int makeErrorId( int moduleId, int functionId, int error )
+{
+    return moduleId + functionId*kFunctionIdIncrement + error;
+}
+
 
 #endif  // CarrtError_h
