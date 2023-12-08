@@ -89,6 +89,8 @@ void Clock::delayMicroseconds( long us )
         req.tv_sec = 0;
         req.tv_nsec = us * kNanoSecsPerMicroSec;
     }
+
+    nanosleep( &req, &rem );
 }
 
 
