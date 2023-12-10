@@ -21,8 +21,10 @@
 | Input to Pico (before diode) | 5.08 V |
 | Input to Pico (after diode) | 4.3 V |
 | RPI Pico Output (3V) | 3.3 V |
-| Motor Batteries Output (at posts) | 10.4 V |
-| Motor Hat (at input) | 10.4 V |
+| Motor Batteries Output (at posts) | 10.4 V (8 batteries) |
+| Motor Hat (at input) | 10.4 V (8 batteries) |
+| Motor Batteries Output (at posts) | 7.8 V (6 batteries) |
+| Motor Hat (at input) | 7.8 V (6 batteries) |
 
 ## Drive Motor Operations
 
