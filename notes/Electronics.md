@@ -9,6 +9,8 @@
 | Orange | Power (3.3 V) |
 | Blue   | I2C SDA |
 | Yellow | I2C SCL |
+| Green | PWM |
+| White | GPIO (various) |
 
 ## Power Voltages
 
