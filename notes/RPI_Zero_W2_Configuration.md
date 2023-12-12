@@ -21,7 +21,7 @@ The main power consumers are:
 To minimize the RPi Zero power consumption, we make the following configuration changes.
 
 ### Turn off blue tooth
-To turn off blue tooth (which also makes the best UART for serial communications) **_add_** the following 
+To turn off blue tooth (which also makes the best UART available for serial communications) **_add_** the following 
 line to `/boot/config.txt` under section `[all]`:
 
 ```bash
