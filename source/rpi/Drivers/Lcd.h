@@ -41,7 +41,7 @@ namespace Lcd
     /*!
      *  These constants are used to identify the five buttons.
      */
-    enum
+    enum Buttons
     {
         kButton_Select   = 0x01,        //!< the Select button       \hideinitializer
         kButton_Right    = 0x02,        //!< the Right button        \hideinitializer
@@ -54,7 +54,7 @@ namespace Lcd
     /*!
      * These constants are used to set the backlight color on the LCD.
      */
-    enum
+    enum Colors
     {
         kBacklight_Off      = 0x0,
         kBacklight_Red      = 0x1,        //!< Backlight red            \hideinitializer
