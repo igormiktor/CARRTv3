@@ -38,11 +38,13 @@ int main()
 
         Lcd::init();
 
+        Lcd::setBacklight( Lcd::kBacklight_Off );
         Lcd::displayOn();
-        Lcd::setBacklight( Lcd::kBacklight_White );
-
-        for ( int i = 0; i < 2; ++i )
+    
+        for ( int i = 1; i < 8; ++i )
         {
+            Lcd::setBacklight( i );
+
             Lcd::displayTopRow( "ABCDEFGHIJKLMNOP" );
             Lcd::displayBottomRow( "abcdefghijklmnop" );
 
@@ -107,7 +109,6 @@ int main()
 
             Clock::delayMilliseconds( 2500 );
         }
-
         Lcd::setBacklight( Lcd::kBacklight_Off );
         Lcd::displayOff();
 
