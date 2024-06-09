@@ -58,11 +58,11 @@ namespace Lcd
     {
         kBacklight_Off      = 0x0,
         kBacklight_Red      = 0x1,        //!< Backlight red            \hideinitializer
-        kBacklight_Yellow   = 0x3,        //!< Backlight yellow         \hideinitializer
         kBacklight_Green    = 0x2,        //!< Backlight green          \hideinitializer
-        kBacklight_Teal     = 0x6,        //!< Backlight teal           \hideinitializer
+        kBacklight_Yellow   = 0x3,        //!< Backlight yellow         \hideinitializer
         kBacklight_Blue     = 0x4,        //!< Backlight blue           \hideinitializer
         kBacklight_Violet   = 0x5,        //!< Backlight violet         \hideinitializer
+        kBacklight_Teal     = 0x6,        //!< Backlight teal           \hideinitializer
         kBacklight_White    = 0x7         //!< Backlight white          \hideinitializer
     };
 
