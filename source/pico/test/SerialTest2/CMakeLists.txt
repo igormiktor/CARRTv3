@@ -6,6 +6,7 @@ add_executable( SerialTest2
 pico_set_program_name( SerialTest2 "SerialTest2" )
 pico_set_program_version( SerialTest2 "0.1")
 pico_set_program_description( SerialTest2 "Basic testing of RPi Zero to Pico serial comms" )
+pico_set_program_url( SerialTest2 "https://github.com/igormiktor/CARRTv3" )
 
 
 pico_enable_stdio_uart( SerialTest2 1 )
