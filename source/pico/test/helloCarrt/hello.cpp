@@ -22,6 +22,11 @@
 #define I2C_SDA 8
 #define I2C_SCL 9
 
+bi_decl( bi_1pin_with_name( PICO_DEFAULT_LED_PIN, "On-board LED for blinking" ) );
+bi_decl( bi_2pins_with_names( 0, "uart0 TX", 1, "uart0 RX" ) );
+bi_decl( bi_2pins_with_names( I2C_SDA, "i2c0 SDA", I2C_SCL, "i2c0 SCL" ) );
+
+
 
 
 int64_t alarm_callback( alarm_id_t id, void *user_data ) 
@@ -34,10 +39,6 @@ int64_t alarm_callback( alarm_id_t id, void *user_data )
 
 int main()
 {
-    bi_decl( bi_1pin_with_name( PICO_DEFAULT_LED_PIN, "On-board LED for blinking" ) );
-    bi_decl( bi_2pins_with_names( 0, "uart0 TX", 1, "uart0 RX" ) );
-    bi_decl( bi_2pins_with_names( I2C_SDA, "i2c0 SDA", I2C_SCL, "i2c0 SCL" ) );
-
     stdio_init_all();
 
     // SPI initialisation. This example will use SPI at 1MHz.
