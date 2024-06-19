@@ -5,6 +5,7 @@ add_executable( SerialTest1
         
 pico_set_program_name( SerialTest1 "SerialTest1" )
 pico_set_program_version( SerialTest1 "0.1")
+pico_set_program_description( SerialTest1 "Minimal proof of concept for RPi0 to Pico serial comms" )
 
 pico_enable_stdio_uart( SerialTest1 1 )
 pico_enable_stdio_usb( SerialTest1 0 )
