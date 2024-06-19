@@ -2,8 +2,9 @@ add_executable(helloCarrtPico
         hello.cpp 
         )
         
-pico_set_program_name(helloCarrtPico "hello")
+pico_set_program_name(helloCarrtPico "CARRTv3 Hello")
 pico_set_program_version(helloCarrtPico "0.1")
+pico_set_program_description(helloCarrtPico "Basic build testing & demo program")
 
 pico_enable_stdio_uart(helloCarrtPico 1)
 pico_enable_stdio_usb(helloCarrtPico 0)
