@@ -1,5 +1,5 @@
 /*
-    Events.h - CARRTv3 Events shared by RPI and Pico.  
+    Event.h - CARRTv3 events shared by RPI and Pico.  
     This file is shared by both the RPI and Pico code bases.
 
     Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
@@ -19,12 +19,12 @@
 */
 
 
-#ifndef Events_h
-#define Events_h
+#ifndef Event_h
+#define Event_h
 
 
 
-enum Events : int
+enum Event : int
 {
     kNullEvent = 0,
 
@@ -61,4 +61,4 @@ enum Events : int
 
 
 
-#endif // Events_h
+#endif // Event_h

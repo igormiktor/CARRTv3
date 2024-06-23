@@ -25,7 +25,7 @@
 #ifndef EventManager_h
 #define EventManager_h
 
-#include "shared/Events.h"      // This is where events themselves are defined
+#include "shared/Event.h"      // This is where events themselves are defined
 
 #include "pico/stdlib.h"
 #include "pico/util/queue.h"
