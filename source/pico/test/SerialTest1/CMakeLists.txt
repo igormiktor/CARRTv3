@@ -21,8 +21,9 @@ target_link_libraries( SerialTest1
 # Add the standard include files to the build
 target_include_directories( SerialTest1 PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}
-  ${CMAKE_CURRENT_LIST_DIR}/../../carrt          
-  ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts or any other standard includes, if required
+  ${CARRT_PICO_DIRECTORY}             
+  ${CARRT_PICO_DIRECTORY}/carrt
+#  ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts or any other standard includes, if required
 )
 
 # Add any user requested libraries

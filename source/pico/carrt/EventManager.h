@@ -25,6 +25,8 @@
 #ifndef EventManager_h
 #define EventManager_h
 
+#include "shared/Events.h"      // This is where events themselves are defined
+
 #include "pico/stdlib.h"
 #include "pico/util/queue.h"
 
@@ -35,32 +37,6 @@ class EventManager
 {
 
 public:
-
-    enum
-    {
-        kNullEvent = 0,
-
-        // Timer events
-        kQuarterSecondTimerEvent,
-        kOneSecondTimerEvent,
-        kEightSecondTimerEvent,
-
-        // Nav update event
-        kNavUpdateEvent,
-        kNavDriftCorrectionEvent,
-
-        // Error event
-        kErrorEvent,
-
-        // Keypad events
-        kKeypadButtonHitEvent,
-
-        // Debugging events
-        kIdentifyCoreEvent,
-
-        kLastEvent
-    };
-
 
     // EventManager recognizes two kinds of events.  By default, events are
     // are queued as low priority, but these constants can be used to explicitly
