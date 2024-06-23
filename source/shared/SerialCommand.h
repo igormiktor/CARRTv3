@@ -25,7 +25,7 @@
 
 
 
-enum SerialCommand : char
+enum SerialCommand : uint8_t
 {
     kNullCmd                = 0x00,
 
