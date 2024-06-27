@@ -23,6 +23,7 @@
 #ifndef SerialCommand_h
 #define SerialCommand_h
 
+#include <stdint.h>
 
 
 enum SerialCommand : uint8_t
