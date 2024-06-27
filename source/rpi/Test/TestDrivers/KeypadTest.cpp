@@ -27,7 +27,7 @@
 #include "Drivers/Lcd.h"
 #include "Drivers/I2c.h"
 
-#include "Utils/CarrtError.h"
+#include "shared/CarrtError.h"
 
 
 const long kThreeMinutesInMillis = 3 * 60 *1000L;

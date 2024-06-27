@@ -23,7 +23,7 @@
 #include <pigpio.h>
 
 #include "Drivers/Clock.h"
-#include "Utils/CarrtError.h"
+#include "shared/CarrtError.h"
 
 #include "Drivers/Motors.h"
 
