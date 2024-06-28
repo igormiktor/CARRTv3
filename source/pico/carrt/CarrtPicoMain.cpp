@@ -1,4 +1,5 @@
 #include "EventManager.h"
+#include "CriticalSection.h"
 
 #include <iostream>
 #include "pico/binary_info.h"
@@ -136,8 +137,13 @@ int main()
     std::cout << "This is core " << get_core_num() << std::endl;
 
     const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-    gpio_init( LED_PIN );
-    gpio_set_dir( LED_PIN, GPIO_OUT );
+    {
+        // Just a test
+        CriticalSection c;
+        gpio_init( LED_PIN );
+        gpio_set_dir( LED_PIN, GPIO_OUT );
+    }
+
 
     multicore_launch_core1( startCore1 );
 
