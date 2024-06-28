@@ -1,10 +1,13 @@
-#include <stdio.h>
+#include <iostream>
+#include <stdexcept>
 #include "pico/binary_info.h"
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
 #include "hardware/i2c.h"
 #include "hardware/timer.h"
 #include "hardware/clocks.h"
+
+#include "shared/CarrtError.h"
 
 // SPI Defines
 // We are going to use SPI 0, and allocate it to the following GPIO pins
@@ -35,52 +38,75 @@ int64_t alarm_callback( alarm_id_t id, void *user_data )
     return 0;
 }
 
-
+volatile int x = 0;
 
 int main()
 {
     stdio_init_all();
 
-    // SPI initialisation. This example will use SPI at 1MHz.
-    spi_init( SPI_PORT, 1000*1000 );
-    gpio_set_function( PIN_MISO, GPIO_FUNC_SPI );
-    gpio_set_function( PIN_CS,   GPIO_FUNC_SIO );
-    gpio_set_function( PIN_SCK,  GPIO_FUNC_SPI );
-    gpio_set_function( PIN_MOSI, GPIO_FUNC_SPI );
-    
-    // Chip select is active-low, so we'll initialise it to a driven-high state
-    gpio_set_dir( PIN_CS, GPIO_OUT );
-    gpio_put( PIN_CS, 1 );
-    
-
-    // I2C Initialisation. Using it at 400Khz.
-    i2c_init( I2C_PORT, 400*1000 );
-    
-    gpio_set_function( I2C_SDA, GPIO_FUNC_I2C );
-    gpio_set_function( I2C_SCL, GPIO_FUNC_I2C );
-    gpio_pull_up( I2C_SDA );
-    gpio_pull_up( I2C_SCL );
-
-    // Timer example code - This example fires off the callback after 2000ms
-    add_alarm_in_ms( 2000, alarm_callback, NULL, false );
-
-
-
-    puts("Hello, this is CARRT Pico!");
-
-    const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-    gpio_init( LED_PIN );
-    gpio_set_dir( LED_PIN, GPIO_OUT );
-
-    while ( true ) 
+    try
     {
-        gpio_put( LED_PIN, 1 );
-        sleep_ms( 250 );
-        gpio_put( LED_PIN, 0 );
-        sleep_ms( 500 );
-        printf( "Hello, world! Light is about to flash on.\n" );
-        sleep_ms( 500 );
+        // SPI initialisation. This example will use SPI at 1MHz.
+        spi_init( SPI_PORT, 1000*1000 );
+        gpio_set_function( PIN_MISO, GPIO_FUNC_SPI );
+        gpio_set_function( PIN_CS,   GPIO_FUNC_SIO );
+        gpio_set_function( PIN_SCK,  GPIO_FUNC_SPI );
+        gpio_set_function( PIN_MOSI, GPIO_FUNC_SPI );
+        
+        // Chip select is active-low, so we'll initialise it to a driven-high state
+        gpio_set_dir( PIN_CS, GPIO_OUT );
+        gpio_put( PIN_CS, 1 );
+        
+
+        // I2C Initialisation. Using it at 400Khz.
+        i2c_init( I2C_PORT, 400*1000 );
+        
+        gpio_set_function( I2C_SDA, GPIO_FUNC_I2C );
+        gpio_set_function( I2C_SCL, GPIO_FUNC_I2C );
+        gpio_pull_up( I2C_SDA );
+        gpio_pull_up( I2C_SCL );
+
+        // Timer example code - This example fires off the callback after 2000ms
+        add_alarm_in_ms( 2000, alarm_callback, NULL, false );
+
+        std::cout << "Hello, this is CARRT Pico!" << std::endl;
+
+        const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+        gpio_init( LED_PIN );
+        gpio_set_dir( LED_PIN, GPIO_OUT );
+
+        while ( true ) 
+        {
+            try 
+            {
+                x = 0;
+                {
+                    ++x;
+                    gpio_put( LED_PIN, 1 );
+                    sleep_ms( 250 );
+                    gpio_put( LED_PIN, 0 );
+                    sleep_ms( 500 );
+                    std::cout << "Hello, world! Light is about to flash on." << std::endl;
+                    sleep_ms( 500 );
+
+                    if ( x == 20 )
+                    {
+                        throw CarrtError( 666, "Test error" );
+                    }
+                }
+            }
+
+            catch( const CarrtError& e )
+            {
+                std::cerr << "Error " << e.errorCode() << " " << e.what() << std::endl;
+            }
+        }
+    
+        return 0;
     }
 
-    return 0;
+    catch( const std::exception& e )
+    {
+        std::cerr << "Error (non-CARRT) " << e.what() << std::endl;
+    }
 }
