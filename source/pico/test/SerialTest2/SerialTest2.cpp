@@ -51,10 +51,6 @@ bool timerCallback( repeating_timer_t* )
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
         Events().queueEvent( EventManager::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
         Events().queueEvent( EventManager::kIdentifyCoreEvent, get_core_num() );
-
-        // Test sending UART from core 1
-        uart_putc_raw( UART_DATA, SerialCommand::kIdentifyCore );
-        uart_putc_raw( UART_DATA, 1 );
     }
 
     if ( eighthSecCount == 0 )
@@ -69,7 +65,11 @@ bool timerCallback( repeating_timer_t* )
 
 void startCore1() 
 {
-    std::cout << "Started Code " << get_core_num() << std::endl;
+    std::cout << "Started Core " << get_core_num() << std::endl;
+
+    // Test sending UART from core 1
+    uart_putc_raw( UART_DATA, SerialCommand::kIdentifyCore );
+    uart_putc_raw( UART_DATA, 1 );
 
     alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
 
@@ -125,6 +125,9 @@ int main()
     gpio_set_dir( LED_PIN, GPIO_OUT );
 
     multicore_launch_core1( startCore1 );
+
+    // Avoid immediate risk of collision with UART test from Core 1
+    sleep_ms( 100 );
 
     bool ledState = false;
     while ( true ) 
