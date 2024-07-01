@@ -67,7 +67,7 @@ I2c::I2cConnection::I2cConnection( uint8_t address )
 
     if ( fd < 0 )
     {
-        throw I2cError( makeErrorId( kI2cError, 1, fd ), "Failed to open the i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 1, fd ), "Failed to open the i2c bus" );
     }
 
     mFd = static_cast<unsigned>( fd );
@@ -95,7 +95,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress )
 
     if ( ret < 0 )
     {
-        throw I2cError( makeErrorId( kI2cError, 2, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 2, i2c.getFd() ), "Error writing to i2c bus" );
     }
 }
 
@@ -109,7 +109,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t data )
 
     if ( ret < 0 )
     {
-        throw I2cError( makeErrorId( kI2cError, 3, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 3, i2c.getFd() ), "Error writing to i2c bus" );
     }
 }
 
@@ -123,7 +123,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint16_t data )
 
     if ( ret < 0 )
     {
-        throw I2cError( makeErrorId( kI2cError, 4, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 4, i2c.getFd() ), "Error writing to i2c bus" );
     }
 }
 
@@ -144,7 +144,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, const char* data )
 
     if ( ret < 0 )
     {
-        throw I2cError( makeErrorId( kI2cError, 5, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 5, i2c.getFd() ), "Error writing to i2c bus" );
     }
 }
 
@@ -163,7 +163,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t* data, uint8_
 
     if ( ret < 0 )
     {
-        throw I2cError( makeErrorId( kI2cError, 6, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 6, i2c.getFd() ), "Error writing to i2c bus" );
     }
 }
 
@@ -176,7 +176,7 @@ void I2c::read( uint8_t address, uint8_t registerAddress, uint8_t* value )
 
     if ( ret < 0 )
     {
-        throw I2cError( makeErrorId( kI2cError, 7, i2c.getFd() ), "Error reading from i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 7, i2c.getFd() ), "Error reading from i2c bus" );
     }
 
     *value = static_cast<uint8_t>( ret );
@@ -192,7 +192,7 @@ void I2c::read( uint8_t address, uint8_t registerAddress, uint16_t* value )
 
     if ( ret < 0 )
     {
-        throw I2cError( makeErrorId( kI2cError, 8, i2c.getFd() ), "Error reading from i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 8, i2c.getFd() ), "Error reading from i2c bus" );
     }
 
     *value = static_cast<uint16_t>( ret );
@@ -207,7 +207,7 @@ int I2c::read( uint8_t address, uint8_t registerAddress, uint8_t numberBytes, ui
 
     if ( ret < 0 || ret > numberBytes )
     {
-        throw I2cError( makeErrorId( kI2cError, 9, i2c.getFd() ), "Error reading from i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 9, i2c.getFd() ), "Error reading from i2c bus" );
     }
 
     return ret;

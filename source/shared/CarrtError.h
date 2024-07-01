@@ -28,6 +28,8 @@
 
 #include <stdexcept>
 
+#include "shared/ErrorCodes.h"
+
 
 class CarrtError : public std::runtime_error
 {
@@ -49,19 +51,21 @@ private:
 
 
 
-// Error code scheme....
-
-const int kFunctionIdIncrement      = -1000;
-
-const int kI2cError                 = -100000;
 
 
-
-
-inline int makeErrorId( int moduleId, int functionId, int error )
+inline int makeRpi0ErrorId( int moduleId, int functionId, int error )
 {
-    return moduleId + functionId*kFunctionIdIncrement + error;
+    return ( moduleId * kRPi0ModuleIdErrIncrement ) 
+        + ( functionId * kRPi0FunctionIdErrIncrement ) + error;
 }
+
+
+inline int makePicoErrorId( int moduleId, int functionId, int error )
+{
+    return ( moduleId * kPicoFunctionIdErrIncrement ) 
+        + ( functionId * kPicoFunctionIdErrIncrement ) + error;
+}
+
 
 
 #endif  // CarrtError_h

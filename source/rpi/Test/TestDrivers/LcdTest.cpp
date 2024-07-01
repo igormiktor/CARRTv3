@@ -25,7 +25,7 @@
 #include "Drivers/Lcd.h"
 #include "Drivers/Clock.h"
 
-#include "Utils/CarrtError.h"
+#include "shared/CarrtError.h"
 
 
 int main()

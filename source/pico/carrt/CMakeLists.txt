@@ -5,6 +5,9 @@ add_executable(CarrtPico
         
 pico_set_program_name(CarrtPico "CarrtPico")
 pico_set_program_version(CarrtPico "0.1")
+pico_set_program_description(CarrtPico "Main program for Pico as part of CARRTv3")
+pico_set_program_url( CarrtPico "https://github.com/igormiktor/CARRTv3" )
+
 
 pico_enable_stdio_uart(CarrtPico 1)
 pico_enable_stdio_usb(CarrtPico 0)
