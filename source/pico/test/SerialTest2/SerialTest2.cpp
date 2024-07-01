@@ -3,6 +3,7 @@
 #include "shared/SerialCommand.h"
 
 #include <iostream>
+#include "pico/binary_info.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "pico/util/queue.h"
@@ -28,6 +29,11 @@
 #define I2C_SCL     9
 
 
+bi_decl( bi_1pin_with_name( PICO_DEFAULT_LED_PIN, "On-board LED for blinking" ) );
+bi_decl( bi_2pins_with_names( UART_DATA_TX_PIN, "uart1 (data) TX", UART_DATA_RX_PIN, "uart1 (data) RX" ) );
+bi_decl( bi_2pins_with_names( I2C_SDA, "i2c0 SDA", I2C_SCL, "i2c0 SCL" ) );
+
+
 
 bool timerCallback( repeating_timer_t* ) 
 {
@@ -38,28 +44,24 @@ bool timerCallback( repeating_timer_t* )
 
     // Queue nav update events every 1/8 second
     // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-    Events().queueEvent( EventManager::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
+    Events().queueEvent( Event::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
 
     if ( ( eighthSecCount % 2 ) == 0 )
     {
         // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        Events().queueEvent( EventManager::kQuarterSecondTimerEvent, (eighthSecCount % 8) / 2 );
+        Events().queueEvent( Event::kQuarterSecondTimerEvent, ( eighthSecCount % 4 ) );
     }
 
     if ( ( eighthSecCount % 8 ) == 0 )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        Events().queueEvent( EventManager::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
-        Events().queueEvent( EventManager::kIdentifyCoreEvent, get_core_num() );
-=======
         Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
         Events().queueEvent( Event::kIdentifyCoreEvent, get_core_num() );
->>>>>>> artemis
     }
 
     if ( eighthSecCount == 0 )
     {
-        Events().queueEvent( EventManager::kEightSecondTimerEvent, 0 );
+        Events().queueEvent( Event::kEightSecondTimerEvent, 0 );
     }
 
     return true;
@@ -105,7 +107,7 @@ int main()
     stdio_init_all();
 
     // I2C Initialisation. Using it at 400Khz.
-    i2c_init(I2C_PORT, 400*1000);
+    i2c_init( I2C_PORT, 400*1000 );
     
     gpio_set_function( I2C_SDA, GPIO_FUNC_I2C ) ;
     gpio_set_function( I2C_SCL, GPIO_FUNC_I2C );
@@ -143,19 +145,19 @@ int main()
         {
             switch ( eventCode )
             {
-                case EventManager::kNavUpdateEvent:
+                case Event::kNavUpdateEvent:
                     std::cout << "Nav " << eventParam << std::endl;
                     uart_putc_raw( UART_DATA, SerialCommand::kTimerNavUpdate );
                     uart_putc_raw( UART_DATA, static_cast<char>( eventParam ) );
                     break;
                     
-                case EventManager::kQuarterSecondTimerEvent:
+                case Event::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
                     uart_putc_raw( UART_DATA, SerialCommand::kTimer1_4s );
                     uart_putc_raw( UART_DATA, static_cast<char>( eventParam ) );
                     break;
                     
-                case EventManager::kOneSecondTimerEvent:
+                case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
                     uart_putc_raw( UART_DATA, SerialCommand::kTimer1s );
                     uart_putc_raw( UART_DATA, static_cast<char>( eventParam ) );
@@ -163,13 +165,13 @@ int main()
                     ledState = !ledState;
                     break;
                     
-                case EventManager::kEightSecondTimerEvent:
+                case Event::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
                     uart_putc_raw( UART_DATA, SerialCommand::kTimer8s );
                     uart_putc_raw( UART_DATA, static_cast<char>( eventParam ) );
                     break;
 
-                case EventManager::kIdentifyCoreEvent:
+                case Event::kIdentifyCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
                     uart_putc_raw( UART_DATA, SerialCommand::kIdentifyCore );
                     uart_putc_raw( UART_DATA, 0 );
