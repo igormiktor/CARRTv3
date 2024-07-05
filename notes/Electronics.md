@@ -38,8 +38,7 @@
 | All motor start     | 1.2 - 2.5 A |
 | All motor run       | 0.8 - 0.9 A |
 
-* Required switching transistor:  TIP120
-* Required transistor base resistor:  3.3 KOhms
+* Switch directly by manual switch on lower (12V) distribution panel
 
 ## Raspberry Pi Zero 2 W Operations
 
@@ -49,7 +48,7 @@
 | Start up      | 200 mA     |
 | Computing     | 350 mA     |
 
-* Switched directly by PowerBoost 1000C using a manual switch that grounds the Enable Pin on the PowerBoost.
+* Switched directly by PowerBoost 1000C using a manual switch (on the upper-rear distribution panel) that grounds the Enable Pin on the PowerBoost.
 
 ## Raspberry Pico Operations
 
@@ -61,4 +60,6 @@
 
 * Required switching transistor:  2N2222
 * Required transistor base resistor:  2.2 KOhms
+* Installed on upper=rear distribution panel
+* Automatically switched by RPi Zero via GPIO17 on Pin 11
 
