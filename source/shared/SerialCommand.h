@@ -58,7 +58,7 @@ enum SerialCommand : uint8_t
     kMotorBattLowAlert      = 0x43,             // Pico sends alert about motor battery low
 
     // Error reports
-    kErrorReportFromPico    = 0xE0,             // Pico sends error code (int) in following bytes
+    kErrorReportFromPico    = 0xE0,             // Pico sends a bool fatal flag (bool in a uint8_t) and error code (int) in following bytes (3-6)
 
 
     // Debugging events

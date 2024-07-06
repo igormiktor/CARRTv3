@@ -69,15 +69,23 @@ const int kPicoModuleIdErrIncrement         = -10000;
 
 
 
+
 enum PicoError : int
 {
 
     // Pico Module Errors (all are * kPicoModuleIdErrIncrement)
 
-    kPicoI2cError               = 1, 
+    kPicoMulticoreError         = 1,
+    kPicoI2cError               = 2, 
+    kPicoMainProcessError       = 3,
 
     kPicoLastError              = 99
 };
+
+const uint32_t kPicoFatalError              = 1;
+const uint32_t kPicoNonFatalError           = 0;
+
+
 
 
 enum RPi0Error : int
