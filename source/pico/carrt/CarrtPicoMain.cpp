@@ -1,5 +1,5 @@
 #include "EventManager.h"
-#include "CriticalSection.h"
+#include "shared/SerialCommand.h"
 
 #include <iostream>
 #include "pico/binary_info.h"
@@ -59,7 +59,7 @@ bool timerCallback( repeating_timer_t* )
         Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
 
 
-        Events().queueEvent( Event::kIdentifyCoreEvent, get_core_num() );
+        Events().queueEvent( Event::kIdentifyPicoCoreEvent, get_core_num() );
     }
 
     if ( eighthSecCount == 0 )
@@ -92,13 +92,6 @@ void startCore1()
     }
 }
 
-
-union Transfer
-{
-    char    c[4];
-    int     i;
-    float   f;
-};
 
 
 int main()
@@ -137,12 +130,8 @@ int main()
     std::cout << "This is core " << get_core_num() << std::endl;
 
     const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-    {
-        // Just a test
-        CriticalSection c;
-        gpio_init( LED_PIN );
-        gpio_set_dir( LED_PIN, GPIO_OUT );
-    }
+    gpio_init( LED_PIN );
+    gpio_set_dir( LED_PIN, GPIO_OUT );
 
 
     multicore_launch_core1( startCore1 );
@@ -175,7 +164,7 @@ int main()
                     std::cout << "8 s " << eventParam << std::endl;
                     break;
 
-                case Event::kIdentifyCoreEvent:
+                case Event::kIdentifyPicoCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
             }
             if ( Events().hasEventQueueOverflowed() )

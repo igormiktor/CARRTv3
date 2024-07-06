@@ -85,9 +85,9 @@ private:
     // What events look like
     struct Event
     {
-        int mCode;
-        int mParam;
-        uint32_t mTime;
+        int         mCode;
+        int         mParam;
+        uint32_t    mTime;
     };
 
     queue_t  mHighPriorityQueue;

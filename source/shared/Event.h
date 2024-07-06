@@ -54,7 +54,7 @@ enum Event : int
     kGpioInterruptWrongPinEvent,
 
     // Debugging events
-    kIdentifyCoreEvent,
+    kIdentifyPicoCoreEvent,
 
     // Error event
     kErrorEvent,

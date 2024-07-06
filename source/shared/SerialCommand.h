@@ -31,40 +31,46 @@ enum SerialCommand : uint8_t
     kNullCmd                = 0x00,
 
     // Commands (to Pico); acknowledged from Pico with same Cmd & second byte (non-zero 2nd byte -> error code)
-    kPicoReady              = 0x01,             // Sent by Pico once ready (non-zero 2nd byte -> error code)
     kPauseCmd               = 0x02,             // Pico to pause event processing
     kResumeCmd              = 0x03,             // Pico to resume event processing  
     kResetCmd               = 0x09,             // Pico to reses itself (ack by sending kPicoReady)
 
+    // Msgs from Pico
+    kPicoReady              = 0x10,             // Sent by Pico once ready (bytes 2-5 -> uint32_t time hack for sync)
+                                                // If Pico not ready, error report instead (via kErrorReportFrom Pico)
+    KPicoSaysStop           = 0x11,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
+
     // Timer events (from Pico)
-    kTimerNavUpdate         = 0x10,             // Navigation timer (1/8 sec) (info in following bytes)
-    kTimer1_4s              = 0x11,             // 1/4 sec timer event (2nd byte -> count)
-    kTimer1s                = 0x12,             // 1 sec timer event (2nd byte -> count)
-    kTimer8s                = 0x13,             // 8 sec timer event (2nd byte -> count)
+    kTimerNavUpdate         = 0x20,             // Navigation timer (1/8 sec) (info in following bytes)
+    kTimer1_4s              = 0x21,             // 1/4 sec timer event (2nd byte -> count)
+    kTimer1s                = 0x22,             // 1 sec timer event (2nd byte -> count)
+    kTimer8s                = 0x23,             // 8 sec timer event (2nd byte -> count)
 
     // Navigation info
-    kDrivingStatusUpdate    = 0x20,             // From Pi-0 to Pico (2nd byte provides driving status)
-    kLeftEncoderUpdate      = 0x21,             // Pico sends update containing left encoder count
-    kRightEncoderUpdate     = 0x22,             // Pico sends update containing right encoder count
-
+    kDrivingStatusUpdate    = 0x30,             // From RPi0 to Pico (2nd byte provides driving status)
+    kLeftEncoderUpdate      = 0x31,             // Pico sends update containing left encoder count and time
+    kRightEncoderUpdate     = 0x32,             // Pico sends update containing right encoder count and time
+ 
     // Battery info
-    kRequestBatteryLevel    = 0x30,             // Pico to reply same with IC battery V in following bytes
-    kBatteryLowAlert        = 0x31,             // Pico sends alert about IC battery low
-    kRequestMotorBattLevel  = 0x32,             // Pico to reply same with motor battery V in following bytes
-    kMotorBattLowAlert      = 0x33,             // Pico sends alert about motor battery low
+    kRequestBatteryLevel    = 0x40,             // Pico to reply same with IC battery V in following bytes
+    kBatteryLowAlert        = 0x41,             // Pico sends alert about IC battery low
+    kRequestMotorBattLevel  = 0x42,             // Pico to reply same with motor battery V in following bytes
+    kMotorBattLowAlert      = 0x43,             // Pico sends alert about motor battery low
 
     // Error reports
     kErrorReportFromPico    = 0xE0,             // Pico sends error code (int) in following bytes
 
 
     // Debugging events
-    kIdentifyCodeRequest    = 0xF0,             // Pi-0 sends to Pico asking to identify core running uart
-    kIdentifyCore           = 0xF1,             // Pico reports which core is running uart (2nd byte)
+    kIdentifyPicoCoreReq    = 0xF0,             // RPi0 sends to Pico asking to identify core (0 or 1) running uart
+    kIdentifyPicoCore       = 0xF1,             // Pico reports which core is running uart (2nd byte)
+    kTestPicoReportError    = 0xF2,             // RPi0 sends to Pico asking to report an error (bytes 2-5 contain error code to send back)
 
     kExtendCmd              = 0xFF
 };
 
 
+// These are the commands in the second by of an extended command (kExtendCmd)
 enum SerialExtendedCmd : uint8_t
 {
     kNullExtCmd             = 0x00,
@@ -73,6 +79,17 @@ enum SerialExtendedCmd : uint8_t
     kTestExtendedCmd        = 0xF0,
 
     kTriggerError           = 0xFF
+};
+
+
+
+
+union Transfer
+{
+    uint8_t     c[4];
+    int         i;
+    uint32_t    u;
+    float       f;
 };
 
 

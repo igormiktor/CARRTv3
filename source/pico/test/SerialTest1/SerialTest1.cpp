@@ -53,7 +53,7 @@ bool timerCallback( repeating_timer_t* )
         Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
 
 
-        Events().queueEvent( Event::kIdentifyCoreEvent, get_core_num() );
+        Events().queueEvent( Event::kIdentifyPicoCoreEvent, get_core_num() );
     }
 
     if ( eighthSecCount == 0 )
@@ -164,7 +164,7 @@ int main()
                     std::cout << "8 s " << eventParam << std::endl;
                     break;
 
-                case Event::kIdentifyCoreEvent:
+                case Event::kIdentifyPicoCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
             }
             if ( Events().hasEventQueueOverflowed() )

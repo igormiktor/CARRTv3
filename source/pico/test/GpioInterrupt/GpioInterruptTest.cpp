@@ -189,7 +189,7 @@ int main()
                     std::cout << "8 s " << eventParam << std::endl;
                     break;
 
-                case Event::kIdentifyCoreEvent:
+                case Event::kIdentifyPicoCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
                     break;
 

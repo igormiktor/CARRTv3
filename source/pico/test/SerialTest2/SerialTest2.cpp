@@ -56,7 +56,7 @@ bool timerCallback( repeating_timer_t* )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
         Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
-        Events().queueEvent( Event::kIdentifyCoreEvent, get_core_num() );
+        Events().queueEvent( Event::kIdentifyPicoCoreEvent, get_core_num() );
     }
 
     if ( eighthSecCount == 0 )
@@ -74,7 +74,7 @@ void startCore1()
     std::cout << "Started Core " << get_core_num() << std::endl;
 
     // Test sending UART from core 1
-    uart_putc_raw( UART_DATA, SerialCommand::kIdentifyCore );
+    uart_putc_raw( UART_DATA, SerialCommand::kIdentifyPicoCore );
     uart_putc_raw( UART_DATA, 1 );
 
     alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
@@ -93,13 +93,6 @@ void startCore1()
     }
 }
 
-
-union Transfer
-{
-    char    c[4];
-    int     i;
-    float   f;
-};
 
 
 int main()
@@ -171,9 +164,9 @@ int main()
                     uart_putc_raw( UART_DATA, static_cast<char>( eventParam ) );
                     break;
 
-                case Event::kIdentifyCoreEvent:
+                case Event::kIdentifyPicoCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
-                    uart_putc_raw( UART_DATA, SerialCommand::kIdentifyCore );
+                    uart_putc_raw( UART_DATA, SerialCommand::kIdentifyPicoCore );
                     uart_putc_raw( UART_DATA, 0 );
                     break;
             }
