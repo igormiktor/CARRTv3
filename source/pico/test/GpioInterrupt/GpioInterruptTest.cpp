@@ -49,7 +49,7 @@ bool timerCallback( repeating_timer_t* )
 
     // Queue nav update events every 1/8 second
     // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-    // Events().queueEvent( Event::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
+    // Events().queueEvent( Event::kNavUpdateEvent, eighthSecCount % 8, 0, EventManager::kHighPriority );
 
     if ( ( eighthSecCount % 2 ) == 0 )
     {
@@ -113,15 +113,15 @@ void gpioInterruptCallback( uint gpio, uint32_t events )
 
         if ( events & GPIO_IRQ_EDGE_FALL )
         {
-            Events().queueEvent( kGpioInterruptTestFallingEvent, static_cast<int>( tick ) );
+            Events().queueEvent( kGpioInterruptTestFallingEvent, static_cast<int>( events ), tick );
         }
-        else if ( events & GPIO_IRQ_EDGE_RISE )
+        if ( events & GPIO_IRQ_EDGE_RISE )
         {
-            Events().queueEvent( kGpioInterruptTestRisingEvent, static_cast<int>( tick )  );
+            Events().queueEvent( kGpioInterruptTestRisingEvent, static_cast<int>( events ), tick  );
         }
-        else
+        if ( !( events & GPIO_IRQ_EDGE_FALL || events & GPIO_IRQ_EDGE_RISE ) )
         {
-            Events().queueEvent( kGpioInterruptTestFailureEvent, static_cast<int>( events )  );
+            Events().queueEvent( kGpioInterruptTestFailureEvent, static_cast<int>( events ), tick );
         }
     }
     else
@@ -165,8 +165,9 @@ int main()
     {
         int eventCode;
         int eventParam;
+        uint32_t eventTime;
 
-        if ( Events().getNextEvent( &eventCode, &eventParam ) )
+        if ( Events().getNextEvent( &eventCode, &eventParam, &eventTime ) )
         {
             switch ( eventCode )
             {
@@ -194,13 +195,13 @@ int main()
 
                 case Event::kGpioInterruptTestFallingEvent:
                     gpio_put( LED_PIN, 0 );
-                    std::cout << "GPIO Falling Event " << static_cast<uint>( eventParam ) << std::endl;
+                    std::cout << "GPIO Falling Event " << eventTime << std::endl;
                     std::cout << "ElapsedTime (usecs) " << elapsedTime << std::endl;
                     break;
 
                 case Event::kGpioInterruptTestRisingEvent:
                     gpio_put( LED_PIN, 1 );
-                    std::cout << "GPIO Rising Event " << static_cast<uint>( eventParam ) << std::endl;
+                    std::cout << "GPIO Rising Event " << eventTime << std::endl;
                     std::cout << "ElapsedTime (usecs) " << elapsedTime << std::endl;
                     break;
 

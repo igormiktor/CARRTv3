@@ -84,7 +84,7 @@ EventManager::EventManager()
 
 
 
-bool EventManager::getNextEvent( int* eventCode, int* param )
+bool EventManager::getNextEvent( int* eventCode, int* param, uint32_t* time )
 {
     Event e;
 
@@ -94,6 +94,10 @@ bool EventManager::getNextEvent( int* eventCode, int* param )
     {
         *eventCode = e.mCode;
         *param = e.mParam;
+        if ( time )
+        {
+            *time = e.mTime;
+        }
         return true;
     }
 
@@ -136,9 +140,9 @@ int EventManager::getNumEventsInQueue( EventPriority pri )
 
 
 
-bool EventManager::queueEvent( int eventCode, int eventParam, EventPriority pri )
+bool EventManager::queueEvent( int eventCode, int eventParam, uint32_t eventTime, EventPriority pri )
 {
-    Event e{ eventCode, eventParam };
+    Event e{ eventCode, eventParam, eventTime };
 
     // Don't block: caller deals with failure to add
     bool success = ( pri == kHighPriority ) ?

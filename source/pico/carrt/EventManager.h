@@ -25,6 +25,8 @@
 #ifndef EventManager_h
 #define EventManager_h
 
+#include <stdint.h>
+
 #include "shared/Event.h"      // This is where events themselves are defined
 
 #include "pico/stdlib.h"
@@ -66,10 +68,10 @@ public:
     // Tries to insert an event into the queue;
     // returns true if successful, false if the
     // queue if full and the event cannot be inserted
-    bool queueEvent( int eventCode, int eventParam, EventPriority pri = kLowPriority );
+    bool queueEvent( int eventCode, int eventParam, uint32_t eventTime = 0, EventPriority pri = kLowPriority );
 
     // This function returns the next event
-    bool getNextEvent( int* eventCode, int* eventParam );
+    bool getNextEvent( int* eventCode, int* eventParam, uint32_t* eventTime = NULL );
 
     // Has the event queue overflowed?
     bool hasEventQueueOverflowed();
@@ -85,6 +87,7 @@ private:
     {
         int mCode;
         int mParam;
+        uint32_t mTime;
     };
 
     queue_t  mHighPriorityQueue;
