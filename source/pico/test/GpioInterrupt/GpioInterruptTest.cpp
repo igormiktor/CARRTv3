@@ -1,3 +1,4 @@
+#include "CarrtPicoDefines.h"
 #include "EventManager.h"
 
 #include "shared/SerialCommand.h"
@@ -13,11 +14,6 @@
 #include "hardware/uart.h"
 
 
-// UART defines
-#define UART_DATA               uart1
-#define UART_DATA_BAUD_RATE     115200
-#define UART_DATA_TX_PIN        4
-#define UART_DATA_RX_PIN        5
 
 // GPIO Interrupt pin
 #define GPIO_TEST_PIN           18      // GPIO18 (pin 24)
@@ -25,17 +21,12 @@
 // Debounce time (in ms)
 #define GPIO_DEBOUNCE_TIME      10      // milliseconds (seems to work well)
 
-// I2C defines
-// This example will use I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
-// Pins can be changed, see the GPIO function select table in the datasheet for information on GPIO assignments
-#define I2C_PORT    i2c0
-#define I2C_SDA     8
-#define I2C_SCL     9
 
 
-bi_decl( bi_1pin_with_name( PICO_DEFAULT_LED_PIN, "On-board LED for blinking" ) );
-bi_decl( bi_2pins_with_names( UART_DATA_TX_PIN, "uart1 (data) TX", UART_DATA_RX_PIN, "uart1 (data) RX" ) );
-bi_decl( bi_2pins_with_names( I2C_SDA, "i2c0 SDA", I2C_SCL, "i2c0 SCL" ) );
+
+bi_decl( bi_1pin_with_name( SIGNALING_LED, "On-board LED for blinking" ) );
+bi_decl( bi_2pins_with_names( SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
+bi_decl( bi_2pins_with_names( PICO_I2C_SDA, "i2c0 SDA", PICO_I2C_SCL, "i2c0 SCL" ) );
 
 
 uint64_t elapsedTime = 0;
@@ -145,9 +136,8 @@ int main()
     std::cout << "Size of int is " << sizeof( int ) << std::endl;
     std::cout << "Start time is: " << to_ms_since_boot( get_absolute_time() ) << std::endl;
 
-    const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-    gpio_init( LED_PIN );
-    gpio_set_dir( LED_PIN, GPIO_OUT );
+    gpio_init( SIGNALING_LED );
+    gpio_set_dir( SIGNALING_LED, GPIO_OUT );
 
     multicore_launch_core1( startCore1 );
     std::cout << "Timer start time is: " << to_ms_since_boot( get_absolute_time() ) << std::endl;
@@ -181,7 +171,7 @@ int main()
                     
                 case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
-                    // gpio_put( LED_PIN, ledState );
+                    // gpio_put( SIGNALING_LED, ledState );
                     // ledState = !ledState;
                     break;
                     
@@ -194,24 +184,24 @@ int main()
                     break;
 
                 case Event::kGpioInterruptTestFallingEvent:
-                    gpio_put( LED_PIN, 0 );
+                    gpio_put( SIGNALING_LED, 0 );
                     std::cout << "GPIO Falling Event " << eventTime << std::endl;
                     std::cout << "ElapsedTime (usecs) " << elapsedTime << std::endl;
                     break;
 
                 case Event::kGpioInterruptTestRisingEvent:
-                    gpio_put( LED_PIN, 1 );
+                    gpio_put( SIGNALING_LED, 1 );
                     std::cout << "GPIO Rising Event " << eventTime << std::endl;
                     std::cout << "ElapsedTime (usecs) " << elapsedTime << std::endl;
                     break;
 
                 case Event::kGpioInterruptTestFailureEvent:
-                    gpio_put( LED_PIN, 0 );
+                    gpio_put( SIGNALING_LED, 0 );
                     std::cout << "GPIO neither rising nor falling (error) " << static_cast<uint>( eventParam ) << std::endl;
                     break;
 
                 case Event::kGpioInterruptWrongPinEvent:
-                    gpio_put( LED_PIN, 0 );
+                    gpio_put( SIGNALING_LED, 0 );
                     std::cout << "GPIO Interrupt wrong pin " << eventParam << std::endl;
                     break;
 

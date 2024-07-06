@@ -1,6 +1,8 @@
 add_executable(CarrtPico 
+        CarrtPicoBinaryInfo.cpp 
         CarrtPicoMain.cpp
         EventManager.cpp 
+        SerialLink.cpp
         )
         
 pico_set_program_name(CarrtPico "CarrtPico")

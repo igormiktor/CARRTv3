@@ -1,4 +1,5 @@
 #include "EventManager.h"
+#include "CarrtPicoDefines.h"
 
 #include <iostream>
 #include "pico/binary_info.h"
@@ -10,23 +11,6 @@
 #include "hardware/timer.h"
 #include "hardware/uart.h"
 
-
-// UART defines
-#define UART_DATA           uart1
-#define UART_DATA_BAUD_RATE 115200
-#define UART_DATA_TX_PIN    4
-#define UART_DATA_RX_PIN    5
-
-
-
-// I2C defines
-// This example will use I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
-// Pins can be changed, see the GPIO function select table in the datasheet for information on GPIO assignments
-#define I2C_PORT    i2c0
-#define I2C_SDA     8
-#define I2C_SCL     9
-
-// EventManager gEvtMgr;
 
 
 
@@ -99,20 +83,18 @@ int main()
 {
     stdio_init_all();
 
-    // I2C Initialisation. Using it at 400Khz.
-    i2c_init( I2C_PORT, 400*1000 );
-    
-    gpio_set_function( I2C_SDA, GPIO_FUNC_I2C ) ;
-    gpio_set_function( I2C_SCL, GPIO_FUNC_I2C );
-    gpio_pull_up( I2C_SDA );
-    gpio_pull_up( I2C_SCL );
+      
+    gpio_set_function( PICO_I2C_SDA, GPIO_FUNC_I2C ) ;
+    gpio_set_function( PICO_I2C_SCL, GPIO_FUNC_I2C );
+    gpio_pull_up( PICO_I2C_SDA );
+    gpio_pull_up( PICO_I2C_SCL );
 
 
     // Initialise UART for data
-    uart_init( UART_DATA, UART_DATA_BAUD_RATE );
+    uart_init( SERIAL_LINK_UART, SERIAL_LINK_UART_BAUD_RATE );
     // Set the GPIO pin mux to the UART
-    gpio_set_function( UART_DATA_TX_PIN, GPIO_FUNC_UART );
-    gpio_set_function( UART_DATA_RX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
 
 
 #if 0
@@ -130,9 +112,8 @@ int main()
     std::cout << "This is CARRT Pico: event queue test" << std::endl;
     std::cout << "This is core " << get_core_num() << std::endl;
 
-    const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-    gpio_init( LED_PIN );
-    gpio_set_dir( LED_PIN, GPIO_OUT );
+    gpio_init( SIGNALING_LED );
+    gpio_set_dir( SIGNALING_LED, GPIO_OUT );
 
     multicore_launch_core1( startCore1 );
 
@@ -156,7 +137,7 @@ int main()
                     
                 case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
-                    gpio_put( LED_PIN, ledState );
+                    gpio_put( SIGNALING_LED, ledState );
                     ledState = !ledState;
                     break;
                     
@@ -174,84 +155,84 @@ int main()
             }
         }
 
-        if ( uart_is_readable( UART_DATA ) )
+        if ( uart_is_readable( SERIAL_LINK_UART ) )
         {
             Transfer t;
-            char cmd = uart_getc( UART_DATA );
+            char cmd = uart_getc( SERIAL_LINK_UART );
 
             switch( cmd )
             {
                 case 'T':
                 case 't':
-                    uart_putc_raw( UART_DATA, 'T' );
-                    //uart_putc_raw( UART_DATA, '\r' );
-                    //uart_putc_raw( UART_DATA, '\n' );
+                    uart_putc_raw( SERIAL_LINK_UART, 'T' );
+                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'F':
                 case 'f':
-                    uart_putc_raw( UART_DATA, 'F' );
+                    uart_putc_raw( SERIAL_LINK_UART, 'F' );
                     t.f = 2.71828;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( UART_DATA, t.c[i] );
+                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( UART_DATA, '\r' );
-                    //uart_putc_raw( UART_DATA, '\n' );
+                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'K':
                 case 'k':
-                    uart_putc_raw( UART_DATA, 'K' );
+                    uart_putc_raw( SERIAL_LINK_UART, 'K' );
                     t.i = 660327733;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( UART_DATA, t.c[i] );
+                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( UART_DATA, '\r' );
-                    //uart_putc_raw( UART_DATA, '\n' );
+                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'I':
                 case 'i':
-                    uart_putc_raw( UART_DATA, 'I' );
+                    uart_putc_raw( SERIAL_LINK_UART, 'I' );
                     t.i = 123456789;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( UART_DATA, t.c[i] );
+                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( UART_DATA, '\r' );
-                    //uart_putc_raw( UART_DATA, '\n' );
+                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'J':
                 case 'j':
-                    uart_putc_raw( UART_DATA, 'J' );
+                    uart_putc_raw( SERIAL_LINK_UART, 'J' );
                     t.i = -123456789;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( UART_DATA, t.c[i] );
+                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( UART_DATA, '\r' );
-                    //uart_putc_raw( UART_DATA, '\n' );
+                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'N':
                 case 'n':
-                    uart_putc_raw( UART_DATA, '\r' );
-                    uart_putc_raw( UART_DATA, '\n' );
+                    uart_putc_raw( SERIAL_LINK_UART, '\r' );
+                    uart_putc_raw( SERIAL_LINK_UART, '\n' );
                     break;
 
                 default:
-                    uart_putc_raw( UART_DATA, '[' );
+                    uart_putc_raw( SERIAL_LINK_UART, '[' );
                     if ( cmd == '\r' || cmd == '\n' )
                     {
                         cmd = '*';
                     }
-                    uart_putc_raw( UART_DATA, cmd );
-                    uart_putc_raw( UART_DATA, ']' );
-                    uart_putc_raw( UART_DATA, '\r' );
-                    uart_putc_raw( UART_DATA, '\n' );
+                    uart_putc_raw( SERIAL_LINK_UART, cmd );
+                    uart_putc_raw( SERIAL_LINK_UART, ']' );
+                    uart_putc_raw( SERIAL_LINK_UART, '\r' );
+                    uart_putc_raw( SERIAL_LINK_UART, '\n' );
                     break;
             }
         }
