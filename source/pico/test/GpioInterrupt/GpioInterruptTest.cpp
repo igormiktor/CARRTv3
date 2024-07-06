@@ -38,7 +38,7 @@ bi_decl( bi_2pins_with_names( UART_DATA_TX_PIN, "uart1 (data) TX", UART_DATA_RX_
 bi_decl( bi_2pins_with_names( I2C_SDA, "i2c0 SDA", I2C_SCL, "i2c0 SCL" ) );
 
 
-
+uint64_t elapsedTime = 0;
 
 bool timerCallback( repeating_timer_t* ) 
 {
@@ -98,6 +98,8 @@ void gpioInterruptCallback( uint gpio, uint32_t events )
 {
     static uint32_t lastInterrupt = 0;
 
+    uint64_t startTime = to_us_since_boot( get_absolute_time() );
+
     if ( gpio == GPIO_TEST_PIN )
     {
         uint32_t tick = to_ms_since_boot( get_absolute_time() );
@@ -126,6 +128,8 @@ void gpioInterruptCallback( uint gpio, uint32_t events )
     {
         Events().queueEvent( kGpioInterruptWrongPinEvent, gpio );
     }
+
+    elapsedTime = to_us_since_boot( get_absolute_time() ) - startTime;
 
     return;
 }
@@ -191,11 +195,13 @@ int main()
                 case Event::kGpioInterruptTestFallingEvent:
                     gpio_put( LED_PIN, 0 );
                     std::cout << "GPIO Falling Event " << static_cast<uint>( eventParam ) << std::endl;
+                    std::cout << "ElapsedTime (usecs) " << elapsedTime << std::endl;
                     break;
 
                 case Event::kGpioInterruptTestRisingEvent:
                     gpio_put( LED_PIN, 1 );
                     std::cout << "GPIO Rising Event " << static_cast<uint>( eventParam ) << std::endl;
+                    std::cout << "ElapsedTime (usecs) " << elapsedTime << std::endl;
                     break;
 
                 case Event::kGpioInterruptTestFailureEvent:
