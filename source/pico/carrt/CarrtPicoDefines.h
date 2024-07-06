@@ -30,12 +30,29 @@
 
 // **************************************************************
 
-// Define the signaling LED
+// Enable stdio over UART for debugging (or not)
 
+#ifndef USE_CARRTPICO_STDIO
+#define USE_CARRTPICO_STDIO         1       // Default to use if unless explictly turned off
+#endif  // USE_CARRTPICO_STDIO
+
+#ifdef  DEBUGPICO
+#undef  USE_CARRTPICO_STDIO
+#define USE_CARRTPICO_STDIO         1       // Force on if compiling DEBUG version
+#endif  // USE_CARRTPICO_STDIO (redefine)
+
+
+
+
+// **************************************************************
+
+// Define the signaling LED
 #ifndef CARRTPICO_SIGNALING_LED
 #define CARRTPICO_SIGNALING_LED         PICO_DEFAULT_LED_PIN
 #endif  // CARRTPICO_SIGNALING_LED
 
+
+// Define the on-board LED
 #ifndef CARRTPICO_ONBOARD_LED    
 #define CARRTPICO_ONBOARD_LED           PICO_DEFAULT_LED_PIN
 #endif  // CARRTPICO_ONBOARD_LED
@@ -94,4 +111,15 @@
 
 
 #endif  // CarrtPicoDefines_h
+
+
+
+
+// **************************************************************
+
+// Flag value to confirm successful launch of core1
+
+#define CORE1_SUCCESS      1234
+#define CORE1_FAILURE      21
+
 

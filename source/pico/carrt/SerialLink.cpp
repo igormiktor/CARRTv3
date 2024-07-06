@@ -30,15 +30,12 @@
 
 
 
-
-
-
-
 void SerialLink::openSerialLink()
 {
     // Initialise UART for the Serial-Link
     uart_init( CARRTPICO_SERIAL_LINK_UART, CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
     uart_set_translate_crlf( CARRTPICO_SERIAL_LINK_UART, false );
+
     // Set the GPIO pin mux to the UART
     gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
     gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
@@ -49,10 +46,16 @@ void SerialLink::openSerialLink()
 void SerialLink::closeSerialLink()
 {
     // Shutdown the Serial-Link UART
-
     gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_NULL );
     gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_NULL );
     uart_deinit( CARRTPICO_SERIAL_LINK_UART );
+}
+
+
+
+bool SerialLink::isReadable()
+{
+    return uart_is_readable( CARRTPICO_SERIAL_LINK_UART );
 }
 
 
@@ -75,7 +78,7 @@ void SerialLink::get4Bytes( uint8_t* c )
 
 
 
-void SerialLink::put( uint8_t c )
+void SerialLink::putByte( uint8_t c )
 {
     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, c );
 }

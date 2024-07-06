@@ -1,82 +1,126 @@
+/*
+    CarrtPicoMain.cpp - CARRT-Pico's main function.  Initializes and hands off to
+    the Main Process.
+
+    Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+
+
+
+
 #include "CarrtPicoDefines.h"
-#include "EventManager.h"
+#include "MainProcess.h"
+// #include "EventManager.h"
+#include "Core1.h"
 #include "shared/SerialCommand.h"
+#include "shared/SerialLink.h"
+#include "shared/CarrtError.h"
 
 #include <iostream>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
-#include "pico/util/queue.h"
-#include "hardware/clocks.h"
+// #include "pico/util/queue.h"
+// #include "hardware/clocks.h"
 #include "hardware/i2c.h"
-#include "hardware/timer.h"
-#include "hardware/uart.h"
+// #include "hardware/timer.h"
+// #include "hardware/uart.h"
 
 
 
 
+void initializeHardware();
+void initI2C();
 
-bool timerCallback( repeating_timer_t* ) 
-{
-    static int eighthSecCount = 0;
-
-    ++eighthSecCount;
-    eighthSecCount %= 64;
-
-    // Queue nav update events every 1/8 second
-    // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-    Events().queueEvent( Event::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
-
-    if ( ( eighthSecCount % 2 ) == 0 )
-    {
-        // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        Events().queueEvent( Event::kQuarterSecondTimerEvent, ( eighthSecCount % 4 ) );
-    }
-
-    if ( ( eighthSecCount % 8 ) == 0 )
-    {
-        // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
-
-
-        Events().queueEvent( Event::kIdentifyPicoCoreEvent, get_core_num() );
-    }
-
-    if ( eighthSecCount == 0 )
-    {
-        Events().queueEvent( Event::kEightSecondTimerEvent, 0 );
-    }
-
-    return true;
-}
-
-
-
-void startCore1() 
-{
-    std::cout << "Started Code " << get_core_num() << std::endl;
-
-    alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
-
-    repeating_timer_t timer;
-    // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
-    if ( !alarm_pool_add_repeating_timer_ms( core1AlarmPool, -125, timerCallback, NULL, &timer ) ) 
-    {
-        std::cout << "Failed to add timer\n" << std::endl;
-    }
-
-    while ( 1 )
-    {
-        // tight_loop_contents();
-        sleep_ms( 100 );
-    }
-}
+bool launchCore1();
+void runEventLoops();
+void reset();
 
 
 
 int main()
 {
-    stdio_init_all();
+ 
+    initializeHardware();
 
+    std::cout << "CARRT Pico started, hw initialized, running on core " << get_core_num() << std::endl;
+
+    try
+    {
+        bool failed = launchCore1();
+        if ( failed )
+        {
+            // Need to bail...
+            throw CarrtError( makePicoErrorId( PicoError::kPicoMulticoreError, 1, 0 ), "CARRT Pico core1 start failed" );
+        }
+
+        // Report we are started...
+        SerialLink::putCmd( kPicoReady );
+        SerialLink::put( to_ms_since_boot( get_absolute_time() ) );
+
+        MainProcess::runMainEventLoop();
+    }
+
+    catch( const CarrtError& e )
+    {
+        // Report the error...
+        std::cout << "Error " << e.errorCode() << ' ' << e.what() << std::endl;
+        SerialLink::putCmd( kErrorReportFromPico );
+        SerialLink::putByte( kPicoFatalError );
+        SerialLink::put( e.errorCode() );
+    }
+
+    catch( const std::exception& e )
+    {
+        std::cout << e.what() << std::endl;
+        SerialLink::putCmd( kErrorReportFromPico );
+        SerialLink::putByte( kPicoFatalError );
+        SerialLink::put( 666 );
+    }
+
+    // Just spin...
+    while ( 1 )
+    {
+        sleep_ms( 100 );
+    }
+
+    return 0;
+}
+
+
+
+void initializeHardware()
+{
+#if USE_CARRTPICO_STDIO
+    // Initialize C/C++ stdio (used for debugging)
+    stdio_init_all();
+#endif 
+
+    // Set up Pico's I2C (to talk with BNO055)
+    initI2C();
+
+    // Initialize UART for RPi0<->Pico serial link
+    SerialLink::openSerialLink();
+}
+
+
+
+void initI2C()
+{
     // I2C Initialisation
     i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
     
@@ -84,157 +128,21 @@ int main()
     gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
     gpio_pull_up( CARRTPICO_I2C_SDA );
     gpio_pull_up( CARRTPICO_I2C_SCL );
-
-
-    // Initialise UART for data
-    uart_init( CARRTPICO_SERIAL_LINK_UART, CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
-    // Set the GPIO pin mux to the UART
-    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
-    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
-
-
-#if 0
-    repeating_timer_t timer;
-    // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
-    if ( !add_repeating_timer_ms( -125, timerCallback, NULL, &timer ) ) 
-    {
-        std::cout << "Failed to add timer\n" << std::endl;
-        return 1;
-    }
-#endif // 0
-
-
-    std::cout << "This is CARRT Pico: event queue test" << std::endl;
-    std::cout << "This is core " << get_core_num() << std::endl;
-
-    const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-    gpio_init( LED_PIN );
-    gpio_set_dir( LED_PIN, GPIO_OUT );
-
-
-    multicore_launch_core1( startCore1 );
-
-    bool ledState = false;
-    while ( true ) 
-    {
-        int eventCode;
-        int eventParam;
-
-        if ( Events().getNextEvent( &eventCode, &eventParam ) )
-        {
-            switch ( eventCode )
-            {
-                case Event::kNavUpdateEvent:
-                    std::cout << "Nav " << eventParam << std::endl;
-                    break;
-                    
-                case Event::kQuarterSecondTimerEvent:
-                    std::cout << "1/4 " << eventParam << std::endl;
-                    break;
-                    
-                case Event::kOneSecondTimerEvent:
-                    std::cout << "1 s " << eventParam << std::endl;
-                    gpio_put( LED_PIN, ledState );
-                    ledState = !ledState;
-                    break;
-                    
-                case Event::kEightSecondTimerEvent:
-                    std::cout << "8 s " << eventParam << std::endl;
-                    break;
-
-                case Event::kIdentifyPicoCoreEvent:
-                    std::cout << "Core " << eventParam << std::endl;
-            }
-            if ( Events().hasEventQueueOverflowed() )
-            {
-                std::cout << "Event queue overflowed" << std::endl;
-                Events().resetEventQueueOverflowFlag();
-            }
-        }
-
-        if ( uart_is_readable( CARRTPICO_SERIAL_LINK_UART ) )
-        {
-            Transfer t;
-            char cmd = uart_getc( CARRTPICO_SERIAL_LINK_UART );
-
-            switch( cmd )
-            {
-                case 'T':
-                case 't':
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'T' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
-                    break;
-
-                case 'F':
-                case 'f':
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'F' );
-                    t.f = 2.71828;
-                    for ( int i = 0; i < 4; ++i )
-                    {
-                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
-                    }
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
-                    break;
-
-                case 'K':
-                case 'k':
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'K' );
-                    t.i = 660327733;
-                    for ( int i = 0; i < 4; ++i )
-                    {
-                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
-                    }
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
-                    break;
-
-                case 'I':
-                case 'i':
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'I' );
-                    t.i = 123456789;
-                    for ( int i = 0; i < 4; ++i )
-                    {
-                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
-                    }
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
-                    break;
-
-                case 'J':
-                case 'j':
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'J' );
-                    t.i = -123456789;
-                    for ( int i = 0; i < 4; ++i )
-                    {
-                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
-                    }
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
-                    break;
-
-                case 'N':
-                case 'n':
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
-                    break;
-
-                default:
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '[' );
-                    if ( cmd == '\r' || cmd == '\n' )
-                    {
-                        cmd = '*';
-                    }
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, cmd );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, ']' );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
-                    break;
-            }
-        }
-        sleep_ms( 25 );
-    }
-
-    return 0;
 }
+
+
+bool launchCore1()
+{
+    multicore_launch_core1( core1Main );
+
+    // Wait for it to start up
+    uint32_t flag = multicore_fifo_pop_blocking();
+    
+    return flag != CORE1_SUCCESS ;
+}
+
+
+void runEventLoops();
+void reset();
+
+
