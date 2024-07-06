@@ -33,11 +33,11 @@
 // Define the signaling LED
 
 #ifndef CARRTPICO_SIGNALING_LED
-#define CARRTPICO_SIGNALING_LED               PICO_DEFAULT_LED_PIN
+#define CARRTPICO_SIGNALING_LED         PICO_DEFAULT_LED_PIN
 #endif  // CARRTPICO_SIGNALING_LED
 
 #ifndef CARRTPICO_ONBOARD_LED    
-#define CARRTPICO_ONBOARD_LED       PICO_DEFAULT_LED_PIN
+#define CARRTPICO_ONBOARD_LED           PICO_DEFAULT_LED_PIN
 #endif  // CARRTPICO_ONBOARD_LED
 
 
@@ -52,19 +52,19 @@
 // Uses I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
 
 #ifndef CARRTPICO_I2C_PORT
-#define CARRTPICO_I2C_PORT       i2c0
+#define CARRTPICO_I2C_PORT              i2c0
 #endif  // CARRTPICO_I2C_PORT
 
 #ifndef CARRTPICO_I2C_SPEED
-#define CARRTPICO_I2C_SPEED       (400*1000)
+#define CARRTPICO_I2C_SPEED             (400*1000)
 #endif  // CARRTPICO_I2C_SPEED
 
 #ifndef CARRTPICO_I2C_SDA
-#define CARRTPICO_I2C_SDA        8
+#define CARRTPICO_I2C_SDA               8
 #endif  // CARRTPICO_I2C_SDA
 
 #ifndef CARRTPICO_I2C_SCL
-#define CARRTPICO_I2C_SCL        9
+#define CARRTPICO_I2C_SCL               9
 #endif  // CARRTPICO_I2C_SCL
 
 
