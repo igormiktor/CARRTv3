@@ -15,7 +15,7 @@
 
 
 
-bi_decl( bi_1pin_with_name( SIGNALING_LED, "On-board LED for blinking" ) );
+bi_decl( bi_1pin_with_name( CARRTPICO_SIGNALING_LED, "On-board LED for blinking" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
 
@@ -104,8 +104,8 @@ int main()
     std::cout << "This is CARRT Pico: event queue test" << std::endl;
     std::cout << "This is core " << get_core_num() << std::endl;
 
-    gpio_init( SIGNALING_LED );
-    gpio_set_dir( SIGNALING_LED, GPIO_OUT );
+    gpio_init( CARRTPICO_SIGNALING_LED );
+    gpio_set_dir( CARRTPICO_SIGNALING_LED, GPIO_OUT );
 
     multicore_launch_core1( startCore1 );
 
@@ -138,7 +138,7 @@ int main()
                     std::cout << "1 s " << eventParam << std::endl;
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kTimer1s );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
-                    gpio_put( SIGNALING_LED, ledState );
+                    gpio_put( CARRTPICO_SIGNALING_LED, ledState );
                     ledState = !ledState;
                     break;
                     
