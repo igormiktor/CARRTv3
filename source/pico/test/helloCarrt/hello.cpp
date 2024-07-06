@@ -14,7 +14,7 @@
 
 bi_decl( bi_1pin_with_name( SIGNALING_LED, "On-board LED for blinking" ) );
 bi_decl( bi_2pins_with_names( 0, "uart0 TX", 1, "uart0 RX" ) );
-bi_decl( bi_2pins_with_names( PICO_I2C_SDA, "i2c0 SDA", PICO_I2C_SCL, "i2c0 SCL" ) );
+bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
 
 
 
@@ -34,12 +34,12 @@ int main()
     try
     {
         // I2C Initialisation. Using it at 400Khz.
-        i2c_init( PICO_I2C_PORT, PICO_I2C_SPEED );
+        i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
         
-        gpio_set_function( PICO_I2C_SDA, GPIO_FUNC_I2C );
-        gpio_set_function( PICO_I2C_SCL, GPIO_FUNC_I2C );
-        gpio_pull_up( PICO_I2C_SDA );
-        gpio_pull_up( PICO_I2C_SCL );
+        gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C );
+        gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
+        gpio_pull_up( CARRTPICO_I2C_SDA );
+        gpio_pull_up( CARRTPICO_I2C_SCL );
 
         // Timer example code - This example fires off the callback after 2000ms
         add_alarm_in_ms( 2000, alarm_callback, NULL, false );

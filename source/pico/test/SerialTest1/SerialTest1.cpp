@@ -84,17 +84,17 @@ int main()
     stdio_init_all();
 
       
-    gpio_set_function( PICO_I2C_SDA, GPIO_FUNC_I2C ) ;
-    gpio_set_function( PICO_I2C_SCL, GPIO_FUNC_I2C );
-    gpio_pull_up( PICO_I2C_SDA );
-    gpio_pull_up( PICO_I2C_SCL );
+    gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C ) ;
+    gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
+    gpio_pull_up( CARRTPICO_I2C_SDA );
+    gpio_pull_up( CARRTPICO_I2C_SCL );
 
 
     // Initialise UART for data
-    uart_init( SERIAL_LINK_UART, SERIAL_LINK_UART_BAUD_RATE );
+    uart_init( CARRTPICO_SERIAL_LINK_UART, CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
     // Set the GPIO pin mux to the UART
-    gpio_set_function( SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
-    gpio_set_function( SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
 
 
 #if 0
@@ -155,84 +155,84 @@ int main()
             }
         }
 
-        if ( uart_is_readable( SERIAL_LINK_UART ) )
+        if ( uart_is_readable( CARRTPICO_SERIAL_LINK_UART ) )
         {
             Transfer t;
-            char cmd = uart_getc( SERIAL_LINK_UART );
+            char cmd = uart_getc( CARRTPICO_SERIAL_LINK_UART );
 
             switch( cmd )
             {
                 case 'T':
                 case 't':
-                    uart_putc_raw( SERIAL_LINK_UART, 'T' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'T' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'F':
                 case 'f':
-                    uart_putc_raw( SERIAL_LINK_UART, 'F' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'F' );
                     t.f = 2.71828;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
+                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'K':
                 case 'k':
-                    uart_putc_raw( SERIAL_LINK_UART, 'K' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'K' );
                     t.i = 660327733;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
+                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'I':
                 case 'i':
-                    uart_putc_raw( SERIAL_LINK_UART, 'I' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'I' );
                     t.i = 123456789;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
+                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'J':
                 case 'j':
-                    uart_putc_raw( SERIAL_LINK_UART, 'J' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'J' );
                     t.i = -123456789;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
+                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'N':
                 case 'n':
-                    uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 default:
-                    uart_putc_raw( SERIAL_LINK_UART, '[' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '[' );
                     if ( cmd == '\r' || cmd == '\n' )
                     {
                         cmd = '*';
                     }
-                    uart_putc_raw( SERIAL_LINK_UART, cmd );
-                    uart_putc_raw( SERIAL_LINK_UART, ']' );
-                    uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, cmd );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, ']' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
             }
         }

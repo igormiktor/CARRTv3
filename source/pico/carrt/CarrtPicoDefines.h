@@ -33,32 +33,33 @@
 // Define the signaling LED
 
 #ifndef SIGNALING_LED
-#define SIGNALING_LED       PICO_DEFAULT_LED_PIN
+#define SIGNALING_LED               PICO_DEFAULT_LED_PIN
 #endif  // SIGNALING_LED
 
-
-
+#ifndef CARRTPICO_ONBOARD_LED    
+#define CARRTPICO_ONBOARD_LED       PICO_DEFAULT_LED_PIN
+#endif  // CARRTPICO_ONBOARD_LED
 
 // **************************************************************
 
 // I2C defines to Pico's I2C network
 // Uses I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
 
-#ifndef PICO_I2C_PORT
-#define PICO_I2C_PORT       i2c0
-#endif  // PICO_I2C_PORT
+#ifndef CARRTPICO_I2C_PORT
+#define CARRTPICO_I2C_PORT       i2c0
+#endif  // CARRTPICO_I2C_PORT
 
-#ifndef PICO_I2C_SPEED
-#define PICO_I2C_SPEED       (400*1000)
-#endif  // PICO_I2C_SPEED
+#ifndef CARRTPICO_I2C_SPEED
+#define CARRTPICO_I2C_SPEED       (400*1000)
+#endif  // CARRTPICO_I2C_SPEED
 
-#ifndef PICO_I2C_SDA
-#define PICO_I2C_SDA        8
-#endif  // PICO_I2C_PORT
+#ifndef CARRTPICO_I2C_SDA
+#define CARRTPICO_I2C_SDA        8
+#endif  // CARRTPICO_I2C_SDA
 
-#ifndef PICO_I2C_SCL
-#define PICO_I2C_SCL        9
-#endif  // PICO_I2C_SCL
+#ifndef CARRTPICO_I2C_SCL
+#define CARRTPICO_I2C_SCL        9
+#endif  // CARRTPICO_I2C_SCL
 
 
 
@@ -68,21 +69,21 @@
 
 // UART defines for the serial-link between RPi0 and Pico
 
-#ifndef SERIAL_LINK_UART
-#define SERIAL_LINK_UART                uart1
-#endif  // SERIAL_LINK_UART
+#ifndef CARRTPICO_SERIAL_LINK_UART
+#define CARRTPICO_SERIAL_LINK_UART                uart1
+#endif  // CARRTPICO_SERIAL_LINK_UART
 
-#ifndef SERIAL_LINK_UART_BAUD_RATE
-#define SERIAL_LINK_UART_BAUD_RATE      115200
-#endif // SERIAL_LINK_UART_BAUD_RATE
+#ifndef CARRTPICO_SERIAL_LINK_UART_BAUD_RATE
+#define CARRTPICO_SERIAL_LINK_UART_BAUD_RATE      115200
+#endif // CARRTPICO_SERIAL_LINK_UART_BAUD_RATE
 
-#ifndef SERIAL_LINK_UART_TX_PIN
-#define SERIAL_LINK_UART_TX_PIN         4
-#endif  // SERIAL_LINK_UART_TX_PIN
+#ifndef CARRTPICO_SERIAL_LINK_UART_TX_PIN
+#define CARRTPICO_SERIAL_LINK_UART_TX_PIN         4
+#endif  // CARRTPICO_SERIAL_LINK_UART_TX_PIN
 
-#ifndef SERIAL_LINK_UART_RX_PIN
-#define SERIAL_LINK_UART_RX_PIN         5    
-#endif  // SERIAL_LINK_UART_RX_PIN
+#ifndef CARRTPICO_SERIAL_LINK_UART_RX_PIN
+#define CARRTPICO_SERIAL_LINK_UART_RX_PIN         5    
+#endif  // CARRTPICO_SERIAL_LINK_UART_RX_PIN
 
 
 

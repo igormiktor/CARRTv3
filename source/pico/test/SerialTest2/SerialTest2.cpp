@@ -16,8 +16,8 @@
 
 
 bi_decl( bi_1pin_with_name( SIGNALING_LED, "On-board LED for blinking" ) );
-bi_decl( bi_2pins_with_names( SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
-bi_decl( bi_2pins_with_names( PICO_I2C_SDA, "i2c0 SDA", PICO_I2C_SCL, "i2c0 SCL" ) );
+bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
+bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
 
 
 
@@ -60,8 +60,8 @@ void startCore1()
     std::cout << "Started Core " << get_core_num() << std::endl;
 
     // Test sending UART from core 1
-    uart_putc_raw( SERIAL_LINK_UART, SerialCommand::kIdentifyPicoCore );
-    uart_putc_raw( SERIAL_LINK_UART, 1 );
+    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kIdentifyPicoCore );
+    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 1 );
 
     alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
 
@@ -86,18 +86,18 @@ int main()
     stdio_init_all();
 
     // I2C Initialisation. Using it at 400Khz.
-    i2c_init( PICO_I2C_PORT, PICO_I2C_SPEED );
-    gpio_set_function( PICO_I2C_SDA, GPIO_FUNC_I2C ) ;
-    gpio_set_function( PICO_I2C_SCL, GPIO_FUNC_I2C );
-    gpio_pull_up( PICO_I2C_SDA );
-    gpio_pull_up( PICO_I2C_SCL );
+    i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
+    gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C ) ;
+    gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
+    gpio_pull_up( CARRTPICO_I2C_SDA );
+    gpio_pull_up( CARRTPICO_I2C_SCL );
 
 
     // Initialise UART for data
-    uart_init( SERIAL_LINK_UART, SERIAL_LINK_UART_BAUD_RATE );
+    uart_init( CARRTPICO_SERIAL_LINK_UART, CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
     // Set the GPIO pin mux to the UART
-    gpio_set_function( SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
-    gpio_set_function( SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
 
 
     // puts("This is CARRT Pico!");
@@ -124,34 +124,34 @@ int main()
             {
                 case Event::kNavUpdateEvent:
                     std::cout << "Nav " << eventParam << std::endl;
-                    uart_putc_raw( SERIAL_LINK_UART, SerialCommand::kTimerNavUpdate );
-                    uart_putc_raw( SERIAL_LINK_UART, static_cast<char>( eventParam ) );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kTimerNavUpdate );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
-                    uart_putc_raw( SERIAL_LINK_UART, SerialCommand::kTimer1_4s );
-                    uart_putc_raw( SERIAL_LINK_UART, static_cast<char>( eventParam ) );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kTimer1_4s );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
-                    uart_putc_raw( SERIAL_LINK_UART, SerialCommand::kTimer1s );
-                    uart_putc_raw( SERIAL_LINK_UART, static_cast<char>( eventParam ) );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kTimer1s );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     gpio_put( SIGNALING_LED, ledState );
                     ledState = !ledState;
                     break;
                     
                 case Event::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
-                    uart_putc_raw( SERIAL_LINK_UART, SerialCommand::kTimer8s );
-                    uart_putc_raw( SERIAL_LINK_UART, static_cast<char>( eventParam ) );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kTimer8s );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
 
                 case Event::kIdentifyPicoCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
-                    uart_putc_raw( SERIAL_LINK_UART, SerialCommand::kIdentifyPicoCore );
-                    uart_putc_raw( SERIAL_LINK_UART, 0 );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kIdentifyPicoCore );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 0 );
                     break;
             }
             if ( Events().hasEventQueueOverflowed() )
@@ -161,84 +161,84 @@ int main()
             }
         }
 
-        if ( uart_is_readable( SERIAL_LINK_UART ) )
+        if ( uart_is_readable( CARRTPICO_SERIAL_LINK_UART ) )
         {
             Transfer t;
-            char cmd = uart_getc( SERIAL_LINK_UART );
+            char cmd = uart_getc( CARRTPICO_SERIAL_LINK_UART );
 
             switch( cmd )
             {
                 case 'T':
                 case 't':
-                    uart_putc_raw( SERIAL_LINK_UART, 'T' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'T' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'F':
                 case 'f':
-                    uart_putc_raw( SERIAL_LINK_UART, 'F' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'F' );
                     t.f = 2.71828;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
+                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'K':
                 case 'k':
-                    uart_putc_raw( SERIAL_LINK_UART, 'K' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'K' );
                     t.i = 660327733;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
+                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'I':
                 case 'i':
-                    uart_putc_raw( SERIAL_LINK_UART, 'I' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'I' );
                     t.i = 123456789;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
+                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'J':
                 case 'j':
-                    uart_putc_raw( SERIAL_LINK_UART, 'J' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'J' );
                     t.i = -123456789;
                     for ( int i = 0; i < 4; ++i )
                     {
-                        uart_putc_raw( SERIAL_LINK_UART, t.c[i] );
+                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
                     }
-                    //uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 case 'N':
                 case 'n':
-                    uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
 
                 default:
-                    uart_putc_raw( SERIAL_LINK_UART, '[' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '[' );
                     if ( cmd == '\r' || cmd == '\n' )
                     {
                         cmd = '*';
                     }
-                    uart_putc_raw( SERIAL_LINK_UART, cmd );
-                    uart_putc_raw( SERIAL_LINK_UART, ']' );
-                    uart_putc_raw( SERIAL_LINK_UART, '\r' );
-                    uart_putc_raw( SERIAL_LINK_UART, '\n' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, cmd );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, ']' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
             }
         }

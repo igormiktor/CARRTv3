@@ -37,11 +37,11 @@
 void SerialLink::openSerialLink()
 {
     // Initialise UART for the Serial-Link
-    uart_init( SERIAL_LINK_UART, SERIAL_LINK_UART_BAUD_RATE );
-    uart_set_translate_crlf( SERIAL_LINK_UART, false );
+    uart_init( CARRTPICO_SERIAL_LINK_UART, CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
+    uart_set_translate_crlf( CARRTPICO_SERIAL_LINK_UART, false );
     // Set the GPIO pin mux to the UART
-    gpio_set_function( SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
-    gpio_set_function( SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
 }
 
 
@@ -50,16 +50,16 @@ void SerialLink::closeSerialLink()
 {
     // Shutdown the Serial-Link UART
 
-    gpio_set_function( SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_NULL );
-    gpio_set_function( SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_NULL );
-    uart_deinit( SERIAL_LINK_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_NULL );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_NULL );
+    uart_deinit( CARRTPICO_SERIAL_LINK_UART );
 }
 
 
 
 uint8_t SerialLink::getByte()
 {
-    return static_cast<uint8_t>( uart_getc( SERIAL_LINK_UART ) );
+    return static_cast<uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
 }
 
 
@@ -68,7 +68,7 @@ void SerialLink::get4Bytes( uint8_t* c )
 {
     for ( int i = 0; i < 4; ++i, ++c )
     {
-        *c = static_cast<uint8_t>( uart_getc( SERIAL_LINK_UART ) );
+        *c = static_cast<uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
     }
     return;
 }
@@ -77,7 +77,7 @@ void SerialLink::get4Bytes( uint8_t* c )
 
 void SerialLink::put( uint8_t c )
 {
-    uart_putc_raw( SERIAL_LINK_UART, c );
+    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, c );
 }
 
 
@@ -86,7 +86,7 @@ void SerialLink::put4Bytes( uint8_t* c )
 {
     for ( int i = 0; i < 4; ++i, ++c )
     {
-        uart_putc_raw( SERIAL_LINK_UART, *c );
+        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, *c );
     }
 }
 
