@@ -93,10 +93,11 @@ int main()
         SerialLink::put( 666 );
     }
 
-    // Just spin...
+    // Just spin and put HeartBeatLed on fast strobe
     while ( 1 )
     {
-        sleep_ms( 100 );
+        sleep_ms( 200 );
+        HeartBeatLed::toggle();
     }
 
     return 0;
