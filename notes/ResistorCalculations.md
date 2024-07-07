@@ -8,12 +8,12 @@ so we need to create a resistor divider to ensure the output
 is always under 3.3V.
 
 * Input V = 5.25 V
-* R1 = 330 Ohm
-* Output V = 3.30 V
-* R2 = 560 Ohm
+* R1 = 1.5K Ohm
+* Output V = 3.12 V and 1.4 mA
+* R2 = 2.2K Ohm
 * Ground
 
-Note that when the input voltage drops to 3.2V, the output voltage is 2.0V.
+Note that when the input voltage drops to 3.2V, the output voltage is 1.9V (and at 0.86 mA).
 This is sufficient voltage to drive RPi to read the gpio pin as a digital "1".
 
 ## Encoders
@@ -22,9 +22,9 @@ Encoders on the wheels are 5V devices, need to convert them to 3.3V.
 We use the same resistor divider bridge
 
 * Input V = 5.0 V
-* R1 = 330 Ohm
-* Output V = 3.15 V
-* R2 = 560 Ohm
+* R1 = 1.5K Ohm
+* Output V = 2.98 V and 1.4 mA
+* R2 = 2.2K Ohm
 * Ground
 
 Note:  we need two of these (two encoders).
