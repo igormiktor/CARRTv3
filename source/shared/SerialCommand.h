@@ -62,8 +62,8 @@ enum SerialCommand : uint8_t
 
 
     // Debugging events
-    kIdentifyPicoCoreReq    = 0xF0,             // RPi0 sends to Pico asking to identify core (0 or 1) running uart
-    kIdentifyPicoCore       = 0xF1,             // Pico reports which core is running uart (2nd byte)
+    kIdentifyPicoCore    = 0xF0,                // RPi0 sends to Pico asking to identify core (0 or 1) running uart
+                                                // Pico responds with same and which core is running uart (2nd byte)
     kTestPicoReportError    = 0xF2,             // RPi0 sends to Pico asking to report an error (bytes 2-5 contain error code to send back)
 
     kExtendCmd              = 0xFF

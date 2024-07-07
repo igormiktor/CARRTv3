@@ -25,7 +25,8 @@
 
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
-#include "Core1.h"
+#include "HeartBeatLed.h"
+
 #include "shared/SerialCommand.h"
 #include "shared/SerialLink.h"
 #include "shared/CarrtError.h"
@@ -49,6 +50,14 @@ namespace MainProcess
     void processEvent();
     void processCommand();
     void dispatchCommand( uint32_t cmd );
+
+    void doNavUpdateEvent( int eventParam, uint32_t eventTime );
+    void doQuarterSecondTimerEvent( int eventParam, uint32_t eventTime );
+    void doOneSecondTimerEvent( int eventParam, uint32_t eventTime );
+    void doEightSecondTimerEvent( int eventParam, uint32_t eventTime );
+    void doIdentifyPicoCoreEvent( int eventParam, uint32_t eventTime );
+    void doEventQueueOverflowed();
+
 };
 
 
@@ -76,36 +85,35 @@ void MainProcess::processEvent()
 {
     int eventCode;
     int eventParam;
+    uint32_t eventTime;
 
-    if ( Events().getNextEvent( &eventCode, &eventParam ) )
+    if ( Events().getNextEvent( &eventCode, &eventParam, &eventTime ) )
     {
         switch ( eventCode )
         {
             case Event::kNavUpdateEvent:
-                std::cout << "Nav " << eventParam << std::endl;
+                doNavUpdateEvent( eventParam, eventTime );
                 break;
                 
             case Event::kQuarterSecondTimerEvent:
-                std::cout << "1/4 " << eventParam << std::endl;
+                doQuarterSecondTimerEvent( eventParam, eventTime );
                 break;
                 
             case Event::kOneSecondTimerEvent:
-                std::cout << "1 s " << eventParam << std::endl;
+                doOneSecondTimerEvent( eventParam, eventTime );
                 break;
                 
             case Event::kEightSecondTimerEvent:
-                std::cout << "8 s " << eventParam << std::endl;
+                doEightSecondTimerEvent( eventParam, eventTime );
                 break;
 
             case Event::kIdentifyPicoCoreEvent:
-                std::cout << "Core " << eventParam << std::endl;
+                doIdentifyPicoCoreEvent( eventParam, eventTime );
+                break;
         }
         if ( Events().hasEventQueueOverflowed() )
         {
-            std::cout << "Event queue overflowed" << std::endl;
-            SerialLink::putCmd( kErrorReportFromPico );
-            SerialLink::putByte( kPicoNonFatalError );
-            SerialLink::put( makePicoErrorId( PicoError::kPicoMainProcessError, 3, 0 ) );
+            doEventQueueOverflowed();
             Events().resetEventQueueOverflowFlag();
         }
     }
@@ -118,9 +126,8 @@ void MainProcess::processCommand()
 {
     if ( SerialLink::isReadable() )
     {
-        Transfer t;
-        uint8_t cmd = SerialLink::getCmd();
 
+        uint8_t cmd = SerialLink::getCmd();
         dispatchCommand( cmd );
     }
 }
@@ -130,3 +137,67 @@ void MainProcess::dispatchCommand( uint32_t cmd )
 {
     // Placeholder
 }
+
+
+
+void MainProcess::doNavUpdateEvent( int eventParam, uint32_t eventTime )
+{
+    // std::cout << "Nav " << eventParam << std::endl;
+    SerialLink::putCmd( kTimerNavUpdate );
+    SerialLink::put( eventTime );
+    SerialLink::put( eventParam );
+}
+
+
+
+void MainProcess::doQuarterSecondTimerEvent( int eventParam, uint32_t eventTime )
+{
+    // std::cout << "1/4s " << eventParam << std::endl;
+    SerialLink::putCmd( kTimer1_4s );
+    SerialLink::put( eventTime );
+    SerialLink::put( eventParam );               
+}
+
+
+
+void MainProcess::doOneSecondTimerEvent( int eventParam, uint32_t eventTime )
+{
+    // std::cout << "1s " << eventParam << std::endl;
+    SerialLink::putCmd( kTimer1s );
+    SerialLink::put( eventTime );
+    SerialLink::put( eventParam );
+
+    HeartBeatLed::toggle();
+}
+
+
+
+void MainProcess::doEightSecondTimerEvent( int eventParam, uint32_t eventTime )
+{
+    // std::cout << "8s " << eventParam << std::endl;
+    SerialLink::putCmd( kTimer8s );
+    SerialLink::put( eventTime );
+    SerialLink::put( eventParam );
+}
+
+
+
+void MainProcess::doIdentifyPicoCoreEvent( int eventParam, uint32_t eventTime )
+{
+    // std::cout << "Core " << eventParam << std::endl;
+    SerialLink::putCmd( kIdentifyPicoCore );
+    SerialLink::put( eventParam );
+}
+
+
+
+void MainProcess::doEventQueueOverflowed()
+{
+    std::cout << "Event queue overflowed" << std::endl;
+    SerialLink::putCmd( kErrorReportFromPico );
+    SerialLink::putByte( kPicoNonFatalError );
+    SerialLink::put( makePicoErrorId( PicoError::kPicoMainProcessError, 3, 0 ) );
+}
+
+
+

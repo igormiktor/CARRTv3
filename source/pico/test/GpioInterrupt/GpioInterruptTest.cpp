@@ -24,7 +24,7 @@
 
 
 
-bi_decl( bi_1pin_with_name( CARRTPICO_SIGNALING_LED, "On-board LED for blinking" ) );
+bi_decl( bi_1pin_with_name( CARRTPICO_HEARTBEAT_LED, "On-board LED for blinking" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
 
@@ -136,8 +136,8 @@ int main()
     std::cout << "Size of int is " << sizeof( int ) << std::endl;
     std::cout << "Start time is: " << to_ms_since_boot( get_absolute_time() ) << std::endl;
 
-    gpio_init( CARRTPICO_SIGNALING_LED );
-    gpio_set_dir( CARRTPICO_SIGNALING_LED, GPIO_OUT );
+    gpio_init( CARRTPICO_HEARTBEAT_LED );
+    gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
 
     multicore_launch_core1( startCore1 );
     std::cout << "Timer start time is: " << to_ms_since_boot( get_absolute_time() ) << std::endl;
@@ -171,7 +171,7 @@ int main()
                     
                 case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
-                    // gpio_put( CARRTPICO_SIGNALING_LED, ledState );
+                    // gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     // ledState = !ledState;
                     break;
                     
@@ -184,24 +184,24 @@ int main()
                     break;
 
                 case Event::kGpioInterruptTestFallingEvent:
-                    gpio_put( CARRTPICO_SIGNALING_LED, 0 );
+                    gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     std::cout << "GPIO Falling Event " << eventTime << std::endl;
                     std::cout << "ElapsedTime (usecs) " << elapsedTime << std::endl;
                     break;
 
                 case Event::kGpioInterruptTestRisingEvent:
-                    gpio_put( CARRTPICO_SIGNALING_LED, 1 );
+                    gpio_put( CARRTPICO_HEARTBEAT_LED, 1 );
                     std::cout << "GPIO Rising Event " << eventTime << std::endl;
                     std::cout << "ElapsedTime (usecs) " << elapsedTime << std::endl;
                     break;
 
                 case Event::kGpioInterruptTestFailureEvent:
-                    gpio_put( CARRTPICO_SIGNALING_LED, 0 );
+                    gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     std::cout << "GPIO neither rising nor falling (error) " << static_cast<uint>( eventParam ) << std::endl;
                     break;
 
                 case Event::kGpioInterruptWrongPinEvent:
-                    gpio_put( CARRTPICO_SIGNALING_LED, 0 );
+                    gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     std::cout << "GPIO Interrupt wrong pin " << eventParam << std::endl;
                     break;
 

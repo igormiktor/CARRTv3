@@ -12,7 +12,7 @@
 
 
 
-bi_decl( bi_1pin_with_name( CARRTPICO_SIGNALING_LED, "On-board LED for blinking" ) );
+bi_decl( bi_1pin_with_name( CARRTPICO_HEARTBEAT_LED, "On-board LED for blinking" ) );
 bi_decl( bi_2pins_with_names( 0, "uart0 TX", 1, "uart0 RX" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
 
@@ -46,8 +46,8 @@ int main()
 
         std::cout << "Hello, this is CARRT Pico!" << std::endl;
 
-        gpio_init( CARRTPICO_SIGNALING_LED );
-        gpio_set_dir( CARRTPICO_SIGNALING_LED, GPIO_OUT );
+        gpio_init( CARRTPICO_HEARTBEAT_LED );
+        gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
 
         while ( true ) 
         {
@@ -56,9 +56,9 @@ int main()
                 x = 0;
                 {
                     ++x;
-                    gpio_put( CARRTPICO_SIGNALING_LED, 1 );
+                    gpio_put( CARRTPICO_HEARTBEAT_LED, 1 );
                     sleep_ms( 250 );
-                    gpio_put( CARRTPICO_SIGNALING_LED, 0 );
+                    gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     sleep_ms( 500 );
                     std::cout << "Hello, world! Light is about to flash on." << std::endl;
                     sleep_ms( 500 );

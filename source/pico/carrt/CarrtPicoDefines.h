@@ -46,16 +46,17 @@
 
 // **************************************************************
 
-// Define the signaling LED
-#ifndef CARRTPICO_SIGNALING_LED
-#define CARRTPICO_SIGNALING_LED         PICO_DEFAULT_LED_PIN
-#endif  // CARRTPICO_SIGNALING_LED
-
-
 // Define the on-board LED
 #ifndef CARRTPICO_ONBOARD_LED    
 #define CARRTPICO_ONBOARD_LED           PICO_DEFAULT_LED_PIN
 #endif  // CARRTPICO_ONBOARD_LED
+
+// Define the signaling LED
+#ifndef CARRTPICO_HEARTBEAT_LED
+#define CARRTPICO_HEARTBEAT_LED         CARRTPICO_ONBOARD_LED
+#endif  // CARRTPICO_HEARTBEAT_LED
+
+
 
 
 

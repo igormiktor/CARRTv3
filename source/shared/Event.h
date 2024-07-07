@@ -41,6 +41,9 @@ enum Event : int
     kEncoderRightEvent,
     kEncoderLeftEvent,
 
+    // Pulse LEDs events
+    kPulsePicoLed,
+
     // Battery events
     kBatteryLowEvent,
 

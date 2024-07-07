@@ -25,8 +25,9 @@
 
 #include "CarrtPicoDefines.h"
 #include "MainProcess.h"
-// #include "EventManager.h"
+#include "HeartBeatLed.h"
 #include "Core1.h"
+
 #include "shared/SerialCommand.h"
 #include "shared/SerialLink.h"
 #include "shared/CarrtError.h"
@@ -115,6 +116,8 @@ void initializeHardware()
 
     // Initialize UART for RPi0<->Pico serial link
     SerialLink::openSerialLink();
+
+    HeartBeatLed::initialize();
 }
 
 

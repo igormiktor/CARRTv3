@@ -54,6 +54,9 @@ void core1Main()
     {
         // Failure; send the failure code
         multicore_fifo_push_blocking( CORE1_FAILURE );
+
+        // Pico core0 will report the error to RPi0 
+        // RPi0 will do whatever is appropriate with it (potentially cycle power to Pico)
     }
 
     while ( 1 )
@@ -61,7 +64,7 @@ void core1Main()
 
         // Let core1 sleep, we're just processing timer callbacks...
         sleep_ms( 20 );
-        // tight_loop_contents();
+        // tight_loop_contents();       // Tight loop really isn't needed here
     }
 }
 
@@ -69,6 +72,8 @@ void core1Main()
 
 bool timerCallback( repeating_timer_t* ) 
 {
+    // Argument is not used...
+
     static int eighthSecCount = 0;
 
     uint32_t timeTick = to_ms_since_boot( get_absolute_time() );
@@ -90,9 +95,7 @@ bool timerCallback( repeating_timer_t* )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
         Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ), timeTick );
-
-
-        Events().queueEvent( Event::kIdentifyPicoCoreEvent, get_core_num(), timeTick );
+        // Events().queueEvent( Event::kPulsePicoLed, 0 );     // Don't need time tick
     }
 
     if ( eighthSecCount == 0 )

@@ -3,6 +3,7 @@ add_executable( CarrtPico
         CarrtPicoMain.cpp
         Core1.cpp
         EventManager.cpp 
+        HeartBeatLed.cpp
         MainProcess.cpp
         SerialLink.cpp
         )

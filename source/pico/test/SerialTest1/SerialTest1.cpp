@@ -112,8 +112,8 @@ int main()
     std::cout << "This is CARRT Pico: event queue test" << std::endl;
     std::cout << "This is core " << get_core_num() << std::endl;
 
-    gpio_init( CARRTPICO_SIGNALING_LED );
-    gpio_set_dir( CARRTPICO_SIGNALING_LED, GPIO_OUT );
+    gpio_init( CARRTPICO_HEARTBEAT_LED );
+    gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
 
     multicore_launch_core1( startCore1 );
 
@@ -137,7 +137,7 @@ int main()
                     
                 case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
-                    gpio_put( CARRTPICO_SIGNALING_LED, ledState );
+                    gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     ledState = !ledState;
                     break;
                     
