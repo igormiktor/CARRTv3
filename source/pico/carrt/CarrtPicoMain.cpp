@@ -96,7 +96,7 @@ int main()
     // Just spin and put HeartBeatLed on fast strobe
     while ( 1 )
     {
-        sleep_ms( 200 );
+        sleep_ms( 100 );
         HeartBeatLed::toggle();
     }
 
