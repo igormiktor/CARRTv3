@@ -26,3 +26,16 @@ We use the same resistor divider bridge
 * Output V = 3.15 V
 * R2 = 560 Ohm
 * Ground
+
+Note:  we need two of these (two encoders).
+
+## Pico power control (on/off from RPi Zero)
+
+Use a 2N2222 transistor on the ground for the Pico to allow the RPi0 to turn it 
+on and off
+
+* 2N2222 collector <- Pico GND
+* 2N2222 base <- 10 KOhm resistor <- RPi0 GPIO17 (pin 11)
+* 2N2222 emitter -> system GND 
+
+Setting RPi0 GPIO17 (pin 11) LOW turns off the Pico; setting RPi0 GPIO17 HIGH turns on the Pico.
