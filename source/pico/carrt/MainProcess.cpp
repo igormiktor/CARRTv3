@@ -142,7 +142,6 @@ void MainProcess::dispatchCommand( uint32_t cmd )
 
 void MainProcess::doNavUpdateEvent( int eventParam, uint32_t eventTime )
 {
-    // std::cout << "Nav " << eventParam << std::endl;
     SerialLink::putCmd( kTimerNavUpdate );
     SerialLink::put( eventTime );
     SerialLink::put( eventParam );
@@ -152,7 +151,6 @@ void MainProcess::doNavUpdateEvent( int eventParam, uint32_t eventTime )
 
 void MainProcess::doQuarterSecondTimerEvent( int eventParam, uint32_t eventTime )
 {
-    // std::cout << "1/4s " << eventParam << std::endl;
     SerialLink::putCmd( kTimer1_4s );
     SerialLink::put( eventTime );
     SerialLink::put( eventParam );               
@@ -162,7 +160,6 @@ void MainProcess::doQuarterSecondTimerEvent( int eventParam, uint32_t eventTime 
 
 void MainProcess::doOneSecondTimerEvent( int eventParam, uint32_t eventTime )
 {
-    // std::cout << "1s " << eventParam << std::endl;
     SerialLink::putCmd( kTimer1s );
     SerialLink::put( eventTime );
     SerialLink::put( eventParam );

@@ -46,9 +46,7 @@
 
 void initializeHardware();
 void initI2C();
-
 bool launchCore1();
-void runEventLoops();
 void reset();
 
 
@@ -58,7 +56,9 @@ int main()
  
     initializeHardware();
 
+#if USE_CARRTPICO_STDIO
     std::cout << "CARRT Pico started, hw initialized, running on core " << get_core_num() << std::endl;
+#endif
 
     try
     {
@@ -68,6 +68,10 @@ int main()
             // Need to bail...
             throw CarrtError( makePicoErrorId( PicoError::kPicoMulticoreError, 1, 0 ), "CARRT Pico core1 start failed" );
         }
+
+    #if USE_CARRTPICO_STDIO
+        std::cout << "CARRT Pico ready on both cores" << std::endl;
+    #endif
 
         // Report we are started...
         SerialLink::putCmd( kPicoReady );
@@ -79,18 +83,24 @@ int main()
     catch( const CarrtError& e )
     {
         // Report the error...
-        std::cout << "Error " << e.errorCode() << ' ' << e.what() << std::endl;
         SerialLink::putCmd( kErrorReportFromPico );
         SerialLink::putByte( kPicoFatalError );
         SerialLink::put( e.errorCode() );
+
+    #if USE_CARRTPICO_STDIO
+        std::cout << "Error " << e.errorCode() << ' ' << e.what() << std::endl;
+    #endif
     }
 
     catch( const std::exception& e )
     {
-        std::cout << e.what() << std::endl;
         SerialLink::putCmd( kErrorReportFromPico );
         SerialLink::putByte( kPicoFatalError );
         SerialLink::put( 666 );
+    
+    #if USE_CARRTPICO_STDIO
+        std::cout << e.what() << std::endl;
+    #endif
     }
 
     // Just spin and put HeartBeatLed on fast strobe
