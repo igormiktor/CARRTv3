@@ -6,6 +6,9 @@
 #include "hardware/i2c.h"
 #include "hardware/timer.h"
 #include "hardware/clocks.h"
+#include "hardware/sync.h"
+#include "hardware/watchdog.h"
+
 
 #include "../carrt/CarrtPicoDefines.h"
 #include "shared/CarrtError.h"
@@ -31,6 +34,8 @@ int main()
 {
     stdio_init_all();
 
+    std::cout << "Hello, this is CARRT Pico!" << std::endl;
+
     try
     {
         // I2C Initialisation. Using it at 400Khz.
@@ -44,8 +49,6 @@ int main()
         // Timer example code - This example fires off the callback after 2000ms
         add_alarm_in_ms( 2000, alarm_callback, NULL, false );
 
-        std::cout << "Hello, this is CARRT Pico!" << std::endl;
-
         gpio_init( CARRTPICO_HEARTBEAT_LED );
         gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
 
@@ -53,17 +56,19 @@ int main()
         {
             try 
             {
+                std::cerr << "At top of try block" << std::endl;
                 x = 0;
+                while ( true )
                 {
                     ++x;
                     gpio_put( CARRTPICO_HEARTBEAT_LED, 1 );
                     sleep_ms( 250 );
                     gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     sleep_ms( 500 );
-                    std::cout << "Hello, world! Light is about to flash on." << std::endl;
+                    std::cout << "Hello, world! Light is about to flash on.  " << x << std::endl;
                     sleep_ms( 500 );
 
-                    if ( x == 20 )
+                    if ( x == 10 )
                     {
                         throw CarrtError( 666, "Test error" );
                     }
@@ -73,6 +78,16 @@ int main()
             catch( const CarrtError& e )
             {
                 std::cerr << "Error " << e.errorCode() << " " << e.what() << std::endl;
+                std::cerr << "Now rebooting Pico" << std::endl;
+                sleep_ms( 500 );
+
+                watchdog_reboot(0, SRAM_END, 0); 
+#if 0
+                while ( 1 )
+                {
+                    __wfi();
+                }
+#endif 
             }
         }
     
