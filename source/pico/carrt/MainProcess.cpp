@@ -24,6 +24,7 @@
 
 
 #include "CarrtPicoDefines.h"
+#include "CarrtPicoReset.h"
 #include "EventManager.h"
 #include "HeartBeatLed.h"
 
@@ -49,7 +50,9 @@ namespace MainProcess
     void checkForErrors();
     void processEvent();
     void processCommand();
-    void dispatchCommand( uint32_t cmd );
+    void dispatchEvent( int eventCode, int eventParam, uint32_t eventTime );
+    void dispatchCommand( uint8_t cmd );
+    void dispatchExtendedCmd( uint8_t cmd );
 
     void doNavUpdateEvent( int eventParam, uint32_t eventTime );
     void doQuarterSecondTimerEvent( int eventParam, uint32_t eventTime );
@@ -57,6 +60,21 @@ namespace MainProcess
     void doEightSecondTimerEvent( int eventParam, uint32_t eventTime );
     void doIdentifyPicoCoreEvent( int eventParam, uint32_t eventTime );
     void doEventQueueOverflowed();
+    void doUnknownEvent( int eventCode );
+
+    void doNullCmd();
+    void doPauseCmd();
+    void doResumeCmd();
+    void doResetCmd();
+    void doDrivingStatusUpdate();
+    void doRequestBatteryLevel();
+    void doRequestMotorBatteryLevel();
+    void doIdentifyPicoCore();
+    void doTestPicoReportError();
+    void doExtendedCmd();
+    void doUnknownCommand( uint8_t cmd );
+
+    void doUnknownExtendedCmd( uint8_t cmd );
 
 };
 
@@ -89,36 +107,15 @@ void MainProcess::processEvent()
 
     if ( Events().getNextEvent( &eventCode, &eventParam, &eventTime ) )
     {
-        switch ( eventCode )
-        {
-            case Event::kNavUpdateEvent:
-                doNavUpdateEvent( eventParam, eventTime );
-                break;
-                
-            case Event::kQuarterSecondTimerEvent:
-                doQuarterSecondTimerEvent( eventParam, eventTime );
-                break;
-                
-            case Event::kOneSecondTimerEvent:
-                doOneSecondTimerEvent( eventParam, eventTime );
-                break;
-                
-            case Event::kEightSecondTimerEvent:
-                doEightSecondTimerEvent( eventParam, eventTime );
-                break;
+        dispatchEvent( eventCode, eventParam, eventTime );
+    }
 
-            case Event::kIdentifyPicoCoreEvent:
-                doIdentifyPicoCoreEvent( eventParam, eventTime );
-                break;
-        }
-        if ( Events().hasEventQueueOverflowed() )
-        {
-            doEventQueueOverflowed();
-            Events().resetEventQueueOverflowFlag();
-        }
+    if ( Events().hasEventQueueOverflowed() )
+    {
+        doEventQueueOverflowed();
+        Events().resetEventQueueOverflowFlag();
     }
 }
-
 
 
 
@@ -126,16 +123,93 @@ void MainProcess::processCommand()
 {
     if ( SerialLink::isReadable() )
     {
-
         uint8_t cmd = SerialLink::getCmd();
         dispatchCommand( cmd );
     }
 }
 
 
-void MainProcess::dispatchCommand( uint32_t cmd )
+
+void MainProcess::dispatchEvent( int eventCode, int eventParam, uint32_t eventTime )
 {
-    // Placeholder
+    switch ( eventCode )
+    {
+        case kNavUpdateEvent:
+            doNavUpdateEvent( eventParam, eventTime );
+            break;
+            
+        case kQuarterSecondTimerEvent:
+            doQuarterSecondTimerEvent( eventParam, eventTime );
+            break;
+            
+        case kOneSecondTimerEvent:
+            doOneSecondTimerEvent( eventParam, eventTime );
+            break;
+            
+        case kEightSecondTimerEvent:
+            doEightSecondTimerEvent( eventParam, eventTime );
+            break;
+
+        case kIdentifyPicoCoreEvent:
+            doIdentifyPicoCoreEvent( eventParam, eventTime );
+            break;
+
+        default:
+            doUnknownEvent( eventCode );
+    }
+}
+
+
+
+void MainProcess::dispatchCommand( uint8_t cmd )
+{
+    switch ( cmd )
+    {
+        // Commands (to Pico); acknowledged from Pico with same Cmd & second byte (non-zero 2nd byte -> error code)
+        case kNullCmd:                      // Null command; simply acknowledge (no extra bytes)
+            doNullCmd();
+            break;
+
+        case kPauseCmd:                     // Pico to pause event processing
+            doPauseCmd();
+            break;
+
+        case kResumeCmd:                    // Pico to resume event processing  
+            doResumeCmd();
+            break;
+
+        case kResetCmd:                     // Pico to reses itself (ack by sending kPicoReady)
+            doResetCmd();
+            break;
+
+        case kDrivingStatusUpdate:          // From RPi0 to Pico (2nd byte provides driving status)
+            doDrivingStatusUpdate();
+            break;
+
+        case kRequestBatteryLevel:          // Pico to reply same with IC battery V in following bytes
+            doRequestBatteryLevel();
+            break;
+
+        case kRequestMotorBatteryLevel:     // Pico to reply same with motor battery V in following bytes
+            doRequestMotorBatteryLevel();
+            break;
+
+        case kIdentifyPicoCore:             // RPi0 sends to Pico asking to identify core (0 or 1) running uart
+            doIdentifyPicoCore();
+            break;
+    
+        case kTestPicoReportError:          // RPi0 sends to Pico asking to report an error (bytes 2-5 contain error code to send back)
+            doTestPicoReportError();
+            break;
+
+        case kExtendedCmd:
+            doExtendedCmd();
+            break;
+    
+        default:
+            doUnknownCommand( cmd );
+            break;
+    }
 }
 
 
@@ -188,13 +262,207 @@ void MainProcess::doIdentifyPicoCoreEvent( int eventParam, uint32_t eventTime )
 
 
 
-void MainProcess::doEventQueueOverflowed()
+void MainProcess::doUnknownEvent( int eventCode )
 {
-    std::cout << "Event queue overflowed" << std::endl;
+#if USE_CARRTPICO_STDIO
+    std::cout << "Warning: Received unknown event: " << eventCode << std::endl;
+#endif
+    
     SerialLink::putCmd( kErrorReportFromPico );
     SerialLink::putByte( kPicoNonFatalError );
-    SerialLink::put( makePicoErrorId( PicoError::kPicoMainProcessError, 3, 0 ) );
+    int errCode = makePicoErrorId( kPicoMainProcessError, 1, 0 );
+    SerialLink::put( errCode );      
 }
 
 
 
+void MainProcess::doEventQueueOverflowed()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Event queue overflowed" << std::endl;
+#endif
+     
+    SerialLink::putCmd( kErrorReportFromPico );
+    SerialLink::putByte( kPicoNonFatalError );
+    int errCode = makePicoErrorId( kPicoMainProcessError, 2, 0 );
+    SerialLink::put( errCode );
+}
+
+
+
+void MainProcess::doNullCmd()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received Null cmd from RPi0" << std::endl;
+#endif
+
+    // Simply acknowledge
+    SerialLink::putCmd( kNullCmd );
+}
+
+
+
+void MainProcess::doPauseCmd()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received Pause cmd from RPi0" << std::endl;
+#endif
+
+    // Try to pause
+    uint8_t pauseFailed = 0;
+    SerialLink::putCmd( kPauseCmd );
+    SerialLink::putByte( pauseFailed );
+}
+
+
+
+void MainProcess::doResumeCmd()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received Resume cmd from RPi0" << std::endl;
+#endif
+
+    // Try to resume
+    uint8_t resumeFailed = 0;
+    SerialLink::putCmd( kResumeCmd );
+    SerialLink::putByte( resumeFailed );
+}
+
+
+
+void MainProcess::doResetCmd()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received Reset cmd from RPi0" << std::endl;
+#endif
+
+    // Acknowledge the reset cmd
+    SerialLink::putCmd( kResetCmd );
+
+    // Trigger a reset of the Pico
+    PicoReset::reset();
+
+    // Wait for the reset to happen
+    while ( 1 )
+    {
+        sleep_ms( 100 );
+    }
+}
+
+
+
+void MainProcess::doDrivingStatusUpdate()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received Drive status update from RPi0" << std::endl;
+#endif
+
+
+}
+
+
+
+void MainProcess::doRequestBatteryLevel()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received request for battery V from RPi0" << std::endl;
+#endif
+
+
+}
+
+
+
+void MainProcess::doRequestMotorBatteryLevel()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received request for motor battery V from RPi0" << std::endl;
+#endif
+
+
+}
+
+
+
+void MainProcess::doIdentifyPicoCore()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received request to ID Core from RPi0" << std::endl;
+#endif
+
+
+}
+
+
+
+void MainProcess::doTestPicoReportError()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received test Pico error report from RPi0" << std::endl;
+#endif
+
+
+}
+
+
+
+void MainProcess::doExtendedCmd()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received extended cmd from RPi0" << std::endl;
+#endif
+
+    uint8_t cmd = SerialLink::getCmd();
+    dispatchExtendedCmd( cmd );
+}
+
+
+
+void MainProcess::doUnknownCommand( uint8_t cmd )
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Warning: Received unknown cmd from RPi0: " << cmd << std::endl;
+#endif
+    
+    SerialLink::putCmd( kErrorReportFromPico );
+    SerialLink::putByte( kPicoNonFatalError );
+    int errCode = makePicoErrorId( kPicoMainProcessError, 3, 0 );
+    SerialLink::put( errCode );
+}
+
+
+
+
+void MainProcess::dispatchExtendedCmd( uint8_t cmd )
+{
+    switch ( cmd )
+    {
+        case kNullExtCmd:
+            break;
+
+        // Debugging extended cmds
+        case kTestExtendedCmd:
+            break;
+
+        case kTriggerError:
+            break;
+
+        default:
+            doUnknownExtendedCmd( cmd );
+            break;
+    }
+}
+
+
+
+void MainProcess::doUnknownExtendedCmd( uint8_t cmd )
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Warning: Received unknown extended cmd from RPi0: " << cmd << std::endl;
+#endif
+    
+    SerialLink::putCmd( kErrorReportFromPico );
+    SerialLink::putByte( kPicoNonFatalError );
+    int errCode = makePicoErrorId( kPicoMainProcessError, 4, 0 );
+    SerialLink::put( errCode );
+}

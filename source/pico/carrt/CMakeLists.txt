@@ -1,6 +1,7 @@
 add_executable( CarrtPico 
         CarrtPicoBinaryInfo.cpp 
         CarrtPicoMain.cpp
+        CarrtPicoReset.cpp
         Core1.cpp
         EventManager.cpp 
         HeartBeatLed.cpp

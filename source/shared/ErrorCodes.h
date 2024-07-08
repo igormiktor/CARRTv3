@@ -75,9 +75,10 @@ enum PicoError : int
 
     // Pico Module Errors (all are * kPicoModuleIdErrIncrement)
 
-    kPicoMulticoreError         = 1,
-    kPicoI2cError               = 2, 
-    kPicoMainProcessError       = 3,
+    kPicoMainError              = 1,
+    kPicoMulticoreError         = 2,
+    kPicoI2cError               = 3, 
+    kPicoMainProcessError       = 4,
 
     kPicoLastError              = 99
 };

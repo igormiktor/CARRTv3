@@ -83,24 +83,24 @@ bool timerCallback( repeating_timer_t* )
 
     // Queue nav update events every 1/8 second
     // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-    Events().queueEvent( Event::kNavUpdateEvent, eighthSecCount % 8, timeTick, EventManager::kHighPriority );
+    Events().queueEvent( kNavUpdateEvent, eighthSecCount % 8, timeTick, EventManager::kHighPriority );
 
     if ( ( eighthSecCount % 2 ) == 0 )
     {
         // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        Events().queueEvent( Event::kQuarterSecondTimerEvent, ( eighthSecCount % 4 ), timeTick );
+        Events().queueEvent( kQuarterSecondTimerEvent, ( eighthSecCount % 4 ), timeTick );
     }
 
     if ( ( eighthSecCount % 8 ) == 0 )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ), timeTick );
+        Events().queueEvent( kOneSecondTimerEvent, ( eighthSecCount / 8 ), timeTick );
         // Events().queueEvent( Event::kPulsePicoLed, 0 );     // Don't need time tick
     }
 
     if ( eighthSecCount == 0 )
     {
-        Events().queueEvent( Event::kEightSecondTimerEvent, 0, timeTick );
+        Events().queueEvent( kEightSecondTimerEvent, 0, timeTick );
     }
 
     return true;

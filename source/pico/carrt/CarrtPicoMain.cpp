@@ -96,10 +96,23 @@ int main()
     {
         SerialLink::putCmd( kErrorReportFromPico );
         SerialLink::putByte( kPicoFatalError );
-        SerialLink::put( 666 );
+        int errCode = makePicoErrorId( kPicoMainError, 1, 0 );
+        SerialLink::put( errCode );
     
     #if USE_CARRTPICO_STDIO
-        std::cout << e.what() << std::endl;
+        std::cout << "Error of unknown type " << e.what() << std::endl;
+    #endif
+    }
+
+    catch( ... )
+    {
+        SerialLink::putCmd( kErrorReportFromPico );
+        SerialLink::putByte( kPicoFatalError );
+        int errCode = makePicoErrorId( kPicoMainError, 2, 0 );
+        SerialLink::put( errCode );
+    
+    #if USE_CARRTPICO_STDIO
+        std::cout << "Unknown error" << std::endl;
     #endif
     }
 
