@@ -22,9 +22,17 @@
 
 #include "CarrtPicoReset.h"
 
+#include "hardware/sync.h"
+#include "hardware/watchdog.h"
+
 
 void PicoReset::reset()
 {
-    // Placeholder
+    watchdog_reboot(0, SRAM_END, 0); 
+
+    while ( 1 )
+    {
+        __wfi();
+    }
 }
 
