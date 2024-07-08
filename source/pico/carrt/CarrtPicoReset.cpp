@@ -29,10 +29,5 @@
 void PicoReset::reset()
 {
     watchdog_reboot(0, SRAM_END, 0); 
-
-    while ( 1 )
-    {
-        __wfi();
-    }
 }
 
