@@ -80,6 +80,7 @@ enum PicoError : int
     kPicoI2cError               = 3, 
     kPicoMainProcessError       = 4,
 
+    kPicoTestError              = 98,
     kPicoLastError              = 99
 };
 
@@ -96,6 +97,7 @@ enum RPi0Error : int
 
     kI2cError               = 1,   
 
+    kTestError              = 98,
     kLastError              = 99
 };
 

@@ -390,7 +390,9 @@ void MainProcess::doIdentifyPicoCore()
     std::cout << "Received request to ID Core from RPi0" << std::endl;
 #endif
 
-
+    SerialLink::putCmd( kIdentifyPicoCore );
+    uint32_t core = get_core_num();
+    SerialLink::put( core );
 }
 
 
@@ -398,10 +400,10 @@ void MainProcess::doIdentifyPicoCore()
 void MainProcess::doTestPicoReportError()
 {
 #if USE_CARRTPICO_STDIO
-    std::cout << "Received test Pico error report from RPi0" << std::endl;
+    std::cout << "Received test Pico error report cmd from RPi0" << std::endl;
 #endif
-
-
+            
+    throw CarrtError( makePicoErrorId( PicoError::kPicoTestError, 1, 0 ), "CARRT Pico test error by request" );
 }
 
 
