@@ -59,6 +59,19 @@
 
 
 
+// **************************************************************
+
+// Define the GPIO pin for the left encoder
+#ifndef CARRTPICO_ENCODER_LEFT_GPIO
+#define CARRTPICO_ENCODER_LEFT_GPIO     20          // GPIO20, Pin 26
+#endif  // CARRTPICO_ENCODER_LEFT_GPIO
+
+// Define the GPIO pin for the right encoder
+#ifndef CARRTPICO_ENCODER_RIGHT_GPIO
+#define CARRTPICO_ENCODER_RIGHT_GPIO    19          // GPIO19, Pin 25
+#endif  // CARRTPICO_ENCODER_RIGHT_GPIO
+
+
 
 
 
@@ -111,10 +124,6 @@
 
 
 
-#endif  // CarrtPicoDefines_h
-
-
-
 
 // **************************************************************
 
@@ -123,4 +132,19 @@
 #define CORE1_SUCCESS      1234
 #define CORE1_FAILURE      21
 
+
+
+
+// **************************************************************
+
+// Debounce time for button presses
+
+#ifndef PICO_GPIO_DEBOUNCE_TIME
+#define PICO_GPIO_DEBOUNCE_TIME                 10      // milliseconds (seems to work well)
+#endif  // PICO_GPIO_DEBOUNCE_TIME
+
+
+
+
+#endif  // CarrtPicoDefines_h
 

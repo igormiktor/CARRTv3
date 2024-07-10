@@ -403,7 +403,7 @@ void MainProcess::doTestPicoReportError()
     std::cout << "Received test Pico error report cmd from RPi0" << std::endl;
 #endif
             
-    throw CarrtError( makePicoErrorId( PicoError::kPicoTestError, 1, 0 ), "CARRT Pico test error by request" );
+    throw CarrtError( makePicoErrorId( PicoError::kPicoTestError, 1, 0 ), "CARRT Pico test error sent by request" );
 }
 
 
