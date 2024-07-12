@@ -104,8 +104,6 @@ void Encoders::initEncoders()
 {
     configureEncoderGpio( CARRTPICO_ENCODER_LEFT_GPIO, callbackLeftEncoder ); 
     configureEncoderGpio( CARRTPICO_ENCODER_RIGHT_GPIO, callbackRightEncoder ); 
-
-
 }
 
 

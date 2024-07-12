@@ -24,13 +24,14 @@
 
 
 #include "CarrtPicoDefines.h"
-#include "MainProcess.h"
-#include "HeartBeatLed.h"
 #include "Core1.h"
+#include "Encoders.h"
+#include "HeartBeatLed.h"
+#include "MainProcess.h"
 
+#include "shared/CarrtError.h"
 #include "shared/SerialCommand.h"
 #include "shared/SerialLink.h"
-#include "shared/CarrtError.h"
 
 #include <iostream>
 #include "pico/stdlib.h"
@@ -47,7 +48,6 @@
 void initializeHardware();
 void initI2C();
 bool launchCore1();
-void reset();
 
 
 
@@ -142,6 +142,8 @@ void initializeHardware()
     SerialLink::openSerialLink();
 
     HeartBeatLed::initialize();
+
+    Encoders::initEncoders();
 }
 
 
@@ -169,7 +171,6 @@ bool launchCore1()
 }
 
 
-void runEventLoops();
-void reset();
+
 
 
