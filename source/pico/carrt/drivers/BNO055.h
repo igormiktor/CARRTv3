@@ -1,5 +1,5 @@
 /*
-    Encoders.h - Track interrupts from the wheel encoders. 
+    BNO055.h - BNO055 functions for CARRT Pico.
 
     Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
 
@@ -18,20 +18,24 @@
 */
 
 
-#ifndef Encoders_h
-#define Encoders_h
+#ifndef BNO055_h
+#define BNO055_h
 
 
 
-namespace Encoders
+namespace BNO055
 {
 
-    void initEncoders();
+    void initI2C();
     
+    signed char send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len );
+
+    signed char receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len );
+
 };
 
 
 
 
-#endif  // Encoders_h
+#endif  // BNO055_h
 

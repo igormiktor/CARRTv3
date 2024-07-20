@@ -1,5 +1,5 @@
 /*
-    Encoders.h - Track interrupts from the wheel encoders. 
+    I2C.h - I2C functions for CARRT Pico.
 
     Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
 
@@ -18,20 +18,24 @@
 */
 
 
-#ifndef Encoders_h
-#define Encoders_h
+#ifndef I2C_h
+#define I2C_h
 
 
 
-namespace Encoders
+namespace I2C
 {
 
-    void initEncoders();
+    void initI2C();
     
+    signed char send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len );
+
+    signed char receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len );
+
 };
 
 
 
 
-#endif  // Encoders_h
+#endif  // I2C_h
 

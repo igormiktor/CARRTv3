@@ -102,6 +102,21 @@
 
 
 
+
+
+// **************************************************************
+
+// BNO055 related defines (I2C network address, etc)
+
+#ifndef CARRT_BNO0555_I2C_ADDR
+#define CARRT_BNO0555_I2C_ADDR          0x28
+#endif  // CARRT_BNO0555_I2C_ADDR
+
+
+
+
+
+
 // **************************************************************
 
 // UART defines for the serial-link between RPi0 and Pico

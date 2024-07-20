@@ -27,6 +27,7 @@
 #include "Core1.h"
 #include "Encoders.h"
 #include "HeartBeatLed.h"
+#include "I2C.h"
 #include "MainProcess.h"
 
 #include "shared/CarrtError.h"
@@ -136,7 +137,7 @@ void initializeHardware()
 #endif 
 
     // Set up Pico's I2C (to talk with BNO055)
-    initI2C();
+    I2C::initI2C();
 
     // Initialize UART for RPi0<->Pico serial link
     SerialLink::openSerialLink();
@@ -146,18 +147,6 @@ void initializeHardware()
     Encoders::initEncoders();
 }
 
-
-
-void initI2C()
-{
-    // I2C Initialisation
-    i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
-    
-    gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C ) ;
-    gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
-    gpio_pull_up( CARRTPICO_I2C_SDA );
-    gpio_pull_up( CARRTPICO_I2C_SCL );
-}
 
 
 bool launchCore1()

@@ -8,7 +8,11 @@ add_executable( CarrtPico
         HeartBeatLed.cpp
         MainProcess.cpp
         SerialLink.cpp
+        drivers/BNO055.cpp
+        drivers/I2C.cpp
+        drivers/BNO055/bno055.c
         )
+
         
 pico_set_program_name( CarrtPico "CarrtPico" )
 pico_set_program_version( CarrtPico "0.1" )

@@ -1,5 +1,5 @@
 /*
-    Encoders.h - Track interrupts from the wheel encoders. 
+    BNO055.cpp - BNO055 functions for CARRT Pico.
 
     Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
 
@@ -18,20 +18,8 @@
 */
 
 
-#ifndef Encoders_h
-#define Encoders_h
+#include "BNO055.h"
 
+#include "BNO055/bno055.h"
 
-
-namespace Encoders
-{
-
-    void initEncoders();
-    
-};
-
-
-
-
-#endif  // Encoders_h
 
