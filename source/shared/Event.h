@@ -38,8 +38,8 @@ enum Event : int
     kNavDriftCorrectionEvent,
 
     // Encoder events
-    kEncoderRightEvent,
     kEncoderLeftEvent,
+    kEncoderRightEvent,
 
     // Pulse LEDs events
     kPulsePicoLed,
