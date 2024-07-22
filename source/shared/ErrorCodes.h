@@ -41,7 +41,7 @@
 
     On Pico (RP2040)...
 
-        Pico error codes (e.g., PICO_ERROR_*) are also all negative, in the range -1 to -9
+        Pico error codes from the SDK (e.g., PICO_ERROR_*) are also all negative, in the range -1 to -9
 
         Within a Pico module identify the function where error occurs by increments of -100 
         and allow up to 99 functions per module, so max -9,900 (plus PICO_ERROR_...)
@@ -77,7 +77,7 @@ enum PicoError : int
 
     kPicoMainError              = 1,
     kPicoMulticoreError         = 2,
-    kPicoI2cError               = 3, 
+    kPicoI2cBNO055Error         = 3, 
     kPicoMainProcessError       = 4,
 
     kPicoTestError              = 98,

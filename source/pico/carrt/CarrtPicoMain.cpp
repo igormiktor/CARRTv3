@@ -27,8 +27,10 @@
 #include "Core1.h"
 #include "Encoders.h"
 #include "HeartBeatLed.h"
-#include "I2C.h"
 #include "MainProcess.h"
+
+#include "drivers/BNO055.h"
+#include "drivers/I2C.h"
 
 #include "shared/CarrtError.h"
 #include "shared/SerialCommand.h"
@@ -142,8 +144,13 @@ void initializeHardware()
     // Initialize UART for RPi0<->Pico serial link
     SerialLink::openSerialLink();
 
+    // Initialize the BNO055 (but we need to verify calibration is complete later on)
+    BNO055::init();
+
+    // Initialize the heartbeat LED (so we can show both normal ops and errors)
     HeartBeatLed::initialize();
 
+    // Set up the encoders;
     Encoders::initEncoders();
 }
 

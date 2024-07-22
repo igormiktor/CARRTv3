@@ -26,12 +26,9 @@
 namespace BNO055
 {
 
-    void initI2C();
+    void init();
     
-    signed char send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len );
-
-    signed char receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len );
-
+    
 };
 
 
