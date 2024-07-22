@@ -35,6 +35,14 @@ int main()
     stdio_init_all();
 
     std::cout << "Hello, this is CARRT Pico!" << std::endl;
+    std::cout << "Size of signed char: " << sizeof( signed char ) << std::endl;
+    std::cout << "Size of signed short int: " << sizeof( signed short int ) << std::endl;
+    std::cout << "Size of signed int: " << sizeof( signed int ) << std::endl;
+    std::cout << "Size of signed long int: " << sizeof( signed long int ) << std::endl;
+    std::cout << "Size of signed long long int: " << sizeof( signed long long int ) << std::endl;
+    std::cout << "Size of float: " << sizeof( float ) << std::endl;
+    std::cout << "Size of double: " << sizeof( double ) << std::endl;
+
 
     try
     {
