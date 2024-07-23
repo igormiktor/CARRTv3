@@ -97,7 +97,21 @@ void BNO055::init()
     }
 
     // Need to wait for the BNO055 to reach calibration, but make that a separate function call
+
+    // Remember load pre-calibration if we have it
 }
     
  
+int BNO055::checkCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag )
+{
+    unsigned char system = 0;
 
+    int err = bno055_get_all_calib_stat( &system, gyro, accel, mag );
+
+    if ( err )
+    {
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 2, err ), "CARRT Pico BNO055 failed to get calibration" );
+    }
+
+    return system;
+}

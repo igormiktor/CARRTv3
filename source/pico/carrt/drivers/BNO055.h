@@ -28,6 +28,7 @@ namespace BNO055
 
     void init();
     
+    int checkCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag );
     
 };
 
