@@ -37,7 +37,35 @@
 
 
 bool timerCallback( repeating_timer_t* ); 
+void core1Main();
 
+
+
+/*
+*   To be called from Core0 
+*
+*   This code actually runs on Core0
+*/
+
+int launchCore1()
+{
+    multicore_launch_core1( core1Main );
+
+    // Wait for it to start up
+    uint32_t flag = multicore_fifo_pop_blocking();
+
+    return ( flag != CORE1_SUCCESS );
+}
+
+
+
+
+
+/*
+*   TThe main() for Core1 
+*
+*   This code actually runs on Core1
+*/
 
 void core1Main() 
 {

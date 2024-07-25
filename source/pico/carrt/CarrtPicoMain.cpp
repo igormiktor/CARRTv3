@@ -24,7 +24,7 @@
 
 
 #include "CarrtPicoDefines.h"
-#include "Core1.h"
+//#include "Core1.h"
 #include "Encoders.h"
 #include "HeartBeatLed.h"
 #include "MainProcess.h"
@@ -38,7 +38,7 @@
 
 #include <iostream>
 #include "pico/stdlib.h"
-#include "pico/multicore.h"
+//#include "pico/multicore.h"
 // #include "pico/util/queue.h"
 // #include "hardware/clocks.h"
 #include "hardware/i2c.h"
@@ -50,7 +50,6 @@
 
 void initializeHardware();
 void initI2C();
-bool launchCore1();
 
 
 
@@ -65,17 +64,6 @@ int main()
 
     try
     {
-        bool failed = launchCore1();
-        if ( failed )
-        {
-            // Need to bail...
-            throw CarrtError( makePicoErrorId( PicoError::kPicoMulticoreError, 1, 0 ), "CARRT Pico core1 start failed" );
-        }
-
-    #if USE_CARRTPICO_STDIO
-        std::cout << "CARRT Pico ready on both cores" << std::endl;
-    #endif
-
         // Report we are started...
         SerialLink::putCmd( kPicoReady );
         SerialLink::put( to_ms_since_boot( get_absolute_time() ) );
@@ -154,17 +142,6 @@ void initializeHardware()
     Encoders::initEncoders();
 }
 
-
-
-bool launchCore1()
-{
-    multicore_launch_core1( core1Main );
-
-    // Wait for it to start up
-    uint32_t flag = multicore_fifo_pop_blocking();
-    
-    return flag != CORE1_SUCCESS ;
-}
 
 
 

@@ -1,5 +1,5 @@
 /*
-    Core1.h - Code that runs on CARRT-Pico Core 1
+    Core1.h - Code that runs on CARRT-Pico Core 1 and the code to launch Core 1
 
     Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
 
@@ -24,6 +24,6 @@
 #define Core1_h
 
 
-void core1Main();
+int launchCore1();
 
 #endif  // Core1.h

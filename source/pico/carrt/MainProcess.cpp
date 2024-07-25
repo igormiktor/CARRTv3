@@ -25,6 +25,8 @@
 
 #include "CarrtPicoDefines.h"
 #include "CarrtPicoReset.h"
+#include "Core1.h"
+
 #include "EventManager.h"
 #include "HeartBeatLed.h"
 
@@ -63,9 +65,16 @@ namespace MainProcess
     void doUnknownEvent( int eventCode );
 
     void doNullCmd();
+    void doStartCore1Cmd();
+    void doBeginCalibration();
     void doPauseCmd();
     void doResumeCmd();
     void doResetCmd();
+
+    void doReplyWithCalibrationStatus();
+    void doProcessCalibrationProfile();
+    void doReplyWithCalibrationProfile();
+
     void doDrivingStatusUpdate();
     void doRequestBatteryLevel();
     void doRequestMotorBatteryLevel();
@@ -170,6 +179,14 @@ void MainProcess::dispatchCommand( uint8_t cmd )
             doNullCmd();
             break;
 
+        case kStartCore1Cmd:                // Pico to start Core1  
+            doStartCore1Cmd();
+            break;
+
+        case kBeginCalibration:             // Pico to begin calibration (of BNO055)
+            doBeginCalibration();
+            break;
+
         case kPauseCmd:                     // Pico to pause event processing
             doPauseCmd();
             break;
@@ -181,6 +198,20 @@ void MainProcess::dispatchCommand( uint8_t cmd )
         case kResetCmd:                     // Pico to reses itself (ack by sending kPicoReady)
             doResetCmd();
             break;
+
+
+        case kRequestCalibStatus:           // Request status of BNO055 calibration
+            doReplyWithCalibrationStatus();
+            break;
+
+        case kSendCalibProfileToPico:       // Sending a calibration profile to Pico (follow by calibration data)
+            doProcessCalibrationProfile();
+            break;
+
+        case kRequestCalibProfileFmPico:    // Request a calibration profile from Pico (reply followed by calibration data)
+            doReplyWithCalibrationProfile();
+            break;
+
 
         case kDrivingStatusUpdate:          // From RPi0 to Pico (2nd byte provides driving status)
             doDrivingStatusUpdate();
@@ -302,6 +333,25 @@ void MainProcess::doNullCmd()
 
 
 
+void MainProcess::doStartCore1Cmd()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received Start Core1 cmd from RPi0" << std::endl;
+#endif
+
+    int err = launchCore1();
+    
+    // Simply acknowledge
+    SerialLink::putCmd( kStartCore1Cmd );
+    SerialLink::putByte( err );
+
+#if USE_CARRTPICO_STDIO
+    std::cout << "Start Core1 " << ( err ? "fail" : "success" ) << std::endl;
+#endif
+}
+
+
+
 void MainProcess::doPauseCmd()
 {
 #if USE_CARRTPICO_STDIO
@@ -312,6 +362,22 @@ void MainProcess::doPauseCmd()
     uint8_t pauseFailed = 0;
     SerialLink::putCmd( kPauseCmd );
     SerialLink::putByte( pauseFailed );
+}
+
+
+
+void MainProcess::doBeginCalibration()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received Pause cmd from RPi0" << std::endl;
+#endif
+
+    // TODO  Start the calibration process
+
+    // Acknowledge by same command in reply, followed by error code
+    unsigned char err = 0;
+    SerialLink::putCmd( kBeginCalibration );
+    SerialLink::putByte( err );
 }
 
 
@@ -348,6 +414,50 @@ void MainProcess::doResetCmd()
         sleep_ms( 100 );
     }
 }
+
+
+
+void doReplyWithCalibrationStatus()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received request calibration status" << std::endl;
+#endif
+
+// TODO  Get calibration status and report it
+}
+
+
+
+void doProcessCalibrationProfile()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received a calibration profile from RPi0" << std::endl;
+#endif
+
+    // TODO  Extract calibration profile and sent it to BNO055
+
+    unsigned char err = 0;
+    SerialLink::putCmd( kSendCalibProfileToPico );
+    SerialLink::putByte( err );
+
+#if USE_CARRTPICO_STDIO
+    // TODO     send calibration profile
+#endif
+}
+
+
+
+void doReplyWithCalibrationProfile()
+{
+#if USE_CARRTPICO_STDIO
+    std::cout << "Received request for the current calibration profile" << std::endl;
+#endif
+
+// Get calibration profile from BNO055 and relay it to RPi0
+}
+
+
+
 
 
 
