@@ -31,8 +31,10 @@ enum SerialCommand : uint8_t
     kNullCmd                    = 0x00,
 
     // Commands (to Pico); acknowledged from Pico with same Cmd & second byte (non-zero 2nd byte -> error code)
-    kPauseCmd                   = 0x02,             // Pico to pause event processing
-    kResumeCmd                  = 0x03,             // Pico to resume event processing  
+    kStartCore1Cmd              = 0x01,             // Pico to start Core1 (reply same with error code)
+    kBeginCalibration           = 0x02,             // Pico to begin calibration of the BNO055 (reply with same to ack)
+    kPauseCmd                   = 0x07,             // Pico to pause event processing
+    kResumeCmd                  = 0x08,             // Pico to resume event processing  
     kResetCmd                   = 0x09,             // Pico to reset itself (ack by sending kReset + byte = 0, then kPicoReady)
 
     // Msgs from Pico
@@ -46,16 +48,21 @@ enum SerialCommand : uint8_t
     kTimer1s                    = 0x22,             // 1 sec timer event (2nd byte -> count)
     kTimer8s                    = 0x23,             // 8 sec timer event (2nd byte -> count)
 
+    // Calibration cmds       
+    kRequestCalibStatus         = 0x30,             // Request status of BNO055 calibration
+    kSendCalibProfileToPico     = 0x31,             // Sending a calibration profile to Pico (follow by calibration data)
+    kRequestCalibProfileFmPico  = 0x32,             // Request a calibration profile from Pico (reply followed by calibration data)
+
     // Navigation info
-    kDrivingStatusUpdate        = 0x30,             // From RPi0 to Pico (2nd byte provides driving status)
-    kLeftEncoderUpdate          = 0x31,             // Pico sends update containing left encoder count and time
-    kRightEncoderUpdate         = 0x32,             // Pico sends update containing right encoder count and time
+    kDrivingStatusUpdate        = 0x90,             // From RPi0 to Pico (2nd byte provides driving status)
+    kLeftEncoderUpdate          = 0x91,             // Pico sends update containing left encoder count and time
+    kRightEncoderUpdate         = 0x92,             // Pico sends update containing right encoder count and time
  
     // Battery info
-    kRequestBatteryLevel        = 0x40,             // Pico to reply same with IC battery V in following bytes
-    kBatteryLowAlert            = 0x41,             // Pico sends alert about IC battery low
-    kRequestMotorBatteryLevel   = 0x42,             // Pico to reply same with motor battery V in following bytes
-    kMotorBattLowAlert          = 0x43,             // Pico sends alert about motor battery low
+    kRequestBatteryLevel        = 0xA0,             // Pico to reply same with IC battery V in following bytes
+    kBatteryLowAlert            = 0xA1,             // Pico sends alert that IC battery is low
+    kRequestMotorBatteryLevel   = 0xA2,             // Pico to reply same with motor battery V in following bytes
+    kMotorBattLowAlert          = 0x53,             // Pico sends alert that motor battery is low
 
     // Error reports
     kErrorReportFromPico        = 0xE0,             // Pico sends a bool fatal flag (bool in a uint8_t) and error code (int) in following bytes (3-6)
@@ -70,7 +77,7 @@ enum SerialCommand : uint8_t
 };
 
 
-// These are the commands in the second by of an extended command (kExtendCmd)
+// These are the commands in the second byte of an extended command (kExtendCmd)
 enum SerialExtendedCmd : uint8_t
 {
     kNullExtCmd                 = 0x00,
