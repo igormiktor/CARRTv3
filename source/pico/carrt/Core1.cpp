@@ -54,6 +54,9 @@ int launchCore1()
     // Wait for it to start up
     uint32_t flag = multicore_fifo_pop_blocking();
 
+
+    // TODO  fix this to be a throw and change launchCore1() to return void
+    // Failure to launch Core1 is a show stopper
     return ( flag != CORE1_SUCCESS );
 }
 
