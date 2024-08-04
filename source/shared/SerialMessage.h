@@ -1,5 +1,5 @@
 /*
-    SerialCommand.h - Serial Command tools for CARRT3 communications
+    SerialMessage.h - Serial Message tools for CARRT3 communications
     between the RPI and Pico.  This file is shared by both the
     RPI and Pico code bases.
 
@@ -20,22 +20,22 @@
 */
 
 
-#ifndef SerialCommand_h
-#define SerialCommand_h
+#ifndef SerialMessage_h
+#define SerialMessage_h
 
 #include <stdint.h>
 
 
-enum SerialCommand : uint8_t
+enum SerialMessage : uint8_t
 {
-    kNullCmd                    = 0x00,
+    kNullMsg                    = 0x00,
 
-    // Commands (to Pico); acknowledged from Pico with same Cmd to ack.  Errors send by kErrorReportFromPico msg
-    kStartCore1Cmd              = 0x01,             // Pico to start Core1 
+    // Messages (to Pico); acknowledged from Pico with same Msg to ack.  Errors send by kErrorReportFromPico msg
+    kStartCore1                 = 0x01,             // Pico to start Core1 
     kBeginCalibration           = 0x02,             // Pico to begin calibration of the BNO055  (end of calibration -> kPicoReady msg)
-    kPauseCmd                   = 0x07,             // Pico to pause event processing
-    kResumeCmd                  = 0x08,             // Pico to resume event processing  
-    kResetCmd                   = 0x09,             // Pico to reset itself (ack by sending kReset, then followed by kPicoReady)
+    kPauseMsg                   = 0x07,             // Pico to pause event processing
+    kResumeMsg                  = 0x08,             // Pico to resume event processing  
+    kResetMsg                   = 0x09,             // Pico to reset itself (ack by sending kReset, then followed by kPicoReady)
 
     // Msgs from Pico
     kPicoReady                  = 0x10,             // Sent by Pico once ready (bytes 2-5 -> uint32_t time hack for sync)
@@ -73,17 +73,17 @@ enum SerialCommand : uint8_t
                                                     // Pico responds with same and which core is running uart (2nd byte)
     kTestPicoReportError        = 0xF2,             // RPi0 sends to Pico asking to report an error (bytes 2-5 contain error code to send back)
 
-    kExtendedCmd                = 0xFF
+    kExtendedMsg                = 0xFF
 };
 
 
-// These are the commands in the second byte of an extended command (kExtendCmd)
-enum SerialExtendedCmd : uint8_t
+// These are the messages in the second byte of an extended message (kExtendMsg)
+enum SerialExtendedMsg : uint8_t
 {
-    kNullExtCmd                 = 0x00,
+    kNullExtMsg                 = 0x00,
 
     // Debugging extended cmds
-    kTestExtendedCmd            = 0xF0,
+    kTestExtendedMsg            = 0xF0,
 
     kTriggerError               = 0xFF
 };
@@ -101,4 +101,4 @@ union Transfer
 
 
 
-#endif // SerialCommand_h
+#endif // SerialMessage_h

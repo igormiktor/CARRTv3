@@ -49,7 +49,7 @@ namespace SerialLink
     uint8_t getByte();
     void get4Bytes( uint8_t* c );
 
-    inline uint8_t getCmd()  { return getByte(); }
+    inline uint8_t getMsg()  { return getByte(); }
 
     inline int getInt()  { SerialLink::Transfer t; SerialLink::get4Bytes( t.c ); return t.i; }
 
@@ -61,7 +61,7 @@ namespace SerialLink
     void putByte( uint8_t c );
     void put4Bytes( uint8_t* c );
 
-    inline void putCmd( uint8_t cmd )  { putByte( cmd ); }
+    inline void putMsg( uint8_t cmd )  { putByte( cmd ); }
     inline void put( char c )   { SerialLink::putByte( c ); }
     inline void put( uint8_t c )   { SerialLink::putByte( c ); }
     inline void put( int i )  { SerialLink::Transfer t; t.i = i; SerialLink::put4Bytes( t.c ); }

@@ -1,7 +1,7 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
 
-#include "shared/SerialCommand.h"
+#include "shared/SerialMessage.h"
 
 #include <iostream>
 #include "pico/binary_info.h"
@@ -60,7 +60,7 @@ void startCore1()
     std::cout << "Started Core " << get_core_num() << std::endl;
 
     // Test sending UART from core 1
-    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kIdentifyPicoCore );
+    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kIdentifyPicoCore );
     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 1 );
 
     alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
@@ -124,19 +124,19 @@ int main()
             {
                 case Event::kNavUpdateEvent:
                     std::cout << "Nav " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kTimerNavUpdate );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimerNavUpdate );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kTimer1_4s );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer1_4s );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kTimer1s );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer1s );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     ledState = !ledState;
@@ -144,13 +144,13 @@ int main()
                     
                 case Event::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kTimer8s );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer8s );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
 
                 case Event::kIdentifyPicoCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialCommand::kIdentifyPicoCore );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kIdentifyPicoCore );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 0 );
                     break;
             }

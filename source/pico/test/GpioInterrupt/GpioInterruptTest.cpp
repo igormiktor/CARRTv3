@@ -1,7 +1,7 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
 
-#include "shared/SerialCommand.h"
+#include "shared/SerialMessage.h"
 
 #include <iostream>
 #include "pico/binary_info.h"

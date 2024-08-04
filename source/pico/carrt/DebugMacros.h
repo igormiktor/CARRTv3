@@ -1,5 +1,5 @@
 /*
-    DebugMarcros.h - Macros for debugging on CARRT-Pico 
+    DebugMacros.h - Macros for debugging on CARRT-Pico 
 
     Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
 

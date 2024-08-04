@@ -26,7 +26,7 @@
 #include "CarrtPicoDefines.h"
 //#include "Core1.h"
 #include "Encoders.h"
-#include "DebugMarcros.h"
+#include "DebugMacros.h"
 #include "HeartBeatLed.h"
 #include "MainProcess.h"
 
@@ -34,7 +34,7 @@
 #include "drivers/I2C.h"
 
 #include "shared/CarrtError.h"
-#include "shared/SerialCommand.h"
+#include "shared/SerialMessage.h"
 #include "shared/SerialLink.h"
 
 #include <iostream>
@@ -65,7 +65,7 @@ int main()
     try
     {
         // Report we are started...
-        SerialLink::putCmd( kPicoReady );
+        SerialLink::putMsg( kPicoReady );
         SerialLink::put( to_ms_since_boot( get_absolute_time() ) );
 
         MainProcess::runMainEventLoop();
@@ -74,7 +74,7 @@ int main()
     catch( const CarrtError& e )
     {
         // Report the error...
-        SerialLink::putCmd( kErrorReportFromPico );
+        SerialLink::putMsg( kErrorReportFromPico );
         SerialLink::putByte( kPicoFatalError );
         SerialLink::put( e.errorCode() );
 
@@ -85,7 +85,7 @@ int main()
 
     catch( const std::exception& e )
     {
-        SerialLink::putCmd( kErrorReportFromPico );
+        SerialLink::putMsg( kErrorReportFromPico );
         SerialLink::putByte( kPicoFatalError );
         int errCode = makePicoErrorId( kPicoMainError, 1, 0 );
         SerialLink::put( errCode );
@@ -96,7 +96,7 @@ int main()
 
     catch( ... )
     {
-        SerialLink::putCmd( kErrorReportFromPico );
+        SerialLink::putMsg( kErrorReportFromPico );
         SerialLink::putByte( kPicoFatalError );
         int errCode = makePicoErrorId( kPicoMainError, 2, 0 );
         SerialLink::put( errCode );
