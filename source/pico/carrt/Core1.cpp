@@ -25,6 +25,8 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
 
+#include "shared/CarrtError.h"
+
 #include <iostream>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -47,25 +49,28 @@ void core1Main();
 *   This code actually runs on Core0
 */
 
-int launchCore1()
+void launchCore1()
 {
     multicore_launch_core1( core1Main );
 
     // Wait for it to start up
     uint32_t flag = multicore_fifo_pop_blocking();
 
-
-    // TODO  fix this to be a throw and change launchCore1() to return void
-    // Failure to launch Core1 is a show stopper
-    return ( flag != CORE1_SUCCESS );
+    if ( flag != CORE1_SUCCESS )
+    {
+        throw CarrtError( makePicoErrorId( PicoError::kPicoMulticoreError, 1, 1 ), "CARRT Pico failed to start Core1" );
+    }
 }
 
 
 
+// Code above here runs on Core0
+
+// Code below here runs on Core1
 
 
 /*
-*   TThe main() for Core1 
+*   The main() for Core1 
 *
 *   This code actually runs on Core1
 */

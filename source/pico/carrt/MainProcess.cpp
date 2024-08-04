@@ -26,7 +26,7 @@
 #include "CarrtPicoDefines.h"
 #include "CarrtPicoReset.h"
 #include "Core1.h"
-
+#include "DebugMarcros.h"
 #include "EventManager.h"
 #include "HeartBeatLed.h"
 
@@ -35,6 +35,7 @@
 #include "shared/CarrtError.h"
 
 #include <iostream>
+
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "pico/util/queue.h"
@@ -295,9 +296,7 @@ void MainProcess::doIdentifyPicoCoreEvent( int eventParam, uint32_t eventTime )
 
 void MainProcess::doUnknownEvent( int eventCode )
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Warning: Received unknown event: " << eventCode << std::endl;
-#endif
+    INFO_PICO_MSG2( "Warning: Pico received unknown event: ",  eventCode );
     
     SerialLink::putCmd( kErrorReportFromPico );
     SerialLink::putByte( kPicoNonFatalError );
@@ -309,10 +308,8 @@ void MainProcess::doUnknownEvent( int eventCode )
 
 void MainProcess::doEventQueueOverflowed()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Event queue overflowed" << std::endl;
-#endif
-     
+    INFO_PICO_MSG1( "Event queue overflowed" );
+      
     SerialLink::putCmd( kErrorReportFromPico );
     SerialLink::putByte( kPicoNonFatalError );
     int errCode = makePicoErrorId( kPicoMainProcessError, 2, 0 );
@@ -323,9 +320,7 @@ void MainProcess::doEventQueueOverflowed()
 
 void MainProcess::doNullCmd()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received Null cmd from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received Null cmd from RPi0" );
 
     // Simply acknowledge
     SerialLink::putCmd( kNullCmd );
@@ -335,42 +330,31 @@ void MainProcess::doNullCmd()
 
 void MainProcess::doStartCore1Cmd()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received Start Core1 cmd from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received Start Core1 cmd from RPi0" );
 
-    int err = launchCore1();
+    launchCore1();
     
     // Simply acknowledge
     SerialLink::putCmd( kStartCore1Cmd );
-    SerialLink::putByte( err );
-
-#if USE_CARRTPICO_STDIO
-    std::cout << "Start Core1 " << ( err ? "fail" : "success" ) << std::endl;
-#endif
 }
 
 
 
 void MainProcess::doPauseCmd()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received Pause cmd from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received Pause cmd from RPi0" );
 
-    // Try to pause
-    uint8_t pauseFailed = 0;
+    // Ack receipt
     SerialLink::putCmd( kPauseCmd );
-    SerialLink::putByte( pauseFailed );
+
+    // TODO  Try to pause (throw exception if fails)
 }
 
 
 
 void MainProcess::doBeginCalibration()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received Pause cmd from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received begin calibration msg from RPi0" );
 
     // TODO  Start the calibration process
 
@@ -384,23 +368,19 @@ void MainProcess::doBeginCalibration()
 
 void MainProcess::doResumeCmd()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received Resume cmd from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received Resume cmd from RPi0" );
 
-    // Try to resume
-    uint8_t resumeFailed = 0;
+    // Ack receipt
     SerialLink::putCmd( kResumeCmd );
-    SerialLink::putByte( resumeFailed );
+
+    // TODO  ry to resume; throw if fails
 }
 
 
 
 void MainProcess::doResetCmd()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received Reset cmd from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received Reset cmd from RPi0" );
 
     // Acknowledge the reset cmd
     SerialLink::putCmd( kResetCmd );
@@ -417,43 +397,34 @@ void MainProcess::doResetCmd()
 
 
 
-void doReplyWithCalibrationStatus()
+void MainProcess::doReplyWithCalibrationStatus()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received request calibration status" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received request calibration status" );
 
 // TODO  Get calibration status and report it
 }
 
 
 
-void doProcessCalibrationProfile()
+void MainProcess::doProcessCalibrationProfile()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received a calibration profile from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received a calibration profile from RPi0" );
 
     // TODO  Extract calibration profile and sent it to BNO055
 
-    unsigned char err = 0;
-    SerialLink::putCmd( kSendCalibProfileToPico );
-    SerialLink::putByte( err );
 
-#if USE_CARRTPICO_STDIO
-    // TODO     send calibration profile
-#endif
+    // TODO     print calibration profile
 }
 
 
 
-void doReplyWithCalibrationProfile()
+void MainProcess::doReplyWithCalibrationProfile()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received request for the current calibration profile" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received request for the current calibration profile" );
 
-// Get calibration profile from BNO055 and relay it to RPi0
+    // TODO  Get calibration profile from BNO055 and relay it to RPi0
+
+    // TODO     print calibration profile
 }
 
 
@@ -463,55 +434,47 @@ void doReplyWithCalibrationProfile()
 
 void MainProcess::doDrivingStatusUpdate()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received Drive status update from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received Drive status update from RPi0" );
 
-
+    // TODO  do something with it
 }
 
 
 
 void MainProcess::doRequestBatteryLevel()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received request for battery V from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received request for battery V from RPi0" );
 
-
+    // TODO  do something with it
 }
 
 
 
 void MainProcess::doRequestMotorBatteryLevel()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received request for motor battery V from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received request for motor battery V from RPi0" );
 
-
+    // TODO  do something with it
 }
 
 
 
 void MainProcess::doIdentifyPicoCore()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received request to ID Core from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received request to ID Core from RPi0" );
 
     SerialLink::putCmd( kIdentifyPicoCore );
     uint32_t core = get_core_num();
     SerialLink::put( core );
+
+    DEBUG_PICO_MSG2( "Pico Core ID is: ", core );
 }
 
 
 
 void MainProcess::doTestPicoReportError()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received test Pico error report cmd from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received test Pico error report cmd from RPi0" );
             
     throw CarrtError( makePicoErrorId( PicoError::kPicoTestError, 1, 0 ), "CARRT Pico test error sent by request" );
 }
@@ -520,9 +483,7 @@ void MainProcess::doTestPicoReportError()
 
 void MainProcess::doExtendedCmd()
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Received extended cmd from RPi0" << std::endl;
-#endif
+    DEBUG_PICO_MSG1( "Received extended cmd from RPi0" );
 
     uint8_t cmd = SerialLink::getCmd();
     dispatchExtendedCmd( cmd );
@@ -532,9 +493,7 @@ void MainProcess::doExtendedCmd()
 
 void MainProcess::doUnknownCommand( uint8_t cmd )
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Warning: Received unknown cmd from RPi0: " << cmd << std::endl;
-#endif
+    INFO_PICO_MSG2( "Warning: Received unknown cmd from RPi0: ", cmd );
     
     SerialLink::putCmd( kErrorReportFromPico );
     SerialLink::putByte( kPicoNonFatalError );
@@ -569,9 +528,7 @@ void MainProcess::dispatchExtendedCmd( uint8_t cmd )
 
 void MainProcess::doUnknownExtendedCmd( uint8_t cmd )
 {
-#if USE_CARRTPICO_STDIO
-    std::cout << "Warning: Received unknown extended cmd from RPi0: " << cmd << std::endl;
-#endif
+    DEBUG_PICO_MSG2( "Warning: Received unknown extended cmd from RPi0: ", cmd );
     
     SerialLink::putCmd( kErrorReportFromPico );
     SerialLink::putByte( kPicoNonFatalError );

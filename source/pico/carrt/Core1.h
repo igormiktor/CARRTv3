@@ -24,6 +24,6 @@
 #define Core1_h
 
 
-int launchCore1();
+void launchCore1();
 
 #endif  // Core1.h

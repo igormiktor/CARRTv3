@@ -26,6 +26,7 @@
 #include "CarrtPicoDefines.h"
 //#include "Core1.h"
 #include "Encoders.h"
+#include "DebugMarcros.h"
 #include "HeartBeatLed.h"
 #include "MainProcess.h"
 
@@ -37,6 +38,7 @@
 #include "shared/SerialLink.h"
 
 #include <iostream>
+
 #include "pico/stdlib.h"
 //#include "pico/multicore.h"
 // #include "pico/util/queue.h"
@@ -58,10 +60,8 @@ int main()
  
     initializeHardware();
 
-#if USE_CARRTPICO_STDIO
-    std::cout << "CARRT Pico started, hw initialized, running on core " << get_core_num() << std::endl;
-#endif
-
+    INFO_PICO_MSG2( "CARRT Pico started, hw initialized, running on core ", get_core_num() );
+    
     try
     {
         // Report we are started...
@@ -79,7 +79,7 @@ int main()
         SerialLink::put( e.errorCode() );
 
     #if USE_CARRTPICO_STDIO
-        std::cout << "Error " << e.errorCode() << ' ' << e.what() << std::endl;
+        INFO_PICO_MSG4( "Error ", e.errorCode(), ' ', e.what() );
     #endif
     }
 
@@ -90,9 +90,8 @@ int main()
         int errCode = makePicoErrorId( kPicoMainError, 1, 0 );
         SerialLink::put( errCode );
     
-    #if USE_CARRTPICO_STDIO
-        std::cout << "Error of unknown type " << e.what() << std::endl;
-    #endif
+    INFO_PICO_MSG2( "Caught error of unknown type ", e.what() );
+
     }
 
     catch( ... )
@@ -102,9 +101,7 @@ int main()
         int errCode = makePicoErrorId( kPicoMainError, 2, 0 );
         SerialLink::put( errCode );
     
-    #if USE_CARRTPICO_STDIO
-        std::cout << "Unknown error" << std::endl;
-    #endif
+        INFO_PICO_MSG1( "Caught unknown error" );
     }
 
     // Just spin and put HeartBeatLed on fast strobe
@@ -141,9 +138,3 @@ void initializeHardware()
     // Set up the encoders;
     Encoders::initEncoders();
 }
-
-
-
-
-
-

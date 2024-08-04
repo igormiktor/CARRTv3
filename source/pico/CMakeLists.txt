@@ -23,7 +23,7 @@ set( PICO_CXX_ENABLE_EXCEPTIONS 1 )
 
 
 # Add a special define "DEBUGPICO" when building debugging builds
-add_compile_options( "$<$<CONFIG:DEBUG>:-DDEBUGPICO>" )
+add_compile_options( "$<$<CONFIG:DEBUG>:-DDEBUGPICO=1>" )
 
 set( CARRT_PICO_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" )
 # message( CARRT_PICO_DIRECTORY="${CARRT_PICO_DIRECTORY}" )

@@ -28,6 +28,6 @@
 
 void PicoReset::reset()
 {
-    watchdog_reboot(0, SRAM_END, 0); 
+    watchdog_reboot( 0, SRAM_END, 0 ); 
 }
 

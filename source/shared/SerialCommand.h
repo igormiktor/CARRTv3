@@ -30,16 +30,16 @@ enum SerialCommand : uint8_t
 {
     kNullCmd                    = 0x00,
 
-    // Commands (to Pico); acknowledged from Pico with same Cmd & second byte (non-zero 2nd byte -> error code)
-    kStartCore1Cmd              = 0x01,             // Pico to start Core1 (reply same with error code)
-    kBeginCalibration           = 0x02,             // Pico to begin calibration of the BNO055 (reply with same to ack)
+    // Commands (to Pico); acknowledged from Pico with same Cmd to ack.  Errors send by kErrorReportFromPico msg
+    kStartCore1Cmd              = 0x01,             // Pico to start Core1 
+    kBeginCalibration           = 0x02,             // Pico to begin calibration of the BNO055  (end of calibration -> kPicoReady msg)
     kPauseCmd                   = 0x07,             // Pico to pause event processing
     kResumeCmd                  = 0x08,             // Pico to resume event processing  
-    kResetCmd                   = 0x09,             // Pico to reset itself (ack by sending kReset + byte = 0, then kPicoReady)
+    kResetCmd                   = 0x09,             // Pico to reset itself (ack by sending kReset, then followed by kPicoReady)
 
     // Msgs from Pico
     kPicoReady                  = 0x10,             // Sent by Pico once ready (bytes 2-5 -> uint32_t time hack for sync)
-                                                    // If Pico not ready, error report instead (via kErrorReportFrom Pico)
+                                                    // If Pico not ready, error report instead (via kErrorReportFromPico)
     KPicoSaysStop               = 0x11,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
 
     // Timer events (from Pico)
@@ -49,7 +49,7 @@ enum SerialCommand : uint8_t
     kTimer8s                    = 0x23,             // 8 sec timer event (2nd byte -> count)
 
     // Calibration cmds       
-    kRequestCalibStatus         = 0x30,             // Request status of BNO055 calibration
+    kRequestCalibStatus         = 0x30,             // Request status of BNO055 calibration (return with one-byte status)
     kSendCalibProfileToPico     = 0x31,             // Sending a calibration profile to Pico (follow by calibration data)
     kRequestCalibProfileFmPico  = 0x32,             // Request a calibration profile from Pico (reply followed by calibration data)
 
