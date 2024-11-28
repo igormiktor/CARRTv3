@@ -38,6 +38,7 @@ extern "C"
 
 
 #if 0
+// copied here for easy reference
 struct bno055_t
 {
     u8 chip_id; /**< chip_id of bno055 */
@@ -53,6 +54,7 @@ struct bno055_t
     void (*delay_msec)(BNO055_MDELAY_DATA_TYPE); /**< delay function pointer */
 };
 #endif
+
 
 
 namespace BNO055
