@@ -23,6 +23,9 @@
 #define ErrorCodes_h
 
 
+#include <cstdint>
+
+
 // Error code scheme....
 
 /*
