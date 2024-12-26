@@ -13,8 +13,13 @@ is always under 3.3V.
 * R2 = 2.2K Ohm
 * Ground
 
-Note that when the input voltage drops to 3.2V, the output voltage is 1.9V (and at 0.86 mA).
-This is sufficient voltage to drive RPi to read the gpio pin as a digital "1".
+Alternate:
+
+* Input V = 5.25 V              <-- Encoder wire 1 (Green)
+* R1 = 3.3K Ohm
+* Output V = 3.19 V and 0.6 mA  --> Pico Pin xxx or yyy
+* R2 = 5.1K Ohm
+* Ground   
 
 ## Encoders
 
@@ -26,6 +31,15 @@ We use the same resistor divider bridge
 * Output V = 2.98 V and 1.4 mA  --> Pico Pin xxx or yyy
 * R2 = 2.2K Ohm
 * Ground                       
+
+Alternate:
+
+* Input V = 5.0 V              <-- Encoder wire 1 (Green)
+* R1 = 3.3K Ohm
+* Output V = 3.04 V and 0.6 mA  --> Pico Pin xxx or yyy
+* R2 = 5.1K Ohm
+* Ground   
+
 
 Note:  we need two of these (two encoders).
 Encoder Pins:
@@ -45,3 +59,10 @@ on and off
 * 2N2222 emitter --> system GND 
 
 Setting RPi0 GPIO17 (pin 11) LOW turns off the Pico; setting RPi0 GPIO17 HIGH turns on the Pico.
+
+
+
+
+## Sources
+
+Resistor calculator: [http://howardtechnical.com/voltage-divider-calculator/](http://howardtechnical.com/voltage-divider-calculator/)
