@@ -31,6 +31,9 @@ build*
 # Ignore any .xxx files
 .*
 
+# Ignore anything in a "Hold"
+Hold
+
 # AVRTools files
 source/avr/AVRTools/Analog2Digital.cpp
 source/avr/AVRTools/Analog2Digital.h
