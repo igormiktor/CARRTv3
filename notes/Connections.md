@@ -11,7 +11,7 @@
 | PowerBoost   | Gnd     |  9 |  | 10 | UART RX   | Pico UART TX |
 | Pico On/Off 2N2222 base | GPIO17  | 11 |  | 12 |  |  |
 |              |         | 13 |  | 14 |  |  |
-|              |         | 15 |  | 16 |  |  |
+|              |         | 15 |  | 16 | GPIO23 | Monitor PowerBoost LPO for battery low |
 |              |         | 17 |  | 18 |  |  |
 |              |         | 19 |  | 20 |  |  |
 |              |         | 21 |  | 22 |  |  |
