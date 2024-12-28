@@ -11,10 +11,10 @@
 build*
 
 # Ignore the schematic outputs
-*.pdf
+# *.pdf
 # *.jpg
 # Except the schematic PDF
-!"CARRTv3 Schematic.pdf"
+# !schematics/"CARRTv3 Schematic.pdf"
 
 # Compiled Object files
 *.slo
@@ -35,6 +35,9 @@ build*
 
 # Ignore anything in a "Hold"
 Hold
+
+# Ignore contents of the support directory
+support/*
 
 # Ignore schematics backups
 CARRTv3-backups
