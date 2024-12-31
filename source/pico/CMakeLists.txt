@@ -1,6 +1,6 @@
 # Generated Cmake Pico project file
 
-cmake_minimum_required( VERSION 3.13 )
+cmake_minimum_required( VERSION 3.25 )
 
 # Initialise pico_sdk from installed location
 # (note this can come from environment, CMake cache etc)
