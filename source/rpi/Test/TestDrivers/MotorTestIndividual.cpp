@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-#include <pigpio.h>
+#include "Drivers/CarrtPigpio.h"
 
 #include "Drivers/Clock.h"
 #include "shared/CarrtError.h"

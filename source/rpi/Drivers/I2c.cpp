@@ -20,7 +20,7 @@
 
 #include "I2c.h"
 
-#include <pigpio.h>
+#include "Drivers/CarrtPigpio.h"
 
 #include <cstdint>
 #include <cstring>

@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-#include <pigpio.h>
+#include "Drivers/CarrtPigpio.h"
 
 #include "Drivers/Clock.h"
 #include "Drivers/Keypad.h"
@@ -47,7 +47,7 @@ int main()
         Lcd::setBacklight( Lcd::kBacklight_White );
 
         const int kMinTimeBetweenButtonChecks = 250;        // milliseconds
-        unsigned long sNextTimeButtonClickAccepted = 0;
+        long sNextTimeButtonClickAccepted = 0;
 
         Lcd::displayTopRow( "Button hit:" );
 
