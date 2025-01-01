@@ -64,3 +64,11 @@ HandlePowerKey=poweroff
 ```
 
 Note that the default GPIO for poweroff (GPIO 3) is needed for I2C, so it can't be used for the shutdown function.
+
+
+## Set pigpiod to run
+
+```bash
+systemctl enable pigpiod
+systemctl start pigpiod
+```
