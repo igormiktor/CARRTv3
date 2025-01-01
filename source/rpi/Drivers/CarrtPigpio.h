@@ -18,6 +18,9 @@
 */
 
 
+#ifndef CarrtPigpio_h
+#define CarrtPigpio_h
+
 #ifndef USE_PIGPIOD
 #warning "USE_PIGPIOD is undefined!"
 #endif
@@ -106,135 +109,227 @@ inline int gpioSetPWMrange( unsigned user_gpio, unsigned range )
 }
 
 
-int gpioGetPWMrange(unsigned user_gpio);
+inline int gpioGetPWMrange( unsigned user_gpio )
+{
+    return get_PWM_range( gGpioId, user_gpio );
+}
 
 
-int gpioGetPWMrealRange(unsigned user_gpio);
+inline int gpioGetPWMrealRange( unsigned user_gpio )
+{
+    return get_PWM_real_range( gGpioId, user_gpio );
+}
 
 
-int gpioSetPWMfrequency(unsigned user_gpio, unsigned frequency);
+inline int gpioSetPWMfrequency( unsigned user_gpio, unsigned frequency )
+{
+    return set_PWM_frequency( gGpioId, user_gpio, frequency );
+}
 
 
-int gpioGetPWMfrequency(unsigned user_gpio);
+inline int gpioGetPWMfrequency( unsigned user_gpio )
+{
+    return get_PWM_frequency( gGpioId, user_gpio );
+}
 
 
-int gpioServo(unsigned user_gpio, unsigned pulsewidth);
+inline int gpioServo( unsigned user_gpio, unsigned pulsewidth )
+{
+    return set_servo_pulsewidth( gGpioId, user_gpio, pulsewidth );
+}
 
 
-int gpioGetServoPulsewidth(unsigned user_gpio);
+inline int gpioGetServoPulsewidth( unsigned user_gpio )
+{
+    return get_servo_pulsewidth( gGpioId, user_gpio );
+}
 
 
-int gpioSetAlertFunc(unsigned user_gpio, gpioAlertFunc_t f);
 
+// int gpioSetAlertFunc(unsigned user_gpio, gpioAlertFunc_t f);                                             // No pigpiod equivalent
 
-int gpioSetAlertFuncEx( unsigned user_gpio, gpioAlertFuncEx_t f, void *userdata );
+// int gpioSetAlertFuncEx( unsigned user_gpio, gpioAlertFuncEx_t f, void *userdata );                       // No pigpiod equivalent
 
+// int gpioSetISRFunc( unsigned gpio, unsigned edge, int timeout, gpioISRFunc_t f );                        // No pigpiod equivalent
 
-int gpioSetISRFunc(
-   unsigned gpio, unsigned edge, int timeout, gpioISRFunc_t f);
+// int gpioSetISRFuncEx( unsigned gpio, unsigned edge, int timeout, gpioISRFuncEx_t f, void *userdata );    // No pigpiod equivalent
 
 
-int gpioSetISRFuncEx(
-   unsigned gpio,
-   unsigned edge,
-   int timeout,
-   gpioISRFuncEx_t f,
-   void *userdata);
 
+inline int gpioNotifyOpen( void )
+{
+    return notify_open( gGpioId );
+}
 
-int gpioNotifyOpen(void);
 
 
-int gpioNotifyOpenWithSize(int bufSize);
+// int gpioNotifyOpenWithSize(int bufSize );                                                                // No pigpiod equivalent
 
 
-int gpioNotifyBegin(unsigned handle, uint32_t bits);
 
+inline int gpioNotifyBegin( unsigned handle, uint32_t bits )
+{
+    return notify_begin( gGpioId, handle, bits );
+}
 
-int gpioNotifyPause(unsigned handle);
 
+inline int gpioNotifyPause( unsigned handle )
+{
+    return notify_pause( gGpioId, handle );
+}
 
-int gpioNotifyClose(unsigned handle);
 
+inline int gpioNotifyClose( unsigned handle )
+{
+    return notify_close( gGpioId, handle );
+}
 
-int gpioWaveClear(void);
 
+inline int gpioWaveClear( void )
+{
+    return wave_clear( gGpioId );
+}
 
-int gpioWaveAddNew(void);
 
+inline int gpioWaveAddNew( void )
+{
+    return wave_add_new( gGpioId );
+}
 
-int gpioWaveAddGeneric(unsigned numPulses, gpioPulse_t *pulses);
 
+inline int gpioWaveAddGeneric( unsigned numPulses, gpioPulse_t *pulses )
+{
+    return wave_add_generic( gGpioId, numPulses, pulses );
+}
 
-int gpioWaveAddSerial
-   (unsigned user_gpio,
-    unsigned baud,
-    unsigned data_bits,
-    unsigned stop_bits,
-    unsigned offset,
-    unsigned numBytes,
-    char     *str);
 
+inline int gpioWaveAddSerial( unsigned user_gpio, unsigned baud, unsigned data_bits, unsigned stop_bits, unsigned offset, unsigned numBytes, char *str ) 
+{
+    return wave_add_serial( gGpioId, user_gpio, baud, data_bits, stop_bits, offset, numBytes, str );
+}
 
-int gpioWaveCreate(void);
 
+inline int gpioWaveCreate( void )
+{
+    return wave_create( gGpioId );
+}
 
-int gpioWaveCreatePad(int pctCB, int pctBOOL, int pctTOOL);
 
-int gpioWaveDelete(unsigned wave_id);
+// int gpioWaveCreatePad( int pctCB, int pctBOOL, int pctTOOL );             // No exact pigpiod equivalent
 
 
-int gpioWaveTxSend(unsigned wave_id, unsigned wave_mode);
+inline int gpioWaveDelete( unsigned wave_id )
+{
+    return wave_delete( gGpioId, wave_id );
+}
 
 
-int gpioWaveChain(char *buf, unsigned bufSize);
+inline int gpioWaveTxSend( unsigned wave_id, unsigned wave_mode )
+{
+    return wave_send_using_mode( gGpioId, wave_id, wave_mode );
+}
 
 
-int gpioWaveTxAt(void);
+inline int gpioWaveChain( char *buf, unsigned bufSize )
+{
+    return wave_chain( gGpioId, buf, bufSize );
+}
 
 
-int gpioWaveTxBusy(void);
+inline int gpioWaveTxAt( void )
+{
+    return wave_tx_at( gGpioId );
+}
 
 
-int gpioWaveTxStop(void);
+inline int gpioWaveTxBusy( void )
+{
+    return wave_tx_busy( gGpioId );
+}
 
 
-int gpioWaveGetMicros(void);
+inline int gpioWaveTxStop( void ) 
+{
+    return wave_tx_stop( gGpioId );
+}
 
 
-int gpioWaveGetHighMicros(void);
+inline int gpioWaveGetMicros( void )
+{
+    return wave_get_micros( gGpioId );
+}
 
 
-int gpioWaveGetMaxMicros(void);
+inline int gpioWaveGetHighMicros( void )
+{
+    return wave_get_high_micros( gGpioId );
+}
 
 
-int gpioWaveGetPulses(void);
+inline int gpioWaveGetMaxMicros( void )
+{
+    return wave_get_max_micros( gGpioId );
+}
 
 
-int gpioWaveGetHighPulses(void);
+inline int gpioWaveGetPulses( void )
+{
+    return wave_get_pulses( gGpioId );
+}
 
 
-int gpioWaveGetMaxPulses(void);
+inline int gpioWaveGetHighPulses( void ) 
+{
+    return wave_get_high_pulses( gGpioId );
+}
 
 
-int gpioWaveGetCbs(void);
+inline int gpioWaveGetMaxPulses( void ) 
+{
+    return wave_get_max_pulses( gGpioId );
+}
 
 
-int gpioWaveGetHighCbs(void);
+inline int gpioWaveGetCbs( void )
+{
+    return wave_get_cbs( gGpioId );
+}
 
 
-int gpioWaveGetMaxCbs(void);
+inline int gpioWaveGetHighCbs( void )
+{
+    return wave_get_high_cbs( gGpioId );
+}
 
 
-int gpioSerialReadOpen(unsigned user_gpio, unsigned baud, unsigned data_bits);
+inline int gpioWaveGetMaxCbs( void )
+{
+    return wave_get_max_cbs( gGpioId );
+}
 
-int gpioSerialReadInvert(unsigned user_gpio, unsigned invert);
 
+inline int gpioSerialReadOpen( unsigned user_gpio, unsigned baud, unsigned data_bits )
+{
+    return bb_serial_read_open( gGpioId, user_gpio, baud, data_bits );
+}
 
-int gpioSerialRead(unsigned user_gpio, void *buf, size_t bufSize);
 
+inline int gpioSerialReadInvert( unsigned user_gpio, unsigned invert )
+{
+    return bb_serial_invert( gGpioId, user_gpio, invert );
+}
 
-int gpioSerialReadClose(unsigned user_gpio);
+
+inline int gpioSerialRead( unsigned user_gpio, void *buf, size_t bufSize )
+{
+    return bb_serial_read( gGpioId, user_gpio, buf, bufSize );
+}
+
+
+inline int gpioSerialReadClose( unsigned user_gpio ) 
+{
+    return bb_serial_read_close( gGpioId, user_gpio );
+}
 
 
 inline int i2cOpen( unsigned i2cBus, unsigned i2cAddr, unsigned i2cFlags )
@@ -339,9 +434,9 @@ inline int i2cWriteDevice( unsigned handle, char *buf, unsigned count )
 }
 
 
-/* void i2cSwitchCombined(int setting);  // Undefined in pigpiod */
+// void i2cSwitchCombined(int setting);                                         // No defined in pigpiod
 
-/* int i2cSegments(unsigned handle, pi_i2c_msg_t *segs, unsigned numSegs); // Undefined in pigpiod */
+// int i2cSegments(unsigned handle, pi_i2c_msg_t *segs, unsigned numSegs);      // No defined in pigpiod
 
 
 inline int i2cZip( unsigned handle, char* inBuf, unsigned inLen, char* outBuf, unsigned outLen )
@@ -350,293 +445,423 @@ inline int i2cZip( unsigned handle, char* inBuf, unsigned inLen, char* outBuf, u
 }
 
 
-int bbI2COpen(unsigned SDA, unsigned SCL, unsigned baud);
+inline int bbI2COpen( unsigned SDA, unsigned SCL, unsigned baud )
+{
+    return bb_i2c_open( gGpioId, SDA, SCL, baud );
+}
 
-int bbI2CClose(unsigned SDA);
 
-int bbI2CZip(
-   unsigned SDA,
-   char    *inBuf,
-   unsigned inLen,
-   char    *outBuf,
-   unsigned outLen);
+inline int bbI2CClose( unsigned SDA )
+{
+    return bb_i2c_close( gGpioId, SDA );
+}
 
-int bscXfer(bsc_xfer_t *bsc_xfer);
 
-int bbSPIOpen(
-   unsigned CS, unsigned MISO, unsigned MOSI, unsigned SCLK,
-   unsigned baud, unsigned spiFlags);
+inline int bbI2CZip( unsigned SDA, char *inBuf, unsigned inLen, char *outBuf, unsigned outLen )
+{
+    return bb_i2c_zip( gGpioId, SDA, inBuf, inLen, outBuf, outLen );
+}
 
-int bbSPIClose(unsigned CS);
 
-int bbSPIXfer(
-   unsigned CS,
-   char    *inBuf,
-   char    *outBuf,
-   unsigned count);
+inline int bscXfer( bsc_xfer_t *bscxfer ) 
+{
+    return bsc_xfer( gGpioId, bscxfer );
+}
 
-int spiOpen(unsigned spiChan, unsigned baud, unsigned spiFlags);
 
-int spiClose(unsigned handle);
+inline int bbSPIOpen( unsigned CS, unsigned MISO, unsigned MOSI, unsigned SCLK, unsigned baud, unsigned spiFlags )
+{
+    return bb_spi_open( gGpioId, CS, MISO, MOSI, SCLK, baud, spiFlags );
+}
 
 
-int spiRead(unsigned handle, char *buf, unsigned count);
+inline int bbSPIClose( unsigned CS )
+{
+    return bb_spi_close( gGpioId, CS );
+}
 
 
-int spiWrite(unsigned handle, char *buf, unsigned count);
+inline int bbSPIXfer( unsigned CS, char *inBuf, char *outBuf, unsigned count )
+{
+    return bb_spi_xfer( gGpioId, CS, inBuf, outBuf, count );
+}
 
-int spiXfer(unsigned handle, char *txBuf, char *rxBuf, unsigned count);
 
+inline int spiOpen( unsigned spiChan, unsigned baud, unsigned spiFlags )
+{
+    return spi_open( gGpioId, spiChan, baud, spiFlags );
+}
 
-int serOpen(char *sertty, unsigned baud, unsigned serFlags);
 
+inline int spiClose( unsigned handle )
+{
+    return spi_close( gGpioId, handle );
+}
 
-int serClose(unsigned handle);
 
-int serWriteByte(unsigned handle, unsigned bVal);
+inline int spiRead( unsigned handle, char *buf, unsigned count )
+{
+    return spi_read( gGpioId, handle, buf, count );
+}
 
-int serReadByte(unsigned handle);
 
-int serWrite(unsigned handle, char *buf, unsigned count);
+inline int spiWrite( unsigned handle, char *buf, unsigned count )
+{
+    return spi_write( gGpioId, handle, buf, count );
+}
 
 
-int serRead(unsigned handle, char *buf, unsigned count);
+inline int spiXfer( unsigned handle, char *txBuf, char *rxBuf, unsigned count )
+{
+    return spi_xfer( gGpioId, handle, txBuf, rxBuf, count );
+}
 
 
-int serDataAvailable(unsigned handle);
+inline int serOpen( char *sertty, unsigned baud, unsigned serFlags )
+{
+    return serial_open( gGpioId, sertty, baud, serFlags );
+}
 
 
-int gpioTrigger(unsigned user_gpio, unsigned pulseLen, unsigned level);
+inline int serClose( unsigned handle )
+{
+    return serial_close( gGpioId, handle );
+}
 
+inline int serWriteByte( unsigned handle, unsigned bVal )
+{
+    return serial_write_byte( gGpioId, handle, bVal );
+}
 
-int gpioSetWatchdog(unsigned user_gpio, unsigned timeout);
 
+inline int serReadByte( unsigned handle )
+{
+    return serial_read_byte( gGpioId, handle );
+}
 
-int gpioNoiseFilter(unsigned user_gpio, unsigned steady, unsigned active);
+inline int serWrite( unsigned handle, char *buf, unsigned count )
+{
+    return serial_write( gGpioId, handle, buf, count );
+}
 
 
-int gpioGlitchFilter(unsigned user_gpio, unsigned steady);
+inline int serRead( unsigned handle, char *buf, unsigned count )
+{
+    return serial_read( gGpioId, handle, buf, count );
+}
 
 
-int gpioSetGetSamplesFunc(gpioGetSamplesFunc_t f, uint32_t bits);
+inline int serDataAvailable( unsigned handle )
+{
+    return serial_data_available( gGpioId, handle );
+}
 
 
-int gpioSetGetSamplesFuncEx(
-   gpioGetSamplesFuncEx_t f, uint32_t bits, void *userdata);
+inline int gpioTrigger( unsigned user_gpio, unsigned pulseLen, unsigned level )
+{
+    return gpio_trigger( gGpioId, user_gpio, pulseLen, level );
+}
 
 
-int gpioSetTimerFunc(unsigned timer, unsigned millis, gpioTimerFunc_t f);
+inline int gpioSetWatchdog( unsigned user_gpio, unsigned timeout )
+{
+    return set_watchdog( gGpioId, user_gpio, timeout );
+}
 
 
-int gpioSetTimerFuncEx(
-   unsigned timer, unsigned millis, gpioTimerFuncEx_t f, void *userdata);
+inline int gpioNoiseFilter( unsigned user_gpio, unsigned steady, unsigned active )
+{
+    return set_noise_filter( gGpioId, user_gpio, steady, active );
+}
 
 
-pthread_t *gpioStartThread(gpioThreadFunc_t f, void *userdata);
+inline int gpioGlitchFilter( unsigned user_gpio, unsigned steady )
+{
+    return set_glitch_filter( gGpioId, user_gpio, steady );
+}
 
 
-void gpioStopThread(pthread_t *pth);
+// int gpioSetGetSamplesFunc( gpioGetSamplesFunc_t f, uint32_t bits );                                  // No defined in pigpiod
 
 
-int gpioStoreScript(char *script);
+// inline int gpioSetGetSamplesFuncEx( gpioGetSamplesFuncEx_t f, uint32_t bits, void *userdata );       // No defined in pigpiod
 
 
-int gpioRunScript(unsigned script_id, unsigned numPar, uint32_t *param);
+// int gpioSetTimerFunc( unsigned timer, unsigned millis, gpioTimerFunc_t f );                          // No defined in pigpiod
 
 
+// int gpioSetTimerFuncEx( unsigned timer, unsigned millis, gpioTimerFuncEx_t f, void *userdata );      // No defined in pigpiod
 
-int gpioUpdateScript(unsigned script_id, unsigned numPar, uint32_t *param);
 
+inline pthread_t *gpioStartThread( gpioThreadFunc_t f, void *userdata )
+{
+    return start_thread( f, userdata );
+}
 
-int gpioScriptStatus(unsigned script_id, uint32_t *param);
 
+inline void gpioStopThread( pthread_t *pth )
+{
+   stop_thread( pth );
+}
 
-int gpioStopScript(unsigned script_id);
 
+inline int gpioStoreScript( char *script )
+{
+    return store_script( gGpioId, script );
+}
 
-int gpioDeleteScript(unsigned script_id);
 
+inline int gpioRunScript( unsigned script_id, unsigned numPar, uint32_t *param )
+{
+    return run_script( gGpioId, script_id, numPar, param );
+}
 
-int gpioSetSignalFunc(unsigned signum, gpioSignalFunc_t f);
 
+inline int gpioUpdateScript( unsigned script_id, unsigned numPar, uint32_t *param )
+{
+    return update_script( gGpioId, script_id, numPar, param );
+}
 
-int gpioSetSignalFuncEx(
-   unsigned signum, gpioSignalFuncEx_t f, void *userdata);
 
+inline int gpioScriptStatus( unsigned script_id, uint32_t *param )
+{
+    return script_status( gGpioId, script_id, param );
+}
 
-uint32_t gpioRead_Bits_0_31(void);
 
+inline int gpioStopScript( unsigned script_id )
+{
+    return stop_script( gGpioId, script_id );
+}
 
-uint32_t gpioRead_Bits_32_53(void);
 
+inline int gpioDeleteScript( unsigned script_id )
+{
+    return delete_script( gGpioId, script_id );
+}
 
-int gpioWrite_Bits_0_31_Clear(uint32_t bits);
 
+// int gpioSetSignalFunc( unsigned signum, gpioSignalFunc_t f) ;                            // No defined in pigpiod
 
-int gpioWrite_Bits_32_53_Clear(uint32_t bits);
 
+// int gpioSetSignalFuncEx( unsigned signum, gpioSignalFuncEx_t f, void *userdata );        // No defined in pigpiod
 
-int gpioWrite_Bits_0_31_Set(uint32_t bits);
 
+inline uint32_t gpioRead_Bits_0_31( void )
+{
+    return read_bank_1( gGpioId );
+}
 
-int gpioWrite_Bits_32_53_Set(uint32_t bits);
 
-int gpioHardwareClock(unsigned gpio, unsigned clkfreq);
+inline uint32_t gpioRead_Bits_32_53( void )
+{
+    return read_bank_2( gGpioId );
+}
 
-int gpioHardwarePWM(unsigned gpio, unsigned PWMfreq, unsigned PWMduty);
 
-int gpioTime(unsigned timetype, int *seconds, int *micros);
+inline int gpioWrite_Bits_0_31_Clear( uint32_t bits )
+{
+    return clear_bank_1( gGpioId, bits );
+}
 
 
-int gpioSleep(unsigned timetype, int seconds, int micros);
+inline int gpioWrite_Bits_32_53_Clear( uint32_t bits )
+{
+    return clear_bank_2( gGpioId, bits );
+}
 
 
-uint32_t gpioDelay(uint32_t micros);
+inline int gpioWrite_Bits_0_31_Set( uint32_t bits )
+{
+    return set_bank_1( gGpioId, bits );
+}
 
 
-uint32_t gpioTick(void);
+inline int gpioWrite_Bits_32_53_Set( uint32_t bits )
+{
+    return set_bank_2( gGpioId, bits );
+}
 
 
-unsigned gpioHardwareRevision(void);
+inline int gpioHardwareClock( unsigned gpio, unsigned clkfreq )
+{
+    return hardware_clock( gGpioId, gpio, clkfreq );
+}
 
+inline int gpioHardwarePWM( unsigned gpio, unsigned PWMfreq, unsigned PWMduty )
+{
+    return hardware_PWM( gGpioId, gpio, PWMfreq, PWMduty );
+}
 
-unsigned gpioVersion(void);
+// int gpioTime( unsigned timetype, int *seconds, int *micros );                    // No defined in pigpiod
 
 
-int gpioGetPad(unsigned pad);
+// int gpioSleep( unsigned timetype, int seconds, int micros );                     // No defined in pigpiod
 
 
-int gpioSetPad(unsigned pad, unsigned padStrength);
+// uint32_t gpioDelay(uint32_t micros);                                             // No defined in pigpiod
 
-int eventMonitor(unsigned handle, uint32_t bits);
 
-int eventSetFunc(unsigned event, eventFunc_t f);
+inline uint32_t gpioTick( void )
+{ 
+    return get_current_tick( gGpioId );
+}
 
-int eventSetFuncEx(unsigned event, eventFuncEx_t f, void *userdata);
 
-int eventTrigger(unsigned event);
+inline unsigned gpioHardwareRevision( void )
+{
+    return get_hardware_revision( gGpioId );
+}
 
 
-int shell(char *scriptName, char *scriptString);
+inline unsigned gpioVersion( void )
+{
+    return get_pigpio_version( gGpioId );
+}
+
+
+inline int gpioGetPad( unsigned pad )
+{
+    return get_pad_strength( gGpioId, pad );
+}
+
+
+inline int gpioSetPad( unsigned pad, unsigned padStrength )
+{
+    return set_pad_strength( gGpioId, pad, padStrength );
+}
+
+
+
+//  int eventMonitor(unsigned handle, uint32_t bits);                           // Not compatible with pigpiod
+
+// int eventSetFunc(unsigned event, eventFunc_t f);                             // Not compatible with pigpiod
+
+// int eventSetFuncEx(unsigned event, eventFuncEx_t f, void *userdata);         // Not compatible with pigpiod
+
+// int eventTrigger(unsigned event);                                            // Not compatible with pigpiod
+
+
+inline int shell( char *scriptName, char *scriptString )
+{
+    return shell_( gGpioId, scriptName, scriptString );
+}
+
+
 
 #pragma GCC diagnostic push
-
 #pragma GCC diagnostic ignored "-Wcomment"
 
-int fileOpen(char *file, unsigned mode);
+inline int fileOpen( char *file, unsigned mode )
+{
+    return file_open( gGpioId, file, mode );
+}
 
 #pragma GCC diagnostic pop
 
-int fileClose(unsigned handle);
+
+inline int fileClose( unsigned handle )
+{
+    return file_close( gGpioId, handle );
+}
 
 
-int fileWrite(unsigned handle, char *buf, unsigned count);
+inline int fileWrite( unsigned handle, char *buf, unsigned count )
+{
+    return file_write( gGpioId, handle, buf, count );
+}
 
 
-int fileRead(unsigned handle, char *buf, unsigned count);
+inline int fileRead( unsigned handle, char *buf, unsigned count )
+{
+    return file_read( gGpioId, handle, buf, count );
+}
 
 
-int fileSeek(unsigned handle, int32_t seekOffset, int seekFrom);
+inline int fileSeek( unsigned handle, int32_t seekOffset, int seekFrom ) 
+{
+    return file_seek( gGpioId, handle, seekOffset, seekFrom );
+}
+
 
 #pragma GCC diagnostic push
-
 #pragma GCC diagnostic ignored "-Wcomment"
 
-int fileList(char *fpat,  char *buf, unsigned count);
+inline int fileList( char *fpat, char *buf, unsigned count )
+{
+    return file_list( gGpioId, fpat, buf, count );
+}
 
 #pragma GCC diagnostic pop
 
 
-int gpioCfgBufferSize(unsigned cfgMillis);
+// int gpioCfgBufferSize( unsigned cfgMillis );                                                     // No defined in pigpiod
+
+// int gpioCfgClock( unsigned cfgMicros, unsigned cfgPeripheral, unsigned cfgSource ;               // Not defined in pigpiod
+
+// int gpioCfgDMAchannel(unsigned DMAchannel);                                                      // Not defined in pigpiod
+
+// int gpioCfgDMAchannels(unsigned primaryChannel, unsigned secondaryChannel);                      // Not defined in pigpiod
+
+// int gpioCfgPermissions(uint64_t updateMask);                                                     // Not defined in pigpiod
+
+// int gpioCfgSocketPort(unsigned port);                                                            // Not defined in pigpiod
+
+// int gpioCfgInterfaces(unsigned ifFlags);                                                         // Not defined in pigpiod
+
+// int gpioCfgMemAlloc(unsigned memAllocMode);                                                      // Not defined in pigpiod
+
+// int gpioCfgNetAddr(int numSockAddr, uint32_t *sockAddr);                                         // Not defined in pigpiod
+
+// uint32_t gpioCfgGetInternals(void);                                                              // Not defined in pigpiod
+
+// int gpioCfgSetInternals(uint32_t cfgVal);                                                        // Not defined in pigpiod
+
+// int gpioCustom1(unsigned arg1, unsigned arg2, char *argx, unsigned argc);                        // Not defined in pigpiod
+
+// int gpioCustom2(unsigned arg1, char *argx, unsigned argc, char *retBuf, unsigned retMax);        // Not defined in pigpiod
 
 
-int gpioCfgClock(
-   unsigned cfgMicros, unsigned cfgPeripheral, unsigned cfgSource);
+// int rawWaveAddSPI(rawSPI_t *spi, unsigned offset, unsigned spiSS, char *buf, unsigned spiTxBits,     // Not defined in pigpiod
+//    unsigned spiBitFirst, unsigned spiBitLast, unsigned spiBits);
+
+// int rawWaveAddGeneric(unsigned numPulses, rawWave_t *pulses);                                    // Not defined in pigpiod 
+
+// unsigned rawWaveCB(void);                                                                        // Not defined in pigpiod
+
+// rawCbs_t *rawWaveCBAdr(int cbNum);                                                               // Not defined in pigpiod
+
+// uint32_t rawWaveGetOOL(int pos);                                                                 // Not defined in pigpiod
+
+// void rawWaveSetOOL(int pos, uint32_t lVal);                                                      // Not defined in pigpiod
+
+// uint32_t rawWaveGetOut(int pos);                                                                 // Not defined in pigpiod
+
+// void rawWaveSetOut(int pos, uint32_t lVal);                                                      // Not defined in pigpiod
+
+// uint32_t rawWaveGetIn(int pos);                                                                  // Not defined in pigpiod
+
+// void rawWaveSetIn(int pos, uint32_t lVal);                                                       // Not defined in pigpiod
+
+// rawWaveInfo_t rawWaveInfo(int wave_id);                                                          // Not defined in pigpiod
+
+// int getBitInBytes(int bitPos, char *buf, int numBits);                                           // Not defined in pigpiod     
+
+// void putBitInBytes(int bitPos, char *buf, int bit);                                              // Not defined in pigpiod
 
 
-int gpioCfgDMAchannel(unsigned DMAchannel);
+// double time_time( void )                                         // Name and signature unchanged
+
+// void time_sleep( double seconds );                               // Name and signature unchanged
 
 
-int gpioCfgDMAchannels(unsigned primaryChannel, unsigned secondaryChannel);
+// void rawDumpWave(void);                                                                          // Not defined in pigpiod
 
-
-int gpioCfgPermissions(uint64_t updateMask);
-
-
-int gpioCfgSocketPort(unsigned port);
-
-
-int gpioCfgInterfaces(unsigned ifFlags);
-
-
-int gpioCfgMemAlloc(unsigned memAllocMode);
-
-
-int gpioCfgNetAddr(int numSockAddr, uint32_t *sockAddr);
-
-
-uint32_t gpioCfgGetInternals(void);
-
-int gpioCfgSetInternals(uint32_t cfgVal);
-
-
-int gpioCustom1(unsigned arg1, unsigned arg2, char *argx, unsigned argc);
-
-
-int gpioCustom2(unsigned arg1, char *argx, unsigned argc,
-                char *retBuf, unsigned retMax);
-
-
-int rawWaveAddSPI(
-   rawSPI_t *spi,
-   unsigned offset,
-   unsigned spiSS,
-   char *buf,
-   unsigned spiTxBits,
-   unsigned spiBitFirst,
-   unsigned spiBitLast,
-   unsigned spiBits);
-
-int rawWaveAddGeneric(unsigned numPulses, rawWave_t *pulses);
-
-unsigned rawWaveCB(void);
-
-rawCbs_t *rawWaveCBAdr(int cbNum);
-
-uint32_t rawWaveGetOOL(int pos);
-
-
-void rawWaveSetOOL(int pos, uint32_t lVal);
-
-uint32_t rawWaveGetOut(int pos);
-
-
-void rawWaveSetOut(int pos, uint32_t lVal);
-
-uint32_t rawWaveGetIn(int pos);
-
-
-void rawWaveSetIn(int pos, uint32_t lVal);
-
-rawWaveInfo_t rawWaveInfo(int wave_id);
-
-int getBitInBytes(int bitPos, char *buf, int numBits);
-
-void putBitInBytes(int bitPos, char *buf, int bit);
-
-double time_time(void);
-
-
-void time_sleep(double seconds);
-
-
-void rawDumpWave(void);
-
-
-void rawDumpScript(unsigned script_id);
+// void rawDumpScript(unsigned script_id);                                                          // Not defined in pigpiod
 
 
 }
 
-#endif
+#endif  // #if USE_PIGPIOD
 
+#endif  // #ifndef CarrtPigpio_h
