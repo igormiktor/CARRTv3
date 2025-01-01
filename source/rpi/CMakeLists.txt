@@ -12,8 +12,19 @@ set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
-set( CARRT_PICO_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" )
-message( CARRT_PICO_DIRECTORY="${CARRT_PICO_DIRECTORY}")
+set( CARRT_RPI_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" )
+message( CARRT_RPI_DIRECTORY="${CARRT_RPI_DIRECTORY}")
+
+set( CARRT_RPI_USE_PIGPIOD 0 )
+
+if ( CARRT_RPI_USE_PIGPIOD )
+    message ( "Using PIGPIOD daemon" )
+    set( PIGPIO_LIB "-lpigpiod_if2" )
+else()
+    message( "Using plain PIGPIO" )
+    set( PIGPIO_LIB "-lpigpio" )
+endif()
+
 
 add_subdirectory(Test)
 

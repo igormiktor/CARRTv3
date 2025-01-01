@@ -18,7 +18,9 @@ set( CarrtSrcs
 
 
 add_executable( LcdOff LcdOff.cpp ${CarrtSrcs} ${DriverSrcs} ${UtilsSrcs}  )
-target_link_libraries( LcdOff -lpigpio -lpthread )
+target_compile_options( LcdOff PRIVATE -Wall -pthread )
+target_link_libraries( LcdOff ${PIGPIO_LIB} -lpthread -lrt )
+target_compile_definitions( LcdOff PRIVATE -DUSE_PIGPIOD=${CARRT_RPI_USE_PIGPIOD} )
 target_include_directories( LcdOff PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/../..
