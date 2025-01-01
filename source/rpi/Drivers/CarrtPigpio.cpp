@@ -18,10 +18,11 @@
 */
 
 
+#include "CarrtPigpio.h"
 
 #if USE_PIGPIOD
 
-int gCarrtGpioId = -1;
+int gGpioId = -1;
 
 #endif
 
