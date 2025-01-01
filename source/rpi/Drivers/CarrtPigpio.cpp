@@ -22,7 +22,7 @@
 
 #if USE_PIGPIOD
 
-int gGpioId = -1;
+int gPigpioId = -1;
 
 #endif
 
