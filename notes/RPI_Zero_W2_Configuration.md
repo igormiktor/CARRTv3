@@ -72,3 +72,8 @@ Note that the default GPIO for poweroff (GPIO 3) is needed for I2C, so it can't 
 systemctl enable pigpiod
 systemctl start pigpiod
 ```
+
+
+## Install wiringpi (especially for the gpio command)
+
+Clone https://github.com/WiringPi/WiringPi and follow the instructions to build and install.
