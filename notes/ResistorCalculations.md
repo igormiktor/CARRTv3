@@ -41,6 +41,14 @@ Alternate:
 * Ground   
 
 
+Alternate:
+
+* Input V = 5.2 V              <-- Encoder wire 1 (Green)
+* R1 = 39K Ohm
+* Output V = 3.3 V and 0.6 mA  --> Pico Pin xxx or yyy
+* R2 = 68K Ohm
+* Ground   
+
 Note:  we need two of these (two encoders).
 Encoder Pins:
 
