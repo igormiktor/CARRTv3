@@ -70,7 +70,7 @@ I2c::I2cConnection::I2cConnection( uint8_t address )
         throw I2cError( makeRpi0ErrorId( kI2cError, 1, fd ), "Failed to open the i2c bus" );
     }
 
-    mFd = static_cast<unsigned>( fd );
+    mFd = fd;
 }
 
 
