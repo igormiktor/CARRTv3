@@ -18,7 +18,7 @@ endif()
 project( carrt_pico C CXX ASM )
 
 set( CMAKE_C_STANDARD 11 )
-set( CMAKE_CXX_STANDARD 17 )
+set( CMAKE_CXX_STANDARD 20 )
 set( PICO_CXX_ENABLE_EXCEPTIONS 1 )
 
 
