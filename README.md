@@ -16,7 +16,7 @@ The name "CARRT" is thanks to my daughter.
 
 ## Version 3: What's New?
 
-Version 2 was based on an AVR Mega2560 microcontroller, which proved to have too little memory maintain a suitably accurate and large enough map of its environment and also calculate paths.  Version 2 also suffered from inability to track its own position and orientation with sufficient accuracy.
+[Version 2](https://github.com/igormiktor/CARRTv2) was based on an AVR Mega2560 microcontroller, which proved to have too little memory maintain a suitably accurate and large enough map of its environment and also calculate paths.  Version 2 also suffered from inability to track its own position and orientation with sufficient accuracy.
 
 To overcome these problems, Version 3 uses a Raspberry Pi Zero 2 W as its primary processor, paired with a Raspberry Pico to handle real-time tasks.  The Pi Zero has more than sufficient RAM to maintain a suitable resolution map of its environment.  Version 3 also has encouders on its wheels and uses a BNO055 9-DOF sensor with on-board sensor fusion using an integrated 32-bit Cortex M0+ microcontroller, so that Euler angles and quaternions can be directly read from the BNO055.  The combination of wheel-encoders and direct access to orientation information are expected to provide suffiently accurate orientation and position information. 
 
