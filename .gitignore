@@ -3,6 +3,8 @@
 # Ignore any backup files.
 *~
 *.bak
+~*
+*.lck
 
 # Ignore kate swap files
 *.kate-swp
