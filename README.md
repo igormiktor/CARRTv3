@@ -41,6 +41,7 @@ CARRTv3 is powered from two sources. A LiPo battery connected to a PowerBoost 10
     * Broadcom BCM2710A1, quad-core 64-bit SoC (Arm Cortex-A53 @ 1GHz)
     * 512MB LPDDR2
     * 2.4GHz IEEE 802.11b/g/n wireless LAN, Bluetooth 4.2, BLE, onboard antenna
+    * 2 x SPI, 1 x I2C, 1 x UART, no ADC
 * Secondary microcontroller
     * Pico RP2040 microcontroller
     * Dual-core Arm Cortex M0+ processor, running up to 133 MHz
@@ -65,6 +66,7 @@ CARRTv3 is powered from two sources. A LiPo battery connected to a PowerBoost 10
     * Controlled by the Pi Zero via I2C
 * LCD display with keypad
     * 2 x 16 character color LCD
+    * 5 button keypad
     * LCD controlled by an HD44780U
     * MCP23017 drives the HD44780U and the keypad
     * MCP23017 connected via I2C to Pi Zero
