@@ -23,9 +23,8 @@
  * \file
  *
  * \brief This file provides functions that interface to the TWI (two-wire serial interface) hardware
- * of the Raspberry Pi, providing a high-level interface to
- * I2C protocol communications.  Include this file if you want your application will operate in Master mode
- * as defined in the I2C protocol.
+ * of the Raspberry Pi, providing a high-level interface to I2C protocol communications.  
+ * Include this file if you want your application to operate in Master mode as defined in the I2C protocol.
  *
  */
 
