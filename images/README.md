@@ -4,8 +4,8 @@ A series of photos capturing the evolution of CARRTv3 from the very beginning of
 
 ## Prototyping ##
 
-<img src="./images/2019-06-02 Carrt3 Prototyping.jpg" width="300" />
+<img src="https://github.com/igormiktor/CARRTv3/blob/main/images/2019-06-02%20Carrt3%20Prototyping.jpg" width="300" />
 
 another
 
-[<img src="./images/2019-06-02 Carrt3 Prototyping.jpg" width="300" />](./"images/2019-06-02 Carrt3 Prototyping.jpg")
+[<img src="https://github.com/igormiktor/CARRTv3/blob/main/images/2019-06-02%20Carrt3%20Prototyping.jpg" width="300" />]("https://github.com/igormiktor/CARRTv3/blob/main/images/2019-06-02%20Carrt3%20Prototyping.jpg")
