@@ -72,7 +72,7 @@ Final wiring was accomplished with hook-up wire (instead of breadboarding wire).
 | Green | PWM and GPIO (various) |
 | White | GPIO (various) |
 
-Images below show a nearly fully wired CARRTv3. The only wires missing are those connecting the motor driver PCB and those connecting the Garmin Lidar (which not yet installed).  These images show views from the front and rear; from the left and right sides; and final a top view.
+Images below show a nearly fully wired CARRTv3. The only wires missing are those connecting the motor driver PCB and those connecting the Garmin Lidar (which is not yet installed).  These images show views from the front and rear; from the left and right sides; and final a top view.
 
 [<img src="2025-04-08%20CARRTv3%20Front%20View.jpg" width="480" alt="Front view" />]("https://github.com/igormiktor/CARRTv3/blob/main/images/2025-04-08%20CARRTv3%20Front%20View.jpg")
 [<img src="2025-04-08%20CARRTv3%20Rear%20View.jpg" width="480" alt="Rear view" />]("https://github.com/igormiktor/CARRTv3/blob/main/images/2025-04-08%20CARRTv3%20Rear%20View.jpg")
