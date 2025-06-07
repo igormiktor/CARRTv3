@@ -59,11 +59,12 @@ Wiring and power-up testing started early and continued throughout assembly.  Th
 [<img src="2024-06-03%20Motors%20running%20under%20electronic%20control.jpg" width="480" alt="All layers powered, LCD and drive motors running" />]("https://github.com/igormiktor/CARRTv3/blob/main/images/2024-06-03%20Motors%20running%20under%20electronic%20control.jpg")
 
 
-More words
+Final wiring was accomplished with hook-up wire (instead of breadboarding wire).  As a general rule, longer wire reaches run under the riser; shorter ones run over the riser and PCBs.  Only the wires connecting the motor driver PCB and those connecting the Garmin Lidar (which not yet installed) are missing from the images below.  These images show views from the front and rear; from the left and right sides; and final a top view.
 
-[<img src="" width="320" alt="Riser Deck, with electronics" />]("")
+[<img src="2025-04-08%20CARRTv3%20Front%20View.jpg" width="480" alt="Front view" />]("https://github.com/igormiktor/CARRTv3/blob/main/images/2025-04-08%20CARRTv3%20Front%20View.jpg")
+[<img src="2025-04-08%20CARRTv3%20Rear%20View.jpg" width="480" alt="Rear view" />]("https://github.com/igormiktor/CARRTv3/blob/main/images/2025-04-08%20CARRTv3%20Rear%20View.jpg")
 
-[<img src="" width="320" alt="Riser Deck, with electronics" />]("")
+[<img src="2025-04-08%20CARRTv3%20Left%20View.jpg" width="480" alt="Left view" />]("https://github.com/igormiktor/CARRTv3/blob/main/images/2025-04-08%20CARRTv3%20Left%20View.jpg")
+[<img src="2025-04-08%20CARRTv3%20Right%20View.jpg" width="480" alt="Right view" />]("https://github.com/igormiktor/CARRTv3/blob/main/images/2025-04-08%20CARRTv3%20Right%20View.jpg")
 
-[<img src="" width="320" alt="Riser Deck, with electronics" />]("")
-
+[<img src="2025-04-08%20CARRTv3%20Top%20View.jpg" width="480" alt="Top view" />]("https://github.com/igormiktor/CARRTv3/blob/main/images/2025-04-08%20CARRTv3%20Top%20View.jpg")
