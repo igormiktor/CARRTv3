@@ -9,7 +9,9 @@
 | Orange | Power (3.3 V) |
 | Blue   | I2C SDA |
 | Yellow | I2C SCL |
-| Green | PWM |
+| Grey | UART TX-RX |
+| Dark Blue | UART RX-TX |
+| Green | PWM and GPIO (various) |
 | White | GPIO (various) |
 
 ## Power Voltages
