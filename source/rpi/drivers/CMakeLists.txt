@@ -27,9 +27,3 @@ target_compile_definitions( driver_library PUBLIC -DUSE_PIGPIOD=${CARRT_RPI_USE_
 target_include_directories( driver_library PUBLIC "${PROJECT_SOURCE_DIR}/drivers" )
 target_link_libraries( driver_library PUBLIC shared_library )
 
-
-#source_group(
-#    TREE "${PROJECT_SOURCE_DIR}/include"
-#    PREFIX "Header Files" 
-#    FILES ${DRVR_HDR_LIST}
-#)
