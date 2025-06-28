@@ -12,18 +12,10 @@ set( CMAKE_C_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_STANDARD 23 CACHE STRING "The C++ standard to use" )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
-# Let's nicely support folders in IDEs
-set_property( GLOBAL PROPERTY USE_FOLDERS ON )
-
-
-include( CTest )
-enable_testing()
-
-
-set( CARRT_RPI_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" )
-message( CARRT_RPI_DIRECTORY="${CARRT_RPI_DIRECTORY}" )
+set (CARRT_ENABLE_DEBUGUTILS 1 )
 
 set( CARRT_RPI_USE_PIGPIOD 0 )
+
 
 if ( CARRT_RPI_USE_PIGPIOD )
     message ( "Using PIGPIOD daemon" )
@@ -33,8 +25,14 @@ else()
     set( PIGPIO_LIB "-lpigpio" )
 endif()
 
-add_subdirectory( drivers )
+
+
 add_subdirectory( shared )
+add_subdirectory( utils )
+add_subdirectory( drivers )
 add_subdirectory( carrt )
 add_subdirectory( test )
 
+
+include( CTest )
+enable_testing()

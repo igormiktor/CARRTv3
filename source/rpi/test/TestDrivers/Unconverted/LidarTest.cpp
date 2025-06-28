@@ -28,7 +28,7 @@
 #include "AVRTools/I2cMaster.h"
 #include "AVRTools/USART0.h"
 
-#include "Drivers/Lidar.h"
+#include "Lidar.h"
 
 
 

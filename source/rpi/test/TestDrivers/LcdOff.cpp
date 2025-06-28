@@ -20,12 +20,13 @@
 
 #include <iostream>
 
-#include "Drivers/CarrtPigpio.h"
+#include "CarrtPigpio.h"
 
-#include "Drivers/Lcd.h"
-#include "Drivers/Clock.h"
+#include "Lcd.h"
+#include "Clock.h"
+#include "CarrtError.h"
 
-#include "shared/CarrtError.h"
+#include "DebugUtils.hpp"
 
 
 int main()

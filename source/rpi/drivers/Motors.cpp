@@ -24,8 +24,8 @@
 
 #include "Motors.h"
 
-#include "Drivers/I2c.h"
-#include "Drivers/PCA9685.h"
+#include "I2c.h"
+#include "PCA9685.h"
 
 
 

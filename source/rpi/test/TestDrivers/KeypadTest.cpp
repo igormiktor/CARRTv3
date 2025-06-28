@@ -20,15 +20,16 @@
 
 #include <iostream>
 
-#include "Drivers/CarrtPigpio.h"
+#include "CarrtPigpio.h"
 
-#include "Drivers/Clock.h"
-#include "Drivers/Keypad.h"
-#include "Drivers/Lcd.h"
-#include "Drivers/I2c.h"
+#include "Clock.h"
+#include "Keypad.h"
+#include "Lcd.h"
+#include "I2c.h"
 
-#include "shared/CarrtError.h"
+#include "CarrtError.h"
 
+#include "DebugUtils.hpp"
 
 const long kThreeMinutesInMillis = 3 * 60 *1000L;
 

@@ -25,7 +25,7 @@
 #include "AVRTools/I2cMaster.h"
 #include "AVRTools/USART0.h"
 
-#include "Drivers/LSM303DLHC.h"
+#include "LSM303DLHC.h"
 
 #include "Utils/VectorUtils.h"
 

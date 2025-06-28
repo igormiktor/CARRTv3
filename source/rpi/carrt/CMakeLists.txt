@@ -1,17 +1,7 @@
+
 add_executable( CarrtRpi CarrtMain.cpp )
-
-target_include_directories( CarrtRpi PRIVATE
-  ${CMAKE_CURRENT_LIST_DIR}
-  ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts or any other standard includes, if required
-)
-
-
-target_include_directories( CarrtRpi PRIVATE
-  ${CMAKE_CURRENT_LIST_DIR}
-  ${CARRT_RPI_DIRECTORY}
-)
-
-# Add any user requested libraries
-target_link_libraries( CarrtRpi  ${PIGPIO_LIB} -lpthread -lrt )
+target_compile_options( CarrtRpi PRIVATE -Wall -pthread )
+target_compile_definitions( CarrtRpi PRIVATE -DUSE_PIGPIOD=${CARRT_RPI_USE_PIGPIOD} -DDEBUGUTILS_ON=${CARRT_ENABLE_DEBUGUTILS} )
+target_link_libraries( CarrtRpi PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
 
 

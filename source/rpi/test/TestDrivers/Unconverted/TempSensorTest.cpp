@@ -25,7 +25,7 @@
 #include "AVRTools/Analog2Digital.h"
 #include "AVRTools/USART0.h"
 
-#include "Drivers/TempSensor.h"
+#include "TempSensor.h"
 
 
 

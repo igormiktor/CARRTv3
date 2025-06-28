@@ -25,7 +25,7 @@
 #include "AVRTools/I2cMaster.h"
 #include "AVRTools/USART0.h"
 
-#include "Drivers/L3GD20.h"
+#include "L3GD20.h"
 
 #include "Utils/VectorUtils.h"
 

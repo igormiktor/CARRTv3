@@ -34,7 +34,7 @@
 
 /* 
     Prefer the pigpio function names, so map these to the pigpiod function names if
-    pigpiod is being used
+    pigpiod is being usedCarrtPigpio.h
 
     And deal with the pesky Pi id number
 */
