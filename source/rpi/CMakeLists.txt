@@ -18,30 +18,39 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 option(
     CARRT_BUILD_TESTS
-    "Enable building test executables. Default: 1. Values: { 0, 1 }."
-    1
+    "Enable building test executables. Default: ON. Values: { OFF, ON }."
+    ON
 )
 
 option( 
     CARRT_ENABLE_DEBUGUTILS
-    "Enable DebugUtils debugging outputs.  Default: 1. Values: { 0, 1 }."
-    1
+    "Enable DebugUtils debugging outputs.  Default: ON. Values: { OFF, ON }."
+    ON
 )
 
 option( 
     CARRT_RPI_USE_PIGPIOD
-    "Enable use of PIGPIO daemon.  Default: 0. Values: { 0, 1 }."
-    0
+    "Enable use of PIGPIO daemon.  Default: OFF. Values: { OFF, ON }."
+    OFF
 )
 
+
+
+if ( CARRT_ENABLE_DEBUGUTILS )
+    set( DEBUGUTILS_VAL 1 )
+else()
+    set( DEBUGUTILS_VAL 0 )
+endif()
 
 
 if ( CARRT_RPI_USE_PIGPIOD )
     message ( "Using PIGPIOD daemon" )
     set( PIGPIO_LIB "-lpigpiod_if2" )
+    set( PIGPIOD_VAL 1 )
 else()
     message( "Using plain PIGPIO" )
     set( PIGPIO_LIB "-lpigpio" )
+    set( PIGPIOD_VAL 0 )
 endif()
 
 
