@@ -17,7 +17,7 @@ set( CMAKE_CXX_STANDARD 23 CACHE STRING "The C++ standard to use" )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 option(
-    
+    CARRT_BUILD_TESTS
     "Enable building test executables. Default: 1. Values: { 0, 1 }."
     1
 )
