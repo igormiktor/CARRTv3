@@ -1,0 +1,77 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "common",
+            "hidden": true,
+            "generator": "Unix Makefiles",
+            "binaryDir": "build/${presetName}"
+        },
+        {
+            "name": "debug",
+            "displayName": "Debug",
+            "inherits": "common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CARRT_BUILD_TESTS": "ON",
+                "CARRT_ENABLE_DEBUGUTILS": "ON",
+                "CARRT_RPI_USE_PIGPIOD": "OFF"
+            }
+        },
+        {
+            "name": "debug-pigpiod",
+            "displayName": "Debug PIGIOD",
+            "inherits": "common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CARRT_BUILD_TESTS": "ON",
+                "CARRT_ENABLE_DEBUGUTILS": "ON",
+                "CARRT_RPI_USE_PIGPIOD": "ON"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release",
+            "inherits": "common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CARRT_BUILD_TESTS": "ON",
+                "CARRT_ENABLE_DEBUGUTILS": "OFF",
+                "CARRT_RPI_USE_PIGPIOD": "OFF"
+            }
+        },
+        {
+            "name": "release-pigpiod",
+            "displayName": "Release PIGIOD",
+            "inherits": "common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CARRT_BUILD_TESTS": "ON",
+                "CARRT_ENABLE_DEBUGUTILS": "OFF",
+                "CARRT_RPI_USE_PIGPIOD": "ON"
+            }
+        },
+        {
+            "name": "rel+debug-info",
+            "displayName": "Release with debug info",
+            "inherits": "common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CARRT_BUILD_TESTS": "ON",
+                "CARRT_ENABLE_DEBUGUTILS": "OFF",
+                "CARRT_RPI_USE_PIGPIOD": "OFF"
+            }
+        },
+        {
+            "name": "release+debug-info-pigpiod",
+            "displayName": "Release with debug info and PIGIOD",
+            "inherits": "common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CARRT_BUILD_TESTS": "ON",
+                "CARRT_ENABLE_DEBUGUTILS": "OFF",
+                "CARRT_RPI_USE_PIGPIOD": "ON"
+            }
+        }
+    ]
+}

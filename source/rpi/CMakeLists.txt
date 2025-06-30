@@ -4,12 +4,17 @@
 # Version is limited by RPi cmake
 cmake_minimum_required( VERSION 3.25 )
 
+# If we have RPi Zero toolchain, use it; otherwise assume native
+if( EXISTS "$ENV{HOME}/.cmake/rpi0w-toolchain.cmake" )
+    set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/rpi0w-toolchain.cmake )
+endif()
 
 project( 
     carrt_rpi 
     VERSION 0.1.0 
     DESCRIPTION "Executable for the CARRTv3 RPi Zero"
-    LANGUAGES ASM C CXX )
+    LANGUAGES ASM C CXX 
+)
 
 set( CMAKE_C_STANDARD 11 CACHE STRING "The C standard to use" )
 set( CMAKE_C_STANDARD_REQUIRED ON )
@@ -44,11 +49,9 @@ endif()
 
 
 if ( CARRT_RPI_USE_PIGPIOD )
-    message ( "Using PIGPIOD daemon" )
     set( PIGPIO_LIB "-lpigpiod_if2" )
     set( PIGPIOD_VAL 1 )
 else()
-    message( "Using plain PIGPIO" )
     set( PIGPIO_LIB "-lpigpio" )
     set( PIGPIOD_VAL 0 )
 endif()
@@ -66,22 +69,10 @@ if ( CARRT_BUILD_TESTS )
     enable_testing()
 endif()
 
+message( "" )
+message( "Configuration summary on host ${CMAKE_HOST_SYSTEM_NAME}:" )
+message( "Build type is ${CMAKE_BUILD_TYPE}." )
+message( "Building of tests is ${CARRT_BUILD_TESTS}." )
+message( "Use of DebugUtils output is ${CARRT_ENABLE_DEBUGUTILS}." )
+message( "Use of PIGPIO daemon is ${CARRT_RPI_USE_PIGPIOD}." )
 
-
-if ( CARRT_BUILD_TESTS )
-    message( "Building of tests is ON" )
-else()
-    message( "Building of tests is OFF" )
-endif()
-
-if ( CARRT_ENABLE_DEBUGUTILS )
-    message( "Use of DebugUtils output is ON" )
-else()
-    message( "Use of DebugUtils output is OFF" )
-endif()
-
-if ( CARRT_RPI_USE_PIGPIOD )
-    message( "Use of PIGPIO daemon is ON" )
-else()
-    message( "Use of PIGPIO daemon is OFF (Using plain PIGPIO)" )
-endif()
