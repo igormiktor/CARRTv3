@@ -73,7 +73,7 @@ if ( CARRT_BUILD_TESTS )
 endif()
 
 message( "" )
-message( "Configuration summary on host ${CMAKE_HOST_SYSTEM_NAME}.:" )
+message( "Configuration summary on host ${CMAKE_HOST_SYSTEM_NAME}:" )
 message( " - Compiler is ${CARRT_COMPILER}.")
 message( " - Preset is ${CARRT_PRESET_NAME}")
 message( " - Build type is ${CMAKE_BUILD_TYPE}." )
