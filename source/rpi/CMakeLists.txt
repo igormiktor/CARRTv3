@@ -7,6 +7,9 @@ cmake_minimum_required( VERSION 3.25 )
 # If we have RPi Zero toolchain, use it; otherwise assume native
 if( EXISTS "$ENV{HOME}/.cmake/rpi0w-toolchain.cmake" )
     set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/rpi0w-toolchain.cmake )
+    set( CARRT_COMPILER "CROSS" )
+else()
+    set( CARRT_COMPILER "NATIVE" )
 endif()
 
 project( 
@@ -70,9 +73,12 @@ if ( CARRT_BUILD_TESTS )
 endif()
 
 message( "" )
-message( "Configuration summary on host ${CMAKE_HOST_SYSTEM_NAME}:" )
+message( "Configuration summary on host ${CMAKE_HOST_SYSTEM_NAME}..." )
+message( "Compiler is ${CARRT_COMPILER}.")
+message( "Preset is ${CARRT_PRESET_NAME}")
 message( "Build type is ${CMAKE_BUILD_TYPE}." )
 message( "Building of tests is ${CARRT_BUILD_TESTS}." )
 message( "Use of DebugUtils output is ${CARRT_ENABLE_DEBUGUTILS}." )
 message( "Use of PIGPIO daemon is ${CARRT_RPI_USE_PIGPIOD}." )
+message( "" )
 

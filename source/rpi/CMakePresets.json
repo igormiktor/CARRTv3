@@ -5,7 +5,10 @@
             "name": "common",
             "hidden": true,
             "generator": "Unix Makefiles",
-            "binaryDir": "build/${presetName}"
+            "binaryDir": "build/${presetName}",
+            "cacheVariables": {
+                "CARRT_PRESET_NAME": "${presetName}"
+            }
         },
         {
             "name": "debug",
@@ -58,7 +61,7 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
                 "CARRT_BUILD_TESTS": "ON",
-                "CARRT_ENABLE_DEBUGUTILS": "OFF",
+                "CARRT_ENABLE_DEBUGUTILS": "ON",
                 "CARRT_RPI_USE_PIGPIOD": "OFF"
             }
         },
