@@ -25,8 +25,8 @@ namespace Buzzer
 {
 
     constexpr unsigned int  kBeepDefaultBeepTone        = 40;
-    constexpr unsigned int  kBeepDefaultBeepDuration    = 50;
-    constexpr unsigned int  kBeepDefaultChirpTone       = 90;
+    constexpr unsigned int  kBeepDefaultBeepDuration    = 100;
+    constexpr unsigned int  kBeepDefaultChirpTone       = 100;
     constexpr unsigned int  kBeepDefaultChirpDuration   = 20;
 
     constexpr unsigned int  kBeepReadyTriTone1          = 0;

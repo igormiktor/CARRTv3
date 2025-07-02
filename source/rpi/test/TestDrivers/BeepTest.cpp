@@ -80,7 +80,7 @@ int main()
                             break;
 
                         case Keypad::kButton_Right:
-                            Lcd::displayBottomRow( "Buzzer()" );
+                            Lcd::displayBottomRow( "beep()" );
                             Buzzer::beep();
                             break;
 

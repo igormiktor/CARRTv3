@@ -47,7 +47,7 @@ namespace Buzzer
 {
     constexpr unsigned int pBuzzerPin = GpioPins::kBuzzerPin;       
 
-    constexpr unsigned int kDutyCycle = 500000;
+    constexpr unsigned int kDutyCycle = 2*500000UL;
 }
 
 
