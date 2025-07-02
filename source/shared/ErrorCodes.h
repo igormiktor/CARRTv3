@@ -64,11 +64,11 @@
 */
 
 
-const int kRPi0FunctionIdErrIncrement       = -10000;
-const int kRPi0ModuleIdErrIncrement         = -1000000;
+constexpr int kRPi0FunctionIdErrIncrement       = -10000;
+constexpr int kRPi0ModuleIdErrIncrement         = -1000000;
 
-const int kPicoFunctionIdErrIncrement       = -100;
-const int kPicoModuleIdErrIncrement         = -10000;
+constexpr int kPicoFunctionIdErrIncrement       = -100;
+constexpr int kPicoModuleIdErrIncrement         = -10000;
 
 
 
@@ -87,8 +87,8 @@ enum PicoError : int
     kPicoLastError              = 99
 };
 
-const uint32_t kPicoFatalError              = 1;
-const uint32_t kPicoNonFatalError           = 0;
+constexpr uint32_t kPicoFatalError              = 1;
+constexpr uint32_t kPicoNonFatalError           = 0;
 
 
 
@@ -99,6 +99,7 @@ enum RPi0Error : int
     // RPi Zero Module errors (all are * kRPi0ModuleIdErrIncrement)
 
     kI2cError               = 1,   
+    kBeepError              = 2,
 
     kTestError              = 98,
     kLastError              = 99
