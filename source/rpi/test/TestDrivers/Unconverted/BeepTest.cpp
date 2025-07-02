@@ -1,5 +1,5 @@
 /*
-    BeepTest.cpp - Testing harness for the audio driver
+    BuzzerTest.cpp - Testing harness for the audio driver
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -28,7 +28,7 @@
 #include "AVRTools/SystemClock.h"
 #include "AVRTools/USART0.h"
 
-#include "Beep.h"
+#include "Buzzer.h"
 
 
 
@@ -37,7 +37,7 @@ void respondToInput();
 void doTone( char* token );
 void doTriTone( char* token );
 void doAlert();
-void doBeep();
+void doBuzzer();
 void doChirp();
 void doError();
 void doReady();
@@ -56,7 +56,7 @@ int main()
 
     delayMilliseconds( 1000 );
 
-    Beep::initBeep();
+    Buzzer::initBuzzer();
 
     doInstructions();
 
@@ -79,7 +79,7 @@ int main()
 
 void doInstructions()
 {
-    laptop.println( "Beep test: demo various sounds..." );
+    laptop.println( "Buzzer test: demo various sounds..." );
     laptop.println( "Enter a (or A) for an alert sound" );
     laptop.println( "Enter b (or B) for a beep sound" );
     laptop.println( "Enter c (or C) for a chirp sound" );
@@ -114,7 +114,7 @@ void respondToInput()
 
             case 'b':
             case 'B':
-                doBeep();
+                doBuzzer();
                 break;
 
             case 'c':
@@ -156,9 +156,9 @@ void doTone( char* token )
     {
         unsigned int tone = atoi( token );
 
-        Beep::beepOn( tone );
+        Buzzer::beepOn( tone );
         delayMilliseconds( 1000 );
-        Beep::beepOff();
+        Buzzer::beepOff();
     }
     else
     {
@@ -194,7 +194,7 @@ void doTriTone( char* token )
                 unsigned int tone3 = atoi( token );
                 laptop.println( tone3 );
 
-                Beep::triTone( tone1, tone2, tone3 );
+                Buzzer::triTone( tone1, tone2, tone3 );
             }
             else
             {
@@ -223,29 +223,29 @@ void doTriTone( char* token )
 
 void doAlert()
 {
-    Beep::alert();
+    Buzzer::alert();
 }
 
 
-void doBeep()
+void doBuzzer()
 {
-    Beep::beep();
+    Buzzer::beep();
 }
 
 
 void doChirp()
 {
-    Beep::chirp();
+    Buzzer::chirp();
 }
 
 
 void doError()
 {
-    Beep::errorChime();
+    Buzzer::errorChime();
 }
 
 
 void doReady()
 {
-    Beep::readyChime();
+    Buzzer::readyChime();
 }

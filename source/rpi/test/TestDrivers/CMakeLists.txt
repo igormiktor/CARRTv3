@@ -45,3 +45,12 @@ target_compile_definitions( MotorTestCollective PRIVATE
 )
 target_link_libraries( MotorTestCollective PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
 
+
+add_executable( BeepTest BeepTest.cpp )
+target_compile_options( BeepTest PRIVATE -Wall -pthread )
+target_compile_definitions( BeepTest PRIVATE 
+    -DUSE_PIGPIOD=${PIGPIOD_VAL} 
+    -DDEBUGUTILS_ON=${DEBUGUTILS_VAL}
+)
+target_link_libraries( BeepTest PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
+

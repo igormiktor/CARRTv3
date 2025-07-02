@@ -99,7 +99,7 @@ enum RPi0Error : int
     // RPi Zero Module errors (all are * kRPi0ModuleIdErrIncrement)
 
     kI2cError               = 1,   
-    kBeepError              = 2,
+    kBuzzerError            = 2,
 
     kTestError              = 98,
     kLastError              = 99

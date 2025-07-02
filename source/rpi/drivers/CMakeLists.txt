@@ -11,6 +11,7 @@ set( DRVR_HDR_LIST
 
 # Driver sources list
 set ( DRVR_SRC_LIST 
+    Buzzer.cpp 
     CarrtPigpio.cpp 
     Clock.cpp 
     I2c.cpp 
