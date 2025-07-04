@@ -1,12 +1,15 @@
 # Driver header list
 set( DRVR_HDR_LIST
+    Buzzer.h    
     CarrtPigpio.h 
+    CarrtPinAssignments.h
     Clock.h 
     I2c.h 
     Keypad.h 
     Lcd.h 
     Motors.h 
-    PCA9685.h 
+    PCA9685.h
+    Servo.h 
 )
 
 # Driver sources list
@@ -19,6 +22,7 @@ set ( DRVR_SRC_LIST
     Lcd.cpp 
     Motors.cpp 
     PCA9685.cpp 
+    Servo.cpp 
 )
 
 
