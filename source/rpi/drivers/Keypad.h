@@ -42,16 +42,21 @@ namespace Keypad
         kChord_Up_Down          = kButton_Up | kButton_Down,
         kChord_Select_Left      = kButton_Select | kButton_Left,
         kChord_Select_Right     = kButton_Select | kButton_Right,
+        kChord_Select_Up        = kButton_Select | kButton_Up, 
+        kChord_Select_Down      = kButton_Select | kButton_Down, 
 
         // Aliases
         kChord_Reset            = kChord_Select_Left,
+        kChord_Reboot           = kChord_Select_Up,
+        kChord_Shutdown         = kChord_Select_Down,
+        kChord_Pico_OnOff       = kChord_Select_Right,
         kChord_Pause            = kChord_Left_Right,
         kChord_Continue         = kChord_Up_Down,
+        
         kChord_A                = kChord_Left_Up,
         kChord_B                = kChord_Down_Right,
         kChord_C                = kChord_Right_Up,
         kChord_D                = kChord_Down_Left,
-        kChord_E                = kChord_Select_Right
     };
 
 
