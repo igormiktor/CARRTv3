@@ -41,6 +41,7 @@ namespace Keypad
         kChord_Left_Right       = kButton_Left | kButton_Right,
         kChord_Up_Down          = kButton_Up | kButton_Down,
         kChord_Select_Left      = kButton_Select | kButton_Left,
+        kChord_Select_Right     = kButton_Select | kButton_Right,
 
         // Aliases
         kChord_Reset            = kChord_Select_Left,
@@ -49,7 +50,8 @@ namespace Keypad
         kChord_A                = kChord_Left_Up,
         kChord_B                = kChord_Down_Right,
         kChord_C                = kChord_Right_Up,
-        kChord_D                = kChord_Down_Left
+        kChord_D                = kChord_Down_Left,
+        kChord_E                = kChord_Select_Right
     };
 
 
