@@ -49,6 +49,7 @@ int main()
 
         const int kMinTimeBetweenButtonChecks = 250;        // milliseconds
         long sNextTimeButtonClickAccepted = 0;
+        uint8_t sPreviousButtonHit{ 0 }; 
 
         Lcd::displayTopRow( "Button hit:" );
 
@@ -59,9 +60,20 @@ int main()
             {
                 uint8_t buttonHit = Keypad::readButtons();
 
-                if ( buttonHit && Clock::millis() > sNextTimeButtonClickAccepted )
+                auto currentMillis{ Clock::millis() };
+                bool mightBeChord{ buttonHit && buttonHit != sPreviousButtonHit && currentMillis <= sNextTimeButtonClickAccepted };
+                if ( mightBeChord )
+                {
+                    // Fake a chord and fake the time so we accept it
+                    debugM( "Composite chord" );
+                    debugV( (int) buttonHit, (int) sPreviousButtonHit );
+                    buttonHit |= sPreviousButtonHit;
+                    currentMillis = sNextTimeButtonClickAccepted + 1;
+                }
+                if ( buttonHit && currentMillis > sNextTimeButtonClickAccepted )
                 {
                     // Accept the button click
+                    sPreviousButtonHit = buttonHit;
 
                     // Rollover happens in about 50 days, so don't worry about it
                     sNextTimeButtonClickAccepted = Clock::millis() + kMinTimeBetweenButtonChecks;
@@ -117,6 +129,10 @@ int main()
 
                         case Keypad::kChord_D:
                             Lcd::displayBottomRow( "D (chord)" );
+                            break;
+
+                        case Keypad::kChord_E:
+                            Lcd::displayBottomRow( "E (chord)" );
                             break;
 
                         default:
