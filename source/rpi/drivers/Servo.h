@@ -33,9 +33,9 @@ namespace Servo
 {
 
 
-    void init();
+    void init( bool pulseMode = false );
 
-    void reset();
+    void reset( bool pulseMode = false );
 
     void disconnect();
 
@@ -43,6 +43,8 @@ namespace Servo
 
     void setPWM( std::uint16_t on, std::uint16_t off );
 
+    std::uint16_t setPulseLen( std::uint16_t pulseLen );
+    std::uint16_t getPulseLen();
 
     // Slew angles measured relative to 000 = straight ahead;
     // left/counter-clockwise = positive, right/clockwise = negative

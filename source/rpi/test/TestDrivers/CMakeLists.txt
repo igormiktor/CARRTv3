@@ -63,3 +63,12 @@ target_compile_definitions( ServoTest PRIVATE
 )
 target_link_libraries( ServoTest PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
 
+
+add_executable( ServoTestPulse ServoTestPulse.cpp )
+target_compile_options( ServoTestPulse PRIVATE -Wall -pthread )
+target_compile_definitions( ServoTestPulse PRIVATE 
+    -DUSE_PIGPIOD=${PIGPIOD_VAL} 
+    -DDEBUGUTILS_ON=${DEBUGUTILS_VAL}
+)
+target_link_libraries( ServoTestPulse PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
+

@@ -54,9 +54,9 @@ int main()
         Servo::init();
 
         Lcd::displayTopRow( "Button -> Servo" );
-        Lcd::displayBottomRow( "Angle version" );
+        Lcd::displayBottomRow( "Pulse version" );
 
-        int direction{ 0 };
+        std::uint16_t pulseLen{ Servo::getPulseLen() };
         bool loopAgain{ true };
         while ( loopAgain )
         {
@@ -78,73 +78,59 @@ int main()
                     {
                         case Keypad::kButton_Select:
                             Lcd::displayTopRow( "End..." );
-                            direction = 0;
-                            Servo::slew( direction );
+                            pulseLen = 341;
+                            Servo::setPulseLen( pulseLen );
                             loopAgain = false;
                             Clock::delayMilliseconds( 1000 );
                             break;
 
                         case Keypad::kButton_Right:
-                            Lcd::displayTopRow( "Slew to R+10" );
-                            direction += 10;
-                            Servo::slew( direction );
+                            Lcd::displayTopRow( "Servo to R+10" );
+                            pulseLen -= 10;
+                            Servo::setPulseLen( pulseLen );
                             Lcd::setCursor( 1, 0 );
-                            Lcd::print( Servo::getCurrentAngle() );
+                            Lcd::print( Servo::getPulseLen() );
                             break;
 
                         case Keypad::kButton_Down:
-                            Lcd::displayTopRow( "Slew to R+1" );
-                            direction += 1;
-                            Servo::slew( direction );
+                            Lcd::displayTopRow( "Servo to R+11" );
+                            pulseLen -= 1;;
+                            Servo::setPulseLen( pulseLen );
                             Lcd::setCursor( 1, 0 );
-                            Lcd::print( Servo::getCurrentAngle() );
+                            Lcd::print( Servo::getPulseLen() );
                             break;
 
                         case Keypad::kButton_Up:
-                            Lcd::displayTopRow( "Slew to L+1" );
-                            direction -= 1;
-                            Servo::slew( direction );
+                            Lcd::displayTopRow( "Servo to L+1" );
+                            pulseLen += 1;
+                            Servo::setPulseLen( pulseLen );
                             Lcd::setCursor( 1, 0 );
-                            Lcd::print( Servo::getCurrentAngle() );
+                            Lcd::print( Servo::getPulseLen() );
                             break;
 
                         case Keypad::kButton_Left:
-                            Lcd::displayTopRow( "Slew to L+10" );
-                            direction -= 10;
-                            Servo::slew( direction );
+                            Lcd::displayTopRow( "Servo to L+10" );
+                            pulseLen += 10;
+                            Servo::setPulseLen( pulseLen );
                             Lcd::setCursor( 1, 0 );
-                            Lcd::print( Servo::getCurrentAngle() );
+                            Lcd::print( Servo::getPulseLen() );
                             break;
 
                         case Keypad::kChord_Reset:
                         case Keypad::kChord_Reboot:
-                        case Keypad::kChord_B:
-                        case Keypad::kChord_D:
-                            Lcd::displayTopRow( "Slew to 0" );
-                            direction = 0;
-                            Servo::slew( direction );
-                            Lcd::setCursor( 1, 0 );
-                            Lcd::print( Servo::getCurrentAngle() );
-                            break;
-
-                        case Keypad::kChord_Pause:
                         case Keypad::kChord_Shutdown:
-                        case Keypad::kChord_C:
-                            Lcd::displayTopRow( "Slew to +90" );
-                            direction = 90;
-                            Servo::slew( direction );
-                            Lcd::setCursor( 1, 0 );
-                            Lcd::print( Servo::getCurrentAngle() );
-                            break;
-
-                        case Keypad::kChord_Continue:
                         case Keypad::kChord_Pico_OnOff:
+                        case Keypad::kChord_Pause:
+                        case Keypad::kChord_Continue:
                         case Keypad::kChord_A:
-                            Lcd::displayTopRow( "Slew to -90" );
-                            direction = -90;
-                            Servo::slew( direction );
+                        case Keypad::kChord_B:
+                        case Keypad::kChord_C:
+                        case Keypad::kChord_D:
+                            Lcd::displayTopRow( "Servo to front" );
+                            pulseLen = 341;
+                            Servo::setPulseLen( pulseLen );
                             Lcd::setCursor( 1, 0 );
-                            Lcd::print( Servo::getCurrentAngle() );
+                            Lcd::print( Servo::getPulseLen() );
                             break;
 
                         default:
