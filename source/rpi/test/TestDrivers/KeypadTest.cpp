@@ -107,6 +107,18 @@ int main()
                             Lcd::displayBottomRow( "Reset (chord)" );
                             break;
 
+                        case Keypad::kChord_Reboot:
+                            Lcd::displayBottomRow( "Reboot (chord)" );
+                            break;
+
+                        case Keypad::kChord_Shutdown:
+                            Lcd::displayBottomRow( "Shutdown (chord)" );
+                            break;
+
+                        case Keypad::kChord_Pico_OnOff:
+                            Lcd::displayBottomRow( "Pico 0/1 (chord)" );
+                            break;
+
                         case Keypad::kChord_Pause:
                             Lcd::displayBottomRow( "Pause (chord)" );
                             break;
@@ -129,10 +141,6 @@ int main()
 
                         case Keypad::kChord_D:
                             Lcd::displayBottomRow( "D (chord)" );
-                            break;
-
-                        case Keypad::kChord_E:
-                            Lcd::displayBottomRow( "E (chord)" );
                             break;
 
                         default:
