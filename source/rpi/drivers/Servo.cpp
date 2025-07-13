@@ -30,10 +30,10 @@
 
 #include "Servo.h"
 
-#include <math.h>
+#include "PCA9685.h"
 
 #include "Clock.h"
-#include "I2c.h"
+#//include "I2c.h"
 
 #include "DebugUtils.hpp"
 
@@ -46,49 +46,10 @@
 namespace Servo
 {
 
-    constexpr std::uint8_t kServoI2cAddress      = 0x40;
-
-
-    constexpr std::uint8_t kPCA9685_SubAdr1      = 0x02;
-    constexpr std::uint8_t kPCA9685_SubAdr2      = 0x03;
-    constexpr std::uint8_t kPCA9685_SubAdr3      = 0x04;
-
-    constexpr std::uint8_t kPCA9685_Mode1        = 0x0;
-    constexpr std::uint8_t kPCA9685_Prescale     = 0xFE;
-
-    constexpr std::uint8_t kLed_On_L             = 0x06;
-    constexpr std::uint8_t kLed_On_H             = 0x07;
-    constexpr std::uint8_t kLed_Off_L            = 0x08;
-    constexpr std::uint8_t kLed_Off_H            = 0x09;
-
-    constexpr std::uint8_t kAllLeds_On_L         = 0xFA;
-    constexpr std::uint8_t kAllLeds_On_H         = 0xFB;
-    constexpr std::uint8_t kAllLeds_Off_L        = 0xFC;
-    constexpr std::uint8_t kAllLeds_Off_H        = 0xFD;
-
-
+    // Servo I2C address (actual the PCA9685 address)
+    constexpr std::uint8_t kLidarServoI2cAddress    =  PCA9685::kPCA9685_I2cAddress;
     // Servo pin assignments
-    constexpr std::uint8_t  kRangeSensorServoPin = 0;
-
-
-    std::uint8_t readByte( std::uint8_t addr );
-    void writeByte( std::uint8_t addr, std::uint8_t d );
-
-
-
-    std::uint8_t readByte( std::uint8_t addr )
-    {
-        std::uint8_t temp;
-        I2c::read( kServoI2cAddress, addr, 1, &temp );
-        return temp;
-    }
-
-
-    void writeByte( std::uint8_t addr, std::uint8_t d )
-    {
-        I2c::write( kServoI2cAddress, addr, d );
-    }
-
+    constexpr std::uint8_t kLidarServoPin           = 0;
 
     int mCurrentAngle;          // +deg -> clockwise; -deg -> counterclockwise; 0 deg -> straight ahead
     std::uint16_t mPulseLen;
@@ -96,6 +57,7 @@ namespace Servo
     std::uint16_t convertToPulseLenFromDegreesRelative( int degrees );
 
 };
+
 
 
 
@@ -108,9 +70,9 @@ void Servo::init( bool pulseMode )
 
 void Servo::reset( bool pulseMode )
 {
-    writeByte( kPCA9685_Mode1, 0x0 );
+    PCA9685::reset( kLidarServoI2cAddress );
     mCurrentAngle = 0;
-    setPWMFreq( 50 );                   // Servo wants a pulse every 20ms, = 50 Hz updates
+    PCA9685::setPwmFreq( kLidarServoI2cAddress, 50 );                   // Servo wants a pulse every 20ms, = 50 Hz updates
     debugM( "Servo initialized to:" );
     if ( pulseMode )
     {
@@ -123,55 +85,32 @@ void Servo::reset( bool pulseMode )
 }
 
 
+
 void Servo::disconnect()
 {
-    setPWMFreq( 0 );
+    setPwmFreq( 0 );
 }
 
 
-void Servo::setPWMFreq( float freq )
+
+void Servo::setPwmFreq( float freq )
 {
-    // Calculate the appropriate prescaler
-    float prescaleValue = 25000000;
-    prescaleValue /= 4096;
-    prescaleValue /= freq;
-    prescaleValue -= 1;
-    std::uint8_t prescaler = floor( prescaleValue + 0.5 );
-
-    std::uint8_t originalMode = readByte( kPCA9685_Mode1 );
-    std::uint8_t sleepMode = ( originalMode & 0x7F ) | 0x10;
-
-    // Set the PCA9685 to sleep so we can set the prescaler
-    writeByte( kPCA9685_Mode1, sleepMode );
-    writeByte( kPCA9685_Prescale, prescaler );
-
-    // Restore the original mode
-    writeByte( kPCA9685_Mode1, originalMode );
-    Clock::delayMilliseconds( 5 );
-
-    // Set the MODE1 registor to enable auto-increment
-    writeByte( kPCA9685_Mode1, originalMode | 0xa1 );
-    Clock::delayMilliseconds( 100 );
+    PCA9685::setPwmFreq( kLidarServoI2cAddress, freq );
 }
 
 
 
-void Servo::setPWM( uint16_t on, uint16_t off )
+void Servo::setPwm( uint16_t on, uint16_t off )
 {
-    std::uint8_t data[4];
-
-    data[0] = on;
-    data[1] = on >> 8;
-    data[2] = off;
-    data[3] = off >> 8;
-
-    I2c::write( kServoI2cAddress, ( kLed_On_L + 4*kRangeSensorServoPin ), data, 4 );
+    PCA9685::setPwm( kLidarServoI2cAddress, kLidarServoPin, on, off );
 }
 
 
 
-
-
+void Servo::setPwmDutyOnCycle( float onRatio )
+{
+    PCA9685::setPwmDutyOnCycle( kLidarServoI2cAddress, kLidarServoPin, onRatio );
+}
 
 
 
@@ -181,7 +120,6 @@ int Servo::getCurrentAngle()
     // positive angles are to the right to match compass angles
     return mCurrentAngle;
 }
-
 
 
 
@@ -200,7 +138,7 @@ int Servo::slew( int angleDegrees )
     mCurrentAngle = angleDegrees;
 
     mPulseLen = convertToPulseLenFromDegreesRelative( mCurrentAngle );
-    setPWM( 0, mPulseLen );
+    setPwm( 0, mPulseLen );
     debugV( mCurrentAngle, mPulseLen );
 
     return mCurrentAngle;
@@ -211,7 +149,7 @@ int Servo::slew( int angleDegrees )
 std::uint16_t Servo::setPulseLen( std::uint16_t pulseLen )
 {
     mPulseLen = pulseLen;
-    setPWM( 0, mPulseLen );
+    setPwm( 0, mPulseLen );
     // Only call this function for testing & calibration, so leave useful debug output here
     debugV( mPulseLen );
     return mPulseLen;

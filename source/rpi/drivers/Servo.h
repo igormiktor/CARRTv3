@@ -39,9 +39,11 @@ namespace Servo
 
     void disconnect();
 
-    void setPWMFreq( float freq );
+    void setPwmFreq( float freq );
 
-    void setPWM( std::uint16_t on, std::uint16_t off );
+    void setPwmDutyOnCycle( float onRatio );
+
+    void setPwm( std::uint16_t on, std::uint16_t off );
 
     std::uint16_t setPulseLen( std::uint16_t pulseLen );
     std::uint16_t getPulseLen();
