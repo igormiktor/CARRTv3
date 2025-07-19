@@ -42,16 +42,21 @@ int main()
     try
     {
         gpioInitialise();
+        std::cerr << "GPIO initialized" << std::endl;
 
         Clock::initSystemClock();
+        std::cerr << "Clock initialized" << std::endl;
 
         Motors::init();
+        std::cerr << "Motors initialized" << std::endl;
 
         Clock::delayMilliseconds( 2*kPauseTimeInMillis );
 
         long endTime = Clock::millis() + kThreeMinutesInMillis;
         while ( 1 && Clock::millis() < endTime )
         {
+            std::cerr << "Motor loop start" << std::endl;
+
             Motors::goForward();
             Clock::delayMilliseconds( kRunTimeInMillis );
 
@@ -75,9 +80,12 @@ int main()
 
             Motors::stop();
             Clock::delayMilliseconds( kPauseTimeInMillis );
+
+            std::cerr << "Motor loop end" << std::endl;
+
         }
 
-        std::cout << "Test complete" << std::endl;
+        std::cerr << "Test complete" << std::endl;
     }
 
     catch ( const CarrtError& err )

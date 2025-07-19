@@ -38,13 +38,17 @@ int main()
     try
     {
         gpioInitialise();
+        std::cerr << "GPIO initialized" << std::endl;
 
         Clock::initSystemClock();
+        std::cerr << "GPIO initialized" << std::endl;
 
         Motors::init();
+        std::cerr << "GPIO initialized" << std::endl;
 
         Clock::delayMilliseconds(3);
 
+        std::cerr<< "Starting motor loop" << std::endl;
         long endTime = Clock::millis() + kThreeMinutesInMillis;
         while ( 1 && Clock::millis() < endTime )
         {
