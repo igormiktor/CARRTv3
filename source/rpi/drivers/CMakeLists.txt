@@ -7,6 +7,7 @@ set( DRVR_HDR_LIST
     I2c.h 
     Keypad.h 
     Lcd.h 
+    Lidar.h
     Motors.h 
     PCA9685.h
     Servo.h 
@@ -20,6 +21,7 @@ set ( DRVR_SRC_LIST
     I2c.cpp 
     Keypad.cpp 
     Lcd.cpp 
+    Lidar.cpp
     Motors.cpp 
     PCA9685.cpp 
     Servo.cpp 
