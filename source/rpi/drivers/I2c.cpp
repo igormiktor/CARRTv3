@@ -51,6 +51,27 @@ namespace I2c
         int mFd;
     };
 
+
+    class TurnOffI2cRestart
+    {
+        /*
+        void i2cSwitchCombined(int setting)
+        This sets the I2C (i2c-bcm2708) module "use combined transactions" parameter on or off.
+        setting: 0 to set the parameter off, non-zero to set it on
+        */
+
+    public:
+        TurnOffI2cRestart()
+        {
+            i2cSwitchCombined( 0 );
+        }
+
+        ~TurnOffI2cRestart()
+        {
+            i2cSwitchCombined( 1 );
+        }
+    };
+
 };
 
 
@@ -208,6 +229,32 @@ int I2c::read( uint8_t address, uint8_t registerAddress, uint8_t numberBytes, ui
     if ( ret < 0 || ret > numberBytes )
     {
         throw I2cError( makeRpi0ErrorId( kI2cError, 9, i2c.getFd() ), "Error reading from i2c bus" );
+    }
+
+    return ret;
+}
+
+
+
+int I2c::readWithOutRestart( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, uint8_t* destination )
+{
+    // Needed for devices that don't implement I2C "restart" properly
+
+    // Turn off I2C restart (detructor restores on exit)
+    TurnOffI2cRestart i2cRestartIsOff;
+
+    I2cConnection i2c( address );
+
+    int ret = i2cWriteByte( i2c.getFd(), registerAddress );
+    if ( ret < 0 )
+    {
+        throw I2cError( makeRpi0ErrorId( kI2cError, 10, i2c.getFd() ), "Error writing to i2c bus" );
+    }
+
+    ret = i2cReadDevice( i2c.getFd(), reinterpret_cast<char*>( destination ), numberBytes );
+    if ( ret < 0 )
+    {
+        throw I2cError( makeRpi0ErrorId( kI2cError, 11, i2c.getFd() ), "Error reading from i2c bus" );
     }
 
     return ret;

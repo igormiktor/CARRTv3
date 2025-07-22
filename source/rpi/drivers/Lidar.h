@@ -59,11 +59,11 @@ namespace Lidar
 
     // Lidar takes approximately 22ms to reset
     // Does not change slew angle (only Lidar internal state)
-    int reset();
+    void reset();
 
 
     // Set the Lidar configuration
-    int setConfiguration( Configuration config );
+    void setConfiguration( Configuration config );
 
 
     // Slew angles measured relative to 000 = straight ahead;
@@ -76,7 +76,7 @@ namespace Lidar
 
     // Get the range in cm from a single range ping
     // Negative value means no valid range obtained
-    int getDistanceInCm( int* distInCm, bool useBiasCorrection = true );
+    int getDistanceInCm( int* uncorrectedDistInCm, bool useBiasCorrection = true );
 
 
     // Get the range in cm from the median of a set of pings

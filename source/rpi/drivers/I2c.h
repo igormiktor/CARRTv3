@@ -73,6 +73,8 @@ namespace I2c
 
     int read( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, std::uint8_t* destination );
 
+    int readWithOutRestart( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, std::uint8_t* destination );
+
 };
 
 
