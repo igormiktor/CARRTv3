@@ -28,22 +28,22 @@ target_compile_definitions( KeypadTest PRIVATE
 target_link_libraries( KeypadTest PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
 
 
-add_executable( MotorTestIndividual MotorTestIndividual.cpp )
-target_compile_options( MotorTestIndividual PRIVATE -Wall -pthread )
-target_compile_definitions( MotorTestIndividual PRIVATE 
+add_executable( MotorTest MotorTest.cpp )
+target_compile_options( MotorTest PRIVATE -Wall -pthread )
+target_compile_definitions( MotorTest PRIVATE 
     -DUSE_PIGPIOD=${PIGPIOD_VAL} 
     -DDEBUGUTILS_ON=${DEBUGUTILS_VAL}
 )
-target_link_libraries( MotorTestIndividual PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
+target_link_libraries( MotorTest PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
 
 
-add_executable( MotorTestCollective MotorTestCollective.cpp )
-target_compile_options( MotorTestCollective PRIVATE -Wall -pthread )
-target_compile_definitions( MotorTestCollective PRIVATE 
+add_executable( DriveTest DriveTest.cpp )
+target_compile_options( DriveTest PRIVATE -Wall -pthread )
+target_compile_definitions( DriveTest PRIVATE 
     -DUSE_PIGPIOD=${PIGPIOD_VAL} 
     -DDEBUGUTILS_ON=${DEBUGUTILS_VAL}
 )
-target_link_libraries( MotorTestCollective PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
+target_link_libraries( DriveTest PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
 
 
 add_executable( BeepTest BeepTest.cpp )
