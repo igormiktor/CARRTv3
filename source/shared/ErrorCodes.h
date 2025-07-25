@@ -100,6 +100,7 @@ enum RPi0Error : int
 
     kI2cError               = 1,   
     kBuzzerError            = 2,
+    kLidarError             = 3,
 
     kTestError              = 98,
     kLastError              = 99

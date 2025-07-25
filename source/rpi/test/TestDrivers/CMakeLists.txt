@@ -72,3 +72,11 @@ target_compile_definitions( ServoTestPulse PRIVATE
 )
 target_link_libraries( ServoTestPulse PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
 
+
+add_executable( LidarTest LidarTest.cpp )
+target_compile_options( LidarTest PRIVATE -Wall -pthread )
+target_compile_definitions( LidarTest PRIVATE 
+    -DUSE_PIGPIOD=${PIGPIOD_VAL} 
+    -DDEBUGUTILS_ON=${DEBUGUTILS_VAL}
+)
+target_link_libraries( LidarTest PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )

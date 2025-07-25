@@ -26,25 +26,22 @@
 #include "Clock.h"
 #include "I2c.h"
 
+#include "CarrtError.h"
+
 #include "DebugUtils.hpp"
 
-#if 0
-#include "AVRTools/GpioPinMacros.h"
-#include "AVRTools/SystemClock.h"
-#include "AVRTools/I2cMaster.h"
+// Useful for early testing and calibration
+#define CARRT_DISABLE_LIDAR_SERVO   1
 
-#include "CarrtPins.h"
-#include "CarrtCallback.h"
-#endif
-
+// Ensure Servo is active unless explicitly turned off
 #if !defined(CARRT_DISABLE_LIDAR_SERVO)
 #define CARRT_DISABLE_LIDAR_SERVO   0
 #endif
 
-#if !defined(CARRT_DISABLE_LIDAR_SERVO) || CARRT_DISABLE_LIDAR_SERVO == 0
-#include "Servo.h"
-#else
+#if CARRT_DISABLE_LIDAR_SERVO
 #warning CARRT_DISABLE_LIDAR_SERVO defined and non-zero: Servo functionality disabled in Lidar driver
+#else
+#include "Servo.h"
 #endif
 
 
@@ -196,6 +193,7 @@ int Lidar::waitUntilLidarReadyToRead()
 
     bool lidarBusy = true;
 
+    I2c::write( kLidarI2cAddress, static_cast<std::uint8_t>(kStatus ) );
     for ( uint8_t i = 0; lidarBusy && i < kMaxWaitLoopCount; ++i )
     {
         uint8_t lidarStatus;
@@ -206,8 +204,8 @@ int Lidar::waitUntilLidarReadyToRead()
         }
         else
         {
-            // throw
-            debugM( "No I2C error, but numRead != 1" );
+            debugM( "No I2C error, but numRead != 1 as expected" );
+            throw CarrtError( makeRpi0ErrorId( kLidarError, 1, numRead ), "No I2C error, but Lidar numRead != 1 (expected)" );
         }
     }
 
@@ -224,7 +222,8 @@ int Lidar::readDistanceData()
 
     if ( numRead != 2 )
     {
-        // Throw
+        debugM( "No I2C error, but numRead != 2 as expected" );
+        throw CarrtError( makeRpi0ErrorId( kLidarError, 2, numRead ), "No I2C error, but Lidar numRead != 2 (expected)" );
     }
    
     return static_cast<int>( ( static_cast<uint16_t>(rawDistance[0]) << 8 ) | rawDistance[1] );
@@ -241,7 +240,8 @@ int Lidar::getUncorrectedDistanceInCm( int* uncorrectedDistInCm, bool useBiasCor
     int err = waitUntilLidarReadyToRead();
     if ( err )
     {
-        // Throw TODO
+            debugM( "Lidar not ready to read" );
+            throw CarrtError( makeRpi0ErrorId( kLidarError, 3, err ), "Lidar timed-out, not ready to read" );
     }
 
     // Lidar ready to read a value
