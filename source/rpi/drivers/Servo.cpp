@@ -76,7 +76,7 @@ void Servo::reset( bool pulseMode )
     debugM( "Servo initialized to:" );
     if ( pulseMode )
     {
-        setPulseLen( 341 );             // Generic safe value for servos I play with
+        setPulseLen( 340 );             // Generic safe value for servos I play with
     }
     else
     {    
@@ -171,14 +171,15 @@ std::uint16_t Servo::convertToPulseLenFromDegreesRelative( int degrees )
 
 #if SERVO_MG_996R
     /*
-    *     90 = 120
-    *      0 = 341
-    *    -90 = 562
+    *     90 = 105
+    *      0 = 328
+    *    -90 = 551
     * 
-    *      pulseLen = (120-562)/180 * degrees + 341
+    *      pulseLen = (105-551)/180 * degrees
     */
-
-    std::int16_t pulse = (-221.0/90.0) * degrees  + 341.0;
+    constexpr auto slope{ (105.0 - 551.0)/180.0 };
+    constexpr auto intercept{ 328.0 };
+    std::int16_t pulse = slope * degrees + intercept + 0.5;
     return static_cast<std::uint16_t>( pulse );
 #endif  // SERVO_HPS_2018
 
