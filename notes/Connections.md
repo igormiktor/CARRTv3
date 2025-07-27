@@ -62,7 +62,7 @@
 | Vs    | Max(USB, LiPo)                              |  |
 | EN    | Enable (Ground to disable)                  | On/Off Switch |
 | GND   | Gound                                       |  |
-| LBO   | Low Battery Signal (toggles from Bat to OV) | (not 3.3V safe!) RPi0 pin 16 (GPIO23) via TXB0104 |
+| LBO   | Low Battery Signal (toggles from Bat to 0V) | (not 3.3V safe!) RPi0 pin 16 (GPIO23) via TXB0104 |
 | GND   | Ground                                      | Common Gnd |
 | 5Vo   | Output 5V (5.2-5.0 V)                       | Common IC 5V rail  |
 |
