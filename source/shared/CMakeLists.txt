@@ -8,5 +8,10 @@ set( SHARED_HDR_LIST
     SerialMessage.h 
 )
 
-add_library( shared_library INTERFACE )
+# Shared source list
+set( SHARED_SRC_LIST 
+    SerialLink.cpp
+)
+
+add_library( shared_library STATIC ${SHARED_SRC_LIST} ${SHARED_HDR_LIST} )
 target_include_directories( shared_library INTERFACE "${PROJECT_SOURCE_DIR}/shared" )
