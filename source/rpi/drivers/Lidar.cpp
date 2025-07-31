@@ -31,7 +31,7 @@
 #include "DebugUtils.hpp"
 
 // Useful for early testing and calibration
-#define CARRT_DISABLE_LIDAR_SERVO   1
+// #define CARRT_DISABLE_LIDAR_SERVO   1
 
 // Ensure Servo is active unless explicitly turned off
 #if !defined(CARRT_DISABLE_LIDAR_SERVO)
