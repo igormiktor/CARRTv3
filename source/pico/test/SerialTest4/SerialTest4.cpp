@@ -124,34 +124,34 @@ int main()
             {
                 case Event::kNavUpdateEvent:
                     std::cout << "Nav " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimerNavUpdate );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimerNavUpdate );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer1_4s );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer1_4s );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer1s );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer1s );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     ledState = !ledState;
                     break;
                     
                 case Event::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer8s );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer8s );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
 
                 case Event::kIdentifyPicoCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kIdentifyPicoCore );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 0 );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kIdentifyPicoCore );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 0 );
                     break;
             }
             if ( Events().hasEventQueueOverflowed() )
@@ -177,8 +177,15 @@ int main()
 
                 case 'F':
                 case 'f':
+                    // Read a float
+                    t.i = 0;
+                    for ( int i = 0; i < 4; ++i )
+                    {
+                        t.c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+                    }
+                    // Send back 'F' and float + 1
+                    t.f += 1;
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'F' );
-                    t.f = 2.71828;
                     for ( int i = 0; i < 4; ++i )
                     {
                         uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
@@ -189,8 +196,15 @@ int main()
 
                 case 'K':
                 case 'k':
+                    // Read an unsigned int
+                    t.u = 0;
+                    for ( int i = 0; i < 4; ++i )
+                    {
+                        t.c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+                    }
+                    // Send back 'K' and an unsigned int + 1
+                    t.u += 1;
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'K' );
-                    t.i = 660327733;
                     for ( int i = 0; i < 4; ++i )
                     {
                         uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
@@ -201,8 +215,15 @@ int main()
 
                 case 'I':
                 case 'i':
+                    // Read an int
+                    t.i = 0;
+                    for ( int i = 0; i < 4; ++i )
+                    {
+                        t.c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+                    }
+                    // Send back 'I' and int + 1
+                    t.i += 1;
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'I' );
-                    t.i = 123456789;
                     for ( int i = 0; i < 4; ++i )
                     {
                         uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
@@ -213,8 +234,15 @@ int main()
 
                 case 'J':
                 case 'j':
+                    // Read an int
+                    t.i = 0;
+                    for ( int i = 0; i < 4; ++i )
+                    {
+                        t.c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+                    }
+                    // Send back 'J' and int + 1;
+                    t.i += 1;
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'J' );
-                    t.i = -123456789;
                     for ( int i = 0; i < 4; ++i )
                     {
                         uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
