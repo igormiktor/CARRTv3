@@ -24,8 +24,26 @@
 
 
 
-SerialLink::~SerialLink()
-{
-    // Nothing to do, but need virtual base destructor
+std::optional<int> SerialLink::getInt()                  
+{ 
+    auto got = get4Bytes(); 
+    if ( got )
+        return static_cast<int>( *got );
+    else 
+        return std::nullopt; 
 }
 
+    
+
+std::optional<float> SerialLink::getFloat()              
+{ 
+    auto got = get4Bytes(); 
+    if ( got )
+    {
+        Transfer t{};
+        t.u = *got;
+        return t.f;
+    }
+    else 
+        return std::nullopt; 
+}

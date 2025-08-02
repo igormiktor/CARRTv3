@@ -115,12 +115,6 @@ SerialLinkRPi::~SerialLinkRPi()
 }
 
 
-#if 0
-bool SerialLinkRPi::isReadable() 
-{
-
-}
-#endif
 
 std::optional<std::uint8_t> SerialLinkRPi::getByte()
 {
@@ -134,7 +128,6 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
     if ( numRead == 1 )
     {
         return c;
-
     }
     else
     {
@@ -144,6 +137,36 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
 
         std::stringstream errMsgStrm{};
         errMsgStrm <<  "getByte() failed reading with errno: " << errno
+            << " and numRead: " << numRead;
+        std::string errMsg{};
+        errMsgStrm >> errMsg;
+        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+    }
+}
+
+
+std::optional<uint32_t> SerialLinkRPi::get4Bytes()
+{
+    Transfer t{};
+    t.u = 0;
+    auto numRead = read( mSerialPort, &t.c, 4 );
+    if ( numRead == 0 )
+    {
+        // EOF == buffer empty
+        return std::nullopt;
+    }
+    if ( numRead == 4 )
+    {
+        return t.u;
+    }
+    else
+    {
+        // Something else, throw...
+        debugM( "get4Byte() failed reading" );
+        debugV( numRead, errno );
+
+        std::stringstream errMsgStrm{};
+        errMsgStrm <<  "get4Byte() failed reading with errno: " << errno
             << " and numRead: " << numRead;
         std::string errMsg{};
         errMsgStrm >> errMsg;

@@ -29,17 +29,23 @@
 #include <cstdint>
 #include <optional>
 
-
-
 class SerialLink
 {
 
 public:
 
-    virtual ~SerialLink();
+    // Abstract class that needs virtual destructor
+    virtual ~SerialLink() = default;
+
+    // Prevent copy, move, or assignment
+    SerialLink( const SerialLink& ) = delete;
+    SerialLink( SerialLink&& ) = delete;
+    SerialLink& operator=( const SerialLink& ) = delete;
+    SerialLink& operator=( SerialLink&& ) = delete;
 
     // Foundational functions, reading
     virtual std::optional<std::uint8_t> getByte() = 0;
+    virtual std::optional<std::uint32_t> get4Bytes() = 0;
     virtual bool get4Bytes( std::uint8_t c[4] ) = 0;
 
     // Foundational functions, writing 
@@ -48,14 +54,11 @@ public:
 
 
     // Reading functions
-    inline std::optional<std::uint8_t> getMsgType()     
-        { return getByte(); }
-    inline std::optional<int> getInt()                  
-        { Transfer t{}; if (get4Bytes( t.c )) return t.i; else return std::nullopt; }
-    inline std::optional<std::uint32_t> getUInt32()     
-        { Transfer t{}; if (get4Bytes( t.c )) return t.u; else return std::nullopt; }
-    inline std::optional<float> getFloat()              
-        { Transfer t{}; if (get4Bytes( t.c )) return t.f; else return std::nullopt; }
+    std::optional<std::uint8_t> getMsgType()            { return getByte(); }
+    std::optional<int> getInt();
+    std::optional<std::uint32_t> getUInt32()            { return get4Bytes(); }
+    std::optional<float> getFloat();
+
 
     // Writing functions
     inline void putMsgType( std::uint8_t cmd )  
@@ -74,11 +77,9 @@ public:
 
 protected:
 
-    SerialLink()                                
-    { /* Prevent instantiation of base class */ }
-
-private:
-
+    // Only derived classes can create a SerialLink
+    SerialLink() = default;     
+    
     union Transfer
     {
         std::uint8_t    c[4];
@@ -86,6 +87,10 @@ private:
         std::uint32_t   u;
         float           f;
     };
+
+
+private:
+
 };
 
 

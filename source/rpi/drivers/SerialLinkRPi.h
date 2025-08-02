@@ -39,20 +39,21 @@ public:
     SerialLinkRPi();
     virtual ~SerialLinkRPi();
 
+    
     // Disable undesired defaults (create, delete, but no move, copy, or assignment)
     SerialLinkRPi( const SerialLinkRPi& ) = delete;
     SerialLinkRPi( SerialLinkRPi&& ) = delete;
     SerialLinkRPi& operator=( const SerialLinkRPi& ) = delete;
     SerialLinkRPi& operator=( SerialLinkRPi&& ) = delete;
 
-//   bool isReadable() override;
 
+    // Fundamental read functions
     std::optional<std::uint8_t> getByte() override;
     bool get4Bytes( std::uint8_t c[4] ) override;
+    std::optional<std::uint32_t> get4Bytes() override;
 
-//    bool getByte( std::uint8_t* c ) override;
-//    bool get4Bytes( std::uint8_t* c ) override;
 
+    // Fundamental write functions
     void putByte( std::uint8_t c ) override;
     void put4Bytes( std::uint8_t c[4] ) override;
 
