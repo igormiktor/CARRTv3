@@ -27,6 +27,7 @@
 
 
 #include <cstdint>
+#include <optional>
 
 
 
@@ -37,31 +38,44 @@ public:
 
     virtual ~SerialLink();
 
-    virtual bool isReadable() = 0;
+    // Foundational functions, reading
+    virtual std::optional<std::uint8_t> getByte() = 0;
+    virtual bool get4Bytes( std::uint8_t c[4] ) = 0;
 
-    virtual uint8_t getByte() = 0;
-    virtual void get4Bytes( uint8_t* c ) = 0;
+    // Foundational functions, writing 
+    virtual void putByte( std::uint8_t c ) = 0;
+    virtual void put4Bytes( std::uint8_t c[4] ) = 0;
 
-    virtual void putByte( uint8_t c ) = 0;
-    virtual void put4Bytes( uint8_t* c ) = 0;
 
-    inline uint8_t getMsgType()             { return getByte(); }
-    inline int getInt()                     { Transfer t{}; get4Bytes( t.c ); return t.i; }
-    inline uint32_t getUInt32()             { Transfer t{}; get4Bytes( t.c ); return t.u; }
-    inline float getFloat()                 { Transfer t{}; get4Bytes( t.c ); return t.f; }
+    // Reading functions
+    inline std::optional<std::uint8_t> getMsgType()     
+        { return getByte(); }
+    inline std::optional<int> getInt()                  
+        { Transfer t{}; if (get4Bytes( t.c )) return t.i; else return std::nullopt; }
+    inline std::optional<std::uint32_t> getUInt32()     
+        { Transfer t{}; if (get4Bytes( t.c )) return t.u; else return std::nullopt; }
+    inline std::optional<float> getFloat()              
+        { Transfer t{}; if (get4Bytes( t.c )) return t.f; else return std::nullopt; }
 
-    inline void putMsgType( uint8_t cmd )   { putByte( cmd ); }
-    inline void put( char c )               { putByte( c ); }
-    inline void put( uint8_t c )            { putByte( c ); }
-    inline void put( int i )                { Transfer t{}; t.i = i; put4Bytes( t.c ); }
-    inline void put( uint32_t u )           { Transfer t{}; t.u = u; put4Bytes( t.c ); }
-    inline void put( float f )              { Transfer t{}; t.f = f; put4Bytes( t.c ); }
+    // Writing functions
+    inline void putMsgType( std::uint8_t cmd )  
+        { putByte( cmd ); }
+    inline void put( char c )                   
+        { putByte( c ); }
+    inline void put( std::uint8_t c )           
+        { putByte( c ); }
+    inline void put( int i )                    
+        { Transfer t{}; t.i = i; put4Bytes( t.c ); }
+    inline void put( std::uint32_t u )          
+        { Transfer t{}; t.u = u; put4Bytes( t.c ); }
+    inline void put( float f )                 
+        { Transfer t{}; t.f = f; put4Bytes( t.c ); }
 
 
 protected:
 
-    SerialLink()                            {}
-
+    SerialLink()                                
+    { /* Prevent instantiation of base class */ }
 
 private:
 
@@ -72,7 +86,6 @@ private:
         std::uint32_t   u;
         float           f;
     };
-    
 };
 
 

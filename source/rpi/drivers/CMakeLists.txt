@@ -10,6 +10,7 @@ set( DRVR_HDR_LIST
     Lidar.h
     Motors.h 
     PCA9685.h
+    SerialLinkRPi.h
     Servo.h 
 )
 
@@ -24,6 +25,7 @@ set ( DRVR_SRC_LIST
     Lidar.cpp
     Motors.cpp 
     PCA9685.cpp 
+    SerialLinkRPi.cpp
     Servo.cpp 
 )
 
