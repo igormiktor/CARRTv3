@@ -1,4 +1,4 @@
 [submodule "source/pico/carrt/drivers/BNO055"]
-	path = source/pico/BNO055
+	path = source/pico/drivers/BNO055
 	url = git@github.com:igormiktor/BNO055_SensorAPI.git
 	branch = IgorMods
