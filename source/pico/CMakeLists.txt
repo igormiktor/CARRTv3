@@ -15,11 +15,33 @@ if ( PICO_SDK_VERSION_STRING VERSION_LESS "1.4.0" )
   message( FATAL_ERROR "Raspberry Pi Pico SDK version 1.4.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}" )
 endif()
 
-project( carrt_pico C CXX ASM )
+project( carrt_pico 
+    VERSION 0.1.0 
+    DESCRIPTION "Executable for the CARRTv3 Pico"
+    LANGUAGES ASM C CXX 
+)
 
-set( CMAKE_C_STANDARD 11 )
-set( CMAKE_CXX_STANDARD 23 )
+
+set( CMAKE_C_STANDARD 11 CACHE STRING "The C standard to use" )
+set( CMAKE_C_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_STANDARD 23 CACHE STRING "The C++ standard to use" )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+
+# This one is a must
 set( PICO_CXX_ENABLE_EXCEPTIONS 1 )
+
+
+option(
+    CARRT_PICO_BUILD_TESTS
+    "Enable building test executables. Default: ON. Values: { OFF, ON }."
+    ON
+)
+
+option( 
+    CARRT_PICO_ENABLE_DEBUGUTILS
+    "Enable DebugUtils debugging outputs.  Default: ON. Values: { OFF, ON }."
+    ON
+)
 
 
 # Add a special define "DEBUGPICO" when building debugging builds
@@ -31,7 +53,38 @@ set( CARRT_PICO_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" )
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
+# add_subdirectory( carrt )
+# add_subdirectory( test )
+
+#######################################
+
+
+if ( CARRT_ENABLE_DEBUGUTILS )
+    set( DEBUGUTILS_VAL 1 )
+else()
+    set( DEBUGUTILS_VAL 0 )
+endif()
+
+
+add_subdirectory( shared )
+#add_subdirectory( utils )
+add_subdirectory( drivers )
 add_subdirectory( carrt )
-add_subdirectory( test )
+
+if ( CARRT_PICO_BUILD_TESTS )
+    add_subdirectory( test )
+#    include( CTest )
+#    enable_testing()
+endif()
+
+message( "" )
+message( "Configuration summary on host ${CMAKE_HOST_SYSTEM_NAME}:" )
+message( " - Compiler is ${CARRT_COMPILER}.")
+message( " - Preset is ${CARRT_PRESET_NAME}.")
+message( " - Build type is ${CMAKE_BUILD_TYPE}." )
+message( " - Building of tests is ${CARRT_PICO_BUILD_TESTS}." )
+message( " - Use of DebugUtils output is ${CARRT_PICO_ENABLE_DEBUGUTILS}." )
+message( "" )
+
 
 

@@ -7,6 +7,6 @@ target_compile_definitions( CarrtRpi PRIVATE
     -DUSE_PIGPIOD=${PIGPIOD_VAL} 
     -DDEBUGUTILS_ON=${DEBUGUTILS_VAL}
 )
-target_link_libraries( CarrtRpi PRIVATE driver_library utils_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
+target_link_libraries( CarrtRpi PRIVATE rpi_driver_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
 
 

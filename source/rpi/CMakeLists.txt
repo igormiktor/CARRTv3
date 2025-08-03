@@ -62,7 +62,7 @@ endif()
 
 
 add_subdirectory( shared )
-add_subdirectory( utils )
+#add_subdirectory( utils )
 add_subdirectory( drivers )
 add_subdirectory( carrt )
 
