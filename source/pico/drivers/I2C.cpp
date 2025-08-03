@@ -22,7 +22,7 @@
 
 #include "CarrtPicoDefines.h"
 
-#include "shared/CarrtError.h"
+#include "CarrtError.h"
 
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"

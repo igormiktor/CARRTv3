@@ -27,7 +27,7 @@
 
 #include <stdint.h>
 
-#include "shared/Event.h"      // This is where events themselves are defined
+#include "Event.h"      // This is where events themselves are defined
 
 #include "pico/stdlib.h"
 #include "pico/util/queue.h"

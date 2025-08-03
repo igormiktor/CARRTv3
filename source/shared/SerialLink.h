@@ -50,7 +50,7 @@ public:
 
     // Foundational functions, writing 
     virtual void putByte( std::uint8_t c ) = 0;
-    virtual void put4Bytes( std::uint8_t c[4] ) = 0;
+    virtual void put4Bytes( const std::uint8_t c[4] ) = 0;
 
 
     // Reading functions
@@ -61,10 +61,12 @@ public:
 
     // Bulk functions
     virtual int getBytes( int nbr, std::uint8_t* buffer ) = 0;
-    virtual int putBytes( int nbr, std::uint8_t* buffer ) = 0;
+    virtual int putBytes( int nbr, const std::uint8_t* buffer ) = 0;
 
 
     // Writing functions
+    inline void putMsgType( char cmd )
+        { putByte( static_cast<uint8_t>( cmd ) );}
     inline void putMsgType( std::uint8_t cmd )  
         { putByte( cmd ); }
     inline void put( char c )                   

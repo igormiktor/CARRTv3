@@ -23,6 +23,7 @@ target_include_directories( SerialTest4 PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}
   ${CARRT_PICO_DIRECTORY}
   ${CARRT_PICO_DIRECTORY}/carrt     
+  ${CARRT_PICO_DIRECTORY}/shared     
 #  ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts or any other standard includes, if required
 )
 

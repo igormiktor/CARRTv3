@@ -225,7 +225,7 @@ void SerialLinkRPi::putByte( std::uint8_t c )
 
 
 
-void SerialLinkRPi::put4Bytes( std::uint8_t* c )
+void SerialLinkRPi::put4Bytes( const std::uint8_t* c )
 {
     auto numWritten = write( mSerialPort, c, 4 );
     if ( numWritten != 4 )
@@ -254,7 +254,7 @@ int SerialLinkRPi::getBytes( int nbr, std::uint8_t* buffer )
 
 
 
-int SerialLinkRPi::putBytes( int nbr, std::uint8_t* buffer )
+int SerialLinkRPi::putBytes( int nbr, const std::uint8_t* buffer )
 {
     return write( mSerialPort, buffer, nbr );
 }

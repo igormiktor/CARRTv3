@@ -19,10 +19,9 @@
 */
 
 
+#include "SerialLinkPico.h"
 
-#include "shared/SerialLink.h"
 #include "CarrtPicoDefines.h"
-
 
 #include "pico/binary_info.h"
 #include "hardware/gpio.h"
@@ -30,7 +29,7 @@
 
 
 
-void SerialLink::openSerialLink()
+SerialLinkPico::SerialLinkPico()
 {
     // Initialise UART for the Serial-Link
     uart_init( CARRTPICO_SERIAL_LINK_UART, CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
@@ -43,7 +42,7 @@ void SerialLink::openSerialLink()
 
 
 
-void SerialLink::closeSerialLink()
+SerialLinkPico::~SerialLinkPico()
 {
     // Shutdown the Serial-Link UART
     gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_NULL );
@@ -53,46 +52,99 @@ void SerialLink::closeSerialLink()
 
 
 
-bool SerialLink::isReadable()
+bool SerialLinkPico::isReadable()
 {
     return uart_is_readable( CARRTPICO_SERIAL_LINK_UART );
 }
 
 
 
-uint8_t SerialLink::getByte()
+std::optional<std::uint8_t> SerialLinkPico::SerialLinkPico::getByte()
 {
-    return static_cast<uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
-}
-
-
-
-void SerialLink::get4Bytes( uint8_t* c )
-{
-    for ( int i = 0; i < 4; ++i, ++c )
+    // Always blocks, so make semantics the same by first checking if 
+    // there is data to read
+    if ( isReadable() )
     {
-        *c = static_cast<uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+        return static_cast<uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
     }
-    return;
-}
-
-
-
-void SerialLink::putByte( uint8_t c )
-{
-    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, c );
-}
-
-
-
-void SerialLink::put4Bytes( uint8_t* c )
-{
-    for ( int i = 0; i < 4; ++i, ++c )
+    else
     {
-        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, *c );
+        return std::nullopt;
     }
 }
 
 
 
+std::optional<std::uint32_t> SerialLinkPico::get4Bytes()
+{
+    // Always blocks, so make semantics the same by first checking if 
+    // there is data to read
+    if ( isReadable() )
+    {   
+        Transfer t;
+        for ( int i = 0; i < 4; ++i )
+        {
+            t.c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+        }
+        return t.u;
+    }
+    else
+    {
+        return std::nullopt;
+    }
+}
+
+
+
+bool SerialLinkPico::get4Bytes( std::uint8_t c[4] )
+{
+    // Always blocks, so make semantics the same by first checking if 
+    // there is data to read
+    if ( isReadable() )
+    {   
+        for ( int i = 0; i < 4; ++i )
+        {
+            c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+
+void SerialLinkPico::putByte( std::uint8_t c )
+{
+    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( c ) );
+}
+
+
+
+void SerialLinkPico::put4Bytes( const std::uint8_t c[4] )
+{
+    uart_write_blocking( CARRTPICO_SERIAL_LINK_UART, c, 4 );
+}
+
+
+
+int SerialLinkPico::getBytes( int nbr, std::uint8_t* buffer )
+{
+    // uart_read_blocking() isn't working for me...  Weird...
+    for ( int i = 0; i < nbr; ++i )
+    {
+        buffer[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+    }
+    return nbr;
+}
+
+
+
+int SerialLinkPico::putBytes( int nbr, const std::uint8_t* buffer )
+{
+    uart_write_blocking( CARRTPICO_SERIAL_LINK_UART, buffer, nbr );
+    return nbr;
+}
 

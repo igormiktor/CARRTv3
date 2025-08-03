@@ -55,13 +55,16 @@ public:
 
     // Fundamental write functions
     void putByte( std::uint8_t c ) override;
-    void put4Bytes( std::uint8_t c[4] ) override;
+    void put4Bytes( const std::uint8_t c[4] ) override;
 
 
     // Bulk functions
-    virtual int getBytes( int nbr, std::uint8_t* buffer ) override;
-    virtual int putBytes( int nbr, std::uint8_t* buffer ) override;
+    int getBytes( int nbr, std::uint8_t* buffer ) override;
+    int putBytes( int nbr, const std::uint8_t* buffer ) override;
 
+    // Additional functions (not part of base class)
+    bool isReadable();
+    
 
 private:
 
