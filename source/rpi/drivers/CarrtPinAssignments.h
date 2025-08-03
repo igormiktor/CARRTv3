@@ -21,6 +21,7 @@
 #ifndef CarrtPinAssignments_h
 #define CarrtPinAssignments_h
 
+
 namespace GpioPins
 {
     constexpr auto kI2cSdaPin           = 2;

@@ -59,6 +59,10 @@ public:
     std::optional<std::uint32_t> getUInt32()            { return get4Bytes(); }
     std::optional<float> getFloat();
 
+    // Bulk functions
+    virtual int getBytes( int nbr, std::uint8_t* buffer ) = 0;
+    virtual int putBytes( int nbr, std::uint8_t* buffer ) = 0;
+
 
     // Writing functions
     inline void putMsgType( std::uint8_t cmd )  

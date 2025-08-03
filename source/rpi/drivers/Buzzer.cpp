@@ -22,24 +22,12 @@
 #include "Buzzer.h"
 
 
-//#include <cstdint>
-//#include <string>
-
-#include "CarrtError.h"
+#include <CarrtError.h>
 #include "CarrtPinAssignments.h"
 #include "CarrtPigpio.h"
 #include "Clock.h"
 
-#include "DebugUtils.hpp"
-
-//#include <cstdint>
-//#include <cstring>
-//#include <iostream>
-
-//#include <unistd.h>                     //Needed for I2C port
-//#include <fcntl.h>                      //Needed for I2C port
-//#include <sys/ioctl.h>                  //Needed for I2C port
-//#include <linux/i2c-dev.h>              //Needed for I2C port
+#include <DebugUtils.hpp>
 
 
 

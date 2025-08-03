@@ -26,9 +26,9 @@
 #include "Clock.h"
 #include "I2c.h"
 
-#include "CarrtError.h"
+#include <CarrtError.h>
+#include <DebugUtils.hpp>
 
-#include "DebugUtils.hpp"
 
 // Useful for early testing and calibration
 // #define CARRT_DISABLE_LIDAR_SERVO   1

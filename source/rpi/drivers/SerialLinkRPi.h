@@ -28,7 +28,7 @@
 #include <cstdint>
 #include <optional>
 
-#include "SerialLink.h"
+#include <SerialLink.h>
 
 
 class SerialLinkRPi : public SerialLink
@@ -56,6 +56,11 @@ public:
     // Fundamental write functions
     void putByte( std::uint8_t c ) override;
     void put4Bytes( std::uint8_t c[4] ) override;
+
+
+    // Bulk functions
+    virtual int getBytes( int nbr, std::uint8_t* buffer ) override;
+    virtual int putBytes( int nbr, std::uint8_t* buffer ) override;
 
 
 private:

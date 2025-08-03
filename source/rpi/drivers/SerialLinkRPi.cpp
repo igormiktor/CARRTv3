@@ -25,15 +25,14 @@
 #include <sstream>
 #include <string>
 
-//#include <stdio.h>
 #include <cstring>
 #include <fcntl.h>
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
 
-#include "CarrtError.h"
-#include "DebugUtils.hpp"
+#include <CarrtError.h>
+#include <DebugUtils.hpp>
 
 
 
@@ -178,7 +177,7 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
 
 bool SerialLinkRPi::get4Bytes( std::uint8_t* c )
 {
-    auto numRead = read( mSerialPort, &c, 4 );
+    auto numRead = read( mSerialPort, c, 4 );
     if ( numRead == 0 )
     {
         // EOF == buffer empty
@@ -243,4 +242,19 @@ void SerialLinkRPi::put4Bytes( std::uint8_t* c )
         errMsgStrm >> errMsg;
         throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
     }
+}
+
+
+
+
+int SerialLinkRPi::getBytes( int nbr, std::uint8_t* buffer )
+{
+    return  read( mSerialPort, buffer, nbr );
+}
+
+
+
+int SerialLinkRPi::putBytes( int nbr, std::uint8_t* buffer )
+{
+    return write( mSerialPort, buffer, nbr );
 }

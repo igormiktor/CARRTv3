@@ -23,10 +23,10 @@
 #ifndef SerialMessage_h
 #define SerialMessage_h
 
-#include <stdint.h>
+#include <cstdint>
 
 
-enum SerialMessage : uint8_t
+enum SerialMessage : std::uint8_t
 {
     kNullMsg                    = 0x00,
 
@@ -78,7 +78,7 @@ enum SerialMessage : uint8_t
 
 
 // These are the messages in the second byte of an extended message (kExtendMsg)
-enum SerialExtendedMsg : uint8_t
+enum SerialExtendedMsg : std::uint8_t
 {
     kNullExtMsg                 = 0x00,
 
@@ -93,10 +93,10 @@ enum SerialExtendedMsg : uint8_t
 
 union Transfer
 {
-    uint8_t     c[4];
-    int         i;
-    uint32_t    u;
-    float       f;
+    std::uint8_t    c[4];
+    int             i;
+    std::uint32_t   u;
+    float           f;
 };
 
 
