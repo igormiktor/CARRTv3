@@ -153,7 +153,7 @@ bool EventManager::queueEvent( int eventCode, int eventParam, uint32_t eventTime
     {
         // Queue overflow flag is intentionally "sicky": once on, stays on until reset
         // This allows us to check for this at our convenience
-        mQueueOverflowOccurred;
+        mQueueOverflowOccurred = true;
     }
 
     return success;
