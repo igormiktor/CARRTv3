@@ -82,10 +82,7 @@ std::optional<std::uint32_t> SerialLinkPico::get4Bytes()
     if ( isReadable() )
     {   
         Transfer t;
-        for ( int i = 0; i < 4; ++i )
-        {
-            t.c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
-        }
+        uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, reinterpret_cast<std::uint8_t*>( &t.c ), 4 );
         return t.u;
     }
     else
@@ -102,10 +99,7 @@ bool SerialLinkPico::get4Bytes( std::uint8_t c[4] )
     // there is data to read
     if ( isReadable() )
     {   
-        for ( int i = 0; i < 4; ++i )
-        {
-            c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
-        }
+        uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, c, 4 );
         return true;
     }
     else
@@ -132,11 +126,7 @@ void SerialLinkPico::put4Bytes( const std::uint8_t c[4] )
 
 int SerialLinkPico::getBytes( int nbr, std::uint8_t* buffer )
 {
-    // uart_read_blocking() isn't working for me...  Weird...
-    for ( int i = 0; i < nbr; ++i )
-    {
-        buffer[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
-    }
+    uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, buffer, nbr );
     return nbr;
 }
 
