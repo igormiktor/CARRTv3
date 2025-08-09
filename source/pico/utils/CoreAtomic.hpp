@@ -103,34 +103,36 @@ namespace CoreAtomic
         // store()
         void store( T value ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
+            CriticalSection block( &mCritSec );
             mValue = value; 
-            critical_section_exit( &mCritSec ); 
         }
 
         void store( T value ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
+            CriticalSection block( &mCritSec );
             mValue = value; 
-            critical_section_exit( &mCritSec ); 
         }
 
 
         // load()
         T load() const noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T value = mValue; 
-            critical_section_exit( &mCritSec ); 
-            return value; 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue; 
+            }
+           return ret; 
         }
 
         T load() const volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T value = mValue; 
-            critical_section_exit( &mCritSec ); 
-            return value; 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue; 
+            }
+            return ret; 
         }
 
 
@@ -149,54 +151,61 @@ namespace CoreAtomic
         // exchange()
         T exchange( T in ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T out = mValue; 
-            mValue = in;
-            critical_section_exit( &mCritSec ); 
-            return out;
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue; 
+                mValue = in;
+            }
+            return ret;
         }
 
         T exchange( T in ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T out = mValue; 
-            mValue = in;
-            critical_section_exit( &mCritSec ); 
-        }
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue; 
+                mValue = in;
+            }
+            return ret;
+         }
 
 
         // compare_exchange_[weak/strong]()
         bool compare_exchange( T& expected, T newValue ) noexcept
         {
-            bool ret = false;
-            critical_section_enter_blocking( &mCritSec ); 
-            if ( mValue == expected )
+            bool ret{ false };
             {
-                mValue = newValue;
-                ret = true;
+                CriticalSection block( &mCritSec );
+                if ( mValue == expected )
+                {
+                    mValue = newValue;
+                    ret = true;
+                }
+                else
+                {
+                    expected = mValue;
+                }
             }
-            else
-            {
-                expected = mValue;
-            }
-            critical_section_exit( &mCritSec ); 
             return ret;
         }
 
         bool compare_exchange( T& expected, T newValue ) volatile noexcept
         {
-            bool ret = false;
-            critical_section_enter_blocking( &mCritSec ); 
-            if ( mValue == expected )
+            bool ret{ false };
             {
-                mValue = newValue;
-                ret = true;
+                CriticalSection block( &mCritSec );
+                if ( mValue == expected )
+                {
+                    mValue = newValue;
+                    ret = true;
+                }
+                else
+                {
+                    expected = mValue;
+                }
             }
-            else
-            {
-                expected = mValue;
-            }
-            critical_section_exit( &mCritSec ); 
             return ret;
         }
 
@@ -224,19 +233,23 @@ namespace CoreAtomic
         // fetch_add()
         T fetch_add( T arg ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T ret = mValue; 
-            mValue += arg;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue; 
+                mValue += arg;
+            }
             return ret;
         }
 
         T fetch_add( T arg ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T ret = mValue; 
-            mValue += arg;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue; 
+                mValue += arg;
+            }
             return ret;
         }
 
@@ -244,19 +257,23 @@ namespace CoreAtomic
         // fetch_sub()
         T fetch_sub( T arg ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T ret = mValue; 
-            mValue -= arg;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue; 
+                mValue -= arg;
+            }
             return ret;
         }
 
         T fetch_sub( T arg ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T ret = mValue; 
-            mValue -= arg;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue; 
+                mValue -= arg;
+            }
             return ret;
         }
 
@@ -264,19 +281,23 @@ namespace CoreAtomic
         // operator+=()
         T operator+=( T arg ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            mValue += arg;
-            T ret = mValue;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue += arg;
+                ret = mValue;
+            }
             return ret;
         }
 
         T operator+=( T arg ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            mValue += arg;
-            T ret = mValue;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue += arg;
+                ret = mValue;
+            }
             return ret;
         }
 
@@ -284,19 +305,23 @@ namespace CoreAtomic
         // operator-=()
         T operator-=( T arg ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            mValue -= arg;
-            T ret = mValue;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue -= arg;
+                ret = mValue;
+            }
             return ret;
         }
 
         T operator-=( T arg ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            mValue -= arg;
-            T ret = mValue;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue -= arg;
+                ret = mValue;
+            }
             return ret;
         }
 
@@ -304,19 +329,23 @@ namespace CoreAtomic
         // operator++()
         T operator++() noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            mValue += 1;
-            T ret = mValue;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
+                ret = mValue;
+            }
             return ret;
         }
 
         T operator++() volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            mValue += 1;
-            T ret = mValue;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
+                ret = mValue;
+            }
             return ret;
         }
 
@@ -324,19 +353,23 @@ namespace CoreAtomic
         // operator++( int )
         T operator++( int ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            T ret = mValue;
-            mValue += 1;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue;
+                mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
+            }
             return ret;
         }
 
         T operator++( int ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            T ret = mValue;
-            mValue += 1;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue;
+                mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
+            }
             return ret;
         }
 
@@ -344,19 +377,23 @@ namespace CoreAtomic
         // operator--()
         T operator--() noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            mValue -= 1;
-            T ret = mValue;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
+                ret = mValue;
+            }
             return ret;
         }
 
         T operator--() volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            mValue -= 1;
-            T ret = mValue;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
+                ret = mValue;
+            }
             return ret;
         }
 
@@ -364,19 +401,23 @@ namespace CoreAtomic
         // operator--( int )
         T operator--( int ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            T ret = mValue;
-            mValue -= 1;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue;
+                mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
+            }
             return ret;
         }
 
         T operator--( int ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec );  
-            T ret = mValue;
-            mValue -= 1;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue;
+                mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
+            }
             return ret;
         }
 
@@ -384,39 +425,47 @@ namespace CoreAtomic
         // fetch_and()
         T fetch_and( T arg ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T ret = mValue; 
-            mValue &= arg;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue;
+                mValue &= arg;  
+            }
             return ret;
         }
 
         T fetch_and( T arg ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T ret = mValue; 
-            mValue &= arg;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue;
+                mValue &= arg;  
+            }
             return ret;
-        }
+       }
 
 
         // fetch_or()
         T fetch_or( T arg ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T ret = mValue; 
-            mValue |= arg;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue;
+                mValue |= arg;  
+            }
             return ret;
         }
 
         T fetch_or( T arg ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T ret = mValue; 
-            mValue |= arg;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue;
+                mValue |= arg;  
+            }
             return ret;
         }
 
@@ -424,19 +473,23 @@ namespace CoreAtomic
         // fetch_xor()
         T fetch_xor( T arg ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T ret = mValue; 
-            mValue ^= arg;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue;
+                mValue ^= arg;  
+            }
             return ret;
         }
 
         T fetch_xor( T arg ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            T ret = mValue; 
-            mValue ^= arg;
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                ret = mValue;
+                mValue ^= arg;  
+            }
             return ret;
         }
 
@@ -444,19 +497,23 @@ namespace CoreAtomic
         // operator&=()
         T operator&=( T arg ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            mValue &= arg;
-            T ret = mValue; 
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue &= arg;
+                ret = mValue; 
+            }
             return ret;
         }   
 
         T operator&=( T arg ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            mValue &= arg;
-            T ret = mValue; 
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue &= arg;
+                ret = mValue; 
+            }
             return ret;
         }   
 
@@ -464,19 +521,23 @@ namespace CoreAtomic
         // operator|=()
         T operator|=( T arg ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            mValue |= arg;
-            T ret = mValue; 
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue |= arg;
+                ret = mValue; 
+            }
             return ret;
         }   
 
         T operator|=( T arg ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            mValue |= arg;
-            T ret = mValue; 
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue |= arg;
+                ret = mValue; 
+            }
             return ret;
         }   
 
@@ -484,19 +545,23 @@ namespace CoreAtomic
         // operator^=()
         T operator^=( T arg ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            mValue ^= arg;
-            T ret = mValue; 
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue ^= arg;
+                ret = mValue; 
+            }
             return ret;
         }   
 
         T operator^=( T arg ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
-            mValue ^= arg;
-            T ret = mValue; 
-            critical_section_exit( &mCritSec ); 
+            T ret{};
+            {
+                CriticalSection block( &mCritSec );
+                mValue ^= arg;
+                ret = mValue; 
+            }
             return ret;
         }   
 
