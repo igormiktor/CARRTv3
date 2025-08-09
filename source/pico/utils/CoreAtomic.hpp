@@ -103,13 +103,13 @@ namespace CoreAtomic
         // store()
         void store( T value ) noexcept
         {
-            CriticalSection block( &mCritSec );
+            CriticalSection block( mCritSec );
             mValue = value; 
         }
 
         void store( T value ) volatile noexcept
         {
-            CriticalSection block( &mCritSec );
+            CriticalSection block( mCritSec );
             mValue = value; 
         }
 
@@ -119,7 +119,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue; 
             }
            return ret; 
@@ -129,7 +129,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue; 
             }
             return ret; 
@@ -153,7 +153,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue; 
                 mValue = in;
             }
@@ -164,7 +164,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue; 
                 mValue = in;
             }
@@ -177,7 +177,7 @@ namespace CoreAtomic
         {
             bool ret{ false };
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 if ( mValue == expected )
                 {
                     mValue = newValue;
@@ -195,7 +195,7 @@ namespace CoreAtomic
         {
             bool ret{ false };
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 if ( mValue == expected )
                 {
                     mValue = newValue;
@@ -235,7 +235,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue; 
                 mValue += arg;
             }
@@ -246,7 +246,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue; 
                 mValue += arg;
             }
@@ -259,7 +259,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue; 
                 mValue -= arg;
             }
@@ -270,7 +270,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue; 
                 mValue -= arg;
             }
@@ -283,7 +283,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue += arg;
                 ret = mValue;
             }
@@ -294,7 +294,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue += arg;
                 ret = mValue;
             }
@@ -307,7 +307,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue -= arg;
                 ret = mValue;
             }
@@ -318,7 +318,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue -= arg;
                 ret = mValue;
             }
@@ -331,7 +331,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
                 ret = mValue;
             }
@@ -342,7 +342,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
                 ret = mValue;
             }
@@ -355,7 +355,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue;
                 mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
             }
@@ -366,7 +366,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue;
                 mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
             }
@@ -379,7 +379,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
                 ret = mValue;
             }
@@ -390,7 +390,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
                 ret = mValue;
             }
@@ -403,7 +403,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue;
                 mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
             }
@@ -414,7 +414,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue;
                 mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
             }
@@ -427,7 +427,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue;
                 mValue &= arg;  
             }
@@ -438,7 +438,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue;
                 mValue &= arg;  
             }
@@ -451,7 +451,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue;
                 mValue |= arg;  
             }
@@ -462,7 +462,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue;
                 mValue |= arg;  
             }
@@ -475,7 +475,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue;
                 mValue ^= arg;  
             }
@@ -486,7 +486,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 ret = mValue;
                 mValue ^= arg;  
             }
@@ -499,7 +499,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue &= arg;
                 ret = mValue; 
             }
@@ -510,7 +510,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue &= arg;
                 ret = mValue; 
             }
@@ -523,7 +523,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue |= arg;
                 ret = mValue; 
             }
@@ -534,7 +534,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue |= arg;
                 ret = mValue; 
             }
@@ -547,7 +547,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue ^= arg;
                 ret = mValue; 
             }
@@ -558,7 +558,7 @@ namespace CoreAtomic
         {
             T ret{};
             {
-                CriticalSection block( &mCritSec );
+                CriticalSection block( mCritSec );
                 mValue ^= arg;
                 ret = mValue; 
             }
