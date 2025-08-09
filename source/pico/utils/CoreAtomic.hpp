@@ -29,6 +29,9 @@
 
 #include "pico/sync.h"
 
+#include "CriticalSection.h"
+
+
 
 namespace CoreAtomic 
 {
@@ -61,12 +64,17 @@ namespace CoreAtomic
 
 
         // Constructors
-        constexpr CAtomic() noexcept(std::is_nothrow_default_constructible_v<T>) = default;
-        CAtomic( const CAtomic<T>& ) = delete;  
-        CAtomic( CAtomic<T>&& ) = delete;       
+        explicit constexpr CAtomic( T initialValue = 0 ) noexcept 
+        : mValue( initialValue ) { }
+
+        CAtomic( const CAtomic<T>& )    = delete;  
+        CAtomic( CAtomic<T>&& )         = delete;       
 
 
         // Assignment
+        CAtomic<T>& operator=( const CAtomic<T>& )  = delete;  
+        CAtomic<T>& operator=( CAtomic<T>&& )       = delete;       
+
         CAtomic<T>& operator=( T value ) noexcept
         {
             store( value ); 
@@ -78,9 +86,6 @@ namespace CoreAtomic
             store( value ); 
             return *this; 
         }
-
-        CAtomic<T>& operator=(const CAtomic<T>&) = delete;  
-        CAtomic<T>& operator=(CAtomic<T>&&) = delete;       
 
 
         // is_lock_free()
@@ -159,11 +164,12 @@ namespace CoreAtomic
             critical_section_exit( &mCritSec ); 
         }
 
+
         // compare_exchange_[weak/strong]()
         bool compare_exchange( T& expected, T newValue ) noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
             bool ret = false;
+            critical_section_enter_blocking( &mCritSec ); 
             if ( mValue == expected )
             {
                 mValue = newValue;
@@ -179,8 +185,8 @@ namespace CoreAtomic
 
         bool compare_exchange( T& expected, T newValue ) volatile noexcept
         {
-            critical_section_enter_blocking( &mCritSec ); 
             bool ret = false;
+            critical_section_enter_blocking( &mCritSec ); 
             if ( mValue == expected )
             {
                 mValue = newValue;
@@ -196,22 +202,22 @@ namespace CoreAtomic
 
         bool compare_exchange_weak( T& expected, T newValue ) noexcept
         {
-            return compare_exchange( std::forward( expected ), newValue );
+            return compare_exchange( expected, newValue );
         }
 
         bool compare_exchange_weak( T& expected, T newValue ) volatile noexcept
         {
-            return compare_exchange( std::forward( expected ), newValue );
+            return compare_exchange( expected, newValue );
         }
 
         bool compare_exchange_strong( T& expected, T newValue ) noexcept
         {
-            return compare_exchange( std::forward( expected ), newValue );
+            return compare_exchange( expected, newValue );
         }
 
         bool compare_exchange_strong( T& expected, T newValue ) volatile noexcept
         {
-            return compare_exchange( std::forward( expected ), newValue );
+            return compare_exchange( expected, newValue );
         }
 
 
@@ -513,7 +519,7 @@ namespace CoreAtomic
 
     namespace Types 
     {
-        // Standard type definitions given by std::atomic and thus replicated by this library
+        // Standard type definitions from std::atomic
         using CAtomic_bool              = CAtomic<bool>;
         using CAtomic_char              = CAtomic<char>;
         using CAtomic_schar             = CAtomic<signed char>;
@@ -551,6 +557,6 @@ namespace CoreAtomic
     }   // Types            
 
 
-} // namespace patom
+} // CoreAtomic
 
 #endif  // CAtomic_hpp
