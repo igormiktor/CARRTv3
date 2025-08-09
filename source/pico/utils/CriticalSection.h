@@ -32,26 +32,40 @@
 
 #include "pico/critical_section.h"
 
+#include "CarrtError.h"
+
+
 
 class CriticalSection
 {
     public:
 
-        CriticalSection()
+        explicit CriticalSection( critical_section_t* initializeCritSection )
+        : mCriticalSection( initializeCritSection )
         {
-            critical_section_init( &mCriticalSection );
-            critical_section_enter_blocking( &mCriticalSection );
+            if ( !mCriticalSection )
+            {
+                throw CarrtError( makePicoErrorId( kPicoCritSectionError, 1, 1 ), "Null critial_section ptr passed to constructor" );
+            }
+            critical_section_enter_blocking( mCriticalSection );
         }
+
+        // Local objects that exist and self-destruct; nothing else
+        CriticalSection( const CriticalSection& )               = delete;  
+        CriticalSection( CriticalSection&& )                    = delete;    
+        CriticalSection& operator=( const CriticalSection& )    = delete;
+        CriticalSection& operator=( CriticalSection&& )          = delete;
+
 
         ~CriticalSection()
         {
-            critical_section_exit( &mCriticalSection );
-            critical_section_deinit( &mCriticalSection );
+            critical_section_exit( mCriticalSection );
         }
+
 
     private:
 
-        critical_section_t   mCriticalSection;
+        critical_section_t*   mCriticalSection;
 
 };
 
