@@ -26,6 +26,7 @@ target_include_directories( SerialTest4a PRIVATE
 target_link_libraries( SerialTest4a PRIVATE
         pico_driver_library
         shared_library
+        utils_library
         pico_multicore
         pico_stdlib 
         hardware_i2c

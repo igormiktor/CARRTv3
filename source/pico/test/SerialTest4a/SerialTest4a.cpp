@@ -14,7 +14,7 @@
 #include "hardware/timer.h"
 #include "hardware/uart.h"
 
-
+#include "utils/CoreAtomic.hpp"
 
 bi_decl( bi_1pin_with_name( CARRTPICO_HEARTBEAT_LED, "On-board LED for blinking" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );

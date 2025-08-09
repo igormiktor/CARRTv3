@@ -11,6 +11,7 @@
 
 
 #include "../carrt/CarrtPicoDefines.h"
+#include "CoreAtomic.hpp"
 #include "shared/CarrtError.h"
 
 
@@ -28,10 +29,12 @@ int64_t alarm_callback( alarm_id_t id, void *user_data )
     return 0;
 }
 
-volatile int x = 0;
+CoreAtomic::CAtomic<int> x;
 
 int main()
 {
+    x = 0;
+
     stdio_init_all();
 
     std::cout << "Hello, this is CARRT Pico!" << std::endl;

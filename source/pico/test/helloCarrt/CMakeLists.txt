@@ -23,6 +23,7 @@ target_include_directories(helloCarrtPico PRIVATE
 
 # Add any user requested libraries
 target_link_libraries(helloCarrtPico 
+        utils_library
         hardware_spi
         hardware_i2c
         hardware_timer
