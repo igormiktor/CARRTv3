@@ -1,3 +1,24 @@
+/*
+    CoreAtomic.hpp - A template for an Atomic class that is atomic across cores
+    and uses only one critical_section spinlock shared across all instances.
+
+    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 
 #ifndef CoreAtomic_hpp
 #define CoreAtomic_hpp
@@ -14,20 +35,22 @@ namespace CoreAtomic
 
     namespace Internal 
     {
-
-        // A critical section shared by all atomic variables
+        // A critical section shared by all atomic variable instances
         inline critical_section_t mCritSec{}; 
 
     }   // Internal
 
 
-
+    // Call this function from main() to init the shared critical section
     inline void initCAtomic()
     {
         critical_section_init( &Internal::mCritSec );  
     }
 
 
+
+
+    // Currently only defined for std::integral types
     template<std::integral T>
     struct CAtomic 
     {
