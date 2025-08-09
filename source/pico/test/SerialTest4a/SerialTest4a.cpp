@@ -80,6 +80,8 @@ void startCore1()
 
 int main()
 {
+    CoreAtomic::CAtomicInitializer theInitializationIsDone;
+
     stdio_init_all();
 
     // I2C Initialisation. Using it at 400Khz.

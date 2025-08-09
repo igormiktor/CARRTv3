@@ -44,11 +44,44 @@ namespace CoreAtomic
     }   // Internal
 
 
-    // Call this function from main() to init the shared critical section
+    
+    // Call this function to init the shared critical section
+    // Notionally called at the beginning of main()
     inline void initCAtomic()
     {
         critical_section_init( &Internal::mCritSec );  
     }
+
+
+    // Call this to de-init the shared critical section
+    // Notionally called at the end of main()
+    inline void deinitCAtomic()
+    {
+        critical_section_deinit( &Internal::mCritSec );
+    }
+
+
+
+
+    // Helper class for initializing and deinitializing the shared critical section 
+    class CAtomicInitializer
+    {
+
+    public:
+        
+        CAtomicInitializer() noexcept
+        {
+            initCAtomic();
+        }
+
+
+        ~CAtomicInitializer()
+        {
+            deinitCAtomic();
+        }
+
+    };
+
 
 
 
@@ -332,7 +365,7 @@ namespace CoreAtomic
             T ret{};
             {
                 CriticalSection block( mCritSec );
-                mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
+                mValue += 1;                            // ++mValue, mValue++ trigger compiler warnings on volatile mValue
                 ret = mValue;
             }
             return ret;
@@ -343,7 +376,7 @@ namespace CoreAtomic
             T ret{};
             {
                 CriticalSection block( mCritSec );
-                mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
+                mValue += 1;                            // ++mValue, mValue++ trigger compiler warnings on volatile mValue
                 ret = mValue;
             }
             return ret;
@@ -357,7 +390,7 @@ namespace CoreAtomic
             {
                 CriticalSection block( mCritSec );
                 ret = mValue;
-                mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
+                mValue += 1;                            // ++mValue, mValue++ trigger compiler warnings on volatile mValue
             }
             return ret;
         }
@@ -368,7 +401,7 @@ namespace CoreAtomic
             {
                 CriticalSection block( mCritSec );
                 ret = mValue;
-                mValue += 1;                            // ++mValue/mValue++ trigger compiler warnings on volatile mValue
+                mValue += 1;                            // ++mValue, mValue++ trigger compiler warnings on volatile mValue
             }
             return ret;
         }
@@ -380,7 +413,7 @@ namespace CoreAtomic
             T ret{};
             {
                 CriticalSection block( mCritSec );
-                mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
+                mValue -= 1;                            // --mValue, mValue-- trigger compiler warnings on volatile mValue
                 ret = mValue;
             }
             return ret;
@@ -391,7 +424,7 @@ namespace CoreAtomic
             T ret{};
             {
                 CriticalSection block( mCritSec );
-                mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
+                mValue -= 1;                            // --mValue, mValue-- trigger compiler warnings on volatile mValue
                 ret = mValue;
             }
             return ret;
@@ -405,7 +438,7 @@ namespace CoreAtomic
             {
                 CriticalSection block( mCritSec );
                 ret = mValue;
-                mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
+                mValue -= 1;                            // --mValue, mValue-- trigger compiler warnings on volatile mValue
             }
             return ret;
         }
@@ -416,7 +449,7 @@ namespace CoreAtomic
             {
                 CriticalSection block( mCritSec );
                 ret = mValue;
-                mValue -= 1;                            // --mValue/mValue-- trigger compiler warnings on volatile mValue
+                mValue -= 1;                            // --mValue, mValue-- trigger compiler warnings on volatile mValue
             }
             return ret;
         }
@@ -624,4 +657,4 @@ namespace CoreAtomic
 
 } // CoreAtomic
 
-#endif  // CAtomic_hpp
+#endif  // CoreAtomic_hpp
