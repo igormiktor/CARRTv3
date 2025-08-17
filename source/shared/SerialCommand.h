@@ -24,6 +24,14 @@
 #define SerialMessage_h
 
 #include <cstdint>
+#include <tuple>
+#include <utility>
+#include <functional> 
+
+
+#include "SerialLink.h"
+#include "CarrtError.h"
+
 
 
 
@@ -107,6 +115,100 @@ union Transfer
 class SerialLink;
 
 
+
+template<typename TTuple>
+struct SerialMessage
+{
+public:
+
+    SerialMessage( CommandId id ) noexcept
+    : mId{ id }, mData{} {}
+
+    SerialMessage( CommandId id, TTuple data ) noexcept;
+
+    void readIn( SerialLink& link )
+    {
+        // Don't read ID, we already have it if we call this function
+        link.put( static_cast<std::uint8_t>( mId ) );
+        for_each( mData, 
+            []( SerialLink& lnk, auto& dataItem )
+            {  
+                auto got = lnk.get( dataItem );
+//                int n{ 10 };
+//                while ( !got && n-- > 0 )
+//                {
+//                    got = lnk.get( dataItem );
+//                }
+                if ( got )
+                {
+                    dataItem = *got;
+                }
+                else
+                {
+                    throw CarrtError( makePicoErrorId( kSerialCmdReadError, 1, 1 ) );
+                }
+            }, 
+            link 
+        );
+    }
+
+    void sendOut( SerialLink& link )
+    {
+        // Send the ID, if we send the message
+        link.put( static_cast<std::uint8_t>( mId ) );
+        for_each( mData, []( SerialLink& lnk, auto& dataItem ){ lnk.put( dataItem ); }, link );
+    }
+
+    // Tuple compile-time iterator
+    template <
+        size_t Index = 0,                                           // start iteration at 0 index
+//        typename TTuple,                                            // the tuple type
+        size_t Size =
+            std::tuple_size_v<std::remove_reference_t<TTuple>>,     // tuple size
+        typename TCallable,                                         // the callable to be invoked for each tuple item
+        typename... TArgs                                           // other arguments to be passed to the callable
+    >
+    void for_each( TTuple&& tuple, TCallable&& callable, TArgs&&... args )
+    {
+        if constexpr (Index < Size)
+        {
+            std::invoke(callable, args..., std::get<Index>(tuple));
+
+            if constexpr (Index + 1 < Size)
+                for_each<Index + 1>(
+                    std::forward<TTuple>(tuple),
+                    std::forward<TCallable>(callable),
+                    std::forward<TArgs>(args)... );
+        }
+    }
+
+
+    CommandId   mId;
+    TTuple      mData;
+
+};
+
+
+
+
+#if 0
+
+template<std::size_t I = 0, typename FuncT, typename... Tp>
+inline typename std::enable_if<I == sizeof...(Tp), void>::type
+  for_each(std::tuple<Tp...> &, FuncT) // Unused arguments are given no names.
+  { }
+
+template<std::size_t I = 0, typename FuncT, typename... Tp>
+inline typename std::enable_if<I < sizeof...(Tp), void>::type
+  for_each(std::tuple<Tp...>& t, FuncT f)
+  {
+    f(std::get<I>(t));
+    for_each<I + 1, FuncT, Tp...>(t, f);
+  }
+
+#endif // if 0
+
+
 class SerialCommand 
 {
 public:
@@ -116,15 +218,15 @@ public:
 
     virtual ~SerialCommand() = default;
 
-    virtual void readIn( SerialLink& link );
+    virtual void readIn( SerialLink& link ) = 0;
 
-    virtual void sendOut( SerialLink& link );
+    virtual void sendOut( SerialLink& link ) = 0;
 
-    virtual void takeAction( SerialLink& link );
+    virtual void takeAction( SerialLink& link ) = 0;
 
-    virtual bool needsAction() const noexcept;
+    virtual bool needsAction() const noexcept = 0;
 
-    std::uint8_t getId() const noexcept;
+    virtual std::uint8_t getId() const noexcept = 0;
 
 
 protected:
