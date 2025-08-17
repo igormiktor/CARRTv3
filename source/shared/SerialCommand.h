@@ -1,9 +1,9 @@
 /*
-    SerialMessage.h - Serial Message tools for CARRT3 communications
+    SerialCommands.h - Serial Commands for CARRT3 communications
     between the RPI and Pico.  This file is shared by both the
     RPI and Pico code bases.
 
-    Copyright (c) 2023 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,7 +26,8 @@
 #include <cstdint>
 
 
-enum SerialMessage : std::uint8_t
+
+enum CommandId : std::uint8_t
 {
     kNullMsg                    = 0x00,
 
@@ -90,7 +91,7 @@ enum SerialExtendedMsg : std::uint8_t
 
 
 
-
+#if 0
 union Transfer
 {
     std::uint8_t    c[4];
@@ -98,7 +99,44 @@ union Transfer
     std::uint32_t   u;
     float           f;
 };
+#endif  // #if 0
 
+
+
+
+class SerialLink;
+
+
+class SerialCommand 
+{
+public:
+
+    SerialCommand( CommandId id ) noexcept 
+    : mId{ id } {}
+
+    virtual ~SerialCommand() = default;
+
+    virtual void readIn( SerialLink& link );
+
+    virtual void sendOut( SerialLink& link );
+
+    virtual void takeAction( SerialLink& link );
+
+    virtual bool needsAction() const noexcept;
+
+    std::uint8_t getId() const noexcept;
+
+
+protected:
+
+//    void setId( std::uint8_t id );
+
+
+private:
+
+    std::uint8_t    mId;
+
+};
 
 
 #endif // SerialMessage_h

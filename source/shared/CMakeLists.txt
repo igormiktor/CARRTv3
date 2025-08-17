@@ -4,12 +4,14 @@ set( SHARED_HDR_LIST
     CarrtError.h 
     ErrorCodes.h 
     Event.h 
+    SerialCommand.h 
+    SerialCommandProcessor.h
     SerialLink.h 
-    SerialMessage.h 
 )
 
 # Shared source list
 set( SHARED_SRC_LIST 
+    SerialCommandProcessor.cpp
     SerialLink.cpp
 )
 

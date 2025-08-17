@@ -1,7 +1,6 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
 
-#include "SerialMessage.h"
 #include "SerialLinkPico.h"
 
 #include <iostream>

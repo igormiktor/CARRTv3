@@ -2,6 +2,7 @@
 #include "EventManager.h"
 
 #include "SerialCommand.h"
+#include "SerialLinkPico.h"
 
 #include <iostream>
 #include "pico/binary_info.h"
@@ -13,7 +14,7 @@
 #include "hardware/timer.h"
 #include "hardware/uart.h"
 
-
+#include "utils/CoreAtomic.hpp"
 
 bi_decl( bi_1pin_with_name( CARRTPICO_HEARTBEAT_LED, "On-board LED for blinking" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
@@ -59,10 +60,6 @@ void startCore1()
 {
     std::cout << "Started Core " << get_core_num() << std::endl;
 
-    // Test sending UART from core 1
-    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kIdentifyPicoCore );
-    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 1 );
-
     alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
 
     repeating_timer_t timer;
@@ -81,19 +78,10 @@ void startCore1()
 
 
 
-
-
-union Transfer
-{
-    std::uint8_t    c[4];
-    int             i;
-    std::uint32_t   u;
-    float           f;
-};
-
-
 int main()
 {
+    CoreAtomic::CAtomicInitializer theInitializationIsDone;
+
     stdio_init_all();
 
     // I2C Initialisation. Using it at 400Khz.
@@ -105,10 +93,7 @@ int main()
 
 
     // Initialise UART for data
-    uart_init( CARRTPICO_SERIAL_LINK_UART, CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
-    // Set the GPIO pin mux to the UART
-    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
-    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
+    SerialLinkPico rpi0;
 
 
     // puts("This is CARRT Pico!");
@@ -120,8 +105,6 @@ int main()
 
     multicore_launch_core1( startCore1 );
 
-    // Avoid immediate risk of collision with UART test from Core 1
-    sleep_ms( 100 );
 
     bool ledState = false;
     while ( true ) 
@@ -135,19 +118,19 @@ int main()
             {
                 case Event::kNavUpdateEvent:
                     std::cout << "Nav " << eventParam << std::endl;
-                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kTimerNavUpdate );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimerNavUpdate );
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
-                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kTimer1_4s );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer1_4s );
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
-                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kTimer1s );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer1s );
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     ledState = !ledState;
@@ -155,13 +138,13 @@ int main()
                     
                 case Event::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
-                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kTimer8s );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer8s );
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
 
                 case Event::kIdentifyPicoCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
-                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kIdentifyPicoCore );
+                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kIdentifyPicoCore );
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 0 );
                     break;
             }
@@ -174,98 +157,119 @@ int main()
 
         if ( uart_is_readable( CARRTPICO_SERIAL_LINK_UART ) )
         {
-            Transfer t;
-            char cmd = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+            uint32_t cmd{ 0 };
+            auto gotCmd = rpi0.getMsgType();
+            if ( gotCmd )
+            {
+                cmd = *gotCmd;
+            }
 
             switch( cmd )
             {
                 case 'T':
                 case 't':
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'T' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
+                    rpi0.putMsgType( 'T' );
                     break;
 
                 case 'F':
                 case 'f':
+                {
                     // Read a float
-                    t.i = 0;
-                    for ( int i = 0; i < 4; ++i )
+                    auto gotF = rpi0.getFloat();
+                    if ( gotF )
                     {
-                        t.c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+                        float f{ *gotF };
+                        // Send back 'F' and float + 1
+                        f += 1;
+                        rpi0.putMsgType( 'F' );
+                        rpi0.put( f );                        
                     }
-                    // Send back 'F' and float + 1
-                    t.f += 1;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'F' );
-                    for ( int i = 0; i < 4; ++i )
+                    else
                     {
-                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
+                        float f{ 666.666 };
+                        // Send back 'X' and this float
+                        rpi0.putMsgType( 'X' );
+                        rpi0.put( f );                        
                     }
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
+                }
 
                 case 'K':
                 case 'k':
+                {
                     // Read an unsigned int
-                    t.u = 0;
-                    for ( int i = 0; i < 4; ++i )
+                    auto gotU = rpi0.get4Bytes();
+                    if ( gotU )
                     {
-                        t.c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+                        std::uint32_t u{ *gotU };
+                        // Send back 'K' and u + 1
+                        u += 1;
+                        rpi0.putMsgType( 'K' );
+                        rpi0.put( u );                        
                     }
-                    // Send back 'K' and an unsigned int + 1
-                    t.u += 1;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'K' );
-                    for ( int i = 0; i < 4; ++i )
+                    else
                     {
-                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
+                        std::uint32_t u{ 666 };
+                        // Send back 'X' and this u
+                        rpi0.putMsgType( 'X' );
+                        rpi0.put( u );                        
                     }
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
+                }
 
                 case 'I':
                 case 'i':
+                {
                     // Read an int
-                    t.i = 0;
-                    for ( int i = 0; i < 4; ++i )
+                    // Send back 'I"
+                    rpi0.putMsgType( 'I' );
+                    auto gotI = rpi0.getInt();
+                    if ( gotI )
                     {
-                        t.c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+                        int i{ *gotI };
+                        // Send back i + 1
+                        i += 1;
+                        rpi0.put( i );                        
                     }
-                    // Send back 'I' and int + 1
-                    t.i += 1;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'I' );
-                    for ( int i = 0; i < 4; ++i )
+                    else
                     {
-                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
+                        int i{ -666 };
+                        // Send back this float
+                        rpi0.put( i );                        
                     }
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
+                }
 
                 case 'J':
                 case 'j':
+                {
                     // Read an int
-                    t.i = 0;
-                    for ( int i = 0; i < 4; ++i )
+                    auto gotI2 = rpi0.getInt();
+                    if ( gotI2 )
                     {
-                        t.c[i] = uart_getc( CARRTPICO_SERIAL_LINK_UART );
+                        int i2{ *gotI2 };
+                        // Send back 'J' and i + 1
+                        i2 += 1;
+                        rpi0.putMsgType( 'J' );
+                        rpi0.put( i2 );                        
                     }
-                    // Send back 'J' and int + 1;
-                    t.i += 1;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 'J' );
-                    for ( int i = 0; i < 4; ++i )
+                    else
                     {
-                        uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, t.c[i] );
+                        int i2{ 666666 };
+                        // Send back 'X' and this float
+                        rpi0.putMsgType( 'X' );
+                        rpi0.put( i2 );                        
                     }
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    //uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
                     break;
-
+                }
                 case 'N':
                 case 'n':
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
+                    break;
+
+                case 0:
+                    // do nothing
                     break;
 
                 default:

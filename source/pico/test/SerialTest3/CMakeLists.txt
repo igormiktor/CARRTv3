@@ -12,12 +12,6 @@ pico_set_program_url( SerialTest3 "https://github.com/igormiktor/CARRTv3" )
 pico_enable_stdio_uart( SerialTest3 1 )
 pico_enable_stdio_usb( SerialTest3 0 )
 
-# Add the standard library to the build
-target_link_libraries( SerialTest3
-        pico_multicore
-        pico_stdlib 
-        )
-
 # Add the standard include files to the build
 target_include_directories( SerialTest3 PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}
@@ -28,10 +22,15 @@ target_include_directories( SerialTest3 PRIVATE
 
 # Add any user requested libraries
 target_link_libraries( SerialTest3 
+        pico_driver_library
+        shared_library
+        utils_library
+        pico_multicore
+        pico_stdlib 
         hardware_i2c
         hardware_timer
         hardware_clocks
-        )
+)
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs( SerialTest3 )
