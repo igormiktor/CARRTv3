@@ -50,7 +50,7 @@ enum CommandId : std::uint8_t
     // Msgs from Pico
     kPicoReady                  = 0x10,             // Pico sends once ready to start receiving messages (Pico initiates serial comms with this message)
                                                     // If Pico fails to be ready, error report instead (via kErrorReportFromPico)
-    kPicoReadyNav               = 0x11,              // Sent by Pico once Nav ready and ready to do stuff (bytes 2-5 -> uint32_t time hack for sync)
+    kPicoReadyNav               = 0x11,             // Sent by Pico once Nav ready and ready to do stuff (bytes 2-5 -> uint32_t time hack for sync)
     KPicoSaysStop               = 0x1F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
 
     // Timer events (from Pico)
@@ -179,24 +179,25 @@ public:
 
 
 
-    // Tuple compile-time iterator
+    // Tuple compile-time iterator over elements
     template <
         size_t Index = 0,                                                   // start iteration at 0 index
         size_t Size = std::tuple_size_v<std::remove_reference_t<TTuple>>,   // tuple size
         typename TCallable,                                                 // the callable to be invoked for each tuple item
-        typename... TArgs                                                   // other arguments to be passed to the callable
+        typename ...TArgs                                                   // other arguments to be passed to the callable
     >
     void for_each( TTuple&& tuple, TCallable&& callable, TArgs&&... args )
     {
-        if constexpr (Index < Size)
+        if constexpr ( Index < Size )
         {
-            std::invoke(callable, args..., std::get<Index>(tuple));
+            std::invoke( callable, args..., std::get<Index>( tuple ) );
 
-            if constexpr (Index + 1 < Size)
-                for_each<Index + 1>(
-                    std::forward<TTuple>(tuple),
-                    std::forward<TCallable>(callable),
-                    std::forward<TArgs>(args)... );
+            if constexpr ( Index + 1 < Size )
+                for_each<Index + 1>( 
+                    std::forward<TTuple>( tuple ), 
+                    std::forward<TCallable>( callable ),
+                    std::forward<TArgs>( args )... 
+                );
         }
     }
 
@@ -209,22 +210,6 @@ public:
 
 
 
-#if 0
-
-template<std::size_t I = 0, typename FuncT, typename... Tp>
-inline typename std::enable_if<I == sizeof...(Tp), void>::type
-  for_each(std::tuple<Tp...> &, FuncT) // Unused arguments are given no names.
-  { }
-
-template<std::size_t I = 0, typename FuncT, typename... Tp>
-inline typename std::enable_if<I < sizeof...(Tp), void>::type
-  for_each(std::tuple<Tp...>& t, FuncT f)
-  {
-    f(std::get<I>(t));
-    for_each<I + 1, FuncT, Tp...>(t, f);
-  }
-
-#endif // if 0
 
 
 class SerialCommand 
