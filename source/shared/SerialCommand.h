@@ -27,6 +27,7 @@
 #include <tuple>
 #include <utility>
 #include <functional> 
+#include <type_traits>
 
 
 #include "SerialLink.h"
@@ -41,15 +42,16 @@ enum CommandId : std::uint8_t
 
     // Messages (to Pico); acknowledged from Pico with same Msg to ack.  Errors send by kErrorReportFromPico msg
     kStartCore1                 = 0x01,             // Pico to start Core1 
-    kBeginCalibration           = 0x02,             // Pico to begin calibration of the BNO055  (end of calibration -> kPicoReady msg)
+    kBeginCalibration           = 0x02,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
     kPauseMsg                   = 0x07,             // Pico to pause event processing
     kResumeMsg                  = 0x08,             // Pico to resume event processing  
     kResetMsg                   = 0x09,             // Pico to reset itself (ack by sending kReset, then followed by kPicoReady)
 
     // Msgs from Pico
-    kPicoReady                  = 0x10,             // Sent by Pico once ready (bytes 2-5 -> uint32_t time hack for sync)
-                                                    // If Pico not ready, error report instead (via kErrorReportFromPico)
-    KPicoSaysStop               = 0x11,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
+    kPicoReady                  = 0x10,             // Pico sends once ready to start receiving messages (Pico initiates serial comms with this message)
+                                                    // If Pico fails to be ready, error report instead (via kErrorReportFromPico)
+    kPicoReadyNav               = 0x11,              // Sent by Pico once Nav ready and ready to do stuff (bytes 2-5 -> uint32_t time hack for sync)
+    KPicoSaysStop               = 0x1F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
 
     // Timer events (from Pico)
     kTimerNavUpdate             = 0x20,             // Navigation timer (1/8 sec) (info in following bytes)
@@ -71,7 +73,7 @@ enum CommandId : std::uint8_t
     kRequestBatteryLevel        = 0xA0,             // Pico to reply same with IC battery V in following bytes
     kBatteryLowAlert            = 0xA1,             // Pico sends alert that IC battery is low
     kRequestMotorBatteryLevel   = 0xA2,             // Pico to reply same with motor battery V in following bytes
-    kMotorBattLowAlert          = 0x53,             // Pico sends alert that motor battery is low
+    kMotorBattLowAlert          = 0xA3,             // Pico sends alert that motor battery is low
 
     // Error reports
     kErrorReportFromPico        = 0xE0,             // Pico sends a bool fatal flag (bool in a uint8_t) and error code (int) in following bytes (3-6)
@@ -81,6 +83,8 @@ enum CommandId : std::uint8_t
     kIdentifyPicoCore           = 0xF0,             // RPi0 sends to Pico asking to identify core (0 or 1) running uart
                                                     // Pico responds with same and which core is running uart (2nd byte)
     kTestPicoReportError        = 0xF2,             // RPi0 sends to Pico asking to report an error (bytes 2-5 contain error code to send back)
+
+    kDebugSerialLink            = 0xFE,             // RPi0 or Pico sends messages to debug/test the serial link
 
     kExtendedMsg                = 0xFF
 };
@@ -116,7 +120,18 @@ class SerialLink;
 
 
 
-template<typename TTuple>
+
+template<typename T>
+inline constexpr bool is_tuple_v = false;
+
+template<typename ...Elems>
+inline constexpr bool is_tuple_v<std::tuple<Elems...>> = true;
+
+template<typename T>
+concept IsTuple = is_tuple_v<std::remove_cvref_t<T>>;
+
+
+template<IsTuple TTuple>
 struct SerialMessage
 {
 public:
@@ -134,11 +149,13 @@ public:
             []( SerialLink& lnk, auto& dataItem )
             {  
                 auto got = lnk.get( dataItem );
-//                int n{ 10 };
-//                while ( !got && n-- > 0 )
-//                {
-//                    got = lnk.get( dataItem );
-//                }
+#if 0   // See if we need this.  Think not
+                int n{ 10 };
+                while ( !got && n-- > 0 )
+                {
+                    got = lnk.get( dataItem );
+                }
+#endif  // if 0
                 if ( got )
                 {
                     dataItem = *got;
@@ -152,6 +169,7 @@ public:
         );
     }
 
+
     void sendOut( SerialLink& link )
     {
         // Send the ID, if we send the message
@@ -159,14 +177,14 @@ public:
         for_each( mData, []( SerialLink& lnk, auto& dataItem ){ lnk.put( dataItem ); }, link );
     }
 
+
+
     // Tuple compile-time iterator
     template <
-        size_t Index = 0,                                           // start iteration at 0 index
-//        typename TTuple,                                            // the tuple type
-        size_t Size =
-            std::tuple_size_v<std::remove_reference_t<TTuple>>,     // tuple size
-        typename TCallable,                                         // the callable to be invoked for each tuple item
-        typename... TArgs                                           // other arguments to be passed to the callable
+        size_t Index = 0,                                                   // start iteration at 0 index
+        size_t Size = std::tuple_size_v<std::remove_reference_t<TTuple>>,   // tuple size
+        typename TCallable,                                                 // the callable to be invoked for each tuple item
+        typename... TArgs                                                   // other arguments to be passed to the callable
     >
     void for_each( TTuple&& tuple, TCallable&& callable, TArgs&&... args )
     {
