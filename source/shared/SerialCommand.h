@@ -1,5 +1,5 @@
 /*
-    SerialCommands.h - Serial Commands for CARRT3 communications
+    SerialCommand.h - Serial Command for CARRT3 communications
     between the RPI and Pico.  This file is shared by both the
     RPI and Pico code bases.
 
@@ -20,8 +20,8 @@
 */
 
 
-#ifndef SerialMessage_h
-#define SerialMessage_h
+#ifndef SerialCommand_h
+#define SerialCommand_h
 
 #include <cstdint>
 #include <tuple>
@@ -84,9 +84,9 @@ enum CommandId : std::uint8_t
                                                     // Pico responds with same and which core is running uart (2nd byte)
     kTestPicoReportError        = 0xF2,             // RPi0 sends to Pico asking to report an error (bytes 2-5 contain error code to send back)
 
-    kDebugSerialLink            = 0xFE,             // RPi0 or Pico sends messages to debug/test the serial link
+    kDebugSerialLink            = 0xFE,             // RPi0 or Pico sends messages to debug/test the serial link; data is two uint8_t values
 
-    kExtendedMsg                = 0xFF
+    kExtendedMsg                = 0xFF              // Indicates an extended msg; read next byte for extended command
 };
 
 
@@ -139,7 +139,9 @@ public:
     SerialMessage( CommandId id ) noexcept
     : mId{ id }, mData{} {}
 
-    SerialMessage( CommandId id, TTuple data ) noexcept;
+    SerialMessage( CommandId id, TTuple t ) noexcept
+    : mId{ id }, mData{ t } {}
+
 
     void readIn( SerialLink& link )
     {
@@ -178,15 +180,15 @@ public:
     }
 
 
-
     // Tuple compile-time iterator over elements
     template <
         size_t Index = 0,                                                   // start iteration at 0 index
-        size_t Size = std::tuple_size_v<std::remove_reference_t<TTuple>>,   // tuple size
+        typename TupleT,                                                    // the tuple type
+        size_t Size = std::tuple_size_v<std::remove_reference_t<TupleT>>,   // tuple size
         typename TCallable,                                                 // the callable to be invoked for each tuple item
         typename ...TArgs                                                   // other arguments to be passed to the callable
     >
-    void for_each( TTuple&& tuple, TCallable&& callable, TArgs&& ...args )
+    void for_each( TupleT&& tuple, TCallable&& callable, TArgs&& ...args )
     {
         if constexpr ( Index < Size )
         {
@@ -195,13 +197,15 @@ public:
             if constexpr ( Index + 1 < Size )
             {
                 for_each<Index + 1>( 
-                    std::forward<TTuple>( tuple ), 
+                    std::forward<TupleT>( tuple ), 
                     std::forward<TCallable>( callable ),
                     std::forward<TArgs>( args )... 
                 );
             }
         }
     }
+
+
 
 
     CommandId   mId;
@@ -218,8 +222,7 @@ class SerialCommand
 {
 public:
 
-    SerialCommand( CommandId id ) noexcept 
-    : mId{ id } {}
+    SerialCommand( CommandId id ) noexcept {}
 
     virtual ~SerialCommand() = default;
 
@@ -233,17 +236,7 @@ public:
 
     virtual std::uint8_t getId() const noexcept = 0;
 
-
-protected:
-
-//    void setId( std::uint8_t id );
-
-
-private:
-
-    std::uint8_t    mId;
-
 };
 
 
-#endif // SerialMessage_h
+#endif // SerialCommand_h

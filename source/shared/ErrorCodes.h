@@ -82,6 +82,7 @@ enum PicoError : int
     kPicoMulticoreError         = 2,
     kPicoI2cBNO055Error         = 3, 
     kPicoMainProcessError       = 4,
+    kPicoSerialCommandError     = 5,
 
     kPicoCritSectionError       = 10,
 

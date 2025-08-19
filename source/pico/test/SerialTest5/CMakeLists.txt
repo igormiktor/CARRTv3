@@ -1,6 +1,7 @@
 add_executable( SerialTest5
         SerialTest5.cpp
         ../../carrt/EventManager.cpp 
+        ../../carrt/PicoSerialCommands.cpp
 )
         
 pico_set_program_name( SerialTest5 "SerialTest5" )
