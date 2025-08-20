@@ -27,19 +27,19 @@
 
 
 DebugLinkCommand::DebugLinkCommand() noexcept 
-: SerialCommand( kDebugSerialLink ), mDebugData( kDebugSerialLink ), mNeedsAction{ false } 
+: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink ), mNeedsAction{ false } 
 {}
 
-DebugLinkCommand::DebugLinkCommand( DebugData t ) noexcept 
-: SerialCommand( kDebugSerialLink ), mDebugData( kDebugSerialLink, t ) 
+DebugLinkCommand::DebugLinkCommand( TheData t ) noexcept 
+: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink, t ) 
 {} 
 
 DebugLinkCommand::DebugLinkCommand( std::uint8_t val1, std::uint8_t val2 ) noexcept 
-: SerialCommand( kDebugSerialLink ), mDebugData( kDebugSerialLink, std::make_tuple( val1, val2 ) ) 
+: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink, std::make_tuple( val1, val2 ) ) 
 {}
 
 DebugLinkCommand::DebugLinkCommand( CommandId id ) 
-: SerialCommand( id ), mDebugData( kDebugSerialLink ), mNeedsAction{ false }
+: SerialCommand( id ), mTheData( kDebugSerialLink ), mNeedsAction{ false }
 { 
     if ( id != kDebugSerialLink ) 
     { 
@@ -48,24 +48,25 @@ DebugLinkCommand::DebugLinkCommand( CommandId id )
 }
 
 
-/*
+
 void DebugLinkCommand::readIn( SerialLink& link ) 
 {
-    mDebugData.readIn( link );
+    mTheData.readIn( link );
     mNeedsAction = true;
 }
-*/
+
 
 
 void DebugLinkCommand::sendOut( SerialLink& link )
 {
-    mDebugData.sendOut( link );
+    mTheData.sendOut( link );
 }
 
 
 
 void DebugLinkCommand::takeAction( SerialLink& link ) 
 {
+    const auto [ byte1, byte2 ] = mTheData.mData;
     sendOut( link );
     mNeedsAction = false;
 }
@@ -73,5 +74,65 @@ void DebugLinkCommand::takeAction( SerialLink& link )
 
 
 
+/*********************************************************************************************/
 
 
+
+
+
+TimerControlCommand::TimerControlCommand() noexcept 
+: SerialCommand( kTimerControl ), mTheData( kTimerControl ), mNeedsAction{ false } 
+{}
+
+TimerControlCommand::TimerControlCommand( TheData t ) noexcept 
+: SerialCommand( kTimerControl ), mTheData( kTimerControl, t ) 
+{} 
+
+TimerControlCommand::TimerControlCommand( bool val ) noexcept 
+: SerialCommand( kTimerControl ), mTheData( kTimerControl, std::make_tuple<std::uint8_t>( val  ) ) 
+{}
+
+TimerControlCommand::TimerControlCommand( CommandId id ) 
+: SerialCommand( id ), mTheData( kTimerControl ), mNeedsAction{ false }
+{ 
+    if ( id != kTimerControl ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kTimerControl ), "Id mismatch at creation" ); 
+    } 
+}
+
+
+
+void TimerControlCommand::readIn( SerialLink& link ) 
+{
+    mTheData.readIn( link );
+    mNeedsAction = true;
+}
+
+
+
+void TimerControlCommand::sendOut( SerialLink& link )
+{
+    mTheData.sendOut( link );
+}
+
+
+
+void TimerControlCommand::takeAction( SerialLink& link ) 
+{
+    if ( std::get<0>( mTheData.mData ) )
+    {
+        // TODO: turn on timer events over serial
+    }
+    else
+    {
+        // TODO: turn off timer events over serial
+    }
+    sendOut( link );
+    mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/

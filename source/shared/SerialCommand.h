@@ -58,6 +58,7 @@ enum CommandId : std::uint8_t
     kTimer1_4s                  = 0x21,             // 1/4 sec timer event (2nd byte -> count)
     kTimer1s                    = 0x22,             // 1 sec timer event (2nd byte -> count)
     kTimer8s                    = 0x23,             // 8 sec timer event (2nd byte -> count)
+    kTimerControl               = 0x2F,             // Start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)
 
     // Calibration cmds       
     kRequestCalibStatus         = 0x30,             // Request status of BNO055 calibration (return with one-byte status)
@@ -164,7 +165,7 @@ public:
                 }
                 else
                 {
-                    throw CarrtError( makePicoErrorId( kSerialCmdReadError, 1, 1 ) );
+                    throw CarrtError( makePicoErrorId( kSerialCmdReadError, 1, 1 ), "Couldn't read serial message in lamba" );
                 }
             }, 
             link 

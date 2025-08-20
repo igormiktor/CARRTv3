@@ -33,10 +33,10 @@ class DebugLinkCommand : public SerialCommand
 {
 public:
 
-    using DebugData = std::tuple< std::uint8_t, std::uint8_t >;
+    using TheData = std::tuple< std::uint8_t, std::uint8_t >;
 
     DebugLinkCommand() noexcept;
-    DebugLinkCommand( DebugData t ) noexcept; 
+    DebugLinkCommand( TheData t ) noexcept; 
     DebugLinkCommand( std::uint8_t val1, std::uint8_t val2 ) noexcept;
     DebugLinkCommand( CommandId id );
 
@@ -51,15 +51,58 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mDebugData.mId; }
+    virtual std::uint8_t getId() const noexcept override { return mTheData.mId; }
 
 
 private:
 
-    struct SerialMessage<DebugData>     mDebugData;
+    struct SerialMessage<TheData>   mTheData;
 
-    bool                                mNeedsAction;
+    bool    mNeedsAction;
 };
+
+
+
+
+
+
+class TimerControlCommand : public SerialCommand
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t >;
+
+    TimerControlCommand() noexcept;
+    TimerControlCommand( TheData t ) noexcept; 
+    TimerControlCommand( bool val ) noexcept;
+    TimerControlCommand( CommandId id );
+
+    virtual ~TimerControlCommand() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mTheData.mId; }
+
+
+private:
+
+    struct SerialMessage<TheData>  mTheData;
+
+    bool    mNeedsAction;
+};
+
+
+
+
+
+
 
 
 
