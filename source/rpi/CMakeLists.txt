@@ -24,6 +24,9 @@ set( CMAKE_C_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_STANDARD 23 CACHE STRING "The C++ standard to use" )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
+SET( BULDING_FOR_RPI0 1 )
+
+
 option(
     CARRT_BUILD_TESTS
     "Enable building test executables. Default: ON. Values: { OFF, ON }."

@@ -59,10 +59,11 @@ public:
         auto it = mCreators.find( id );
         if ( it != mCreators.end() )  
         {
-//            return std::make_unique<SerialCommand>( it->second( id ) );
             return it->second( id );
         }
-        return nullptr;
+        // If we can find the id, return a special command, UnknownCmd.
+        int err = makeSharedErrorId( kSerialCmdUnknownCmd, 1, id );
+        return std::unique_ptr<SerialCommand>( new UnknownCmd(  id, err ) );
     }
 
 
@@ -118,6 +119,9 @@ private:
 
 
 };
+
+
+
 
 
 

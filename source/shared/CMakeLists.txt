@@ -16,5 +16,11 @@ set( SHARED_SRC_LIST
 )
 
 add_library( shared_library STATIC ${SHARED_SRC_LIST} ${SHARED_HDR_LIST} )
+if( BULDING_FOR_PICO )
+    target_compile_options( shared_library PUBLIC -Wall -DBUILDING_FOR_PICO=1 )
+endif()
+if( BULDING_FOR_RPI0 )
+    target_compile_options( shared_library PUBLIC -Wall -DBUILDING_FOR_RPI0=1 )
+endif()
 target_include_directories( shared_library PUBLIC "${PROJECT_SOURCE_DIR}/carrt")
 target_include_directories( shared_library INTERFACE "${PROJECT_SOURCE_DIR}/shared" )

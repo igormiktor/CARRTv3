@@ -40,7 +40,7 @@ enum CommandId : std::uint8_t
 {
     kNullMsg                    = 0x00,
 
-    // Messages (to Pico); acknowledged from Pico with same Msg to ack.  Errors send by kErrorReportFromPico msg
+    // Messages (to Pico). Errors send by kErrorReportFromPico msg
     kStartCore1                 = 0x01,             // Pico to start Core1 
     kBeginCalibration           = 0x02,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
     kPauseMsg                   = 0x07,             // Pico to pause event processing
@@ -54,27 +54,23 @@ enum CommandId : std::uint8_t
     KPicoSaysStop               = 0x1F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
 
     // Timer events (from Pico)
-    kTimerNavUpdate             = 0x20,             // Navigation timer (1/8 sec) (info in following bytes)
-    kTimer1_4s                  = 0x21,             // 1/4 sec timer event (2nd byte -> count)
-    kTimer1s                    = 0x22,             // 1 sec timer event (2nd byte -> count)
-    kTimer8s                    = 0x23,             // 8 sec timer event (2nd byte -> count)
-    kTimerControl               = 0x2F,             // Start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)
+    kTimerEvent                 = 0x21,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type)
+    kTimerControl               = 0x22,             // Start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)
 
     // Calibration cmds       
     kRequestCalibStatus         = 0x30,             // Request status of BNO055 calibration (return with one-byte status)
     kSendCalibProfileToPico     = 0x31,             // Sending a calibration profile to Pico (follow by calibration data)
     kRequestCalibProfileFmPico  = 0x32,             // Request a calibration profile from Pico (reply followed by calibration data)
 
-    // Navigation info
-    kDrivingStatusUpdate        = 0x90,             // From RPi0 to Pico (2nd byte provides driving status)
-    kLeftEncoderUpdate          = 0x91,             // Pico sends update containing left encoder count and time
-    kRightEncoderUpdate         = 0x92,             // Pico sends update containing right encoder count and time
+    // Navigation events
+    kTimerNavUpdate             = 0x40,             // Navigation timer (1/8 sec) from Pico to RPi0 (info in following bytes)
+    kDrivingStatusUpdate        = 0x41,             // From RPi0 to Pico (2nd byte provides driving status)
+    kEncoderUpdate              = 0x42,             // From Pico to RPi0, 2nd byte = L count; 3rd byte = R count; followed by time hack
  
     // Battery info
-    kRequestBatteryLevel        = 0xA0,             // Pico to reply same with IC battery V in following bytes
-    kBatteryLowAlert            = 0xA1,             // Pico sends alert that IC battery is low
-    kRequestMotorBatteryLevel   = 0xA2,             // Pico to reply same with motor battery V in following bytes
-    kMotorBattLowAlert          = 0xA3,             // Pico sends alert that motor battery is low
+    kRequestBatteryLevel        = 0x50,             // From RPi0 to Pico requesting battery level (2nd byte = which battery: 0 = IC, 1 = Motor)
+    kBatteryLevelUpdate         = 0x51,             // Pico to RPi0 battery V; 2nd byte = which battery; following 4 bytes V (float)
+    kBatteryLowAlert            = 0x52,             // Pico to RPi0 alert that battery is low; 2nd byte = which battery; following 4 bytes V (float)
 
     // Error reports
     kErrorReportFromPico        = 0xE0,             // Pico sends a bool fatal flag (bool in a uint8_t) and error code (int) in following bytes (3-6)
@@ -85,7 +81,7 @@ enum CommandId : std::uint8_t
                                                     // Pico responds with same and which core is running uart (2nd byte)
     kTestPicoReportError        = 0xF2,             // RPi0 sends to Pico asking to report an error (bytes 2-5 contain error code to send back)
 
-    kDebugSerialLink            = 0xFE,             // RPi0 or Pico sends messages to debug/test the serial link; data is two uint8_t values
+    kDebugSerialLink            = 0xFE,             // RPi0 or Pico sends messages to debug/test the serial link; data is two int values
 
     kExtendedMsg                = 0xFF              // Indicates an extended msg; read next byte for extended command
 };
@@ -238,6 +234,45 @@ public:
     virtual std::uint8_t getId() const noexcept = 0;
 
 };
+
+
+
+// Common to both RPi0 and Pico, but each has its own implementation
+// This lets us handle unknown commands gracefully 
+// But can't really continue becuase serial pipe is now potentially corrupt
+class UnknownCmd : public SerialCommand 
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t, int >;
+
+    UnknownCmd() noexcept;
+    UnknownCmd( TheData t ) noexcept; 
+    UnknownCmd( std::uint8_t, int errorCode ) noexcept;
+    UnknownCmd( CommandId id );
+
+    virtual ~UnknownCmd() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mTheData.mId; }
+
+
+private:
+
+    struct SerialMessage<TheData>  mTheData;
+
+    bool    mNeedsAction;
+};
+
+
 
 
 #endif // SerialCommand_h

@@ -26,30 +26,42 @@
 #include "CarrtError.h"
 
 
-DebugLinkCommand::DebugLinkCommand() noexcept 
-: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink ), mNeedsAction{ false } 
+
+
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+TimerEventCmd::TimerEventCmd() noexcept 
+: SerialCommand( kTimerEvent ), mTheData( kTimerEvent ), mNeedsAction{ false } 
 {}
 
-DebugLinkCommand::DebugLinkCommand( TheData t ) noexcept 
-: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink, t ) 
+TimerEventCmd::TimerEventCmd( TheData t ) noexcept 
+: SerialCommand( kTimerEvent ), mTheData( kTimerEvent, t ), mNeedsAction{ true }
 {} 
 
-DebugLinkCommand::DebugLinkCommand( std::uint8_t val1, std::uint8_t val2 ) noexcept 
-: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink, std::make_tuple( val1, val2 ) ) 
+TimerEventCmd::TimerEventCmd( std::uint8_t which, std::uint8_t count ) noexcept 
+: SerialCommand( kTimerEvent ), mTheData( kTimerEvent, std::make_tuple( which, count ) ), mNeedsAction{ true } 
 {}
 
-DebugLinkCommand::DebugLinkCommand( CommandId id ) 
-: SerialCommand( id ), mTheData( kDebugSerialLink ), mNeedsAction{ false }
+TimerEventCmd::TimerEventCmd( CommandId id ) 
+: SerialCommand( id ), mTheData( kTimerEvent ), mNeedsAction{ false }
 { 
-    if ( id != kDebugSerialLink ) 
+    if ( id != kTimerEvent ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kDebugSerialLink ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kTimerEvent ), "Id mismatch at creation" ); 
     } 
+    // Note that it doesn't need action until loaded with data
 }
 
 
 
-void DebugLinkCommand::readIn( SerialLink& link ) 
+void TimerEventCmd::readIn( SerialLink& link ) 
 {
     mTheData.readIn( link );
     mNeedsAction = true;
@@ -57,16 +69,16 @@ void DebugLinkCommand::readIn( SerialLink& link )
 
 
 
-void DebugLinkCommand::sendOut( SerialLink& link )
+void TimerEventCmd::sendOut( SerialLink& link )
 {
     mTheData.sendOut( link );
 }
 
 
 
-void DebugLinkCommand::takeAction( SerialLink& link ) 
+void TimerEventCmd::takeAction( SerialLink& link ) 
 {
-    const auto [ byte1, byte2 ] = mTheData.mData;
+    // Only action is to send it
     sendOut( link );
     mNeedsAction = false;
 }
@@ -79,31 +91,31 @@ void DebugLinkCommand::takeAction( SerialLink& link )
 
 
 
-
-TimerControlCommand::TimerControlCommand() noexcept 
+TimerControlCmd::TimerControlCmd() noexcept 
 : SerialCommand( kTimerControl ), mTheData( kTimerControl ), mNeedsAction{ false } 
 {}
 
-TimerControlCommand::TimerControlCommand( TheData t ) noexcept 
-: SerialCommand( kTimerControl ), mTheData( kTimerControl, t ) 
+TimerControlCmd::TimerControlCmd( TheData t ) noexcept 
+: SerialCommand( kTimerControl ), mTheData( kTimerControl, t ), mNeedsAction{ true } 
 {} 
 
-TimerControlCommand::TimerControlCommand( bool val ) noexcept 
-: SerialCommand( kTimerControl ), mTheData( kTimerControl, std::make_tuple<std::uint8_t>( val  ) ) 
+TimerControlCmd::TimerControlCmd( bool val ) noexcept 
+: SerialCommand( kTimerControl ), mTheData( kTimerControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
 {}
 
-TimerControlCommand::TimerControlCommand( CommandId id ) 
+TimerControlCmd::TimerControlCmd( CommandId id ) 
 : SerialCommand( id ), mTheData( kTimerControl ), mNeedsAction{ false }
 { 
     if ( id != kTimerControl ) 
     { 
         throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kTimerControl ), "Id mismatch at creation" ); 
     } 
+    // Note that it doesn't need action until loaded with data
 }
 
 
 
-void TimerControlCommand::readIn( SerialLink& link ) 
+void TimerControlCmd::readIn( SerialLink& link ) 
 {
     mTheData.readIn( link );
     mNeedsAction = true;
@@ -111,14 +123,14 @@ void TimerControlCommand::readIn( SerialLink& link )
 
 
 
-void TimerControlCommand::sendOut( SerialLink& link )
+void TimerControlCmd::sendOut( SerialLink& link )
 {
     mTheData.sendOut( link );
 }
 
 
 
-void TimerControlCommand::takeAction( SerialLink& link ) 
+void TimerControlCmd::takeAction( SerialLink& link ) 
 {
     if ( std::get<0>( mTheData.mData ) )
     {
@@ -128,6 +140,119 @@ void TimerControlCommand::takeAction( SerialLink& link )
     {
         // TODO: turn off timer events over serial
     }
+    sendOut( link );
+    mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+ErrorReportCmd::ErrorReportCmd() noexcept 
+: SerialCommand( kErrorReportFromPico ), mTheData( kErrorReportFromPico ), mNeedsAction{ false } 
+{}
+
+ErrorReportCmd::ErrorReportCmd( TheData t ) noexcept 
+: SerialCommand( kErrorReportFromPico ), mTheData( kErrorReportFromPico, t ), mNeedsAction{ true } 
+{} 
+
+ErrorReportCmd::ErrorReportCmd( bool val, int errorCode ) noexcept 
+: SerialCommand( kErrorReportFromPico ), mTheData( kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ) ), 
+    mNeedsAction{ true } 
+{}
+
+ErrorReportCmd::ErrorReportCmd( CommandId id ) 
+: SerialCommand( id ), mTheData( kErrorReportFromPico ), mNeedsAction{ false }
+{ 
+    if ( id != kErrorReportFromPico ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kErrorReportFromPico ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+
+void ErrorReportCmd::readIn( SerialLink& link ) 
+{
+    mTheData.readIn( link );
+    mNeedsAction = true;
+}
+
+
+
+void ErrorReportCmd::sendOut( SerialLink& link )
+{
+    mTheData.sendOut( link );
+}
+
+
+
+void ErrorReportCmd::takeAction( SerialLink& link ) 
+{
+    // Only action is to send the message out
+    sendOut( link );
+    mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+DebugLinkCmd::DebugLinkCmd() noexcept 
+: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink ), mNeedsAction{ false } 
+{}
+
+DebugLinkCmd::DebugLinkCmd( TheData t ) noexcept 
+: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink, t ), mNeedsAction{ true } 
+{} 
+
+DebugLinkCmd::DebugLinkCmd( int val1, int val2 ) noexcept 
+: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink, std::make_tuple( val1, val2 ) ), mNeedsAction{ true } 
+{}
+
+DebugLinkCmd::DebugLinkCmd( CommandId id ) 
+: SerialCommand( id ), mTheData( kDebugSerialLink ), mNeedsAction{ false }          
+{ 
+    if ( id != kDebugSerialLink ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kDebugSerialLink ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+
+void DebugLinkCmd::readIn( SerialLink& link ) 
+{
+    mTheData.readIn( link );
+    mNeedsAction = true;
+}
+
+
+
+void DebugLinkCmd::sendOut( SerialLink& link )
+{
+    mTheData.sendOut( link );
+}
+
+
+
+void DebugLinkCmd::takeAction( SerialLink& link ) 
+{
+    // Lets negate the values, flip the order, and send them back
+    auto [ val1, val2 ] = mTheData.mData;
+    val1 *= -1;
+    val2 *= -1;
+    mTheData.mData = std::make_tuple( val2, val1 );
     sendOut( link );
     mNeedsAction = false;
 }

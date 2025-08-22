@@ -48,7 +48,7 @@ SerialCommandProcessor::CmdPtr SerialCommandProcessor::createCommandFromSerialLi
 //    auto cmd = std::make_unique<SerialCommand>( cmdPtr );
     auto cmd = mFactory.createCommand( id );
     cmd->readIn( mLink );
-    return std::move( cmd );
+    return  cmd;
 }
 
 
