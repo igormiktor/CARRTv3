@@ -45,7 +45,7 @@ TimerEventCmd::TimerEventCmd( TheData t ) noexcept
 : SerialCommand( kTimerEvent ), mTheData( kTimerEvent, t ), mNeedsAction{ true }
 {} 
 
-TimerEventCmd::TimerEventCmd( std::uint8_t which, std::uint8_t count ) noexcept 
+TimerEventCmd::TimerEventCmd( std::uint8_t which, int count ) noexcept 
 : SerialCommand( kTimerEvent ), mTheData( kTimerEvent, std::make_tuple( which, count ) ), mNeedsAction{ true } 
 {}
 
@@ -253,6 +253,63 @@ void DebugLinkCmd::takeAction( SerialLink& link )
     val1 *= -1;
     val2 *= -1;
     mTheData.mData = std::make_tuple( val2, val1 );
+    sendOut( link );
+    mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+UnknownCmd::UnknownCmd() noexcept 
+: SerialCommand( kUnknownCommand ), mTheData( kUnknownCommand ), mNeedsAction{ false } 
+{}
+
+UnknownCmd::UnknownCmd( TheData t ) noexcept 
+: SerialCommand( kUnknownCommand ), mTheData( kUnknownCommand, t ), mNeedsAction{ true } 
+{} 
+
+UnknownCmd::UnknownCmd( std::uint8_t rcvdId, int errorCode ) noexcept 
+: SerialCommand( kUnknownCommand ), mTheData( kUnknownCommand, std::make_tuple( rcvdId, errorCode ) ), 
+    mNeedsAction{ true } 
+{}
+
+UnknownCmd::UnknownCmd( CommandId id ) 
+: SerialCommand( id ), mTheData( kUnknownCommand ), mNeedsAction{ false }
+{ 
+    if ( id != kUnknownCommand ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kUnknownCommand ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+
+void UnknownCmd::readIn( SerialLink& link ) 
+{
+    mTheData.readIn( link );
+    mNeedsAction = true;
+}
+
+
+
+void UnknownCmd::sendOut( SerialLink& link )
+{
+    // We don't send this Cmd out on link; instead send error report
+    ErrorReportCmd errCmd( false, std::get<1>( mTheData.mData ) );
+    errCmd.takeAction( link );
+}
+
+
+
+void UnknownCmd::takeAction( SerialLink& link ) 
+{
+    // Only action is to send the message out
     sendOut( link );
     mNeedsAction = false;
 }

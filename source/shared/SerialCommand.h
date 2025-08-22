@@ -75,7 +75,9 @@ enum CommandId : std::uint8_t
     // Error reports
     kErrorReportFromPico        = 0xE0,             // Pico sends a bool fatal flag (bool in a uint8_t) and error code (int) in following bytes (3-6)
 
-
+    // Unknown command
+    kUnknownCommand             = 0xEE,             // Never transmitted; used to designate an unknown command received; contains error code (int)
+    
     // Debugging events
     kIdentifyPicoCore           = 0xF0,             // RPi0 sends to Pico asking to identify core (0 or 1) running uart
                                                     // Pico responds with same and which core is running uart (2nd byte)

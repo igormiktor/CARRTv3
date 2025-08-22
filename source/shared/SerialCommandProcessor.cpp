@@ -53,3 +53,15 @@ SerialCommandProcessor::CmdPtr SerialCommandProcessor::createCommandFromSerialLi
 
 
 
+std::optional<SerialCommandProcessor::CmdPtr> SerialCommandProcessor::receiveCommandIfAvailable()
+{
+    auto cmdId = mLink.getMsgType();
+    if ( cmdId )
+    {
+        return createCommandFromSerialLink( *cmdId );
+    }
+    else
+    {
+        return std::nullopt; 
+    }
+}

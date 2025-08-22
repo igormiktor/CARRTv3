@@ -36,7 +36,7 @@ class TimerEventCmd : public SerialCommand
 {
 public:
 
-    using TheData = std::tuple< std::uint8_t, std::uint8_t >;
+    using TheData = std::tuple< std::uint8_t, int >;
 
     enum : std::uint8_t
     {
@@ -47,7 +47,7 @@ public:
 
     TimerEventCmd() noexcept;
     TimerEventCmd( TheData t ) noexcept; 
-    TimerEventCmd( std::uint8_t which, std::uint8_t count ) noexcept;
+    TimerEventCmd( std::uint8_t which, int count ) noexcept;
     TimerEventCmd( CommandId id );
 
     virtual ~TimerEventCmd() = default;

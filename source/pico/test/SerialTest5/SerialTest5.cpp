@@ -2,7 +2,9 @@
 #include "EventManager.h"
 
 #include "SerialCommand.h"
+#include "PicoSerialCommands.h"
 #include "SerialLinkPico.h"
+#include "SerialCommandProcessor.h"
 
 #include <iostream>
 #include "pico/binary_info.h"
@@ -107,6 +109,11 @@ int main()
 
     multicore_launch_core1( startCore1 );
 
+    SerialCommandProcessor scp( rpi0 );
+    scp.registerCommand<TimerControlCmd>( kTimerControl );
+//    scp.registerCommand<ErrorReportCmd>( kErrorReportFromPico );
+    scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+
 
     bool ledState = false;
     while ( true ) 
@@ -126,7 +133,8 @@ int main()
                     std::cout << "1/4 " << eventParam << std::endl;
                     if ( gSendTimerEvents )
                     {
-                        
+                        TimerEventCmd qtrSec( TimerEventCmd::k1QuarterSecondEvent, eventParam );
+                        qtrSec.sendOut( rpi0 );
                     }
                     break;
                     
@@ -134,7 +142,8 @@ int main()
                     std::cout << "1 s " << eventParam << std::endl;
                     if ( gSendTimerEvents )
                     {
-                        
+                        TimerEventCmd oneSec( TimerEventCmd::k1SecondEvent, eventParam );
+                        oneSec.sendOut( rpi0 );
                     }
                     gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     ledState = !ledState;
@@ -144,7 +153,8 @@ int main()
                     std::cout << "8 s " << eventParam << std::endl;
                     if ( gSendTimerEvents )
                     {
-                        
+                        TimerEventCmd eightSec( TimerEventCmd::k8SecondEvent, eventParam );
+                        eightSec.sendOut( rpi0 );
                     }
                     break;
 
@@ -157,139 +167,16 @@ int main()
             if ( Events().hasEventQueueOverflowed() )
             {
                 std::cout << "Event queue overflowed" << std::endl;
+                ErrorReportCmd errCmd( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ) );
+                errCmd.sendOut( rpi0 );
                 Events().resetEventQueueOverflowFlag();
             }
         }
 
-        if ( uart_is_readable( CARRTPICO_SERIAL_LINK_UART ) )
+        auto cmd{ scp.receiveCommandIfAvailable() };
+        if ( cmd )
         {
-            uint32_t cmd{ 0 };
-            auto gotCmd = rpi0.getMsgType();
-            if ( gotCmd )
-            {
-                cmd = *gotCmd;
-            }
-
-            switch( cmd )
-            {
-                case 'T':
-                case 't':
-                    rpi0.putMsgType( 'T' );
-                    break;
-
-                case 'F':
-                case 'f':
-                {
-                    // Read a float
-                    auto gotF = rpi0.getFloat();
-                    if ( gotF )
-                    {
-                        float f{ *gotF };
-                        // Send back 'F' and float + 1
-                        f += 1;
-                        rpi0.putMsgType( 'F' );
-                        rpi0.put( f );                        
-                    }
-                    else
-                    {
-                        float f{ 666.666 };
-                        // Send back 'X' and this float
-                        rpi0.putMsgType( 'X' );
-                        rpi0.put( f );                        
-                    }
-                    break;
-                }
-
-                case 'K':
-                case 'k':
-                {
-                    // Read an unsigned int
-                    auto gotU = rpi0.get4Bytes();
-                    if ( gotU )
-                    {
-                        std::uint32_t u{ *gotU };
-                        // Send back 'K' and u + 1
-                        u += 1;
-                        rpi0.putMsgType( 'K' );
-                        rpi0.put( u );                        
-                    }
-                    else
-                    {
-                        std::uint32_t u{ 666 };
-                        // Send back 'X' and this u
-                        rpi0.putMsgType( 'X' );
-                        rpi0.put( u );                        
-                    }
-                    break;
-                }
-
-                case 'I':
-                case 'i':
-                {
-                    // Read an int
-                    // Send back 'I"
-                    rpi0.putMsgType( 'I' );
-                    auto gotI = rpi0.getInt();
-                    if ( gotI )
-                    {
-                        int i{ *gotI };
-                        // Send back i + 1
-                        i += 1;
-                        rpi0.put( i );                        
-                    }
-                    else
-                    {
-                        int i{ -666 };
-                        // Send back this float
-                        rpi0.put( i );                        
-                    }
-                    break;
-                }
-
-                case 'J':
-                case 'j':
-                {
-                    // Read an int
-                    auto gotI2 = rpi0.getInt();
-                    if ( gotI2 )
-                    {
-                        int i2{ *gotI2 };
-                        // Send back 'J' and i + 1
-                        i2 += 1;
-                        rpi0.putMsgType( 'J' );
-                        rpi0.put( i2 );                        
-                    }
-                    else
-                    {
-                        int i2{ 666666 };
-                        // Send back 'X' and this float
-                        rpi0.putMsgType( 'X' );
-                        rpi0.put( i2 );                        
-                    }
-                    break;
-                }
-                case 'N':
-                case 'n':
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
-                    break;
-
-                case 0:
-                    // do nothing
-                    break;
-
-                default:
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '[' );
-                    if ( cmd == '\r' || cmd == '\n' )
-                    {
-                        cmd = '*';
-                    }
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, cmd );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, ']' );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\r' );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, '\n' );
-                    break;
-            }
+            cmd.value()->takeAction( rpi0 );
         }
         sleep_ms( 25 );
     }

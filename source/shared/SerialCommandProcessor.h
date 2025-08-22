@@ -98,6 +98,7 @@ public:
     SerialCommandProcessor& operator=( const SerialCommandProcessor& ) = delete;
     SerialCommandProcessor& operator=( SerialCommandProcessor&& ) = delete;
 
+    std::optional<CmdPtr> receiveCommandIfAvailable();
 
     template <typename T> 
     void registerCommand( CommandId id )
@@ -107,10 +108,9 @@ public:
 
 
 
-
-
 private:
 
+    inline CmdPtr createCommandFromSerialLink( std::uint8_t id ) { return createCommandFromSerialLink( static_cast<CommandId>( id ) ); }
     CmdPtr createCommandFromSerialLink( CommandId id );
 
 
