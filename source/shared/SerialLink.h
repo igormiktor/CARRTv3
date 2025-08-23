@@ -59,6 +59,13 @@ public:
     std::optional<std::uint32_t> getUInt32()            { return get4Bytes(); }
     std::optional<float> getFloat();
 
+    // Reading overloaded functions
+    std::optional<std::uint8_t> get( uint8_t )          { return getByte(); }
+    std::optional<int> get( int )                       { return getInt(); }
+    std::optional<std::uint32_t> get( std::uint32_t )   { return getUInt32(); }
+    std::optional<float> get( float )                   { return getFloat(); }
+
+    
     // Bulk functions
     virtual int getBytes( int nbr, std::uint8_t* buffer ) = 0;
     virtual int putBytes( int nbr, const std::uint8_t* buffer ) = 0;

@@ -33,6 +33,8 @@ CoreAtomic::CAtomic<int> x;
 
 int main()
 {
+    CoreAtomic::CAtomicInitializer doneIt;
+    
     x = 0;
 
     stdio_init_all();

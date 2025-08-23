@@ -68,4 +68,26 @@ inline int makePicoErrorId( int moduleId, int functionId, int error )
 
 
 
+#if BUILDING_FOR_PICO
+
+inline int makeSharedErrorId( int moduleId, int functionId, int error )
+{
+    return makePicoErrorId( moduleId, functionId,  error );
+}
+
+#endif  // BUILDING_FOR_PICO
+
+
+#if BUILDING_FOR_RPI0
+
+inline int makeSharedErrorId( int moduleId, int functionId, int error )
+{
+    return makeRpi0ErrorId( moduleId, functionId,  error );
+}
+
+#endif  // BUILDING_FOR_RPI0
+
+
+
+
 #endif  // CarrtError_h

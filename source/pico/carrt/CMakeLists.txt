@@ -29,9 +29,7 @@ pico_enable_stdio_usb( CarrtPico 0 )
 #)
 
 target_compile_options( CarrtPico PRIVATE -Wall )
-target_compile_definitions( CarrtPico PRIVATE 
-        -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
-)
+target_compile_definitions( CarrtPico PRIVATE -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} )
 
 
 # Add any user requested libraries

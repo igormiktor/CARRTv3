@@ -1,7 +1,6 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
 
-#include "SerialMessage.h"
 #include "SerialLinkPico.h"
 
 #include <iostream>
@@ -80,6 +79,8 @@ void startCore1()
 
 int main()
 {
+    CoreAtomic::CAtomicInitializer theInitializationIsDone;
+
     stdio_init_all();
 
     // I2C Initialisation. Using it at 400Khz.

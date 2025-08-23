@@ -47,7 +47,7 @@ SerialLinkRPi::SerialLinkRPi()
         debugM( "Serial port open error" );
         char *errMsg = std::strerror( mSerialPort );
         debugV( mSerialPort, errMsg );
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 1, mSerialPort ), std::string( errMsg ) );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 1, mSerialPort ), std::string( errMsg ) );
     }
     else
     {
@@ -65,7 +65,7 @@ SerialLinkRPi::SerialLinkRPi()
         char* errMsg = std::strerror( errno );
         debugM( "tcgetattr() failed" );
         debugV( errno, errMsg );
-        throw  CarrtError( makeRpi0ErrorId( kSerialError, 2, errno ), std::string( errMsg ) );
+        throw  CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ), std::string( errMsg ) );
     }
 
     tty.c_cflag &= ~PARENB;                     // Clear parity bit, disabling parity (most common)
@@ -102,7 +102,7 @@ SerialLinkRPi::SerialLinkRPi()
         char* errMsg = std::strerror( errno );
         debugM( "tcsetattr() failed" );
         debugV( errno, errMsg );
-        throw  CarrtError( makeRpi0ErrorId( kSerialError, 2, errno ), std::string( errMsg ) );
+        throw  CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ), std::string( errMsg ) );
     }
 }
 
@@ -139,7 +139,7 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
             << " and numRead: " << numRead;
         std::string errMsg{};
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
     }
 }
 
@@ -154,23 +154,37 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
         // EOF == buffer empty
         return std::nullopt;
     }
+
     if ( numRead == 4 )
     {
         return t.u;
     }
-    else
+    
+    if ( numRead < 4 && errno == 0 )
     {
-        // Something else, throw...
-        debugM( "get4Byte() failed reading" );
-        debugV( numRead, errno );
-
-        std::stringstream errMsgStrm{};
-        errMsgStrm <<  "get4Byte() failed reading with errno: " << errno
-            << " and numRead: " << numRead;
-        std::string errMsg{};
-        errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+        // Try reading the remainder
+        std::uint8_t buf[4];
+        auto more = read( mSerialPort, buf, 4 - numRead );
+        if ( numRead + more == 4 )
+        {
+            for ( int j{ 0 }, i{ numRead }; i < 4; i++, j++ )
+            {
+                t.c[i] = buf[j];
+            }
+            return t.u;
+        }
     }
+    
+    // If we haven't returned by this point, we're out of options; throw
+    debugM( "gettByte() failed reading" );
+    debugV( numRead, errno );
+
+    std::stringstream errMsgStrm{};
+    errMsgStrm <<  "get4Byte() failed reading with errno: " << errno
+        << " and numRead: " << numRead;
+    std::string errMsg{};
+    errMsgStrm >> errMsg;
+    throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
 }
 
 
@@ -183,24 +197,38 @@ bool SerialLinkRPi::get4Bytes( std::uint8_t* c )
         // EOF == buffer empty
         return false;
     }
+
     if ( numRead == 4 )
     {
         // Got exactly what we wanted
         return true;
     }
-    else
-    {
-        // Something else, throw...
-        debugM( "get4Byte() failed reading" );
-        debugV( numRead, errno );
 
-        std::stringstream errMsgStrm{};
-        errMsgStrm <<  "get4Byte() failed reading with errno: " << errno
-            << " and numRead: " << numRead;
-        std::string errMsg{};
-        errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+    if ( numRead < 4 && errno == 0 )
+    {
+        // Try reading the remainder
+        std::uint8_t buf[4];
+        auto more = read( mSerialPort, buf, 4 - numRead );
+        if ( numRead + more == 4 )
+        {
+            for ( int j{ 0 }, i{ numRead }; i < 4; i++, j++ )
+            {
+                c[i] = buf[j];
+            }
+            return true;
+        }
     }
+
+    // If we haven't returned by this point, we're out of options; throw
+    debugM( "gettByte(uint8_t*) failed reading" );
+    debugV( numRead, errno );
+
+    std::stringstream errMsgStrm{};
+    errMsgStrm <<  "get4Byte(uint8_t*) failed reading with errno: " << errno
+        << " and numRead: " << numRead;
+    std::string errMsg{};
+    errMsgStrm >> errMsg;
+    throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
 }
 
 
@@ -211,15 +239,14 @@ void SerialLinkRPi::putByte( std::uint8_t c )
     if ( numWritten != 1 )
     {
         debugM( "putByte() failed writing value: " );
-        debugV( c );
-        debugV( numWritten );
+        debugV( c, numWritten );
 
         std::stringstream errMsgStrm;
         errMsgStrm << "putByte() failed writing value: " << c
             << " with numWritten: " << numWritten << " and errno: " << errno;
         std::string errMsg;
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
     }
 }
 
@@ -240,7 +267,7 @@ void SerialLinkRPi::put4Bytes( const std::uint8_t* c )
             << " with numWritten: " << numWritten << " and errno: " << errno;
         std::string errMsg;
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
     }
 }
 

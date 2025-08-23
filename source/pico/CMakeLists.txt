@@ -53,13 +53,13 @@ set( CARRT_PICO_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" )
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
-# add_subdirectory( carrt )
-# add_subdirectory( test )
 
 #######################################
 
 
-if ( CARRT_ENABLE_DEBUGUTILS )
+SET( BULDING_FOR_PICO 1 )
+
+if ( CARRT_PICO_ENABLE_DEBUGUTILS )
     set( DEBUGUTILS_VAL 1 )
 else()
     set( DEBUGUTILS_VAL 0 )
