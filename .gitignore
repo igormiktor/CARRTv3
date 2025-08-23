@@ -6,6 +6,10 @@
 ~*
 *.lck
 
+# Ignore old files
+*.old
+*.old.*
+
 # Ignore kate swap files
 *.kate-swp
 
