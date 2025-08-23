@@ -22,6 +22,9 @@ target_include_directories( SerialTest5 PRIVATE
 #  ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts or any other standard includes, if required
 )
 
+target_compile_options( CarrtPico PRIVATE -Wall )
+target_compile_definitions( SerialTest5 PUBLIC -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} )
+
 # Add any user requested libraries
 target_link_libraries( SerialTest5 PRIVATE
         pico_driver_library

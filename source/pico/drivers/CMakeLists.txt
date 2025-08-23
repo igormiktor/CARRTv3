@@ -20,9 +20,7 @@ set ( DRVR_SRC_LIST
 
 add_library( pico_driver_library STATIC ${DRVR_SRC_LIST} ${DRVR_HDR_LIST} )
 target_compile_options( pico_driver_library PUBLIC -Wall )
-target_compile_definitions( pico_driver_library PUBLIC 
-    -DDEBUGUTILS_ON=${DEBUGUTILS_VAL}
-)
+target_compile_definitions( pico_driver_library PUBLIC -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} )
 target_include_directories( pico_driver_library PUBLIC "${PROJECT_SOURCE_DIR}/drivers" "${PROJECT_SOURCE_DIR}/carrt" )
 target_link_libraries( pico_driver_library PUBLIC shared_library )
 target_link_libraries( pico_driver_library PUBLIC 

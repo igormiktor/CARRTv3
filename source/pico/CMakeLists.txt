@@ -59,7 +59,7 @@ pico_sdk_init()
 
 SET( BULDING_FOR_PICO 1 )
 
-if ( CARRT_ENABLE_DEBUGUTILS )
+if ( CARRT_PICO_ENABLE_DEBUGUTILS )
     set( DEBUGUTILS_VAL 1 )
 else()
     set( DEBUGUTILS_VAL 0 )
