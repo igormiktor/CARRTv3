@@ -136,7 +136,6 @@ public:
     void readIn( SerialLink& link )
     {
         // Don't read ID, we already have it if we call this function
-        link.put( static_cast<std::uint8_t>( mId ) );
         for_each( mMsg, 
             []( SerialLink& lnk, auto& dataItem )
             {  
