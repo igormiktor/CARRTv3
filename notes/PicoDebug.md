@@ -9,7 +9,13 @@ Use the orange-black-yellow connector
 
 ## Serial Connections (UART Port)
 
-Use the white-red-black connector
+Using the white-red-black connector
 * White wire goes to Pico Pin 2, GP1
 * Red wire goes to Pico Pin 3, GND
 * Black wire goes to Pico Pin 1, GP0
+
+Using the orange-black-yellow connector
+* Orange wire goes to Pico Pin 2, GP1
+* Black wire goes to Pico Pin 3, GND
+* Yellow wire goes to Pico Pin 1, GP0
+
