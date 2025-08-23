@@ -1,8 +1,7 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
 
-#include "SerialCommand.h"
-#include "PicoSerialCommands.h"
+#include "SerialCommands.h"
 #include "SerialLinkPico.h"
 #include "SerialCommandProcessor.h"
 

@@ -1,5 +1,5 @@
 /*
-    SerialCommand.h - Serial Command for CARRT3 communications
+    SerialCommand.h - Serial Command structure for CARRT3 communications
     between the RPI and Pico.  This file is shared by both the
     RPI and Pico code bases.
 
@@ -77,7 +77,7 @@ enum CommandId : std::uint8_t
 
     // Unknown command
     kUnknownCommand             = 0xEE,             // Never transmitted; used to designate an unknown command received; contains error code (int)
-    
+
     // Debugging events
     kIdentifyPicoCore           = 0xF0,             // RPi0 sends to Pico asking to identify core (0 or 1) running uart
                                                     // Pico responds with same and which core is running uart (2nd byte)
@@ -102,20 +102,11 @@ enum SerialExtendedMsg : std::uint8_t
 
 
 
-#if 0
-union Transfer
-{
-    std::uint8_t    c[4];
-    int             i;
-    std::uint32_t   u;
-    float           f;
-};
-#endif  // #if 0
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-class SerialLink;
 
 
 
@@ -205,14 +196,15 @@ public:
     }
 
 
-
-
     CommandId   mId;
     TTuple      mData;
 
 };
 
 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -236,6 +228,12 @@ public:
     virtual std::uint8_t getId() const noexcept = 0;
 
 };
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 
@@ -273,6 +271,7 @@ private:
 
     bool    mNeedsAction;
 };
+
 
 
 

@@ -1,6 +1,7 @@
 /*
-    PicoSerialCommands.h - Serial Commands for CARRT3 communications
-    between the RPI and Pico.  This file contains the Pico commands.
+    SerialCommands.h - The actual Serial Commands for CARRT3 communications
+    between the RPI and Pico.  This file is shared by both the
+    RPI and Pico code bases.
 
     Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
 
@@ -19,16 +20,24 @@
 */
 
 
-#ifndef PicoSerialCommands_h
-#define PicoSerialCommands_h
+#ifndef SerialCommands_h
+#define SerialCommands_h
+
 
 
 #include "SerialCommand.h"
 
+#include "SerialLink.h"
 #include "CarrtError.h"
 
 
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    All the actual Serial Commands follow (except for the UnknownCmd, which is in SerialCommand.h)
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -73,6 +82,9 @@ private:
 
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 class TimerControlCmd : public SerialCommand
 {
@@ -106,6 +118,9 @@ private:
     bool    mNeedsAction;
 };
 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -143,6 +158,9 @@ private:
 
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 class DebugLinkCmd : public SerialCommand
 {
@@ -178,6 +196,7 @@ private:
 
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -186,12 +205,4 @@ private:
 
 
 
-
-
-
-
-
-
-
-
-#endif  // PicoSerialCommands_h
+#endif // SerialCommands_h

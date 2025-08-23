@@ -21,7 +21,7 @@
 
 
 
-#include "PicoSerialCommands.h"
+#include "SerialCommands.h"
 
 #include "CarrtError.h"
 
@@ -132,14 +132,11 @@ void TimerControlCmd::sendOut( SerialLink& link )
 
 void TimerControlCmd::takeAction( SerialLink& link ) 
 {
-    if ( std::get<0>( mTheData.mData ) )
-    {
-        // TODO: turn on timer events over serial
-    }
-    else
-    {
-        // TODO: turn off timer events over serial
-    }
+    // This is a kluge for testing only
+    extern bool gSendTimerEvents;
+
+    gSendTimerEvents = std::get<0>( mTheData.mData );
+    
     sendOut( link );
     mNeedsAction = false;
 }
@@ -292,8 +289,7 @@ UnknownCmd::UnknownCmd( CommandId id )
 
 void UnknownCmd::readIn( SerialLink& link ) 
 {
-    mTheData.readIn( link );
-    mNeedsAction = true;
+    // Unknown command; don't try to read it in.
 }
 
 
@@ -318,3 +314,4 @@ void UnknownCmd::takeAction( SerialLink& link )
 
 
 /*********************************************************************************************/
+
