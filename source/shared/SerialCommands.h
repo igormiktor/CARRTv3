@@ -70,12 +70,12 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mTheData.mId; }
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
 
 
 private:
 
-    struct SerialMessage<TheData>  mTheData;
+    struct SerialMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -108,12 +108,12 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mTheData.mId; }
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
 
 
 private:
 
-    struct SerialMessage<TheData>  mTheData;
+    struct SerialMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -146,12 +146,12 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mTheData.mId; }
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
 
 
 private:
 
-    struct SerialMessage<TheData>  mTheData;
+    struct SerialMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -184,12 +184,12 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mTheData.mId; }
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
 
 
 private:
 
-    struct SerialMessage<TheData>   mTheData;
+    struct SerialMessage<TheData>   mContent;
 
     bool    mNeedsAction;
 };

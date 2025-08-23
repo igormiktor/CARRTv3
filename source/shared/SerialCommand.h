@@ -127,17 +127,17 @@ struct SerialMessage
 public:
 
     SerialMessage( CommandId id ) noexcept
-    : mId{ id }, mData{} {}
+    : mId{ id }, mMsg{} {}
 
     SerialMessage( CommandId id, TTuple t ) noexcept
-    : mId{ id }, mData{ t } {}
+    : mId{ id }, mMsg{ t } {}
 
 
     void readIn( SerialLink& link )
     {
         // Don't read ID, we already have it if we call this function
         link.put( static_cast<std::uint8_t>( mId ) );
-        for_each( mData, 
+        for_each( mMsg, 
             []( SerialLink& lnk, auto& dataItem )
             {  
                 auto got = lnk.get( dataItem );
@@ -166,7 +166,7 @@ public:
     {
         // Send the ID, if we send the message
         link.put( static_cast<std::uint8_t>( mId ) );
-        for_each( mData, []( SerialLink& lnk, auto& dataItem ){ lnk.put( dataItem ); }, link );
+        for_each( mMsg, []( SerialLink& lnk, auto& dataItem ){ lnk.put( dataItem ); }, link );
     }
 
 
@@ -197,7 +197,7 @@ public:
 
 
     CommandId   mId;
-    TTuple      mData;
+    TTuple      mMsg;
 
 };
 
@@ -262,12 +262,12 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mTheData.mId; }
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
 
 
 private:
 
-    struct SerialMessage<TheData>  mTheData;
+    struct SerialMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };

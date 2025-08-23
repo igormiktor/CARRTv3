@@ -41,19 +41,19 @@
 
 
 TimerEventCmd::TimerEventCmd() noexcept 
-: SerialCommand( kTimerEvent ), mTheData( kTimerEvent ), mNeedsAction{ false } 
+: SerialCommand( kTimerEvent ), mContent( kTimerEvent ), mNeedsAction{ false } 
 {}
 
 TimerEventCmd::TimerEventCmd( TheData t ) noexcept 
-: SerialCommand( kTimerEvent ), mTheData( kTimerEvent, t ), mNeedsAction{ true }
+: SerialCommand( kTimerEvent ), mContent( kTimerEvent, t ), mNeedsAction{ true }
 {} 
 
 TimerEventCmd::TimerEventCmd( std::uint8_t which, int count ) noexcept 
-: SerialCommand( kTimerEvent ), mTheData( kTimerEvent, std::make_tuple( which, count ) ), mNeedsAction{ true } 
+: SerialCommand( kTimerEvent ), mContent( kTimerEvent, std::make_tuple( which, count ) ), mNeedsAction{ true } 
 {}
 
 TimerEventCmd::TimerEventCmd( CommandId id ) 
-: SerialCommand( id ), mTheData( kTimerEvent ), mNeedsAction{ false }
+: SerialCommand( id ), mContent( kTimerEvent ), mNeedsAction{ false }
 { 
     if ( id != kTimerEvent ) 
     { 
@@ -66,7 +66,7 @@ TimerEventCmd::TimerEventCmd( CommandId id )
 
 void TimerEventCmd::readIn( SerialLink& link ) 
 {
-    mTheData.readIn( link );
+    mContent.readIn( link );
     mNeedsAction = true;
 }
 
@@ -82,7 +82,7 @@ void TimerEventCmd::sendOut( SerialLink& link )
 void TimerEventCmd::takeAction( SerialLink& link ) 
 {
     // For the test just print out
-    auto [ kind, count ] = mTheData.mData;
+    auto [ kind, count ] = mContent.mMsg;
     std::cout << "Timer msg ";
     switch ( kind )
     {
@@ -115,19 +115,19 @@ void TimerEventCmd::takeAction( SerialLink& link )
 
 
 TimerControlCmd::TimerControlCmd() noexcept 
-: SerialCommand( kTimerControl ), mTheData( kTimerControl ), mNeedsAction{ false } 
+: SerialCommand( kTimerControl ), mContent( kTimerControl ), mNeedsAction{ false } 
 {}
 
 TimerControlCmd::TimerControlCmd( TheData t ) noexcept 
-: SerialCommand( kTimerControl ), mTheData( kTimerControl, t ), mNeedsAction{ true } 
+: SerialCommand( kTimerControl ), mContent( kTimerControl, t ), mNeedsAction{ true } 
 {} 
 
 TimerControlCmd::TimerControlCmd( bool val ) noexcept 
-: SerialCommand( kTimerControl ), mTheData( kTimerControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+: SerialCommand( kTimerControl ), mContent( kTimerControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
 {}
 
 TimerControlCmd::TimerControlCmd( CommandId id ) 
-: SerialCommand( id ), mTheData( kTimerControl ), mNeedsAction{ false }
+: SerialCommand( id ), mContent( kTimerControl ), mNeedsAction{ false }
 { 
     if ( id != kTimerControl ) 
     { 
@@ -140,7 +140,7 @@ TimerControlCmd::TimerControlCmd( CommandId id )
 
 void TimerControlCmd::readIn( SerialLink& link ) 
 {
-    mTheData.readIn( link );
+    mContent.readIn( link );
     mNeedsAction = true;
 }
 
@@ -148,7 +148,7 @@ void TimerControlCmd::readIn( SerialLink& link )
 
 void TimerControlCmd::sendOut( SerialLink& link )
 {
-    mTheData.sendOut( link );
+    mContent.sendOut( link );
 }
 
 
@@ -169,20 +169,20 @@ void TimerControlCmd::takeAction( SerialLink& link )
 
 
 ErrorReportCmd::ErrorReportCmd() noexcept 
-: SerialCommand( kErrorReportFromPico ), mTheData( kErrorReportFromPico ), mNeedsAction{ false } 
+: SerialCommand( kErrorReportFromPico ), mContent( kErrorReportFromPico ), mNeedsAction{ false } 
 {}
 
 ErrorReportCmd::ErrorReportCmd( TheData t ) noexcept 
-: SerialCommand( kErrorReportFromPico ), mTheData( kErrorReportFromPico, t ), mNeedsAction{ true } 
+: SerialCommand( kErrorReportFromPico ), mContent( kErrorReportFromPico, t ), mNeedsAction{ true } 
 {} 
 
 ErrorReportCmd::ErrorReportCmd( bool val, int errorCode ) noexcept 
-: SerialCommand( kErrorReportFromPico ), mTheData( kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ) ), 
+: SerialCommand( kErrorReportFromPico ), mContent( kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ) ), 
     mNeedsAction{ true } 
 {}
 
 ErrorReportCmd::ErrorReportCmd( CommandId id ) 
-: SerialCommand( id ), mTheData( kErrorReportFromPico ), mNeedsAction{ false }
+: SerialCommand( id ), mContent( kErrorReportFromPico ), mNeedsAction{ false }
 { 
     if ( id != kErrorReportFromPico ) 
     { 
@@ -195,7 +195,7 @@ ErrorReportCmd::ErrorReportCmd( CommandId id )
 
 void ErrorReportCmd::readIn( SerialLink& link ) 
 {
-    mTheData.readIn( link );
+    mContent.readIn( link );
     mNeedsAction = true;
 }
 
@@ -210,7 +210,7 @@ void ErrorReportCmd::sendOut( SerialLink& link )
 
 void ErrorReportCmd::takeAction( SerialLink& link ) 
 {
-    auto [ fatal, errCode ] = mTheData.mData;
+    auto [ fatal, errCode ] = mContent.mMsg;
     std::cout << "Error from Pico: " << ( fatal ? "fatal" : "non-fatal" ) << "; error code " << errCode << std::endl;
 
     mNeedsAction = false;
@@ -225,19 +225,19 @@ void ErrorReportCmd::takeAction( SerialLink& link )
 
 
 DebugLinkCmd::DebugLinkCmd() noexcept 
-: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink ), mNeedsAction{ false } 
+: SerialCommand( kDebugSerialLink ), mContent( kDebugSerialLink ), mNeedsAction{ false } 
 {}
 
 DebugLinkCmd::DebugLinkCmd( TheData t ) noexcept 
-: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink, t ), mNeedsAction{ true } 
+: SerialCommand( kDebugSerialLink ), mContent( kDebugSerialLink, t ), mNeedsAction{ true } 
 {} 
 
 DebugLinkCmd::DebugLinkCmd( int val1, int val2 ) noexcept 
-: SerialCommand( kDebugSerialLink ), mTheData( kDebugSerialLink, std::make_tuple( val1, val2 ) ), mNeedsAction{ true } 
+: SerialCommand( kDebugSerialLink ), mContent( kDebugSerialLink, std::make_tuple( val1, val2 ) ), mNeedsAction{ true } 
 {}
 
 DebugLinkCmd::DebugLinkCmd( CommandId id ) 
-: SerialCommand( id ), mTheData( kDebugSerialLink ), mNeedsAction{ false }          
+: SerialCommand( id ), mContent( kDebugSerialLink ), mNeedsAction{ false }          
 { 
     if ( id != kDebugSerialLink ) 
     { 
@@ -250,7 +250,7 @@ DebugLinkCmd::DebugLinkCmd( CommandId id )
 
 void DebugLinkCmd::readIn( SerialLink& link ) 
 {
-    mTheData.readIn( link );
+    mContent.readIn( link );
     mNeedsAction = true;
 }
 
@@ -258,7 +258,7 @@ void DebugLinkCmd::readIn( SerialLink& link )
 
 void DebugLinkCmd::sendOut( SerialLink& link )
 {
-    mTheData.sendOut( link );
+    mContent.sendOut( link );
 }
 
 
@@ -266,7 +266,7 @@ void DebugLinkCmd::sendOut( SerialLink& link )
 void DebugLinkCmd::takeAction( SerialLink& link ) 
 {
     // Let's display what we got
-    auto [ val1, val2 ] = mTheData.mData;
+    auto [ val1, val2 ] = mContent.mMsg;
     std::cout << "Debug: got: " << val1 << " and " << val2 << std::endl;
     mNeedsAction = false;
 }
@@ -280,20 +280,20 @@ void DebugLinkCmd::takeAction( SerialLink& link )
 
 
 UnknownCmd::UnknownCmd() noexcept 
-: SerialCommand( kUnknownCommand ), mTheData( kUnknownCommand ), mNeedsAction{ false } 
+: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand ), mNeedsAction{ false } 
 {}
 
 UnknownCmd::UnknownCmd( TheData t ) noexcept 
-: SerialCommand( kUnknownCommand ), mTheData( kUnknownCommand, t ), mNeedsAction{ true } 
+: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand, t ), mNeedsAction{ true } 
 {} 
 
 UnknownCmd::UnknownCmd( std::uint8_t rcvdId, int errorCode ) noexcept 
-: SerialCommand( kUnknownCommand ), mTheData( kUnknownCommand, std::make_tuple( rcvdId, errorCode ) ), 
+: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand, std::make_tuple( rcvdId, errorCode ) ), 
     mNeedsAction{ true } 
 {}
 
 UnknownCmd::UnknownCmd( CommandId id ) 
-: SerialCommand( id ), mTheData( kUnknownCommand ), mNeedsAction{ false }
+: SerialCommand( id ), mContent( kUnknownCommand ), mNeedsAction{ false }
 { 
     if ( id != kUnknownCommand ) 
     { 
@@ -322,7 +322,7 @@ void UnknownCmd::sendOut( SerialLink& link )
 void UnknownCmd::takeAction( SerialLink& link ) 
 {
     // this should do something to trigger error processing 
-    auto [ id, errCode ] = mTheData.mData;
+    auto [ id, errCode ] = mContent.mMsg;
     std::cout << "We received an unknown command, id " << id << " and error " << errCode << std::endl;
 
     mNeedsAction = false;
