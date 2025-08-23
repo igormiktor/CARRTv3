@@ -12,7 +12,7 @@
 
 void doDebugLinkTest( int val1, int val2, SerialLink& link )
 {
-    DebugLinkCmd cmd0( 1, 0 );
+    DebugLinkCmd cmd0( val1, val2 );
     cmd0.sendOut( link ); 
     std::cout << "Sent debug link cmd: " << val1 << ", " << val2 << std::endl;
 }
@@ -22,6 +22,7 @@ void doTest( int i, SerialLink& link )
 {
     int j = i % 4;
 
+    std::cout << "*********** Doing Test " << j << std::endl;
     switch ( j )
     {
         case 0:
@@ -32,11 +33,11 @@ void doTest( int i, SerialLink& link )
             doDebugLinkTest( -1, 0, link );
             break;
 
-        case 3:
-            doDebugLinkTest( 111, 666, link );
+        case 2:
+            doDebugLinkTest( 18, 61, link );
             break;
 
-        case 4:
+        case 3:
             doDebugLinkTest( 111, 666, link );
             break;
     }
@@ -46,7 +47,9 @@ void doTest( int i, SerialLink& link )
 
 int main() 
 {
+    Clock::initSystemClock();
     SerialLinkRPi  pico;
+
 
     std::cout << "Serial link test" << std::endl;
 
@@ -60,9 +63,14 @@ int main()
 
     try
     {
-        int toggle{ 0 };
-        int i{ 1 }; 
-        while ( i )
+        bool keepGoing{ true };
+        bool timerEventsOn{ false };
+        int testNbr{ 0 };
+        long start{ Clock::millis() };
+        long lastTest{ start + 5000 };
+        long lastToggle{ start - 15000 };
+
+        while ( keepGoing )
         {
             auto cmd{ scp.receiveCommandIfAvailable() };
             if ( cmd )
@@ -70,18 +78,41 @@ int main()
                 cmd.value()->takeAction( pico );
             }
 
-            doTest( i++, pico );
+            long now{ Clock::millis() };
 
-            if ( 0 == i % 8 )
+#if 1
+            auto timeForTest{ (now - lastTest) / 10000 };
+            if ( timeForTest )
             {
-                int onOff = (++toggle) % 2; 
-                TimerControlCmd toggleTimerEvts( onOff );
-                toggleTimerEvts.sendOut( pico );
+                doTest( testNbr++, pico );
+                lastTest = Clock::millis();
             }
+#endif
 
-            Clock::delayMilliseconds( 1000 );
-
-            i %= 32;
+#if 1
+            auto timeForToggle{ (now - lastToggle) / 20000 };
+            if ( timeForToggle )
+            {
+                if ( timerEventsOn )
+                { 
+                    timerEventsOn = false;
+                }
+                else
+                {
+                    timerEventsOn = true;
+                }
+                std::cout << "************ Timer Events turned on? " << timerEventsOn << std::endl;
+                TimerControlCmd toggleTimerEvts( timerEventsOn );
+                toggleTimerEvts.sendOut( pico );
+                lastToggle = Clock::millis();
+            }
+#endif
+            if ( (now - start) / 1000 > 4*60 )
+            {
+                keepGoing = false;
+            }
+            
+            Clock::delayMilliseconds(10);
         }
 
         std::cout << "Tests end" << std::endl;

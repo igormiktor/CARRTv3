@@ -96,9 +96,10 @@ void TimerEventCmd::takeAction( SerialLink& link )
 
         case k8SecondEvent: 
             std::cout << "8 ";
+            break;
 
         default:
-            std::cout << "?? " << kind << " ?? ";
+            std::cout << "?? " << static_cast<int>(kind) << " ?? ";
             break;
     }
     std::cout << "sec; count " << count << std::endl;

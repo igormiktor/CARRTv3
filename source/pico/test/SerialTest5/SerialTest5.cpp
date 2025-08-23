@@ -37,7 +37,7 @@ bool timerCallback( repeating_timer_t* )
     if ( ( eighthSecCount % 2 ) == 0 )
     {
         // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        Events().queueEvent( Event::kQuarterSecondTimerEvent, ( eighthSecCount % 4 ) );
+        Events().queueEvent( Event::kQuarterSecondTimerEvent, ( (eighthSecCount / 2) % 4 ) );
     }
 
     if ( ( eighthSecCount % 8 ) == 0 )
@@ -59,7 +59,7 @@ bool timerCallback( repeating_timer_t* )
 
 void startCore1() 
 {
-    std::cout << "Started Core " << get_core_num() << std::endl;
+    std::cout << "This is core " << get_core_num() << std::endl;
 
     alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
 
@@ -83,101 +83,119 @@ bool gSendTimerEvents{ false };
 
 int main()
 {
-    CoreAtomic::CAtomicInitializer theInitializationIsDone;
-
-    stdio_init_all();
-
-    // I2C Initialisation. Using it at 400Khz.
-    i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
-    gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C ) ;
-    gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
-    gpio_pull_up( CARRTPICO_I2C_SDA );
-    gpio_pull_up( CARRTPICO_I2C_SCL );
-
-
-    // Initialise UART for data
-    SerialLinkPico rpi0;
-
-
-    // puts("This is CARRT Pico!");
-    std::cout << "This is CARRT Pico: event queue test" << std::endl;
-    std::cout << "This is core " << get_core_num() << std::endl;
-
-    gpio_init( CARRTPICO_HEARTBEAT_LED );
-    gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
-
-    multicore_launch_core1( startCore1 );
-
-    SerialCommandProcessor scp( rpi0 );
-    scp.registerCommand<TimerControlCmd>( kTimerControl );
-//    scp.registerCommand<ErrorReportCmd>( kErrorReportFromPico );
-    scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
-
-
-    bool ledState = false;
-    while ( true ) 
+    try
     {
-        int eventCode;
-        int eventParam;
+        CoreAtomic::CAtomicInitializer theInitializationIsDone;
 
-        if ( Events().getNextEvent( &eventCode, &eventParam ) )
+        stdio_init_all();
+
+        // I2C Initialisation. Using it at 400Khz.
+        i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
+        gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C ) ;
+        gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
+        gpio_pull_up( CARRTPICO_I2C_SDA );
+        gpio_pull_up( CARRTPICO_I2C_SCL );
+
+
+        // Initialise UART for data
+        SerialLinkPico rpi0;
+
+
+        std::cout << "This is CARRT Pico" << std::endl;
+        std::cout << "This is core " << get_core_num() << std::endl;
+
+        gpio_init( CARRTPICO_HEARTBEAT_LED );
+        gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
+
+        multicore_launch_core1( startCore1 );
+
+        SerialCommandProcessor scp( rpi0 );
+        scp.registerCommand<TimerControlCmd>( kTimerControl );
+        scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+
+
+        bool ledState = false;
+        while ( true ) 
         {
-            switch ( eventCode )
-            {
-                case Event::kNavUpdateEvent:
-                    std::cout << "Nav " << eventParam << std::endl;
-                    break;
-                    
-                case Event::kQuarterSecondTimerEvent:
-                    std::cout << "1/4 " << eventParam << std::endl;
-                    if ( gSendTimerEvents )
-                    {
-                        TimerEventCmd qtrSec( TimerEventCmd::k1QuarterSecondEvent, eventParam );
-                        qtrSec.sendOut( rpi0 );
-                    }
-                    break;
-                    
-                case Event::kOneSecondTimerEvent:
-                    std::cout << "1 s " << eventParam << std::endl;
-                    if ( gSendTimerEvents )
-                    {
-                        TimerEventCmd oneSec( TimerEventCmd::k1SecondEvent, eventParam );
-                        oneSec.sendOut( rpi0 );
-                    }
-                    gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
-                    ledState = !ledState;
-                    break;
-                    
-                case Event::kEightSecondTimerEvent:
-                    std::cout << "8 s " << eventParam << std::endl;
-                    if ( gSendTimerEvents )
-                    {
-                        TimerEventCmd eightSec( TimerEventCmd::k8SecondEvent, eventParam );
-                        eightSec.sendOut( rpi0 );
-                    }
-                    break;
+            int eventCode;
+            int eventParam;
 
-                case Event::kIdentifyPicoCoreEvent:
-                    std::cout << "Core " << eventParam << std::endl;
-                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kIdentifyPicoCore );
-                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 0 );
-                    break;
-            }
-            if ( Events().hasEventQueueOverflowed() )
+            if ( Events().getNextEvent( &eventCode, &eventParam ) )
             {
-                std::cout << "Event queue overflowed" << std::endl;
-                ErrorReportCmd errCmd( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ) );
-                errCmd.sendOut( rpi0 );
-                Events().resetEventQueueOverflowFlag();
-            }
-        }
+                switch ( eventCode )
+                {
+                    case Event::kNavUpdateEvent:
+                        // std::cout << "Nav " << eventParam << std::endl;
+                        break;
+                        
+                    case Event::kQuarterSecondTimerEvent:
+                        // std::cout << "1/4 " << eventParam << std::endl;
+                        if ( gSendTimerEvents )
+                        {
+                            // std::cout << "1/4 " << eventParam << ", " << gSendTimerEvents << std::endl;
+                            TimerEventCmd qtrSec( TimerEventCmd::k1QuarterSecondEvent, eventParam );
+                            qtrSec.sendOut( rpi0 );
+                        }
+                        break;
+                        
+                    case Event::kOneSecondTimerEvent:
+                        // std::cout << "1 s " << eventParam << std::endl;
+                        if ( gSendTimerEvents )
+                        {
+                            TimerEventCmd oneSec( TimerEventCmd::k1SecondEvent, eventParam );
+                            oneSec.sendOut( rpi0 );
+                        }
+                        gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
+                        ledState = !ledState;
+                        break;
+                        
+                    case Event::kEightSecondTimerEvent:
+                        // std::cout << "8 s " << eventParam << std::endl;
+                        if ( gSendTimerEvents )
+                        {
+                            TimerEventCmd eightSec( TimerEventCmd::k8SecondEvent, eventParam );
+                            eightSec.sendOut( rpi0 );
+                        }
+                        break;
 
-        auto cmd{ scp.receiveCommandIfAvailable() };
-        if ( cmd )
-        {
-            cmd.value()->takeAction( rpi0 );
+                    case Event::kIdentifyPicoCoreEvent:
+                        // std::cout << "Core " << eventParam << std::endl;
+                        // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kIdentifyPicoCore );
+                        // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 0 );
+                        break;
+                }
+                if ( Events().hasEventQueueOverflowed() )
+                {
+                    std::cout << "Event queue overflowed" << std::endl;
+                    ErrorReportCmd errCmd( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ) );
+                    errCmd.sendOut( rpi0 );
+                    Events().resetEventQueueOverflowFlag();
+                }
+            }
+
+            auto cmd{ scp.receiveCommandIfAvailable() };
+            if ( cmd )
+            {
+                cmd.value()->takeAction( rpi0 );
+            }
+            sleep_ms( 25 );
         }
-        sleep_ms( 25 );
+    }
+
+
+    catch ( const CarrtError& err )
+    {
+        std::cerr << "Error: " << err.errorCode() << ", " << err.what() << std::endl;
+    }
+
+    catch ( const std::exception& err )
+    {
+        std::cerr << "Error: " << err.what() << std::endl;
+    }
+
+    catch (...)
+    {
+        std::cerr << "Error of unknown type." << std::endl;
     }
 
     return 0;

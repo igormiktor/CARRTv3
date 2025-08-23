@@ -140,13 +140,13 @@ public:
             []( SerialLink& lnk, auto& dataItem )
             {  
                 auto got = lnk.get( dataItem );
-#if 0   // See if we need this.  Think not
-                int n{ 10 };
+
+                int n{ 4 };
                 while ( !got && n-- > 0 )
                 {
                     got = lnk.get( dataItem );
                 }
-#endif  // if 0
+
                 if ( got )
                 {
                     dataItem = *got;

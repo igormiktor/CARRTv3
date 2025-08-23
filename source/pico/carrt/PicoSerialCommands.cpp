@@ -25,7 +25,7 @@
 
 #include "CarrtError.h"
 
-
+#include "DebugUtils.hpp"
 
 
 
@@ -125,7 +125,7 @@ void TimerControlCmd::readIn( SerialLink& link )
 
 void TimerControlCmd::sendOut( SerialLink& link )
 {
-    mContent.sendOut( link );
+    // This never sent from Pico
 }
 
 
@@ -134,10 +134,8 @@ void TimerControlCmd::takeAction( SerialLink& link )
 {
     // This is a kluge for testing only
     extern bool gSendTimerEvents;
-
     gSendTimerEvents = std::get<0>( mContent.mMsg );
     
-    sendOut( link );
     mNeedsAction = false;
 }
 
@@ -232,6 +230,9 @@ void DebugLinkCmd::readIn( SerialLink& link )
 {
     mContent.readIn( link );
     mNeedsAction = true;
+//    auto [ v1, v2 ] = mContent.mMsg;
+//    debugM( "DebugLinkCmd got" );
+//    debugV( v1, v2 );
 }
 
 
@@ -249,8 +250,11 @@ void DebugLinkCmd::takeAction( SerialLink& link )
     auto [ val1, val2 ] = mContent.mMsg;
     val1 *= -1;
     val2 *= -1;
-    mContent.mMsg = std::make_tuple( val2, val1 );
-    sendOut( link );
+    DebugLinkCmd reply( val2, val1 );
+//    auto [ v1, v2 ] = reply.mContent.mMsg;
+//    debugM( "DebugLinkCmd sending" );
+//    debugV( v1, v2 );
+    reply.sendOut( link );
     mNeedsAction = false;
 }
 
