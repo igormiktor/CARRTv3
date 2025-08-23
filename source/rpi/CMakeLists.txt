@@ -24,6 +24,7 @@ set( CMAKE_C_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_STANDARD 23 CACHE STRING "The C++ standard to use" )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
+
 SET( BULDING_FOR_RPI0 1 )
 
 
@@ -47,14 +48,14 @@ option(
 
 
 
-if ( CARRT_ENABLE_DEBUGUTILS )
+if( CARRT_ENABLE_DEBUGUTILS )
     set( DEBUGUTILS_VAL 1 )
 else()
     set( DEBUGUTILS_VAL 0 )
 endif()
 
 
-if ( CARRT_RPI_USE_PIGPIOD )
+if( CARRT_RPI_USE_PIGPIOD )
     set( PIGPIO_LIB "-lpigpiod_if2" )
     set( PIGPIOD_VAL 1 )
 else()
@@ -69,7 +70,7 @@ add_subdirectory( shared )
 add_subdirectory( drivers )
 add_subdirectory( carrt )
 
-if ( CARRT_BUILD_TESTS )
+if( CARRT_BUILD_TESTS )
     add_subdirectory( test )
     include( CTest )
     enable_testing()

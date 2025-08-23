@@ -1,167 +1,110 @@
-#include "SerialMessage.h"
-#include "SerialLinkRPi.h"
-
-#include "DebugUtils.hpp"
-
-// library headers
 #include <iostream>
 #include <string>
 
+#include "SerialLinkRPi.h"
+#include "SerialCommands.h"
+#include "SerialCommandProcessor.h"
+#include "Clock.h"
+
+
+#include "DebugUtils.hpp"
+
+
+void doDebugLinkTest( int val1, int val2, SerialLink& link )
+{
+    DebugLinkCmd cmd0( 1, 0 );
+    cmd0.sendOut( link ); 
+    std::cout << "Sent debug link cmd: " << val1 << ", " << val2 << std::endl;
+}
+
+
+void doTest( int i, SerialLink& link )
+{
+    int j = i % 4;
+
+    switch ( j )
+    {
+        case 0:
+            doDebugLinkTest( -100, 200, link );
+            break;
+
+        case 1:
+            doDebugLinkTest( -1, 0, link );
+            break;
+
+        case 3:
+            doDebugLinkTest( 111, 666, link );
+            break;
+
+        case 4:
+            doDebugLinkTest( 111, 666, link );
+            break;
+    }
+}
+
+
+
 int main() 
 {
-    std::cout << "Serial link test" << std::endl;
-
     SerialLinkRPi  pico;
 
-    std::cout << "Start tests" << std::endl;
+    std::cout << "Serial link test" << std::endl;
 
+    SerialCommandProcessor scp( pico );
+    scp.registerCommand<TimerEventCmd>( kTimerEvent );
+    scp.registerCommand<TimerControlCmd>( kTimerControl );
+    scp.registerCommand<ErrorReportCmd>( kErrorReportFromPico );
+    scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+
+    std::cout << "Tests begin" << std::endl;
+
+    try
     {
-        std::uint8_t c{ 'T' };
-        pico.put( c );
-        auto got = pico.getByte();
-        if ( got )
+        int toggle{ 0 };
+        int i{ 1 }; 
+        while ( i )
         {
-            if ( *got == c )
-                std::cout << "Success";
-            else
-                std::cout << "Failure";
-            std::cout << ": sent " << static_cast<char>( c ) << ", got " << static_cast<char>( *got ) << std::endl;
+            auto cmd{ scp.receiveCommandIfAvailable() };
+            if ( cmd )
+            {
+                cmd.value()->takeAction( pico );
+            }
+
+            doTest( i++, pico );
+
+            if ( 0 == i % 8 )
+            {
+                int onOff = (++toggle) % 2; 
+                TimerControlCmd toggleTimerEvts( onOff );
+                toggleTimerEvts.sendOut( pico );
+            }
+
+            Clock::delayMilliseconds( 1000 );
+
+            i %= 32;
         }
-        else
-        {
-            std::cout << "Failure: nothing read" << std::endl;
-        }
+
+        std::cout << "Tests end" << std::endl;
     }
 
+    catch ( const CarrtError& err )
     {
-        // We send 'i' and an integer
-        std::uint8_t c{ 'i' };
-        pico.putMsgType( c );
-        int i{ 999 };
-        pico.put( i );
-
-        // We should get back 'I' and our integer + 1
-        auto got = pico.getMsgType();
-        while ( !got )
-        {
-            got = pico.getMsgType();
-        }
-        if ( *got == 'I' )      // Pico always responds uppercase
-            std::cout << "Success";
-        else
-            std::cout << "Failure";
-        std::cout << ": sent " << static_cast<char>( c ) << ", got " << static_cast<char>( *got ) << std::endl;
-
-        int iVal = i + 1;
-        auto got2 = pico.getInt();
-        while ( !got2 )
-        {
-            got2 = pico.getInt();
-        }
-        if ( *got2 == iVal )
-             std::cout << "Success";
-        else 
-            std::cout << "Failure";
-        std::cout << ": expected " << iVal << " got " << *got2 << std::endl; 
-
+        std::cerr << "Error: " << err.errorCode() << ", " << err.what() << std::endl;
     }
 
+    catch ( const std::exception& err )
     {
-        // We send 'j' and a negative integer
-        std::uint8_t c{ 'j' };
-        pico.putMsgType( c );
-        int j{ -123456789 };
-        pico.put( j );
-
-        // We should get back 'J' and our integer + 1
-        auto got = pico.getMsgType();
-        while ( !got )
-        {
-            got = pico.getMsgType();
-        }
-        if ( *got == 'J' )      // Pico always responds uppercase
-            std::cout << "Success";
-        else
-            std::cout << "Failure";
-        std::cout << ": sent " << static_cast<char>( c ) << ", got " << static_cast<char>( *got ) << std::endl;
-
-        int iVal = j + 1;
-        auto got2 = pico.getInt();
-        while ( !got2 )
-        {
-            got2 = pico.getInt();
-        }
-        if ( *got2 == iVal )
-             std::cout << "Success";
-        else 
-            std::cout << "Failure";
-        std::cout << ": expected " << iVal << " got " << *got2 << std::endl; 
+        std::cerr << "Error: " << err.what() << std::endl;
     }
 
+    catch (...)
     {
-        // We send 'k' and a large unsigned integer 
-        std::uint8_t c{ 'k' };
-        pico.putMsgType( c );
-        std::uint32_t k{ 660327733 };
-        pico.put( k );
-
-        // We should get back 'K' and our integer + 1
-        auto got = pico.getMsgType();
-        while ( !got )
-        {
-            got = pico.getMsgType();
-        }
-        if ( *got == 'K' )      // Pico always responds uppercase
-            std::cout << "Success";
-        else
-            std::cout << "Failure";
-        std::cout << ": sent " << static_cast<char>( c ) << ", got " << static_cast<char>( *got ) << std::endl;
-
-        int iVal = k + 1;
-        auto got2 = pico.getInt();
-        while ( !got2 )
-        {
-            got2 = pico.getInt();
-        }
-        if ( *got2 == iVal )
-             std::cout << "Success";
-        else 
-            std::cout << "Failure";
-        std::cout << ": expected " << iVal << " got " << *got2 << std::endl; 
+        std::cerr << "Error of unknown type." << std::endl;
     }
 
 
-    {
-        // We send 'f' and a float
-        std::uint8_t c{ 'f' };
-        pico.putMsgType( c );
-        float f{ 2.71828 };
-        pico.put( f );
-        
-        // We should get back 'F' and our float + 1
-        auto got = pico.getMsgType();
-        while ( !got )
-        {
-            got = pico.getMsgType();
-        }
-        if ( *got == 'F' )      // Pico always responds uppercase
-            std::cout << "Success";
-        else
-            std::cout << "Failure";
-        std::cout << ": sent " << static_cast<char>( c ) << ", got " << static_cast<char>( *got ) << std::endl;
+    std::cout << "Exiting test" << std::endl;
+    
 
-        float fVal = f + 1;
-        auto got2 = pico.getFloat();
-        while ( !got2 )
-        {
-            got2 = pico.getFloat();
-        }
-        if ( *got2 == fVal )
-             std::cout << "Success";
-        else 
-            std::cout << "Failure";
-        std::cout << ": expected " << fVal << " got " << *got2 << std::endl; 
-    }
-
-    return 0; // success
+    return 0; 
 };

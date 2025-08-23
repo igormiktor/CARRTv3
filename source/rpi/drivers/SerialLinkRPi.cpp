@@ -47,7 +47,7 @@ SerialLinkRPi::SerialLinkRPi()
         debugM( "Serial port open error" );
         char *errMsg = std::strerror( mSerialPort );
         debugV( mSerialPort, errMsg );
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 1, mSerialPort ), std::string( errMsg ) );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 1, mSerialPort ), std::string( errMsg ) );
     }
     else
     {
@@ -65,7 +65,7 @@ SerialLinkRPi::SerialLinkRPi()
         char* errMsg = std::strerror( errno );
         debugM( "tcgetattr() failed" );
         debugV( errno, errMsg );
-        throw  CarrtError( makeRpi0ErrorId( kSerialError, 2, errno ), std::string( errMsg ) );
+        throw  CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ), std::string( errMsg ) );
     }
 
     tty.c_cflag &= ~PARENB;                     // Clear parity bit, disabling parity (most common)
@@ -102,7 +102,7 @@ SerialLinkRPi::SerialLinkRPi()
         char* errMsg = std::strerror( errno );
         debugM( "tcsetattr() failed" );
         debugV( errno, errMsg );
-        throw  CarrtError( makeRpi0ErrorId( kSerialError, 2, errno ), std::string( errMsg ) );
+        throw  CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ), std::string( errMsg ) );
     }
 }
 
@@ -139,7 +139,7 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
             << " and numRead: " << numRead;
         std::string errMsg{};
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
     }
 }
 
@@ -169,7 +169,7 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
             << " and numRead: " << numRead;
         std::string errMsg{};
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
     }
 }
 
@@ -199,7 +199,7 @@ bool SerialLinkRPi::get4Bytes( std::uint8_t* c )
             << " and numRead: " << numRead;
         std::string errMsg{};
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
     }
 }
 
@@ -219,7 +219,7 @@ void SerialLinkRPi::putByte( std::uint8_t c )
             << " with numWritten: " << numWritten << " and errno: " << errno;
         std::string errMsg;
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
     }
 }
 
@@ -240,7 +240,7 @@ void SerialLinkRPi::put4Bytes( const std::uint8_t* c )
             << " with numWritten: " << numWritten << " and errno: " << errno;
         std::string errMsg;
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kSerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
     }
 }
 
