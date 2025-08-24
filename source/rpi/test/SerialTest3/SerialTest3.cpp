@@ -1,4 +1,4 @@
-#include "SerialMessage.h"
+#include "SerialCommand.h"
 #include "SerialLinkRPi.h"
 
 #include "DebugUtils.hpp"
@@ -6,6 +6,16 @@
 // library headers
 #include <iostream>
 #include <string>
+
+
+union Transfer
+{
+    std::uint8_t    c[4];
+    int             i;
+    std::uint32_t   u;
+    float           f;
+};
+
 
 int main() 
 {

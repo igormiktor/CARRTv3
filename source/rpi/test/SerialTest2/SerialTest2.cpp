@@ -1,4 +1,4 @@
-#include "SerialMessage.h"
+#include "SerialCommand.h"
 
 // C library headers
 #include <stdio.h>
@@ -10,6 +10,15 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
 
+
+
+union Transfer
+{
+    std::uint8_t    c[4];
+    int             i;
+    std::uint32_t   u;
+    float           f;
+};
 
 
 int main() 
