@@ -4,7 +4,6 @@ set( SHARED_HDR_LIST
     CarrtError.h 
     DebugUtils.hpp
     ErrorCodes.h 
-    Event.h 
     SerialCommand.h 
     SerialCommandProcessor.h
     SerialLink.h 
