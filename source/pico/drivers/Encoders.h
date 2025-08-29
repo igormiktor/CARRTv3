@@ -26,7 +26,7 @@
 namespace Encoders
 {
 
-    void initEncoders();
+    void initEncoders() noexcept;
     
 };
 

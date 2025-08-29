@@ -32,9 +32,7 @@
 
 namespace Encoders
 {
-    void initEncoders();
-
-    void configureEncoderGpio( uint gpio, gpio_irq_callback_t callback );
+    void configureEncoderGpio( uint gpio, gpio_irq_callback_t callback ) noexcept;
 };
 
 
@@ -100,7 +98,7 @@ void callbackRightEncoder( uint, uint32_t events )
 
 
 
-void Encoders::initEncoders()
+void Encoders::initEncoders() noexcept
 {
     configureEncoderGpio( CARRTPICO_ENCODER_LEFT_GPIO, callbackLeftEncoder ); 
     configureEncoderGpio( CARRTPICO_ENCODER_RIGHT_GPIO, callbackRightEncoder ); 
@@ -108,7 +106,7 @@ void Encoders::initEncoders()
 
 
 
-void Encoders::configureEncoderGpio( uint pin, gpio_irq_callback_t callBack )
+void Encoders::configureEncoderGpio( uint pin, gpio_irq_callback_t callBack ) noexcept
 {
     // Configure interrupt on "pin" with "callback"
     gpio_init( pin );
