@@ -28,22 +28,11 @@
 #include "hardware/i2c.h"
 
 
-namespace I2C
-{
-
-    void initI2C();
-    
-    signed char send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len );
-
-    signed char receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len );
-
-};
 
 
 
 
-
-void I2C::initI2C()
+void I2C::initI2C() noexcept
 {
     // I2C Initialisation
     i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
@@ -56,7 +45,7 @@ void I2C::initI2C()
 
 
 
-signed char I2C::send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len )
+signed char I2C::send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept
 {
     // Write the register address without STOP...
     int ret = i2c_write_blocking( CARRTPICO_I2C_PORT, CARRT_BNO0555_I2C_ADDR, &reg, 1, true );
@@ -82,7 +71,7 @@ signed char I2C::send( unsigned char address, unsigned char reg, unsigned char* 
 
 
 
-signed char I2C::receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len )
+signed char I2C::receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept
 {
     // Write the register address without a STOP...
     int ret = i2c_write_blocking( CARRTPICO_I2C_PORT, CARRT_BNO0555_I2C_ADDR, &reg, 1, true );
