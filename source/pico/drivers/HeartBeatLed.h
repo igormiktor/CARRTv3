@@ -25,8 +25,8 @@
 
 namespace HeartBeatLed
 {
-    void initialize();
-    void toggle();
+    void initialize() noexcept;
+    void toggle() noexcept;
 }
 
 #endif  // HeartBeatLed_h

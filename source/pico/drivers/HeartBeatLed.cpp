@@ -28,14 +28,11 @@
 
 namespace HeartBeatLed
 {
-    void initialize();
-    void toggle();
-
     uint8_t ledState = 0;
 }
 
 
-void HeartBeatLed::initialize()
+void HeartBeatLed::initialize() noexcept
 {
     gpio_init( CARRTPICO_HEARTBEAT_LED );
     gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
@@ -45,7 +42,7 @@ void HeartBeatLed::initialize()
 }
 
 
-void HeartBeatLed::toggle()
+void HeartBeatLed::toggle() noexcept
 {
     gpio_put( CARRTPICO_HEARTBEAT_LED, HeartBeatLed::ledState );
     HeartBeatLed::ledState = !HeartBeatLed::ledState;
