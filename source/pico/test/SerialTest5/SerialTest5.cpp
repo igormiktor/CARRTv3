@@ -117,8 +117,9 @@ int main()
         bool ledState = false;
         while ( true ) 
         {
-            int eventCode;
-            int eventParam;
+            uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
+            int eventCode{};
+            int eventParam{};
 
             if ( Events().getNextEvent( &eventCode, &eventParam ) )
             {
@@ -133,7 +134,7 @@ int main()
                         if ( gSendTimerEvents )
                         {
                             // std::cout << "1/4 " << eventParam << ", " << gSendTimerEvents << std::endl;
-                            TimerEventCmd qtrSec( TimerEventCmd::k1QuarterSecondEvent, eventParam );
+                            TimerEventCmd qtrSec( TimerEventCmd::k1QuarterSecondEvent, eventParam, timeTick );
                             qtrSec.sendOut( rpi0 );
                         }
                         break;
@@ -142,7 +143,7 @@ int main()
                         // std::cout << "1 s " << eventParam << std::endl;
                         if ( gSendTimerEvents )
                         {
-                            TimerEventCmd oneSec( TimerEventCmd::k1SecondEvent, eventParam );
+                            TimerEventCmd oneSec( TimerEventCmd::k1SecondEvent, eventParam, timeTick );
                             oneSec.sendOut( rpi0 );
                         }
                         gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
@@ -153,7 +154,7 @@ int main()
                         // std::cout << "8 s " << eventParam << std::endl;
                         if ( gSendTimerEvents )
                         {
-                            TimerEventCmd eightSec( TimerEventCmd::k8SecondEvent, eventParam );
+                            TimerEventCmd eightSec( TimerEventCmd::k8SecondEvent, eventParam, timeTick );
                             eightSec.sendOut( rpi0 );
                         }
                         break;
@@ -176,7 +177,7 @@ int main()
             auto cmd{ scp.receiveCommandIfAvailable() };
             if ( cmd )
             {
-                cmd.value()->takeAction( rpi0 );
+                cmd.value()->takeAction( Events(), rpi0 );
             }
             sleep_ms( 25 );
         }
