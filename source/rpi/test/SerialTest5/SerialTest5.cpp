@@ -44,6 +44,11 @@ void doTest( int i, SerialLink& link )
 }
 
 
+class EventManager
+{
+
+};
+
 
 int main() 
 {
@@ -75,7 +80,8 @@ int main()
             auto cmd{ scp.receiveCommandIfAvailable() };
             if ( cmd )
             {
-                cmd.value()->takeAction( pico );
+                EventManager events;
+                cmd.value()->takeAction( events, pico );
             }
 
             long now{ Clock::millis() };

@@ -32,7 +32,7 @@
 
 
 
-
+class EventManager;
 
 
 /*********************************************************************************************/
@@ -48,8 +48,8 @@ TimerEventCmd::TimerEventCmd( TheData t ) noexcept
 : SerialCommand( kTimerEvent ), mContent( kTimerEvent, t ), mNeedsAction{ true }
 {} 
 
-TimerEventCmd::TimerEventCmd( std::uint8_t which, int count ) noexcept 
-: SerialCommand( kTimerEvent ), mContent( kTimerEvent, std::make_tuple( which, count ) ), mNeedsAction{ true } 
+TimerEventCmd::TimerEventCmd( std::uint8_t which, int count, std::uint32_t time ) noexcept 
+: SerialCommand( kTimerEvent ), mContent( kTimerEvent, std::make_tuple( which, count, time ) ), mNeedsAction{ true } 
 {}
 
 TimerEventCmd::TimerEventCmd( CommandId id ) 
@@ -79,10 +79,10 @@ void TimerEventCmd::sendOut( SerialLink& link )
 
 
 
-void TimerEventCmd::takeAction( SerialLink& link ) 
+void TimerEventCmd::takeAction( EventManager&, SerialLink& link ) 
 {
     // For the test just print out
-    auto [ kind, count ] = mContent.mMsg;
+    auto [ kind, count, time ] = mContent.mMsg;
     std::cout << "Timer msg ";
     switch ( kind )
     {
@@ -102,7 +102,7 @@ void TimerEventCmd::takeAction( SerialLink& link )
             std::cout << "?? " << static_cast<int>(kind) << " ?? ";
             break;
     }
-    std::cout << "sec; count " << count << std::endl;
+    std::cout << "sec; count: " << count << " time: " << time << std::endl;
     mNeedsAction = false;
 }
 
@@ -154,7 +154,7 @@ void TimerControlCmd::sendOut( SerialLink& link )
 
 
 
-void TimerControlCmd::takeAction( SerialLink& link ) 
+void TimerControlCmd::takeAction( EventManager&, SerialLink& link ) 
 {
     // RPi0 action is to send it out...
     sendOut( link );
@@ -209,7 +209,7 @@ void ErrorReportCmd::sendOut( SerialLink& link )
 
 
 
-void ErrorReportCmd::takeAction( SerialLink& link ) 
+void ErrorReportCmd::takeAction( EventManager&, SerialLink& link ) 
 {
     auto [ fatal, errCode ] = mContent.mMsg;
     std::cout << "Error from Pico: " << ( fatal ? "fatal" : "non-fatal" ) << "; error code " << errCode << std::endl;
@@ -264,7 +264,7 @@ void DebugLinkCmd::sendOut( SerialLink& link )
 
 
 
-void DebugLinkCmd::takeAction( SerialLink& link ) 
+void DebugLinkCmd::takeAction( EventManager&, SerialLink& link ) 
 {
     // Let's display what we got
     auto [ val1, val2 ] = mContent.mMsg;
@@ -320,7 +320,7 @@ void UnknownCmd::sendOut( SerialLink& link )
 
 
 
-void UnknownCmd::takeAction( SerialLink& link ) 
+void UnknownCmd::takeAction( EventManager&, SerialLink& link ) 
 {
     // this should do something to trigger error processing 
     auto [ id, errCode ] = mContent.mMsg;
