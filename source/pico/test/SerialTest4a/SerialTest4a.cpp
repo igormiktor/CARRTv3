@@ -42,7 +42,6 @@ bool timerCallback( repeating_timer_t* )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
         Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
-        Events().queueEvent( Event::kIdentifyPicoCoreEvent, get_core_num() );
     }
 
     if ( eighthSecCount == 0 )
@@ -139,12 +138,6 @@ int main()
                     std::cout << "8 s " << eventParam << std::endl;
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer8s );
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
-                    break;
-
-                case Event::kIdentifyPicoCoreEvent:
-                    std::cout << "Core " << eventParam << std::endl;
-                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kIdentifyPicoCore );
-                    // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 0 );
                     break;
             }
             if ( Events().hasEventQueueOverflowed() )

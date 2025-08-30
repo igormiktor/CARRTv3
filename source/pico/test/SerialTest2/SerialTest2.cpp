@@ -1,7 +1,7 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
 
-#include "SerialCommand.h"
+#include "SerialCommands.h"
 
 #include <iostream>
 #include "pico/binary_info.h"
@@ -51,7 +51,6 @@ bool timerCallback( repeating_timer_t* )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
         Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
-        Events().queueEvent( Event::kIdentifyPicoCoreEvent, get_core_num() );
     }
 
     if ( eighthSecCount == 0 )
@@ -67,10 +66,6 @@ bool timerCallback( repeating_timer_t* )
 void startCore1() 
 {
     std::cout << "Started Core " << get_core_num() << std::endl;
-
-    // Test sending UART from core 1
-    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kIdentifyPicoCore );
-    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 1 );
 
     alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
 
@@ -139,13 +134,15 @@ int main()
                     
                 case Event::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kTimer1_4s );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kTimerEvent );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( TimerEventCmd::k1QuarterSecondEvent ) );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kTimer1s );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kTimerEvent );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( TimerEventCmd::k1SecondEvent ) );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     ledState = !ledState;
@@ -153,14 +150,9 @@ int main()
                     
                 case Event::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kTimer8s );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kTimerEvent );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( TimerEventCmd::k8SecondEvent ) );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
-                    break;
-
-                case Event::kIdentifyPicoCoreEvent:
-                    std::cout << "Core " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, CommandId::kIdentifyPicoCore );
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, 0 );
                     break;
             }
             if ( Events().hasEventQueueOverflowed() )
