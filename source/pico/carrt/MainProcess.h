@@ -19,9 +19,12 @@
 */
 
 
+class EventManager;
+class SerialLinkPico;
+class SerialCommandProcessor;
 
 namespace MainProcess
 {
-    void runMainEventLoop();
+    void runMainEventLoop( EventManager& events, SerialCommandProcessor& scp, SerialLinkPico& rpi0 );
 }
 
