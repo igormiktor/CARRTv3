@@ -26,4 +26,6 @@
 
 void launchCore1();
 
+bool isRunningCore1();
+
 #endif  // Core1.h

@@ -25,9 +25,8 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
 
-#include "shared/CarrtError.h"
+#include "CarrtError.h"
 
-#include <iostream>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "pico/util/queue.h"
@@ -54,7 +53,7 @@ void launchCore1()
     multicore_launch_core1( core1Main );
 
     // Wait for it to start up
-    uint32_t flag = multicore_fifo_pop_blocking();
+    uint32_t flag{ multicore_fifo_pop_blocking() };
 
     if ( flag != CORE1_SUCCESS )
     {
@@ -77,7 +76,7 @@ void launchCore1()
 
 void core1Main() 
 {
-    repeating_timer_t timer;
+    repeating_timer_t timer{};
 
 
     alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
@@ -110,9 +109,9 @@ bool timerCallback( repeating_timer_t* )
 {
     // Argument is not used...
 
-    static int eighthSecCount = 0;
+    static int eighthSecCount{ 0 };
 
-    uint32_t timeTick = to_ms_since_boot( get_absolute_time() );
+    uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
 
     ++eighthSecCount;
     eighthSecCount %= 64;
@@ -124,7 +123,7 @@ bool timerCallback( repeating_timer_t* )
     if ( ( eighthSecCount % 2 ) == 0 )
     {
         // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        Events().queueEvent( kQuarterSecondTimerEvent, ( eighthSecCount % 4 ), timeTick );
+        Events().queueEvent( kQuarterSecondTimerEvent, ( (eighthSecCount / 2) % 4 ), timeTick );
     }
 
     if ( ( eighthSecCount % 8 ) == 0 )
