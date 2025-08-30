@@ -446,4 +446,4 @@ namespace DebugUtils
 // Convenience macro to instantiate a file to log all the debug output
 #define logDebugToFile( filename )      DebugUtils::DebugFileOn debugEnabled( filename )
 
-#endif  // DebugUtils_h
+#endif  // DebugUtils_hpp
