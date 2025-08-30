@@ -6,6 +6,7 @@ add_executable( CarrtPico
         EventManager.cpp 
         MainProcess.cpp
         PicoSerialCommands.cpp
+        PicoState.cpp
 )
 
         
@@ -37,6 +38,7 @@ target_compile_definitions( CarrtPico PRIVATE -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
 target_link_libraries( CarrtPico PRIVATE
         pico_driver_library
         shared_library
+        utils_library
         pico_multicore
         pico_stdlib
         hardware_i2c

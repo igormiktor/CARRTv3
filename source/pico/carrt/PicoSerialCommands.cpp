@@ -25,11 +25,10 @@
 
 #include "EventManager.h"
 #include "PicoOutputUtils.hpp"
+#include "PicoState.h"
 
 #include "DebugUtils.hpp"
 
-
-#include "DebugUtils.hpp"
 
 
 
@@ -372,10 +371,9 @@ void TimerControlCmd::sendOut( SerialLink& link )
 
 void TimerControlCmd::takeAction( EventManager& events, SerialLink& link ) 
 {
-    // TODO:  This is a kluge for testing only
-    extern bool gSendTimerEvents;
-    gSendTimerEvents = std::get<0>( mContent.mMsg );
-    
+    bool val = std::get<0>( mContent.mMsg );
+    PicoState::access()->sendTimerEvents( val );
+    output2cout( "Timer events to RPi0 turned ", val );    
     mNeedsAction = false;
 }
 

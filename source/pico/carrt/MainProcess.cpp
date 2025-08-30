@@ -35,6 +35,7 @@
 #include "CarrtError.h"
 
 #include "PicoOutputUtils.hpp"
+#include "PicoState.h"
 
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -241,27 +242,37 @@ void MainProcess::dispatchMessage( uint8_t cmd )
 
 void MainProcess::doNavUpdateEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime )
 {
+    if ( PicoState::access()->wantNavEvents() )
+    {
+
 /*
     SerialLink::putMsg( kTimerNavUpdate );
     SerialLink::put( eventTime );
     SerialLink::put( eventParam );
 */
+    }
 }
 
 
 
 void MainProcess::doQuarterSecondTimerEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime )
 {
-    TimerEventCmd timerEvt( TimerEventCmd::k1QuarterSecondEvent, eventParam, eventTime );
-    timerEvt.sendOut( rpi0 ); 
+    if ( PicoState::access()->wantTimerEvents() )
+    {
+        TimerEventCmd timerEvt( TimerEventCmd::k1QuarterSecondEvent, eventParam, eventTime );
+        timerEvt.sendOut( rpi0 ); 
+    }
 }
 
 
 
 void MainProcess::doOneSecondTimerEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime )
 {
-    TimerEventCmd timerEvt( TimerEventCmd::k1SecondEvent, eventParam, eventTime );
-    timerEvt.sendOut( rpi0 ); 
+    if ( PicoState::access()->wantTimerEvents() )
+    {
+        TimerEventCmd timerEvt( TimerEventCmd::k1SecondEvent, eventParam, eventTime );
+        timerEvt.sendOut( rpi0 ); 
+    }
 
     HeartBeatLed::toggle();
 }
@@ -270,8 +281,11 @@ void MainProcess::doOneSecondTimerEvent( SerialLinkPico& rpi0, int eventParam, u
 
 void MainProcess::doEightSecondTimerEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime )
 {
-    TimerEventCmd timerEvt( TimerEventCmd::k8SecondEvent, eventParam, eventTime );
-    timerEvt.sendOut( rpi0 ); 
+    if ( PicoState::access()->wantTimerEvents() )
+    {
+        TimerEventCmd timerEvt( TimerEventCmd::k8SecondEvent, eventParam, eventTime );
+        timerEvt.sendOut( rpi0 ); 
+    }
 }
 
 

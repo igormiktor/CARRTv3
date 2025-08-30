@@ -40,6 +40,11 @@
 #include "SerialCommandProcessor.h"
 #include "DebugUtils.hpp"
 
+#include "PicoState.h"
+
+#include "CoreAtomic.hpp"
+
+
 
 #include "pico/stdlib.h"
 //#include "pico/multicore.h"
@@ -58,15 +63,25 @@ void setupCommandProcessor( SerialCommandProcessor& cmdr );
 void sendReady( SerialLinkPico& link );
 
 
+
+
+
+
+
 int main()
 {
+    CoreAtomic::CAtomicInitializer theInitializationIsDone;
+
     initializeFailSafeHardware();
 
     // Open the serial link to RPi0
     SerialLinkPico rpi0;
 
     try
-    { 
+    {
+        // Force creation of the singleton
+        PicoState::access()->allSendEventsOff();
+
         initializeFailableHardware();
 
         output2cout( "CARRT Pico started, hardware initialized, both cores running." );
