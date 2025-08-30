@@ -29,7 +29,23 @@
 
 
 
-SerialLinkPico::SerialLinkPico()
+
+SerialLinkPico& serialLink()
+{
+    // Not constructed until first time this function is called
+    static SerialLinkPico  sTheSerialLink;
+
+    return sTheSerialLink;
+}
+
+
+
+
+
+
+
+
+SerialLinkPico::SerialLinkPico() noexcept
 {
     // Initialise UART for the Serial-Link
     uart_init( CARRTPICO_SERIAL_LINK_UART, CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
@@ -42,7 +58,7 @@ SerialLinkPico::SerialLinkPico()
 
 
 
-SerialLinkPico::~SerialLinkPico()
+SerialLinkPico::~SerialLinkPico() noexcept
 {
     // Shutdown the Serial-Link UART
     gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_NULL );
@@ -52,7 +68,7 @@ SerialLinkPico::~SerialLinkPico()
 
 
 
-bool SerialLinkPico::isReadable()
+bool SerialLinkPico::isReadable() noexcept
 {
     return uart_is_readable( CARRTPICO_SERIAL_LINK_UART );
 }

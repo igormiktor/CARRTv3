@@ -36,8 +36,8 @@ class SerialLinkPico : public SerialLink
 
 public:
 
-    SerialLinkPico();
-    virtual ~SerialLinkPico();
+    SerialLinkPico() noexcept;
+    virtual ~SerialLinkPico() noexcept;
 
     
     // Disable undesired defaults (create, delete, but no move, copy, or assignment)
@@ -63,7 +63,7 @@ public:
     int putBytes( int nbr, const std::uint8_t* buffer ) override;
 
     // Additional functions (not part of base class)
-    bool isReadable();
+    bool isReadable() noexcept;
     
 
 private:
@@ -71,6 +71,13 @@ private:
     int mSerialPort;
 
 };
+
+
+
+
+
+// SerialLinkPico& serialLink();
+
 
 
 
