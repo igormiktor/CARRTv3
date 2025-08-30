@@ -11,6 +11,7 @@ set( DRVR_HDR_LIST
 # Driver sources list
 set ( DRVR_SRC_LIST 
     BNO055/bno055.c
+    BNO055.cpp
     Encoders.cpp
     HeartBeatLed.cpp
     I2C.cpp 

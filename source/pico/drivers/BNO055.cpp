@@ -21,7 +21,7 @@
 #include "BNO055.h"
 
 #include "I2C.h"
-#include "shared/CarrtError.h"
+#include "CarrtError.h"
 
 
 #include "hardware/timer.h"
