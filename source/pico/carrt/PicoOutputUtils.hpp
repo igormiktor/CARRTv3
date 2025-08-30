@@ -59,6 +59,12 @@
     #define USE_CARRTPICO_STDIO     0
 #endif
 
+#ifndef DEBUGUTILS_ON
+    #define DEBUGUTILS_ON 0
+#endif
+
+#define DEBUGUTILS_AND_PICO_STDIO_ON    ( DEBUGUTILS_ON && USE_CARRTPICO_STDIO )
+
 
 
 
@@ -83,23 +89,33 @@ namespace OutputUtils
 
 
     // OutputUtilsPolicy is a type used to manage template instantiation and specialization,
-    // as well as overload resolution.
+    // as well as overload resolution the generate output only when Pico STDIO is enabled.
 
-    // When OutputUtilsPolicy == std::true_type, code for debugging is compiled.
+    // When OutputUtilsPolicy == std::true_type, code for output to stdio (std::cout) is compiled.
     // When OutputUtilsPolicy == std::false_type, it is not.
 
     using OutputUtilsPolicy = typename TypeSelect<USE_CARRTPICO_STDIO>::type;
 
 
+    // OutputDebugPolicy is a type used to manage template instantiation and specialization,
+    // as well as overload resolution for output only when Pico STDIO *and* DEBUG_UTILS are both enabled.
+
+    // When OutputDebugPolicy == std::true_type, code for debug output to stdio (std::cout) is compiled.
+    // When OutputDebugPolicy == std::false_type, it is not.
+
+    using OutputDebugPolicy = typename TypeSelect<DEBUGUTILS_AND_PICO_STDIO_ON>::type;
+
+
+
 
     // This is the working overload
     template< typename T, typename ...V >
-    void output2stdio_( std::true_type, T&& head, V&&... tail )
+    void output2cout_( std::true_type, T&& head, V&&... tail )
     {
         std::cout << std::forward<T>( head );
         if constexpr ( sizeof...(tail) )
         {
-            output2stdio_( std::true_type{}, std::forward<V>( tail )... );
+            output2cout_( std::true_type{}, std::forward<V>( tail )... );
         }
         else
         {
@@ -109,26 +125,46 @@ namespace OutputUtils
 
     // This is the null overload
     template< typename T, typename ...V >
-     void output2stdio_( std::false_type, T&& head, V&&... tail )
+    void output2cout_( std::false_type, T&& head, V&&... tail )
     {
         // Do nothing
     }
 
 
-    // This is the public function actually called in user code
+    // This is the public function actually called in user code for std::cout output
     // Converts the arguments to 
     //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
+    //
+    // Use output2cout for code that should remain in the Pico executable (if Pico STDIO 
+    // functionality is enabled) even in release/production builds.
+
     template< typename T, typename ...V >
-    void output2stdio( T&& head, V&&... tail )
+    inline void output2cout( T&& head, V&&... tail )
     {
-        output2stdio_( OutputUtilsPolicy{}, std::forward<T>( head ), std::forward<V>( tail )... );
+        output2cout_( OutputUtilsPolicy{}, std::forward<T>( head ), std::forward<V>( tail )... );
     }
 
+    // This is the public function actually called in user code for std::cout output *only* when debugging enabled
+    // If DEBUGUTILS_ON, converts the arguments to 
+    //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
+    //
+    // Use debug2cout for code that should remain in the Pico executable (if Pico STDIO 
+    // functionality is enabled) only in debugging builds. 
+
+    template< typename T, typename ...V >
+    inline void debug2cout( T&& head, V&&... tail )
+    {
+        output2cout_( OutputDebugPolicy{}, std::forward<T>( head ), std::forward<V>( tail )... );
+    }
+
+    // For more sophisticated debugging output (to std::cerr) use DebugUitls.hpp
 }
 
 
 // For convenience (likelihood of name clash is very low)
-using OutputUtils::output2stdio;
+using OutputUtils::output2cout;
+using OutputUtils::debug2cout;
 
 
 #endif  // PicoOutputUtils_hpp
+

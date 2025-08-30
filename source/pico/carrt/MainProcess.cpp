@@ -279,7 +279,7 @@ void MainProcess::doEightSecondTimerEvent( SerialLinkPico& rpi0, int eventParam,
 
 void MainProcess::doUnknownEvent( SerialLinkPico& rpi0, int eventCode )
 {
-    output2stdio( "Warning: Pico received unknown event: ",  eventCode );
+    output2cout( "Warning: Pico received unknown event: ",  eventCode );
     
     int errCode{ makePicoErrorId( kPicoMainProcessError, 1, eventCode ) };
     ErrorReportCmd errRpt( kPicoNonFatalError, errCode );
@@ -290,7 +290,7 @@ void MainProcess::doUnknownEvent( SerialLinkPico& rpi0, int eventCode )
 
 void MainProcess::doEventQueueOverflowed( SerialLinkPico& rpi0 )
 {
-    output2stdio( "Event queue overflowed" );
+    output2cout( "Event queue overflowed" );
 
     int errCode{ makePicoErrorId( kPicoMainProcessError, 2, 0 ) };
     ErrorReportCmd errRpt( kPicoNonFatalError, errCode );
@@ -301,7 +301,7 @@ void MainProcess::doEventQueueOverflowed( SerialLinkPico& rpi0 )
 
 void MainProcess::doNullMsg()
 {
-    output2stdio( "Received Null cmd from RPi0" );
+    output2cout( "Received Null cmd from RPi0" );
 
     // do nothing
 }
@@ -310,7 +310,7 @@ void MainProcess::doNullMsg()
 
 void MainProcess::doPauseMsg()
 {
-    output2stdio( "Received Pause cmd from RPi0" );
+    output2cout( "Received Pause cmd from RPi0" );
 
     // TODO  Try to pause (throw exception if fails?)
 }
@@ -319,7 +319,7 @@ void MainProcess::doPauseMsg()
 
 void MainProcess::doBeginCalibration()
 {
-    output2stdio( "Received begin calibration msg from RPi0" );
+    output2cout( "Received begin calibration msg from RPi0" );
 
     // TODO  Start the calibration process
 }
@@ -328,7 +328,7 @@ void MainProcess::doBeginCalibration()
 
 void MainProcess::doResumeMsg()
 {
-    output2stdio( "Received Resume cmd from RPi0" );
+    output2cout( "Received Resume cmd from RPi0" );
 
     // TODO  ry to resume; throw if fails
 }
@@ -337,7 +337,7 @@ void MainProcess::doResumeMsg()
 
 void MainProcess::doResetMsg()
 {
-    output2stdio( "Received Reset cmd from RPi0" );
+    output2cout( "Received Reset cmd from RPi0" );
 
     // Trigger a reset of the Pico
     PicoReset::reset();
@@ -353,7 +353,7 @@ void MainProcess::doResetMsg()
 
 void MainProcess::doReplyWithCalibrationStatus()
 {
-    output2stdio( "Received request calibration status" );
+    output2cout( "Received request calibration status" );
 
 // TODO  Get calibration status and report it
 }
@@ -362,7 +362,7 @@ void MainProcess::doReplyWithCalibrationStatus()
 
 void MainProcess::doProcessCalibrationProfile()
 {
-    output2stdio( "Received a calibration profile from RPi0" );
+    output2cout( "Received a calibration profile from RPi0" );
 
     // TODO  Extract calibration profile and sent it to BNO055
 
@@ -374,7 +374,7 @@ void MainProcess::doProcessCalibrationProfile()
 
 void MainProcess::doReplyWithCalibrationProfile()
 {
-    output2stdio( "Received request for the current calibration profile" );
+    output2cout( "Received request for the current calibration profile" );
 
     // TODO  Get calibration profile from BNO055 and relay it to RPi0
 
@@ -388,7 +388,7 @@ void MainProcess::doReplyWithCalibrationProfile()
 
 void MainProcess::doDrivingStatusUpdate()
 {
-    output2stdio( "Received Drive status update from RPi0" );
+    output2cout( "Received Drive status update from RPi0" );
 
     // TODO  do something with it
 }
@@ -397,7 +397,7 @@ void MainProcess::doDrivingStatusUpdate()
 
 void MainProcess::doRequestBatteryLevel()
 {
-    output2stdio( "Received request for battery V from RPi0" );
+    output2cout( "Received request for battery V from RPi0" );
 
     // TODO  do something with it
 }
@@ -406,7 +406,7 @@ void MainProcess::doRequestBatteryLevel()
 
 void MainProcess::doRequestMotorBatteryLevel()
 {
-    output2stdio( "Received request for motor battery V from RPi0" );
+    output2cout( "Received request for motor battery V from RPi0" );
 
     // TODO  do something with it
 }
@@ -415,7 +415,7 @@ void MainProcess::doRequestMotorBatteryLevel()
 
 void MainProcess::doTestPicoReportError()
 {
-    output2stdio( "Received test Pico error report cmd from RPi0" );
+    output2cout( "Received test Pico error report cmd from RPi0" );
             
     throw CarrtError( makePicoErrorId( PicoError::kPicoTestError, 1, 0 ), "CARRT Pico test error sent by request" );
 }

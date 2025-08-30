@@ -69,7 +69,7 @@ int main()
     { 
         initializeFailableHardware();
 
-        output2stdio( "CARRT Pico started, hardware initialized, both cores running." );
+        output2cout( "CARRT Pico started, hardware initialized, both cores running." );
     
         // Set up command processor
         SerialCommandProcessor scp( rpi0 );
@@ -86,7 +86,7 @@ int main()
         ErrorReportCmd err( kPicoFatalError, e.errorCode() ); 
         err.sendOut( rpi0 );
 
-        output2stdio( "Fatal error ", e.errorCode(), ' ', e.what() );
+        output2cout( "Fatal error ", e.errorCode(), ' ', e.what() );
     }
 
     catch( const std::exception& e )
@@ -95,7 +95,7 @@ int main()
         ErrorReportCmd err( kPicoFatalError, errCode ); 
         err.sendOut( rpi0 );
 
-        output2stdio( "Fatal error of unexpected nature", e.what() );
+        output2cout( "Fatal error of unexpected nature", e.what() );
     }
 
     catch( ... )
@@ -104,11 +104,11 @@ int main()
         ErrorReportCmd err( kPicoFatalError, errCode ); 
         err.sendOut( rpi0 );
 
-        output2stdio( "Fatal error of unknown type" );
+        output2cout( "Fatal error of unknown type" );
     }
 
 
-    output2stdio( "Pico frozen with fast LED strobe" );
+    output2cout( "Pico frozen with fast LED strobe" );
     // Just spin and put HeartBeatLed on fast strobe
     while ( 1 )
     {
