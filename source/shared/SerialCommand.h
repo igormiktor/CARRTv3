@@ -41,7 +41,6 @@ enum CommandId : std::uint8_t
     kNullMsg                    = 0x00,
 
     // Messages (to Pico). Errors send by kErrorReportFromPico msg
-    kStartCore1                 = 0x01,             // Pico to start Core1 
     kBeginCalibration           = 0x02,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
     kPauseMsg                   = 0x07,             // Pico to pause event processing
     kResumeMsg                  = 0x08,             // Pico to resume event processing  
@@ -51,11 +50,11 @@ enum CommandId : std::uint8_t
     kPicoReady                  = 0x10,             // Pico sends once ready to start receiving messages (Pico initiates serial comms with this message)
                                                     // If Pico fails to be ready, error report instead (via kErrorReportFromPico)
     kPicoReadyNav               = 0x11,             // Sent by Pico once Nav ready and ready to do stuff (bytes 2-5 -> uint32_t time hack for sync)
-    KPicoSaysStop               = 0x1F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
+    kPicoSaysStop               = 0x1F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
 
-    // Timer events (from Pico)
-    kTimerEvent                 = 0x21,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type)
-    kTimerControl               = 0x22,             // Start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)
+    // Timer events
+    kTimerEvent                 = 0x21,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type; 4th byte time hack)
+    kTimerControl               = 0x22,             // To pico to start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)
 
     // Calibration cmds       
     kRequestCalibStatus         = 0x30,             // Request status of BNO055 calibration (return with one-byte status)
@@ -206,6 +205,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+class EventManager;
 
 
 class SerialCommand 
@@ -220,7 +220,7 @@ public:
 
     virtual void sendOut( SerialLink& link ) = 0;
 
-    virtual void takeAction( SerialLink& link ) = 0;
+    virtual void takeAction( EventManager& events, SerialLink& link ) = 0;
 
     virtual bool needsAction() const noexcept = 0;
 
@@ -238,7 +238,7 @@ public:
 
 // Common to both RPi0 and Pico, but each has its own implementation
 // This lets us handle unknown commands gracefully 
-// But can't really continue becuase serial pipe is now potentially corrupt
+// But can't really continue operation becuase serial pipe is now potentially corrupt after unknown command
 class UnknownCmd : public SerialCommand 
 {
 public:
@@ -257,7 +257,7 @@ public:
 
     virtual void sendOut( SerialLink& link ) override;
 
-    virtual void takeAction( SerialLink& link ) override;
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 

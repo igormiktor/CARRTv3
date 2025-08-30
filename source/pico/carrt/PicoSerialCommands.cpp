@@ -27,7 +27,154 @@
 
 #include "DebugUtils.hpp"
 
+#include "EventManager.h"
 
+
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+
+NullCmd::NullCmd() noexcept
+: SerialCommand( kNullMsg )
+{
+    // Nothing to do
+}
+
+NullCmd::NullCmd( CommandId id )
+: SerialCommand( kNullMsg )
+{
+    if ( id != kNullMsg ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kNullMsg ), "Id mismatch at creation" ); 
+    } 
+}
+
+
+
+void NullCmd::readIn( SerialLink& link ) 
+{
+    // Nothing to do (we already have the ID if we call this function)
+}
+
+void NullCmd::sendOut( SerialLink& link )
+{
+    // Send the ID, it's the only thing we need to send
+    link.put( static_cast<std::uint8_t>( kNullMsg ) );
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+PicoReadyCmd::PicoReadyCmd() noexcept 
+: SerialCommand( kPicoReady ), mContent( kPicoReady ), mNeedsAction{ false } 
+{}
+
+PicoReadyCmd::PicoReadyCmd( TheData t ) noexcept 
+: SerialCommand( kPicoReady ), mContent( kPicoReady, t ), mNeedsAction{ true }
+{} 
+
+PicoReadyCmd::PicoReadyCmd( std::uint32_t time ) noexcept 
+: SerialCommand( kPicoReady ), mContent( kPicoReady, std::make_tuple( static_cast<std::uint32_t>( time ) ) ), mNeedsAction{ true } 
+{}
+
+PicoReadyCmd::PicoReadyCmd( CommandId id ) 
+: SerialCommand( id ), mContent( kPicoReady ), mNeedsAction{ false }
+{ 
+    if ( id != kPicoReady ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kPicoReady ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+
+void PicoReadyCmd::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+
+
+void PicoReadyCmd::sendOut( SerialLink& link )
+{
+    mContent.sendOut( link );
+}
+
+
+
+void PicoReadyCmd::takeAction( EventManager&, SerialLink& link ) 
+{
+    // Only action is to send it
+    sendOut( link );
+    mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+PicoReadyNavCmd::PicoReadyNavCmd() noexcept 
+: SerialCommand( kPicoReadyNav ), mContent( kPicoReadyNav ), mNeedsAction{ false } 
+{}
+
+PicoReadyNavCmd::PicoReadyNavCmd( TheData t ) noexcept 
+: SerialCommand( kPicoReadyNav ), mContent( kPicoReadyNav, t ), mNeedsAction{ true }
+{} 
+
+PicoReadyNavCmd::PicoReadyNavCmd( std::uint32_t time ) noexcept 
+: SerialCommand( kPicoReadyNav ), mContent( kPicoReadyNav, static_cast<std::uint32_t>( time ) ), mNeedsAction{ true } 
+{}
+
+PicoReadyNavCmd::PicoReadyNavCmd( CommandId id ) 
+: SerialCommand( id ), mContent( kPicoReadyNav ), mNeedsAction{ false }
+{ 
+    if ( id != kPicoReadyNav ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kPicoReadyNav ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+
+void PicoReadyNavCmd::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+
+
+void PicoReadyNavCmd::sendOut( SerialLink& link )
+{
+    mContent.sendOut( link );
+}
+
+
+
+void PicoReadyNavCmd::takeAction( EventManager&, SerialLink& link ) 
+{
+    // Only action is to send it
+    sendOut( link );
+    mNeedsAction = false;
+}
 
 
 
@@ -45,8 +192,8 @@ TimerEventCmd::TimerEventCmd( TheData t ) noexcept
 : SerialCommand( kTimerEvent ), mContent( kTimerEvent, t ), mNeedsAction{ true }
 {} 
 
-TimerEventCmd::TimerEventCmd( std::uint8_t which, int count ) noexcept 
-: SerialCommand( kTimerEvent ), mContent( kTimerEvent, std::make_tuple( which, count ) ), mNeedsAction{ true } 
+TimerEventCmd::TimerEventCmd( std::uint8_t which, int count, uint32_t time ) noexcept 
+: SerialCommand( kTimerEvent ), mContent( kTimerEvent, std::make_tuple( which, count, time ) ), mNeedsAction{ true } 
 {}
 
 TimerEventCmd::TimerEventCmd( CommandId id ) 
@@ -76,7 +223,7 @@ void TimerEventCmd::sendOut( SerialLink& link )
 
 
 
-void TimerEventCmd::takeAction( SerialLink& link ) 
+void TimerEventCmd::takeAction( EventManager&, SerialLink& link ) 
 {
     // Only action is to send it
     sendOut( link );
@@ -130,9 +277,9 @@ void TimerControlCmd::sendOut( SerialLink& link )
 
 
 
-void TimerControlCmd::takeAction( SerialLink& link ) 
+void TimerControlCmd::takeAction( EventManager& events, SerialLink& link ) 
 {
-    // This is a kluge for testing only
+    // TODO:  This is a kluge for testing only
     extern bool gSendTimerEvents;
     gSendTimerEvents = std::get<0>( mContent.mMsg );
     
@@ -187,7 +334,7 @@ void ErrorReportCmd::sendOut( SerialLink& link )
 
 
 
-void ErrorReportCmd::takeAction( SerialLink& link ) 
+void ErrorReportCmd::takeAction( EventManager&, SerialLink& link ) 
 {
     // Only action is to send the message out
     sendOut( link );
@@ -244,17 +391,114 @@ void DebugLinkCmd::sendOut( SerialLink& link )
 
 
 
-void DebugLinkCmd::takeAction( SerialLink& link ) 
+void DebugLinkCmd::takeAction( EventManager& events, SerialLink& link ) 
 {
     // Lets negate the values, flip the order, and send them back
     auto [ val1, val2 ] = mContent.mMsg;
-    val1 *= -1;
-    val2 *= -1;
-    DebugLinkCmd reply( val2, val1 );
-//    auto [ v1, v2 ] = reply.mContent.mMsg;
-//    debugM( "DebugLinkCmd sending" );
-//    debugV( v1, v2 );
-    reply.sendOut( link );
+
+ 
+    switch ( val1 )
+    {
+        case kNullMsg:
+            break;
+
+        case kBeginCalibration:
+            break;
+
+        case kPauseMsg:
+            break;
+
+        case kResumeMsg:
+            break;
+
+        case kResetMsg:
+            break;
+
+
+        // Msgs from Pico
+        case kPicoReady:
+            break;
+
+        case kPicoReadyNav:
+            break;
+
+        case kPicoSaysStop:
+            break;
+
+
+        // Timer events (from Pico)
+        case kTimerEvent:
+            break;
+
+        case kTimerControl:
+            break;
+
+
+        // Calibration cmds       
+        case kRequestCalibStatus:
+            break;
+
+        case kSendCalibProfileToPico:
+            break;
+
+        case kRequestCalibProfileFmPico:
+            break;
+
+
+        // Navigation events
+        case kTimerNavUpdate:
+            break;
+
+        case kDrivingStatusUpdate:
+            break;
+
+        case kEncoderUpdate:
+            break;
+
+
+        // Battery info
+        case kRequestBatteryLevel:
+            break;
+
+        case kBatteryLevelUpdate:
+            break;
+
+        case kBatteryLowAlert:
+            break;
+
+
+        // Error reports
+        case kErrorReportFromPico:
+            break;
+
+
+        // Uncase known:
+            break;
+
+        case kUnknownCommand:
+            break;
+
+
+        // Debugging events
+        case kIdentifyPicoCore:
+            break;
+
+        case kTestPicoReportError:
+            break;
+
+        case kExtendedMsg:
+            break;
+
+        default: 
+            val1 *= -1;
+            val2 *= -1;
+            DebugLinkCmd reply( val2, val1 );
+            // auto [ v1, v2 ] = reply.mContent.mMsg;
+            // debugM( "DebugLinkCmd sending" );
+            // debugV( v1, v2 );
+            reply.sendOut( link );
+            break;
+    }
     mNeedsAction = false;
 }
 
@@ -302,12 +546,12 @@ void UnknownCmd::sendOut( SerialLink& link )
 {
     // We don't send this Cmd out on link; instead send error report
     ErrorReportCmd errCmd( false, std::get<1>( mContent.mMsg ) );
-    errCmd.takeAction( link );
+    errCmd.sendOut( link );
 }
 
 
 
-void UnknownCmd::takeAction( SerialLink& link ) 
+void UnknownCmd::takeAction( EventManager& events, SerialLink& link ) 
 {
     // Only action is to send the message out
     sendOut( link );

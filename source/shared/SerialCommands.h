@@ -41,11 +41,116 @@
 
 
 
+
+class NullCmd : public SerialCommand 
+{
+public:
+
+    NullCmd() noexcept;
+    NullCmd( CommandId id );
+
+    virtual ~NullCmd() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override {}
+
+    virtual bool needsAction() const noexcept override { return false; }
+
+    virtual std::uint8_t getId() const noexcept override { return kNullMsg; }
+
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class PicoReadyCmd : public SerialCommand 
+{
+public:
+
+    using TheData = std::tuple< std::uint32_t >;
+
+    PicoReadyCmd() noexcept;
+    PicoReadyCmd( TheData t ) noexcept; 
+    PicoReadyCmd( std::uint32_t time ) noexcept;
+    PicoReadyCmd( CommandId id );
+
+    virtual ~PicoReadyCmd() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct SerialMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class PicoReadyNavCmd : public SerialCommand 
+{
+public:
+
+    using TheData = std::tuple< std::uint32_t >;
+
+    PicoReadyNavCmd() noexcept;
+    PicoReadyNavCmd( TheData t ) noexcept; 
+    PicoReadyNavCmd( std::uint32_t time ) noexcept;
+    PicoReadyNavCmd( CommandId id );
+
+    virtual ~PicoReadyNavCmd() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct SerialMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 class TimerEventCmd : public SerialCommand
 {
 public:
 
-    using TheData = std::tuple< std::uint8_t, int >;
+    using TheData = std::tuple< std::uint8_t, int, uint32_t >;
 
     enum : std::uint8_t
     {
@@ -56,7 +161,7 @@ public:
 
     TimerEventCmd() noexcept;
     TimerEventCmd( TheData t ) noexcept; 
-    TimerEventCmd( std::uint8_t which, int count ) noexcept;
+    TimerEventCmd( std::uint8_t which, int count, uint32_t time ) noexcept;
     TimerEventCmd( CommandId id );
 
     virtual ~TimerEventCmd() = default;
@@ -66,7 +171,7 @@ public:
 
     virtual void sendOut( SerialLink& link ) override;
 
-    virtual void takeAction( SerialLink& link ) override;
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
@@ -104,7 +209,7 @@ public:
 
     virtual void sendOut( SerialLink& link ) override;
 
-    virtual void takeAction( SerialLink& link ) override;
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
@@ -142,7 +247,7 @@ public:
 
     virtual void sendOut( SerialLink& link ) override;
 
-    virtual void takeAction( SerialLink& link ) override;
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
@@ -180,7 +285,7 @@ public:
 
     virtual void sendOut( SerialLink& link ) override;
 
-    virtual void takeAction( SerialLink& link ) override;
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
