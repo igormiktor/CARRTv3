@@ -24,20 +24,22 @@
 
 
 #include "CarrtPicoDefines.h"
-//#include "Core1.h"
+#include "Core1.h"
 #include "Encoders.h"
-#include "DebugMacros.h"
+#include "EventManager.h"
 #include "HeartBeatLed.h"
 #include "MainProcess.h"
+#include "PicoOutputUtils.hpp"
 
-#include "drivers/BNO055.h"
-#include "drivers/I2C.h"
+#include "BNO055.h"
+#include "I2C.h"
+#include "SerialLinkPico.h"
 
-#include "shared/CarrtError.h"
-#include "shared/SerialMessage.h"
-#include "shared/SerialLink.h"
+#include "CarrtError.h"
+#include "SerialCommands.h"
+#include "SerialCommandProcessor.h"
+#include "DebugUtils.hpp"
 
-#include <iostream>
 
 #include "pico/stdlib.h"
 //#include "pico/multicore.h"
@@ -50,60 +52,63 @@
 
 
 
-void initializeHardware();
-void initI2C();
-
+void initializeFailSafeHardware();
+void initializeFailableHardware();
+void setupCommandProcessor( SerialCommandProcessor& cmdr );
+void sendReady( SerialLinkPico& link );
 
 
 int main()
 {
- 
-    initializeHardware();
+    initializeFailSafeHardware();
 
-    INFO_PICO_MSG2( "CARRT Pico started, hw initialized, running on core ", get_core_num() );
-    
+    // Open the serial link to RPi0
+    SerialLinkPico rpi0;
+
     try
-    {
-        // Report we are started...
-        SerialLink::putMsg( kPicoReady );
-        SerialLink::put( to_ms_since_boot( get_absolute_time() ) );
+    { 
+        initializeFailableHardware();
 
-        MainProcess::runMainEventLoop();
+        output2stdio( "CARRT Pico started, hardware initialized, both cores running." );
+    
+        // Set up command processor
+        SerialCommandProcessor scp( rpi0 );
+    
+        // Report we are started and ready to receive commands
+        sendReady( rpi0 );
+
+        MainProcess::runMainEventLoop( Events(), scp, rpi0  );
     }
 
     catch( const CarrtError& e )
     {
         // Report the error...
-        SerialLink::putMsg( kErrorReportFromPico );
-        SerialLink::putByte( kPicoFatalError );
-        SerialLink::put( e.errorCode() );
+        ErrorReportCmd err( kPicoFatalError, e.errorCode() ); 
+        err.sendOut( rpi0 );
 
-    #if USE_CARRTPICO_STDIO
-        INFO_PICO_MSG4( "Error ", e.errorCode(), ' ', e.what() );
-    #endif
+        output2stdio( "Fatal error ", e.errorCode(), ' ', e.what() );
     }
 
     catch( const std::exception& e )
     {
-        SerialLink::putMsg( kErrorReportFromPico );
-        SerialLink::putByte( kPicoFatalError );
-        int errCode = makePicoErrorId( kPicoMainError, 1, 0 );
-        SerialLink::put( errCode );
-    
-    INFO_PICO_MSG2( "Caught error of unknown type ", e.what() );
+        int errCode{ makePicoErrorId( kPicoMainError, 1, 0 ) };
+        ErrorReportCmd err( kPicoFatalError, errCode ); 
+        err.sendOut( rpi0 );
 
+        output2stdio( "Fatal error of unexpected nature", e.what() );
     }
 
     catch( ... )
-    {
-        SerialLink::putMsg( kErrorReportFromPico );
-        SerialLink::putByte( kPicoFatalError );
-        int errCode = makePicoErrorId( kPicoMainError, 2, 0 );
-        SerialLink::put( errCode );
-    
-        INFO_PICO_MSG1( "Caught unknown error" );
+    {    
+        int errCode{ makePicoErrorId( kPicoMainError, 2, 0 ) };
+        ErrorReportCmd err( kPicoFatalError, errCode ); 
+        err.sendOut( rpi0 );
+
+        output2stdio( "Fatal error of unknown type" );
     }
 
+
+    output2stdio( "Pico frozen with fast LED strobe" );
     // Just spin and put HeartBeatLed on fast strobe
     while ( 1 )
     {
@@ -116,25 +121,55 @@ int main()
 
 
 
-void initializeHardware()
+
+void initializeFailSafeHardware()
 {
+    // Nothing in this function throws or even fails
+
 #if USE_CARRTPICO_STDIO
-    // Initialize C/C++ stdio (used for debugging)
+    // Initialize C/C++ stdio (used for status output and debugging)
     stdio_init_all();
 #endif 
 
     // Set up Pico's I2C (to talk with BNO055)
     I2C::initI2C();
 
-    // Initialize UART for RPi0<->Pico serial link
-    SerialLink::openSerialLink();
-
-    // Initialize the BNO055 (but we need to verify calibration is complete later on)
-    BNO055::init();
-
-    // Initialize the heartbeat LED (so we can show both normal ops and errors)
+    // Initialize the heartbeat LED
     HeartBeatLed::initialize();
 
     // Set up the encoders;
     Encoders::initEncoders();
+}
+
+
+
+
+void initializeFailableHardware()
+{
+    // These function calls may throw
+
+    // Initialize the BNO055 (but we need to verify calibration is complete later on)
+    BNO055::init();
+
+    // Launch Core1
+    launchCore1();
+}
+
+
+
+void setupCommandProcessor( SerialCommandProcessor& scp )
+{
+    scp.registerCommand<NullCmd>( kNullMsg );
+    scp.registerCommand<PicoReadyCmd>( kPicoReady );
+    scp.registerCommand<TimerControlCmd>( kTimerControl );
+    scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+
+}
+
+
+
+void sendReady( SerialLinkPico& link )
+{
+    PicoReadyCmd ready( kPicoReady );
+    ready.sendOut( link );
 }
