@@ -50,17 +50,11 @@ enum Event : int
     // Keypad events
     kKeypadButtonHitEvent,
 
-    // Core events
-    kStartCore1Event,
-
     // Test events
     kGpioInterruptTestFallingEvent,
     kGpioInterruptTestRisingEvent,
     kGpioInterruptTestFailureEvent,
     kGpioInterruptWrongPinEvent,
-
-    // Debugging events
-    kIdentifyPicoCoreEvent,
 
     // Error event
     kErrorEvent,
