@@ -58,7 +58,7 @@
 
 
 #ifndef DebugUtils_hpp
-#define DebugUitls_hpp
+#define DebugUtils_hpp
 
 #include <iostream>
 #include <fstream>
