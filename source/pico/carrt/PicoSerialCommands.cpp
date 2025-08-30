@@ -472,17 +472,12 @@ void DebugLinkCmd::takeAction( EventManager& events, SerialLink& link )
             break;
 
 
-        // Uncase known:
-            break;
-
+        // Unknown command
         case kUnknownCommand:
             break;
 
 
         // Debugging events
-        case kIdentifyPicoCore:
-            break;
-
         case kTestPicoReportError:
             break;
 

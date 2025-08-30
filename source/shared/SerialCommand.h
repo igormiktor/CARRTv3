@@ -78,8 +78,6 @@ enum CommandId : std::uint8_t
     kUnknownCommand             = 0xEE,             // Never transmitted; used to designate an unknown command received; contains error code (int)
 
     // Debugging events
-    kIdentifyPicoCore           = 0xF0,             // RPi0 sends to Pico asking to identify core (0 or 1) running uart
-                                                    // Pico responds with same and which core is running uart (2nd byte)
     kTestPicoReportError        = 0xF2,             // RPi0 sends to Pico asking to report an error (bytes 2-5 contain error code to send back)
 
     kDebugSerialLink            = 0xFE,             // RPi0 or Pico sends messages to debug/test the serial link; data is two int values
