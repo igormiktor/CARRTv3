@@ -23,13 +23,132 @@
 
 #include "SerialCommands.h"
 
-#include "CarrtError.h"
+#include "EventManager.h"
+#include "PicoOutputUtils.hpp"
 
 #include "DebugUtils.hpp"
 
-#include "EventManager.h"
+
+#include "DebugUtils.hpp"
 
 
+
+
+
+
+
+UnknownCmd::UnknownCmd() noexcept 
+: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand ), mNeedsAction{ false } 
+{}
+
+UnknownCmd::UnknownCmd( TheData t ) noexcept 
+: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand, t ), mNeedsAction{ true } 
+{} 
+
+UnknownCmd::UnknownCmd( std::uint8_t rcvdId, int errorCode ) noexcept 
+: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand, std::make_tuple( rcvdId, errorCode ) ), 
+    mNeedsAction{ true } 
+{}
+
+UnknownCmd::UnknownCmd( CommandId id ) 
+: SerialCommand( id ), mContent( kUnknownCommand ), mNeedsAction{ false }
+{ 
+    if ( id != kUnknownCommand ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kUnknownCommand ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void UnknownCmd::readIn( SerialLink& link ) 
+{
+    // Unknown command; don't try to read it in.
+}
+
+void UnknownCmd::sendOut( SerialLink& link )
+{
+    // We don't send this Cmd out on link; instead send error report
+    ErrorReportCmd errCmd( false, std::get<1>( mContent.mMsg ) );
+    errCmd.sendOut( link );
+}
+
+void UnknownCmd::takeAction( EventManager& events, SerialLink& link ) 
+{
+    // Only action is to send the message out
+    sendOut( link );
+    mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+NoContentCmd::NoContentCmd( std::uint8_t id ) noexcept
+: SerialCommand( static_cast<CommandId>( id ) ), mId{ id }, mNeedsAction{ false } 
+{
+    // Nothing to do
+}
+
+NoContentCmd::NoContentCmd( CommandId id ) noexcept
+: SerialCommand( id ), mId{ id }, mNeedsAction{ true }
+{
+    // Nothing to do
+}
+
+
+void NoContentCmd::readIn( SerialLink& link ) 
+{
+    // Nothing to do (we already have the ID if we call this function)
+}
+
+void NoContentCmd::sendOut( SerialLink& link )
+{
+    // Send the ID, it's the only thing we need to send
+    link.put( static_cast<std::uint8_t>( kNullMsg ) );
+}
+
+bool NoContentCmd::needsAction() const noexcept
+{ 
+    return mNeedsAction; 
+}
+
+std::uint8_t NoContentCmd::getId() const noexcept
+{ 
+    return static_cast<std::uint8_t>( mId ); 
+}
+
+
+
+
+/*********************************************************************************************/
+/*********************************************************************************************/
+
+
+
+
+
+NullCmd::NullCmd() noexcept
+: NoContentCmd( kNullMsg )
+{
+    // Nothing to do
+}
+
+NullCmd::NullCmd( CommandId id ) noexcept
+: NoContentCmd( kNullMsg )
+{
+    // Nothing to do
+}
+
+
+void NullCmd::takeAction( EventManager& events, SerialLink& link )
+{
+    // Null Cmd, so nothing to do
+}
 
 
 
@@ -40,32 +159,26 @@
 
 
 
-NullCmd::NullCmd() noexcept
-: SerialCommand( kNullMsg )
+BeginCalibrationCmd::BeginCalibrationCmd() noexcept
+: NoContentCmd( kNullMsg )
 {
     // Nothing to do
 }
 
-NullCmd::NullCmd( CommandId id )
-: SerialCommand( kNullMsg )
+BeginCalibrationCmd::BeginCalibrationCmd( CommandId id ) noexcept
+: NoContentCmd( kNullMsg )
 {
-    if ( id != kNullMsg ) 
-    { 
-        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kNullMsg ), "Id mismatch at creation" ); 
-    } 
+    // Nothing to do
 }
 
 
-
-void NullCmd::readIn( SerialLink& link ) 
+void BeginCalibrationCmd::takeAction( EventManager& events, SerialLink& link )
 {
-    // Nothing to do (we already have the ID if we call this function)
-}
+    // TODO trigger BNO055 calibration
 
-void NullCmd::sendOut( SerialLink& link )
-{
-    // Send the ID, it's the only thing we need to send
-    link.put( static_cast<std::uint8_t>( kNullMsg ) );
+    output2cout( "Trigger calibration (code not written)" );
+
+    // When done, need to send PicoReadyNavCmd
 }
 
 
@@ -99,21 +212,16 @@ PicoReadyCmd::PicoReadyCmd( CommandId id )
 }
 
 
-
 void PicoReadyCmd::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
 }
 
-
-
 void PicoReadyCmd::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 }
-
-
 
 void PicoReadyCmd::takeAction( EventManager&, SerialLink& link ) 
 {
@@ -153,21 +261,16 @@ PicoReadyNavCmd::PicoReadyNavCmd( CommandId id )
 }
 
 
-
 void PicoReadyNavCmd::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
 }
 
-
-
 void PicoReadyNavCmd::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 }
-
-
 
 void PicoReadyNavCmd::takeAction( EventManager&, SerialLink& link ) 
 {
@@ -207,21 +310,16 @@ TimerEventCmd::TimerEventCmd( CommandId id )
 }
 
 
-
 void TimerEventCmd::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
 }
 
-
-
 void TimerEventCmd::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 }
-
-
 
 void TimerEventCmd::takeAction( EventManager&, SerialLink& link ) 
 {
@@ -261,21 +359,16 @@ TimerControlCmd::TimerControlCmd( CommandId id )
 }
 
 
-
 void TimerControlCmd::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
 }
 
-
-
 void TimerControlCmd::sendOut( SerialLink& link )
 {
     // This never sent from Pico
 }
-
-
 
 void TimerControlCmd::takeAction( EventManager& events, SerialLink& link ) 
 {
@@ -318,21 +411,16 @@ ErrorReportCmd::ErrorReportCmd( CommandId id )
 }
 
 
-
 void ErrorReportCmd::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
 }
 
-
-
 void ErrorReportCmd::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 }
-
-
 
 void ErrorReportCmd::takeAction( EventManager&, SerialLink& link ) 
 {
@@ -372,7 +460,6 @@ DebugLinkCmd::DebugLinkCmd( CommandId id )
 }
 
 
-
 void DebugLinkCmd::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
@@ -382,14 +469,10 @@ void DebugLinkCmd::readIn( SerialLink& link )
 //    debugV( v1, v2 );
 }
 
-
-
 void DebugLinkCmd::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 }
-
-
 
 void DebugLinkCmd::takeAction( EventManager& events, SerialLink& link ) 
 {
@@ -494,62 +577,6 @@ void DebugLinkCmd::takeAction( EventManager& events, SerialLink& link )
             reply.sendOut( link );
             break;
     }
-    mNeedsAction = false;
-}
-
-
-
-
-/*********************************************************************************************/
-
-
-
-
-UnknownCmd::UnknownCmd() noexcept 
-: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand ), mNeedsAction{ false } 
-{}
-
-UnknownCmd::UnknownCmd( TheData t ) noexcept 
-: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand, t ), mNeedsAction{ true } 
-{} 
-
-UnknownCmd::UnknownCmd( std::uint8_t rcvdId, int errorCode ) noexcept 
-: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand, std::make_tuple( rcvdId, errorCode ) ), 
-    mNeedsAction{ true } 
-{}
-
-UnknownCmd::UnknownCmd( CommandId id ) 
-: SerialCommand( id ), mContent( kUnknownCommand ), mNeedsAction{ false }
-{ 
-    if ( id != kUnknownCommand ) 
-    { 
-        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kUnknownCommand ), "Id mismatch at creation" ); 
-    } 
-    // Note that it doesn't need action until loaded with data
-}
-
-
-
-void UnknownCmd::readIn( SerialLink& link ) 
-{
-    // Unknown command; don't try to read it in.
-}
-
-
-
-void UnknownCmd::sendOut( SerialLink& link )
-{
-    // We don't send this Cmd out on link; instead send error report
-    ErrorReportCmd errCmd( false, std::get<1>( mContent.mMsg ) );
-    errCmd.sendOut( link );
-}
-
-
-
-void UnknownCmd::takeAction( EventManager& events, SerialLink& link ) 
-{
-    // Only action is to send the message out
-    sendOut( link );
     mNeedsAction = false;
 }
 

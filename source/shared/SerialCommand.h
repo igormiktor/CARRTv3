@@ -44,7 +44,7 @@ enum CommandId : std::uint8_t
     kBeginCalibration           = 0x02,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
     kPauseMsg                   = 0x07,             // Pico to pause event processing
     kResumeMsg                  = 0x08,             // Pico to resume event processing  
-    kResetMsg                   = 0x09,             // Pico to reset itself (ack by sending kReset, then followed by kPicoReady)
+    kResetMsg                   = 0x09,             // Pico to reset itself (ack by sending kResetMsg back, then followed by kPicoReady)
 
     // Msgs from Pico
     kPicoReady                  = 0x10,             // Pico sends once ready to start receiving messages (Pico initiates serial comms with this message)
@@ -265,6 +265,40 @@ public:
 private:
 
     struct SerialMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+
+// Commands with no content (just commmand ID) are common. This is a base class for those
+// Common to both RPi0 and Pico, but each has its own implementation
+
+class NoContentCmd : public SerialCommand 
+{
+public:
+
+    NoContentCmd( std::uint8_t id ) noexcept;
+    NoContentCmd( CommandId id ) noexcept;
+
+    virtual ~NoContentCmd() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) = 0;
+
+    virtual bool needsAction() const noexcept override;
+
+    virtual std::uint8_t getId() const noexcept override;
+
+
+private:
+
+    CommandId   mId;
 
     bool    mNeedsAction;
 };

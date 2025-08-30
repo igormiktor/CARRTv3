@@ -42,26 +42,17 @@
 
 
 
-class NullCmd : public SerialCommand 
+class NullCmd : public NoContentCmd 
 {
 public:
 
     NullCmd() noexcept;
-    NullCmd( CommandId id );
+    NullCmd( CommandId id ) noexcept;
 
     virtual ~NullCmd() = default;
 
 
-    virtual void readIn( SerialLink& link ) override;
-
-    virtual void sendOut( SerialLink& link ) override;
-
-    virtual void takeAction( EventManager& events, SerialLink& link ) override {}
-
-    virtual bool needsAction() const noexcept override { return false; }
-
-    virtual std::uint8_t getId() const noexcept override { return kNullMsg; }
-
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
 
 
@@ -100,6 +91,25 @@ private:
     struct SerialMessage<TheData>  mContent;
 
     bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class BeginCalibrationCmd : public NoContentCmd 
+{
+public:
+
+    BeginCalibrationCmd() noexcept;
+    BeginCalibrationCmd( CommandId id ) noexcept;
+
+    virtual ~BeginCalibrationCmd() = default;
+
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
 
 
