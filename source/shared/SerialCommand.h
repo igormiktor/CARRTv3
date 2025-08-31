@@ -40,17 +40,17 @@ enum CommandId : std::uint8_t
 {
     kNullMsg                    = 0x00,
 
-    // Messages (to Pico). Errors send by kErrorReportFromPico msg
-    kBeginCalibration           = 0x02,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
-    kPauseMsg                   = 0x07,             // Pico to pause event processing
-    kResumeMsg                  = 0x08,             // Pico to resume event processing  
-    kResetMsg                   = 0x09,             // Pico to reset itself (ack by sending kResetMsg back, then followed by kPicoReady)
-
     // Msgs from Pico
-    kPicoReady                  = 0x10,             // Pico sends once ready to start receiving messages (Pico initiates serial comms with this message)
+    kPicoReady                  = 0x01,             // Pico sends once ready to start receiving messages (Pico initiates serial comms with this message)
                                                     // If Pico fails to be ready, error report instead (via kErrorReportFromPico)
-    kPicoReadyNav               = 0x11,             // Sent by Pico once Nav ready and ready to do stuff (bytes 2-5 -> uint32_t time hack for sync)
-    kPicoSaysStop               = 0x1F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
+    kPicoReadyNav               = 0x02,             // Sent by Pico once Nav ready and ready to do stuff (bytes 2-5 -> uint32_t time hack for sync)
+    kPicoSaysStop               = 0x0F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
+
+    // Messages (to Pico). Errors send by kErrorReportFromPico msg
+    kBeginCalibration           = 0x11,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
+    kPauseMsg                   = 0x12,             // Pico to pause event processing
+    kResumeMsg                  = 0x13,             // Pico to resume event processing  
+    kResetMsg                   = 0x1F,             // Pico to reset itself (ack by sending kResetMsg back, then followed by kPicoReady)
 
     // Timer events
     kTimerEvent                 = 0x21,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type; 4th byte time hack)
