@@ -31,6 +31,12 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( PICO_CXX_ENABLE_EXCEPTIONS 1 )
 
 
+option( 
+    CARRT_PICO_ENABLE_UART_STDIO
+    "Enable stdio over UART.  Default: ON. Values: { OFF, ON }."
+    ON
+)
+
 option(
     CARRT_PICO_BUILD_TESTS
     "Enable building test executables. Default: ON. Values: { OFF, ON }."
@@ -57,7 +63,13 @@ pico_sdk_init()
 #######################################
 
 
-SET( BULDING_FOR_PICO 1 )
+set( BULDING_FOR_PICO 1 )
+
+if ( CARRT_PICO_ENABLE_UART_STDIO )
+    set( USE_CARRTPICO_STDIO_VAL 1 )
+else()
+    set( USE_CARRTPICO_STDIO_VAL 0 )
+endif()
 
 if ( CARRT_PICO_ENABLE_DEBUGUTILS )
     set( DEBUGUTILS_VAL 1 )
@@ -79,10 +91,9 @@ endif()
 
 message( "" )
 message( "Configuration summary on host ${CMAKE_HOST_SYSTEM_NAME}:" )
-message( " - Compiler is ${CARRT_COMPILER}.")
-message( " - Preset is ${CARRT_PRESET_NAME}.")
 message( " - Build type is ${CMAKE_BUILD_TYPE}." )
 message( " - Building of tests is ${CARRT_PICO_BUILD_TESTS}." )
+message( " - Use of stdio over UART is ${CARRT_PICO_ENABLE_UART_STDIO}." )
 message( " - Use of DebugUtils output is ${CARRT_PICO_ENABLE_DEBUGUTILS}." )
 message( "" )
 

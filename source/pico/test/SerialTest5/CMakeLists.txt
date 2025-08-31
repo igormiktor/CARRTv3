@@ -2,6 +2,7 @@ add_executable( SerialTest5
         SerialTest5.cpp
         ../../carrt/EventManager.cpp 
         ../../carrt/PicoSerialCommands.cpp
+        ../../carrt/PicoState.cpp
 )
         
 pico_set_program_name( SerialTest5 "SerialTest5" )
@@ -23,7 +24,11 @@ target_include_directories( SerialTest5 PRIVATE
 )
 
 target_compile_options( CarrtPico PRIVATE -Wall )
-target_compile_definitions( SerialTest5 PUBLIC -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} )
+target_compile_definitions( SerialTest5 PRIVATE
+        -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
+        -DUSE_CARRTPICO_STDIO=${USE_CARRTPICO_STDIO_VAL}
+        "$<$<CONFIG:DEBUG>:-DDEBUGPICO=1>" 
+)
 
 # Add any user requested libraries
 target_link_libraries( SerialTest5 PRIVATE

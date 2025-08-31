@@ -16,7 +16,7 @@ pico_set_program_description( CarrtPico "Main program for Pico as part of CARRTv
 pico_set_program_url( CarrtPico "https://github.com/igormiktor/CARRTv3" )
 
 
-pico_enable_stdio_uart( CarrtPico 1 )
+pico_enable_stdio_uart( CarrtPico ${USE_CARRTPICO_STDIO_VAL} )
 pico_enable_stdio_usb( CarrtPico 0 )
 
 # Add the standard library to the build
@@ -31,7 +31,11 @@ pico_enable_stdio_usb( CarrtPico 0 )
 #)
 
 target_compile_options( CarrtPico PRIVATE -Wall )
-target_compile_definitions( CarrtPico PRIVATE -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} )
+target_compile_definitions( CarrtPico PRIVATE 
+        -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
+        -DUSE_CARRTPICO_STDIO=${USE_CARRTPICO_STDIO_VAL}
+        "$<$<CONFIG:DEBUG>:-DDEBUGPICO=1>" 
+)
 
 
 # Add any user requested libraries
