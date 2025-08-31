@@ -23,6 +23,7 @@
 
 #include "SerialCommands.h"
 
+#include "CarrtPicoReset.h"
 #include "EventManager.h"
 #include "PicoOutputUtils.hpp"
 #include "PicoState.h"
@@ -157,37 +158,6 @@ void NullCmd::takeAction( EventManager& events, SerialLink& link )
 
 
 
-
-BeginCalibrationCmd::BeginCalibrationCmd() noexcept
-: NoContentCmd( kNullMsg )
-{
-    // Nothing to do
-}
-
-BeginCalibrationCmd::BeginCalibrationCmd( CommandId id ) noexcept
-: NoContentCmd( kNullMsg )
-{
-    // Nothing to do
-}
-
-
-void BeginCalibrationCmd::takeAction( EventManager& events, SerialLink& link )
-{
-    // TODO trigger BNO055 calibration
-
-    output2cout( "Trigger calibration (code not written)" );
-
-    // When done, need to send PicoReadyNavCmd
-}
-
-
-
-
-/*********************************************************************************************/
-
-
-
-
 PicoReadyCmd::PicoReadyCmd() noexcept 
 : SerialCommand( kPicoReady ), mContent( kPicoReady ), mNeedsAction{ false } 
 {}
@@ -276,6 +246,123 @@ void PicoReadyNavCmd::takeAction( EventManager&, SerialLink& link )
     // Only action is to send it
     sendOut( link );
     mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+
+BeginCalibrationCmd::BeginCalibrationCmd() noexcept
+: NoContentCmd( kBeginCalibration )
+{
+    // Nothing to do
+}
+
+BeginCalibrationCmd::BeginCalibrationCmd( CommandId id ) noexcept
+: NoContentCmd( kBeginCalibration )
+{
+    // Nothing to do
+}
+
+
+void BeginCalibrationCmd::takeAction( EventManager& events, SerialLink& link )
+{
+    // TODO trigger BNO055 calibration
+
+    output2cout( "Got a calibration cmd: TODO -- Trigger calibration (code not written)" );
+
+    // When done, need to send PicoReadyNavCmd
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+
+PauseCmd::PauseCmd() noexcept
+: NoContentCmd( kPauseMsg )
+{
+    // Nothing to do
+}
+
+PauseCmd::PauseCmd( CommandId id ) noexcept
+: NoContentCmd( id )
+{
+    // Nothing to do
+}
+
+
+void PauseCmd::takeAction( EventManager& events, SerialLink& link )
+{
+    // TODO implement a pause in Pico
+
+    output2cout( "Got a pause cmd: TODO -- implement a pause in Pico (not yet coded)" );
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+
+ResumeCmd::ResumeCmd() noexcept
+: NoContentCmd( kResumeMsg )
+{
+    // Nothing to do
+}
+
+ResumeCmd::ResumeCmd( CommandId id ) noexcept
+: NoContentCmd( id )
+{
+    // Nothing to do
+}
+
+
+void ResumeCmd::takeAction( EventManager& events, SerialLink& link )
+{
+    // TODO resume Pico (from a pause)
+
+    output2cout( "Got a resume cmd: TODO resume Pico (from a pause)" );
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+ResetCmd::ResetCmd() noexcept
+: NoContentCmd( kResetMsg )
+{
+    // Nothing to do
+}
+
+ResetCmd::ResetCmd( CommandId id ) noexcept
+: NoContentCmd( id )
+{
+    // Nothing to do
+}
+
+
+void ResetCmd::takeAction( EventManager& events, SerialLink& link )
+{
+    output2cout( "Pico commanded to reset by RPi0" );
+
+    PicoReset::reset( link );
 }
 
 

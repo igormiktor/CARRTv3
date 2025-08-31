@@ -351,16 +351,6 @@ void MainProcess::doResumeMsg()
 
 void MainProcess::doResetMsg()
 {
-    output2cout( "Received Reset cmd from RPi0" );
-
-    // Trigger a reset of the Pico
-    PicoReset::reset();
-
-    // Wait for the reset to happen
-    while ( 1 )
-    {
-        sleep_ms( 100 );
-    }
 }
 
 

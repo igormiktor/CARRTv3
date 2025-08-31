@@ -23,10 +23,11 @@
 #ifndef CarrtPicoReset_h
 #define CarrtPicoReset_h
 
+class SerialLink;
 
 namespace PicoReset
 {
-    void reset();
+    void reset( SerialLink& link );
 };
 
 

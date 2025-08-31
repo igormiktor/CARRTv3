@@ -30,6 +30,7 @@
 #include "HeartBeatLed.h"
 #include "MainProcess.h"
 #include "PicoOutputUtils.hpp"
+#include "CarrtPicoReset.h"
 
 #include "BNO055.h"
 #include "I2C.h"
@@ -88,6 +89,7 @@ int main()
     
         // Set up command processor
         SerialCommandProcessor scp( rpi0 );
+        // TODO load it up with commands...
     
         // Report we are started and ready to receive commands
         sendReady( rpi0 );
@@ -129,6 +131,18 @@ int main()
     {
         sleep_ms( 100 );
         HeartBeatLed::toggle();
+
+        // See if we get a sent a reset command
+        if ( rpi0.isReadable() )
+        {
+            auto msgType = rpi0.getMsgType();
+            if ( msgType && *msgType == kResetMsg )
+            {
+                PicoReset::reset( rpi0 );
+            }
+        }
+
+        // If no reset msg, we keep strobing the LED
     }
 
     return 0;

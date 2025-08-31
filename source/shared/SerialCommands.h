@@ -118,6 +118,63 @@ public:
 
 
 
+class PauseCmd : public NoContentCmd 
+{
+public:
+
+    PauseCmd() noexcept;
+    PauseCmd( CommandId id ) noexcept;
+
+    virtual ~PauseCmd() = default;
+
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class ResumeCmd : public NoContentCmd 
+{
+public:
+
+    ResumeCmd() noexcept;
+    ResumeCmd( CommandId id ) noexcept;
+
+    virtual ~ResumeCmd() = default;
+
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class ResetCmd : public NoContentCmd 
+{
+public:
+
+    ResetCmd() noexcept;
+    ResetCmd( CommandId id ) noexcept;
+
+    virtual ~ResetCmd() = default;
+
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 class PicoReadyNavCmd : public SerialCommand 
 {
 public:
