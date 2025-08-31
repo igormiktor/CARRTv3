@@ -60,7 +60,7 @@
 
 void initializeFailSafeHardware();
 void initializeFailableHardware();
-void setupCommandProcessor( SerialCommandProcessor& cmdr );
+void setupCommandProcessor( SerialCommandProcessor& scp );
 void sendReady( SerialLinkPico& link );
 
 
@@ -188,10 +188,21 @@ void initializeFailableHardware()
 
 void setupCommandProcessor( SerialCommandProcessor& scp )
 {
+    // Only register those commands/messages we actually can receive
+    // Commands/messages that are only outgoing don't need to be registered
     scp.registerCommand<NullCmd>( kNullMsg );
-    scp.registerCommand<PicoReadyCmd>( kPicoReady );
+//    scp.registerCommand<PicoReadyCmd>( kPicoReady );
+//    scp.registerCommand<PicoReadyNavCmd>( kPicoReadyNav );
+//    scp.registerCommand<PicoSaysStopCmd>( kPicoSaysStop );
+    scp.registerCommand<BeginCalibrationCmd>( kBeginCalibration );
+    scp.registerCommand<PauseCmd>( kPauseMsg );
+    scp.registerCommand<ResumeCmd>( kResumeMsg );
+    scp.registerCommand<ResetCmd>( kResetMsg );
+//    scp.registerCommand<TimerEventCmd>( kTimerEvent );
     scp.registerCommand<TimerControlCmd>( kTimerControl );
     scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+
+
 
 }
 

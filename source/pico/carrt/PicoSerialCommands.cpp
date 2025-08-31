@@ -257,26 +257,22 @@ void PicoReadyNavCmd::takeAction( EventManager&, SerialLink& link )
 
 
 
-BeginCalibrationCmd::BeginCalibrationCmd() noexcept
-: NoContentCmd( kBeginCalibration )
+PicoSaysStopCmd::PicoSaysStopCmd() noexcept
+: NoContentCmd( kPicoSaysStop )
 {
     // Nothing to do
 }
 
-BeginCalibrationCmd::BeginCalibrationCmd( CommandId id ) noexcept
-: NoContentCmd( kBeginCalibration )
+PicoSaysStopCmd::PicoSaysStopCmd( CommandId id ) noexcept
+: NoContentCmd( id )
 {
     // Nothing to do
 }
 
 
-void BeginCalibrationCmd::takeAction( EventManager& events, SerialLink& link )
+void PicoSaysStopCmd::takeAction( EventManager& events, SerialLink& link )
 {
-    // TODO trigger BNO055 calibration
-
-    output2cout( "Got a calibration cmd: TODO -- Trigger calibration (code not written)" );
-
-    // When done, need to send PicoReadyNavCmd
+    // Nothing to do (outgoing command)
 }
 
 
@@ -462,6 +458,37 @@ void TimerControlCmd::takeAction( EventManager& events, SerialLink& link )
     PicoState::access()->sendTimerEvents( val );
     output2cout( "Timer events to RPi0 turned ", val );    
     mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+
+BeginCalibrationCmd::BeginCalibrationCmd() noexcept
+: NoContentCmd( kBeginCalibration )
+{
+    // Nothing to do
+}
+
+BeginCalibrationCmd::BeginCalibrationCmd( CommandId id ) noexcept
+: NoContentCmd( id )
+{
+    // Nothing to do
+}
+
+
+void BeginCalibrationCmd::takeAction( EventManager& events, SerialLink& link )
+{
+    // TODO trigger BNO055 calibration
+
+    output2cout( "Got a calibration cmd: TODO -- Trigger calibration (code not written)" );
+
+    // When done, need to send PicoReadyNavCmd
 }
 
 

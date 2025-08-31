@@ -47,9 +47,8 @@ enum CommandId : std::uint8_t
     kPicoSaysStop               = 0x0F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
 
     // Messages (to Pico). Errors send by kErrorReportFromPico msg
-    kBeginCalibration           = 0x11,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
-    kPauseMsg                   = 0x12,             // Pico to pause event processing
-    kResumeMsg                  = 0x13,             // Pico to resume event processing  
+    kPauseMsg                   = 0x10,             // Pico to pause event processing
+    kResumeMsg                  = 0x11,             // Pico to resume event processing  
     kResetMsg                   = 0x1F,             // Pico to reset itself (ack by sending kResetMsg back, then followed by kPicoReady)
 
     // Timer events
@@ -57,9 +56,12 @@ enum CommandId : std::uint8_t
     kTimerControl               = 0x22,             // To pico to start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)
 
     // Calibration cmds       
-    kRequestCalibStatus         = 0x30,             // Request status of BNO055 calibration (return with one-byte status)
-    kSendCalibProfileToPico     = 0x31,             // Sending a calibration profile to Pico (follow by calibration data)
-    kRequestCalibProfileFmPico  = 0x32,             // Request a calibration profile from Pico (reply followed by calibration data)
+    kBeginCalibration           = 0x30,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
+    kRequestCalibStatus         = 0x31,             // Request status of BNO055 calibration (return with kSendCalibStatus)
+    kSendCalibStatus            = 0x32,             // Send status of BNO055 calibration (contains one-byte status)
+    kSendCalibProfileToPico     = 0x33,             // Sending a calibration profile to Pico (follow by calibration profile data)
+    kRequestCalibProfileFmPico  = 0x34,             // Request a calibration profile from Pico (reply with kSendCalibProfileToRPi0)
+    kSendCalibProfileToRPi0     = 0x35,             // Send a calibration profile to RPi0 (followed by calibration profile data)
 
     // Navigation events
     kTimerNavUpdate             = 0x40,             // Navigation timer (1/8 sec) from Pico to RPi0 (info in following bytes)

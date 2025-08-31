@@ -99,14 +99,52 @@ private:
 
 
 
-class BeginCalibrationCmd : public NoContentCmd 
+class PicoReadyNavCmd : public SerialCommand 
 {
 public:
 
-    BeginCalibrationCmd() noexcept;
-    BeginCalibrationCmd( CommandId id ) noexcept;
+    using TheData = std::tuple< std::uint32_t >;
 
-    virtual ~BeginCalibrationCmd() = default;
+    PicoReadyNavCmd() noexcept;
+    PicoReadyNavCmd( TheData t ) noexcept; 
+    PicoReadyNavCmd( std::uint32_t time ) noexcept;
+    PicoReadyNavCmd( CommandId id );
+
+    virtual ~PicoReadyNavCmd() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct SerialMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class PicoSaysStopCmd : public NoContentCmd 
+{
+public:
+
+    PicoSaysStopCmd() noexcept;
+    PicoSaysStopCmd( CommandId id ) noexcept;
+
+    virtual ~PicoSaysStopCmd() = default;
 
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
@@ -167,44 +205,6 @@ public:
 
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
-};
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-class PicoReadyNavCmd : public SerialCommand 
-{
-public:
-
-    using TheData = std::tuple< std::uint32_t >;
-
-    PicoReadyNavCmd() noexcept;
-    PicoReadyNavCmd( TheData t ) noexcept; 
-    PicoReadyNavCmd( std::uint32_t time ) noexcept;
-    PicoReadyNavCmd( CommandId id );
-
-    virtual ~PicoReadyNavCmd() = default;
-
-
-    virtual void readIn( SerialLink& link ) override;
-
-    virtual void sendOut( SerialLink& link ) override;
-
-    virtual void takeAction( EventManager& events, SerialLink& link ) override;
-
-    virtual bool needsAction() const noexcept override { return mNeedsAction; }
-
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
-
-
-private:
-
-    struct SerialMessage<TheData>  mContent;
-
-    bool    mNeedsAction;
 };
 
 
@@ -288,6 +288,25 @@ private:
     struct SerialMessage<TheData>  mContent;
 
     bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class BeginCalibrationCmd : public NoContentCmd 
+{
+public:
+
+    BeginCalibrationCmd() noexcept;
+    BeginCalibrationCmd( CommandId id ) noexcept;
+
+    virtual ~BeginCalibrationCmd() = default;
+
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
 
 
