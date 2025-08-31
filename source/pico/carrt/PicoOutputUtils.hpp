@@ -59,11 +59,11 @@
     #define USE_CARRTPICO_STDIO     0
 #endif
 
-#ifndef DEBUGUTILS_ON
-    #define DEBUGUTILS_ON 0
+#ifndef DEBUGPICO
+    #define DEBUGPICO 0
 #endif
 
-#define DEBUGUTILS_AND_PICO_STDIO_ON    ( DEBUGUTILS_ON && USE_CARRTPICO_STDIO )
+#define DEBUG_AND_PICO_STDIO_ON    ( DEBUGPICO && USE_CARRTPICO_STDIO )
 
 
 
@@ -103,7 +103,7 @@ namespace OutputUtils
     // When OutputDebugPolicy == std::true_type, code for debug output to stdio (std::cout) is compiled.
     // When OutputDebugPolicy == std::false_type, it is not.
 
-    using OutputDebugPolicy = typename TypeSelect<DEBUGUTILS_AND_PICO_STDIO_ON>::type;
+    using OutputDebugPolicy = typename TypeSelect<DEBUG_AND_PICO_STDIO_ON>::type;
 
 
 
