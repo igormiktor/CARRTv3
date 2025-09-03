@@ -21,14 +21,23 @@
 #ifndef BNO055_h
 #define BNO055_h
 
-
+#include <tuple>
 
 namespace BNO055
 {
+    struct Status
+    {
+        unsigned char system;
+        unsigned char gyro;
+        unsigned char accel;
+        unsigned char mag;
+    };
 
     void init();
     
     int checkCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag );
+
+    Status checkCalibration();
     
 };
 

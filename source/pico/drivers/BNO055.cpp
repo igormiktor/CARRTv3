@@ -106,7 +106,7 @@ void BNO055::init()
  
 int BNO055::checkCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag )
 {
-    unsigned char system = 0;
+    unsigned char system{ 0 };
 
     int err = bno055_get_all_calib_stat( &system, gyro, accel, mag );
 
@@ -116,4 +116,20 @@ int BNO055::checkCalibration( unsigned char* gyro, unsigned char* accel, unsigne
     }
 
     return system;
+}
+
+
+
+BNO055::Status BNO055::checkCalibration()
+{
+    Status ret{};
+
+    int err = bno055_get_all_calib_stat( &ret.system, &ret.gyro, &ret.accel, &ret.mag );
+
+    if ( err )
+    {
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 3, err ), "CARRT Pico BNO055 failed to get calibration" );
+    }
+
+    return ret;
 }
