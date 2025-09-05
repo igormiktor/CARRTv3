@@ -27,10 +27,13 @@ namespace I2C
 {
 
     void initI2C() noexcept;
-    
-    signed char send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept;
 
-    signed char receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept;
+    extern "C"
+    {
+        signed char send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept;
+
+        signed char receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept;
+    }
 
 };
 
