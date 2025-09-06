@@ -24,93 +24,25 @@
 #define PicoState_h
 
 
-#include "CoreAtomic.hpp"
 
-
-class PicoState
+namespace PicoState
 {
-public:
-
-    static PicoState* access();
 
     bool sendTimerEvents( bool newVal ) noexcept;       // Returns prior value
-    bool wantTimerEvents() noexcept;             // Returns value
+    bool wantTimerEvents() noexcept;                    // Returns value
 
     bool sendNavEvents( bool newVal  ) noexcept;        // Returns prior value
-    bool wantNavEvents() noexcept;               // Returns value
+    bool wantNavEvents() noexcept;                      // Returns value
 
     bool sendEncoderEvents( bool newVal  ) noexcept;    // Returns prior value
-    bool wantEncoderEvents() noexcept;          // Returns value
+    bool wantEncoderEvents() noexcept;                  // Returns value
 
     void allSendEventOn() noexcept;
     void allSendEventsOff() noexcept;
 
-protected:
-
-    PicoState() noexcept;
-
-
-private:
-
-    // These all happen in Core1 so no atomics needed
-    bool  mSendTimerEvents;
-    bool  mSendNavEvents;
-    bool  mSendEncoderEvents;
-
-    static PicoState* mTheState;
 };
 
 
-
-inline bool PicoState::sendTimerEvents( bool newVal ) noexcept
-{
-    bool oldVal = mSendTimerEvents;
-    mSendTimerEvents = newVal;
-    return oldVal;
-}
-
-inline bool PicoState::wantTimerEvents() noexcept
-{
-    return mSendTimerEvents;
-}
-
-inline bool PicoState::sendNavEvents( bool newVal ) noexcept
-{
-    bool oldVal = mSendNavEvents;
-    mSendNavEvents = newVal;
-    return oldVal;
-}
-
-inline bool PicoState::wantNavEvents() noexcept
-{
-    return mSendNavEvents;
-}
-
-inline bool PicoState::sendEncoderEvents( bool newVal ) noexcept
-{
-    bool oldVal = mSendEncoderEvents;
-    mSendEncoderEvents = newVal;
-    return oldVal;
-}
-
-inline bool PicoState::wantEncoderEvents() noexcept
-{
-    return mSendEncoderEvents;
-}
-
-inline void PicoState::allSendEventOn() noexcept
-{
-    mSendTimerEvents = true;
-    mSendNavEvents = true;
-    mSendEncoderEvents = true;
-}
-
-inline void PicoState::allSendEventsOff() noexcept
-{
-    mSendTimerEvents = false;
-    mSendNavEvents = false;
-    mSendEncoderEvents = false;
-}
 
 
 #endif  // PicoState_h

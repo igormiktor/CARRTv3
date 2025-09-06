@@ -20,83 +20,72 @@
 
 #include "PicoState.h"
 
+#include "CoreAtomic.hpp"
 
 
-PicoState* PicoState::mTheState{ nullptr };
 
-
-PicoState* PicoState::access()
+namespace 
 {
-    if ( !mTheState )
-    {
-        mTheState = new PicoState();
-    }
+    // These all happen in Core1 so no atomics needed
+    bool  sSendTimerEvents;
+    bool  sSendNavEvents;
+    bool  sSendEncoderEvents;
 
-    return mTheState;
-}
-
-
-PicoState::PicoState() noexcept
-: mSendTimerEvents{ false },
-  mSendNavEvents{ false },
-  mSendEncoderEvents{ false }
-{
-    // Nothing else to do  
 }
 
 
 
 
-#if 0       // Comment out because inlined
+
 bool PicoState::sendTimerEvents( bool newVal ) noexcept
 {
-    bool oldVal = mSendTimerEvents;
-    mSendTimerEvents = newVal;
+    bool oldVal = sSendTimerEvents;
+    sSendTimerEvents = newVal;
     return oldVal;
 }
 
 bool PicoState::wantTimerEvents() noexcept
 {
-    return mSendTimerEvents;
+    return sSendTimerEvents;
 }
 
 bool PicoState::sendNavEvents( bool newVal ) noexcept
 {
-    bool oldVal = mSendNavEvents;
-    mSendNavEvents = newVal;
+    bool oldVal = sSendNavEvents;
+    sSendNavEvents = newVal;
     return oldVal;
 }
 
 bool PicoState::wantNavEvents() noexcept
 {
-    return mSendNavEvents;
+    return sSendNavEvents;
 }
 
 bool PicoState::sendEncoderEvents( bool newVal ) noexcept
 {
-    bool oldVal = mSendEncoderEvents;
-    mSendEncoderEvents = newVal;
+    bool oldVal = sSendEncoderEvents;
+    sSendEncoderEvents = newVal;
     return oldVal;
 }
 
 bool PicoState::wantEncoderEvents() noexcept
 {
-    return mSendEncoderEvents;
+    return sSendEncoderEvents;
 }
 
-inline void PicoState::allSendEventOn() noexcept
+void PicoState::allSendEventOn() noexcept
 {
-    mSendTimerEvents = true;
-    mSendNavEvents = true;
-    mSendEncoderEvents = true;
+    sSendTimerEvents = true;
+    sSendNavEvents = true;
+    sSendEncoderEvents = true;
 }
 
-inline void PicoState::allSendEventsOff() noexcept
+void PicoState::allSendEventsOff() noexcept
 {
-    mSendTimerEvents = false;
-    mSendNavEvents = false;
-    mSendEncoderEvents = false;
+    sSendTimerEvents = false;
+    sSendNavEvents = false;
+    sSendEncoderEvents = false;
 }
-#endif  // #if 0 becuase of inlining
+
 
 

@@ -455,7 +455,7 @@ void TimerControlCmd::sendOut( SerialLink& link )
 void TimerControlCmd::takeAction( EventManager& events, SerialLink& link ) 
 {
     bool val = std::get<0>( mContent.mMsg );
-    PicoState::access()->sendTimerEvents( val );
+    PicoState::sendTimerEvents( val );
     output2cout( "Timer events to RPi0 turned ", val );    
     mNeedsAction = false;
 }

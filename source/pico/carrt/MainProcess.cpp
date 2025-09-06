@@ -242,7 +242,7 @@ void MainProcess::dispatchMessage( uint8_t cmd )
 
 void MainProcess::doNavUpdateEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime )
 {
-    if ( PicoState::access()->wantNavEvents() )
+    if ( PicoState::wantNavEvents() )
     {
 
 /*
@@ -257,7 +257,7 @@ void MainProcess::doNavUpdateEvent( SerialLinkPico& rpi0, int eventParam, uint32
 
 void MainProcess::doQuarterSecondTimerEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime )
 {
-    if ( PicoState::access()->wantTimerEvents() )
+    if ( PicoState::wantTimerEvents() )
     {
         TimerEventCmd timerEvt( TimerEventCmd::k1QuarterSecondEvent, eventParam, eventTime );
         timerEvt.sendOut( rpi0 ); 
@@ -268,7 +268,7 @@ void MainProcess::doQuarterSecondTimerEvent( SerialLinkPico& rpi0, int eventPara
 
 void MainProcess::doOneSecondTimerEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime )
 {
-    if ( PicoState::access()->wantTimerEvents() )
+    if ( PicoState::wantTimerEvents() )
     {
         TimerEventCmd timerEvt( TimerEventCmd::k1SecondEvent, eventParam, eventTime );
         timerEvt.sendOut( rpi0 ); 
@@ -281,7 +281,7 @@ void MainProcess::doOneSecondTimerEvent( SerialLinkPico& rpi0, int eventParam, u
 
 void MainProcess::doEightSecondTimerEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime )
 {
-    if ( PicoState::access()->wantTimerEvents() )
+    if ( PicoState::wantTimerEvents() )
     {
         TimerEventCmd timerEvt( TimerEventCmd::k8SecondEvent, eventParam, eventTime );
         timerEvt.sendOut( rpi0 ); 

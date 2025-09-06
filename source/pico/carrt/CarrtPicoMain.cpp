@@ -81,7 +81,7 @@ int main()
     try
     {
         // Force creation of the singleton
-        PicoState::access()->allSendEventsOff();
+        PicoState::allSendEventsOff();
 
         initializeFailableHardware();
 
