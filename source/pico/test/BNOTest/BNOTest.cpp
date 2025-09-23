@@ -1,6 +1,7 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
 #include "BNO055.h"
+#include "I2C.h"
 #include "SerialCommands.h"
 #include "SerialLinkPico.h"
 #include "SerialCommandProcessor.h"
@@ -88,20 +89,42 @@ int main()
 
         stdio_init_all();
 
-        // I2C Initialisation. Using it at 400Khz.
-        i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
-        gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C ) ;
-        gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
-        gpio_pull_up( CARRTPICO_I2C_SDA );
-        gpio_pull_up( CARRTPICO_I2C_SCL );
-
+        std::cout << "This is CARRT Pico" << std::endl;
+        std::cout << "This is core " << get_core_num() << std::endl;
 
         // Initialise UART for data
         SerialLinkPico rpi0;
 
+        // Init I2C
+        I2C::initI2C();
 
-        std::cout << "This is CARRT Pico" << std::endl;
-        std::cout << "This is core " << get_core_num() << std::endl;
+        BNO055::init();
+
+        for ( int i = 0; i < 100; ++i ) 
+        {
+            auto m = BNO055::checkMagCalibration();
+            if ( m )
+                std::cout << "Mag calib = " << static_cast<int>( *m ) << std::endl;
+            auto a = BNO055::checkAccelCalibration();
+            if ( a )
+                std::cout << "Accel calib = " << static_cast<int>( *a ) << std::endl;
+            auto g = BNO055::checkGyroCalibration();
+            if ( g )
+                std::cout << "Gyro calib = " << static_cast<int>( *g ) << std::endl;
+            auto s = BNO055::checkSysCalibration();
+            if ( s )
+                std::cout << "Sys calib = " << static_cast<int>( *s ) << std::endl;
+
+            BNO055::Status sts{ BNO055::checkCalibration() };
+                std::cout << "Status is " << std::endl;
+                std::cout << "mag: " << static_cast<int>( sts.mag ) << std::endl;
+                std::cout << "accel: " << static_cast<int>( sts.accel ) << std::endl;
+                std::cout << "gyro: " << static_cast<int>( sts.gyro ) << std::endl;
+                std::cout << "sys: " << static_cast<int>( sts.system ) << std::endl;
+
+            sleep_ms( 1000 );
+        }
+
 
         gpio_init( CARRTPICO_HEARTBEAT_LED );
         gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
@@ -111,6 +134,8 @@ int main()
         SerialCommandProcessor scp( rpi0 );
         scp.registerCommand<TimerControlCmd>( kTimerControl );
         scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+
+
 
 
         bool ledState = false;

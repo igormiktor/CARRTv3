@@ -1,5 +1,6 @@
 add_subdirectory( helloCarrt )
 add_subdirectory( multicore )
+add_subdirectory( i2cTest )
 add_subdirectory( SerialTest1 )
 add_subdirectory( SerialTest2 )
 add_subdirectory( SerialTest3 )

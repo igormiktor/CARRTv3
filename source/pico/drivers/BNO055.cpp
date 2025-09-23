@@ -103,7 +103,74 @@ void BNO055::init()
     // Remember load pre-calibration if we have it
 }
     
- 
+
+
+
+
+std::optional<std::uint8_t> BNO055::checkMagCalibration()
+{
+    unsigned char calib{};
+    std::int8_t err{ bno055_get_mag_calib_stat( &calib ) };
+
+    if ( err )
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return static_cast<std::uint8_t>( calib );
+    }
+}
+
+
+std::optional<std::uint8_t> BNO055::checkAccelCalibration()
+{
+    unsigned char calib{};
+    std::int8_t err{ bno055_get_accel_calib_stat( &calib ) };
+
+    if ( err )
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return static_cast<std::uint8_t>( calib );
+    }
+}
+
+
+std::optional<std::uint8_t> BNO055::checkGyroCalibration()
+{
+    unsigned char calib{};
+    std::int8_t err{ bno055_get_gyro_calib_stat( &calib ) };
+
+    if ( err )
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return static_cast<std::uint8_t>( calib );
+    }
+}
+
+
+std::optional<std::uint8_t> BNO055::checkSysCalibration()
+{
+    unsigned char calib{};
+    std::int8_t err{ bno055_get_sys_calib_stat( &calib ) };
+
+    if ( err )
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return static_cast<std::uint8_t>( calib );
+    }
+}
+
+
 int BNO055::checkCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag )
 {
     unsigned char system{ 0 };

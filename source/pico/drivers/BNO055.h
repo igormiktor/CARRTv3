@@ -21,7 +21,10 @@
 #ifndef BNO055_h
 #define BNO055_h
 
+#include <cstdint>
 #include <tuple>
+#include <optional>
+
 
 namespace BNO055
 {
@@ -34,7 +37,13 @@ namespace BNO055
     };
 
     void init();
-    
+
+
+    std::optional<std::uint8_t> checkMagCalibration();
+    std::optional<std::uint8_t> checkAccelCalibration();
+    std::optional<std::uint8_t> checkGyroCalibration();
+    std::optional<std::uint8_t> checkSysCalibration();
+   
     int checkCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag );
 
     Status checkCalibration();
