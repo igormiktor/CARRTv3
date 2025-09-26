@@ -100,7 +100,7 @@ int main()
 
         BNO055::init();
 
-        for ( int i = 0; i < 100; ++i ) 
+        for ( int i = 0; i < 20; ++i ) 
         {
             auto m = BNO055::checkMagCalibration();
             if ( m )
@@ -122,7 +122,9 @@ int main()
                 std::cout << "gyro: " << static_cast<int>( sts.gyro ) << std::endl;
                 std::cout << "sys: " << static_cast<int>( sts.system ) << std::endl;
 
-            sleep_ms( 1000 );
+            
+
+            sleep_ms( 15000 );
         }
 
 
