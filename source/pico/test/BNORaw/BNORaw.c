@@ -58,14 +58,14 @@ int main()
     {
         putchar( '\n' );
         /* variable used to read the euler h data output as degree or radians */
-        struct bno055_euler_double_t d_euler_hpr;
-        bno055_convert_double_euler_hpr_deg( &d_euler_hpr );
+        struct bno055_euler_float_t euler_hpr;
+        bno055_convert_float_euler_hpr_deg( &euler_hpr );
     
-        struct bno055_linear_accel_double_t d_linear_accel_xyz;
-        bno055_convert_double_linear_accel_xyz_msq( &d_linear_accel_xyz );        
+        struct bno055_linear_accel_float_t linear_accel_xyz;
+        bno055_convert_float_linear_accel_xyz_msq( &linear_accel_xyz );        
 
-        struct bno055_gravity_double_t d_gravity_xyz;
-        bno055_convert_double_gravity_xyz_msq( &d_gravity_xyz );
+        struct bno055_gravity_float_t gravity_xyz;
+        bno055_convert_float_gravity_xyz_msq( &gravity_xyz );
 
 
         /*
@@ -83,26 +83,26 @@ int main()
         Serial.println(F(""));
         */
 
-        struct bno055_quaternion_t d_quaternion_wxyz;
-        bno055_read_quaternion_wxyz( &d_quaternion_wxyz );
-        // convert to double
-        const double scale = (1.0 / (1 << 14));
-        double w = scale*d_quaternion_wxyz.w;
-        double x = scale*d_quaternion_wxyz.x;
-        double y = scale*d_quaternion_wxyz.y;
-        double z = scale*d_quaternion_wxyz.z;
+        struct bno055_quaternion_t quaternion_wxyz;
+        bno055_read_quaternion_wxyz( &quaternion_wxyz );
+        // convert to float
+        const float scale = (1.0 / (1 << 14));
+        float w = scale*quaternion_wxyz.w;
+        float x = scale*quaternion_wxyz.x;
+        float y = scale*quaternion_wxyz.y;
+        float z = scale*quaternion_wxyz.z;
         // Normalize
-        double sqw = w*w;
-        double sqx = x*x;
-        double sqy = y*y;
-        double sqz = z*z;
-        double mag = sqrt( sqw + sqx + sqy + sqz );
+        float sqw = w*w;
+        float sqx = x*x;
+        float sqy = y*y;
+        float sqz = z*z;
+        float mag = sqrt( sqw + sqx + sqy + sqz );
         w /= mag;
         x /= mag;
         y /= mag;
         z /= mag;
         //Flip axes???
-        double tmp = x;
+        float tmp = x;
         x = y;
         y = tmp;
         z = z;
@@ -111,14 +111,14 @@ int main()
         sqx = x*x;
         sqy = y*y;
         sqz = z*z;
-        double h = (-180.0 / M_PI) * atan2( 2.0 * (x * y + z * w), (sqx - sqy - sqz + sqw) );
-        double p = (-180.0 / M_PI) * asin( -2.0 * (x * z - y * w) / (sqx + sqy + sqz + sqw) );
-        double r = (-180.0 / M_PI) * atan2( 2.0 * (y * z + x * w), (-sqx - sqy + sqz + sqw) );
+        float h = (-180.0 / M_PI) * atan2( 2.0 * (x * y + z * w), (sqx - sqy - sqz + sqw) );
+        float p = (-180.0 / M_PI) * asin( -2.0 * (x * z - y * w) / (sqx + sqy + sqz + sqw) );
+        float r = (-180.0 / M_PI) * atan2( 2.0 * (y * z + x * w), (-sqx - sqy + sqz + sqw) );
 
 
-        printf( "Accel x = %f, y = %f, z = %f \n", d_linear_accel_xyz.x, d_linear_accel_xyz.y, d_linear_accel_xyz.z );
-        printf( "Gravity x = %f, y = %f, z = %f \n", d_gravity_xyz.x, d_gravity_xyz.y, d_gravity_xyz.z );
-        printf( "Euler h = %f, p = %f, r = %f \n", d_euler_hpr.h, d_euler_hpr.p, d_euler_hpr.r );
+        printf( "Accel x = %f, y = %f, z = %f \n", linear_accel_xyz.x, linear_accel_xyz.y, linear_accel_xyz.z );
+        printf( "Gravity x = %f, y = %f, z = %f \n", gravity_xyz.x, gravity_xyz.y, gravity_xyz.z );
+        printf( "Euler h = %f, p = %f, r = %f \n", euler_hpr.h, euler_hpr.p, euler_hpr.r );
         printf( "Q-Euler h = %f, p = %f, r = %f \n", h, p, r );
 
         bno055_get_mag_calib_stat( &calib_mag );
