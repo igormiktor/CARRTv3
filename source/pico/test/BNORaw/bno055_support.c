@@ -583,8 +583,6 @@ s8 BNO055_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
     u8 array[I2C_BUFFER_LEN];
     u8 stringpos = BNO055_INIT_VALUE;
 
-
-
     array[BNO055_INIT_VALUE] = reg_addr;
     for (stringpos = BNO055_INIT_VALUE; stringpos < cnt; stringpos++)
     {
@@ -632,7 +630,9 @@ s8 BNO055_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
  */
 s8 BNO055_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
+#if 0
 /*    s32 BNO055_iERROR = BNO055_INIT_VALUE;    */
+
     u8 array[I2C_BUFFER_LEN] = { BNO055_INIT_VALUE };
     u8 stringpos = BNO055_INIT_VALUE;
 
@@ -652,7 +652,7 @@ s8 BNO055_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
     {
         *(reg_data + stringpos) = array[stringpos];
     }
-
+#endif // #if 0
 
     // Write the register address without a STOP...
     int ret = i2c_write_blocking( MY_I2C_PORT, dev_addr, &reg_addr, 1, true );

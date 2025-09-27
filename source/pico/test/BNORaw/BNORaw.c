@@ -1,8 +1,8 @@
 #include <stdio.h>
+#include <math.h>
 
 #include "BNO055/bno055.h"
 #include "bno055_support.h"
-
 
 #include "pico/binary_info.h"
 #include "pico/stdlib.h"
@@ -49,7 +49,7 @@ int main()
         printf( "Calib status (M, A, G, S): %u, %u, %u, %u \n", 
                 calib_mag, calib_accel, calib_gyro, calib_sys ); 
 
-        sleep_ms( 10000 );
+        sleep_ms( 3000 );
     }
 
     puts( "Achieved full calibration!\n" );
@@ -67,9 +67,59 @@ int main()
         struct bno055_gravity_double_t d_gravity_xyz;
         bno055_convert_double_gravity_xyz_msq( &d_gravity_xyz );
 
-        printf( "Euler h = %f, p = %f, r = %f \n", d_euler_hpr.h, d_euler_hpr.p, d_euler_hpr.r );
+
+        /*
+        imu::Quaternion q = bno.getQuat();
+        q.normalize();
+        float temp = q.x();  q.x() = -q.y();  q.y() = temp;
+        q.z() = -q.z();
+        imu::Vector<3> euler = q.toEuler();
+        Serial.print(F("Orientation: "));
+        Serial.print(-180/M_PI * euler.x());  // heading, nose-right is positive, z-axis points up
+        Serial.print(F(" "));
+        Serial.print(-180/M_PI * euler.y());  // roll, rightwing-up is positive, y-axis points forward
+        Serial.print(F(" "));
+        Serial.print(-180/M_PI * euler.z());  // pitch, nose-down is positive, x-axis points right
+        Serial.println(F(""));
+        */
+
+        struct bno055_quaternion_t d_quaternion_wxyz;
+        bno055_read_quaternion_wxyz( &d_quaternion_wxyz );
+        // convert to double
+        const double scale = (1.0 / (1 << 14));
+        double w = scale*d_quaternion_wxyz.w;
+        double x = scale*d_quaternion_wxyz.x;
+        double y = scale*d_quaternion_wxyz.y;
+        double z = scale*d_quaternion_wxyz.z;
+        // Normalize
+        double sqw = w*w;
+        double sqx = x*x;
+        double sqy = y*y;
+        double sqz = z*z;
+        double mag = sqrt( sqw + sqx + sqy + sqz );
+        w /= mag;
+        x /= mag;
+        y /= mag;
+        z /= mag;
+        //Flip axes???
+        double tmp = x;
+        x = y;
+        y = tmp;
+        z = z;
+        // Convert to Euler
+        sqw = w*w;
+        sqx = x*x;
+        sqy = y*y;
+        sqz = z*z;
+        double h = (-180.0 / M_PI) * atan2( 2.0 * (x * y + z * w), (sqx - sqy - sqz + sqw) );
+        double p = (-180.0 / M_PI) * asin( -2.0 * (x * z - y * w) / (sqx + sqy + sqz + sqw) );
+        double r = (-180.0 / M_PI) * atan2( 2.0 * (y * z + x * w), (-sqx - sqy + sqz + sqw) );
+
+
         printf( "Accel x = %f, y = %f, z = %f \n", d_linear_accel_xyz.x, d_linear_accel_xyz.y, d_linear_accel_xyz.z );
         printf( "Gravity x = %f, y = %f, z = %f \n", d_gravity_xyz.x, d_gravity_xyz.y, d_gravity_xyz.z );
+        printf( "Euler h = %f, p = %f, r = %f \n", d_euler_hpr.h, d_euler_hpr.p, d_euler_hpr.r );
+        printf( "Q-Euler h = %f, p = %f, r = %f \n", h, p, r );
 
         bno055_get_mag_calib_stat( &calib_mag );
         bno055_get_accel_calib_stat( &calib_accel );
@@ -79,7 +129,7 @@ int main()
         printf( "Calib status (M, A, G, S): %u, %u, %u, %u \n", 
                 calib_mag, calib_accel, calib_gyro, calib_sys ); 
 
-        sleep_ms( 10000 );
+        sleep_ms( 5000 );
     }
 
     /* De-initialize */
