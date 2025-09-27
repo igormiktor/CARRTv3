@@ -23,7 +23,7 @@
 int main()
 {
     stdio_init_all();
-
+    
     // I2C Initialisation
     i2c_init( MY_I2C_PORT, MY_I2C_SPEED );
     
@@ -32,12 +32,17 @@ int main()
     gpio_pull_up( MY_I2C_SDA );
     gpio_pull_up( MY_I2C_SCL );
 
+    puts( "BNO055 Test");
+
+    sleep_ms( 3000 );
+
     bno055_data_readout_template( 1 );
 
     // Remap axis the way we want them
     bno055_set_operation_mode( BNO055_OPERATION_MODE_CONFIG );
     bno055_set_axis_remap_value( BNO055_REMAP_X_Y );
-    bno055_set_remap_x_sign( 1 );
+//    bno055_set_remap_x_sign( 1 );
+    bno055_set_remap_z_sign( 1 );
     bno055_set_operation_mode( BNO055_OPERATION_MODE_NDOF );
 
     unsigned char calib_mag = 0;
@@ -60,7 +65,7 @@ int main()
 
     puts( "Achieved full calibration!\n" );
 
-    for ( int i = 0; i < 100; ++i )
+    for ( int i = 0; i < 10000; ++i )
     {
         putchar( '\n' );
         /* variable used to read the euler h data output as degree or radians */
@@ -88,7 +93,7 @@ int main()
         Serial.print(-180/M_PI * euler.z());  // pitch, nose-down is positive, x-axis points right
         Serial.println(F(""));
         */
-
+#if ENABLE_QUATERNIONS
         struct bno055_quaternion_t quaternion_wxyz;
         bno055_read_quaternion_wxyz( &quaternion_wxyz );
         // convert to float
@@ -120,18 +125,19 @@ int main()
         float h = (-180.0 / M_PI) * atan2( 2.0 * (x * y + z * w), (sqx - sqy - sqz + sqw) );
         float p = (-180.0 / M_PI) * asin( -2.0 * (x * z - y * w) / (sqx + sqy + sqz + sqw) );
         float r = (-180.0 / M_PI) * atan2( 2.0 * (y * z + x * w), (-sqx - sqy + sqz + sqw) );
-
+#endif
 
         printf( "Accel x = %f, y = %f, z = %f \n", linear_accel_xyz.x, linear_accel_xyz.y, linear_accel_xyz.z );
         printf( "Gravity x = %f, y = %f, z = %f \n", gravity_xyz.x, gravity_xyz.y, gravity_xyz.z );
         printf( "Euler h = %f, p = %f, r = %f \n", euler_hpr.h, euler_hpr.p, euler_hpr.r );
+#if ENABLE_QUATERNIONS
         printf( "Q-Euler h = %f, p = %f, r = %f \n", h, p, r );
+#endif
 
         bno055_get_mag_calib_stat( &calib_mag );
         bno055_get_accel_calib_stat( &calib_accel );
         bno055_get_gyro_calib_stat( &calib_gyro );
         bno055_get_sys_calib_stat( &calib_sys );
-
         printf( "Calib status (M, A, G, S): %u, %u, %u, %u \n", 
                 calib_mag, calib_accel, calib_gyro, calib_sys ); 
 
