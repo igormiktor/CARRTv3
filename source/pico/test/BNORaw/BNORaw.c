@@ -34,6 +34,12 @@ int main()
 
     bno055_data_readout_template( 1 );
 
+    // Remap axis the way we want them
+    bno055_set_operation_mode( BNO055_OPERATION_MODE_CONFIG );
+    bno055_set_axis_remap_value( BNO055_REMAP_X_Y );
+    bno055_set_remap_x_sign( 1 );
+    bno055_set_operation_mode( BNO055_OPERATION_MODE_NDOF );
+
     unsigned char calib_mag = 0;
     unsigned char calib_accel = 0;
     unsigned char calib_gyro = 0;
