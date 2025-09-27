@@ -27,6 +27,8 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
+#include "string.h"
+
 
 
 
@@ -47,25 +49,29 @@ void I2C::initI2C() noexcept
 
 extern "C" signed char I2C::send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept
 {
-    // Write the register address without STOP...
-    int ret = i2c_write_blocking( CARRTPICO_I2C_PORT, CARRT_BNO0555_I2C_ADDR, &reg, 1, true );
-    if ( ret == 1 )
-    {
-        // Then write the data
-        ret = i2c_write_blocking( CARRTPICO_I2C_PORT, CARRT_BNO0555_I2C_ADDR, data, len, false );
-        if ( ret == len )
-        {
-            ret = 0;
-        }
-    }
+    constexpr int CARRT_BNO055_MAX_SENT_MSG_LEN = 18;   // Actual longest message sent to BNO055 is 18 bytes; need +1 for address
 
-    if ( ret )
+    if ( len > 18 )
     {
         return PICO_ERROR_GENERIC;
     }
-    else
+
+    unsigned char array[ CARRT_BNO055_MAX_SENT_MSG_LEN + 1 ];
+    array[0] = reg;
+    memcpy( (array + 1), data, len );
+
+    // Count the reg entry in array[0]
+    ++len;
+
+    int ret = i2c_write_blocking( CARRTPICO_I2C_PORT, address, array, len, false );
+
+    if ( ret == len )
     {
         return 0;
+    }
+    else
+    {
+        return PICO_ERROR_GENERIC;
     }
 }
 
@@ -74,11 +80,11 @@ extern "C" signed char I2C::send( unsigned char address, unsigned char reg, unsi
 extern "C" signed char I2C::receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept
 {
     // Write the register address without a STOP...
-    int ret = i2c_write_blocking( CARRTPICO_I2C_PORT, CARRT_BNO0555_I2C_ADDR, &reg, 1, true );
+    int ret = i2c_write_blocking( CARRTPICO_I2C_PORT, address, &reg, 1, true );
     if ( ret == 1 )
     {
         // Then read the data...
-        ret = i2c_read_blocking( CARRTPICO_I2C_PORT, CARRT_BNO0555_I2C_ADDR, data, len, false );
+        ret = i2c_read_blocking( CARRTPICO_I2C_PORT, address, data, len, false );
         if ( ret == len )
         {
             ret = 0;
