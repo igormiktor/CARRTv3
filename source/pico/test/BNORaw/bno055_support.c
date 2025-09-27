@@ -39,6 +39,10 @@
 /*---------------------------------------------------------------------------*
 *  Includes
 *---------------------------------------------------------------------------*/
+
+#include "pico/stdlib.h"
+#include "hardware/i2c.h"
+
 #include "BNO055/bno055.h"
 
 /*----------------------------------------------------------------------------*
@@ -88,7 +92,7 @@ void BNO055_delay_msek(u32 msek);
  *  \param: None
  *  \return: communication result
  */
-s32 bno055_data_readout_template(void);
+s32 bno055_data_readout_template( int initOnly );
 
 /*----------------------------------------------------------------------------*
  *  struct bno055_t parameters can be accessed by using BNO055
@@ -106,7 +110,7 @@ struct bno055_t bno055;
  *  \param: None
  *  \return: communication result
  */
-s32 bno055_data_readout_template(void)
+s32 bno055_data_readout_template( int initOnly )
 {
     /* Variable used to return value of
      * communication routine*/
@@ -329,6 +333,14 @@ s32 bno055_data_readout_template(void)
     /* set the power mode as NORMAL*/
     comres += bno055_set_power_mode(power_mode);
 
+
+    if ( initOnly ) 
+    {
+        comres += bno055_set_operation_mode( BNO055_OPERATION_MODE_NDOF );
+
+        return comres;
+    }
+
     /*----------------------------------------------------------------*
      ************************* END INITIALIZATION *************************
      *-----------------------------------------------------------------*/
@@ -511,7 +523,7 @@ s32 bno055_data_readout_template(void)
     power_mode = BNO055_POWER_MODE_SUSPEND;
 
     /* set the power mode as SUSPEND*/
-    comres += bno055_set_power_mode(power_mode);
+/*    comres += bno055_set_power_mode(power_mode);  */
 
     /*---------------------------------------------------------------------*
     ************************* END DE-INITIALIZATION **********************
@@ -567,16 +579,29 @@ s8 I2C_routine(void)
  */
 s8 BNO055_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
-    s32 BNO055_iERROR = BNO055_INIT_VALUE;
+/*    s32 BNO055_iERROR = BNO055_INIT_VALUE;  */
     u8 array[I2C_BUFFER_LEN];
     u8 stringpos = BNO055_INIT_VALUE;
+
+
 
     array[BNO055_INIT_VALUE] = reg_addr;
     for (stringpos = BNO055_INIT_VALUE; stringpos < cnt; stringpos++)
     {
         array[stringpos + BNO055_I2C_BUS_WRITE_ARRAY_INDEX] = *(reg_data + stringpos);
     }
-}
+
+    
+    int ret = i2c_write_blocking( MY_I2C_PORT, dev_addr, array, ( cnt+1 ), false );
+
+    if ( ret == cnt+1 )
+    {
+        return BNO055_SUCCESS;
+    }
+    else
+    {
+        return -1;
+    }
 
 /*
  * Please take the below APIs as your reference for
@@ -594,7 +619,6 @@ s8 BNO055_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
  * in the I2C write string function
  * For more information please refer data sheet SPI communication:
  */
-return (s8)BNO055_iERROR;
 }
 
 /*  \Brief: The API is used as I2C bus read
@@ -608,7 +632,7 @@ return (s8)BNO055_iERROR;
  */
 s8 BNO055_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
-    s32 BNO055_iERROR = BNO055_INIT_VALUE;
+/*    s32 BNO055_iERROR = BNO055_INIT_VALUE;    */
     u8 array[I2C_BUFFER_LEN] = { BNO055_INIT_VALUE };
     u8 stringpos = BNO055_INIT_VALUE;
 
@@ -629,7 +653,28 @@ s8 BNO055_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
         *(reg_data + stringpos) = array[stringpos];
     }
 
-    return (s8)BNO055_iERROR;
+
+    // Write the register address without a STOP...
+    int ret = i2c_write_blocking( MY_I2C_PORT, dev_addr, &reg_addr, 1, true );
+    if ( ret == 1 )
+    {
+        // Then read the data...
+        ret = i2c_read_blocking( MY_I2C_PORT, dev_addr, reg_data, cnt, false );
+        if ( ret == cnt )
+        {
+            ret = 0;
+        }
+    }
+
+    if ( ret )
+    {
+        return -1;
+    }
+    else
+    {
+        return BNO055_SUCCESS;
+    }
+
 }
 
 /*  Brief : The delay routine
@@ -638,6 +683,7 @@ s8 BNO055_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 void BNO055_delay_msek(u32 msek)
 {
     /*Here you can write your own delay routine*/
+     sleep_ms( msek );
 }
 
 #endif

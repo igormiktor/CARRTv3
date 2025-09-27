@@ -1,5 +1,7 @@
 add_executable( BNORaw
         BNORaw.c
+        bno055_support.c
+        ../../drivers/BNO055/bno055.c
 )
         
 pico_set_program_name( BNORaw "BNORaw" )
@@ -19,15 +21,18 @@ target_include_directories( BNORaw PRIVATE
 #  ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts or any other standard includes, if required
 )
 
-target_compile_options( CarrtPico PRIVATE -Wall )
+target_compile_options( BNORaw PRIVATE -Wall )
 target_compile_definitions( BNORaw PRIVATE
         -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
         -DUSE_CARRTPICO_STDIO=${USE_CARRTPICO_STDIO_VAL}
         "$<$<CONFIG:DEBUG>:-DDEBUGPICO=1>" 
+        -DBNO055_API=1
+        -DMY_I2C_PORT=i2c0
 )
 
 # Add any user requested libraries
 target_link_libraries( BNORaw PRIVATE
+
         pico_driver_library
         pico_multicore
         pico_stdlib 
