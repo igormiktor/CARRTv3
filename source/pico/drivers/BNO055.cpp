@@ -23,8 +23,8 @@
 #include "I2C.h"
 #include "CarrtError.h"
 
+#include "pico/stdlib.h"
 
-#include "hardware/timer.h"
 
 
 extern "C"
@@ -72,7 +72,7 @@ namespace BNO055
 
 void BNO055::delayMsec( unsigned int msec )
 {
-    busy_wait_ms( msec );
+    sleep_ms( msec );
 }
 
 
@@ -90,24 +90,41 @@ void BNO055::init()
     // Set the power mode as NORMAL 
     err += bno055_set_power_mode( BNO055_POWER_MODE_NORMAL );
 
+    // Re-map the axes to what we need for our configuration
+    err += bno055_set_axis_remap_value( BNO055_REMAP_X_Y );
+    err += bno055_set_remap_z_sign( 1 );
+
     // Set mode of the BNO055 to NDOF (9 Degs of Freedom, Fused)
     err += bno055_set_operation_mode( BNO055_OPERATION_MODE_NDOF );
+
+    sleep_ms( 10 );
 
     if ( err )
     {
         throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 1, err ), "CARRT Pico BNO055 init failed" );
     }
 
-    // Need to wait for the BNO055 to reach calibration, but make that a separate function call
-
-    // Remember load pre-calibration if we have it
+    // Need to calibrate the BNO055, but that will be a separate function
 }
     
 
 
+float BNO055::getHeading()
+{
+    float heading{-666 };
+    std::int8_t err { bno055_convert_float_euler_h_deg( &heading ) };
+
+    if ( err )
+    {
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 2, err ), "CARRT Pico BNO055 failed to get cheading" );
+    }
+
+    return heading;
+}
 
 
-std::optional<std::uint8_t> BNO055::checkMagCalibration()
+
+std::optional<std::uint8_t> BNO055::getMagCalibration()
 {
     unsigned char calib{};
     std::int8_t err{ bno055_get_mag_calib_stat( &calib ) };
@@ -123,7 +140,7 @@ std::optional<std::uint8_t> BNO055::checkMagCalibration()
 }
 
 
-std::optional<std::uint8_t> BNO055::checkAccelCalibration()
+std::optional<std::uint8_t> BNO055::getAccelCalibration()
 {
     unsigned char calib{};
     std::int8_t err{ bno055_get_accel_calib_stat( &calib ) };
@@ -139,7 +156,7 @@ std::optional<std::uint8_t> BNO055::checkAccelCalibration()
 }
 
 
-std::optional<std::uint8_t> BNO055::checkGyroCalibration()
+std::optional<std::uint8_t> BNO055::getGyroCalibration()
 {
     unsigned char calib{};
     std::int8_t err{ bno055_get_gyro_calib_stat( &calib ) };
@@ -155,7 +172,7 @@ std::optional<std::uint8_t> BNO055::checkGyroCalibration()
 }
 
 
-std::optional<std::uint8_t> BNO055::checkSysCalibration()
+std::optional<std::uint8_t> BNO055::getSysCalibration()
 {
     unsigned char calib{};
     std::int8_t err{ bno055_get_sys_calib_stat( &calib ) };
@@ -171,7 +188,7 @@ std::optional<std::uint8_t> BNO055::checkSysCalibration()
 }
 
 
-int BNO055::checkCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag )
+int BNO055::getCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag )
 {
     unsigned char system{ 0 };
 
@@ -179,7 +196,7 @@ int BNO055::checkCalibration( unsigned char* gyro, unsigned char* accel, unsigne
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 2, err ), "CARRT Pico BNO055 failed to get calibration" );
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 3, err ), "CARRT Pico BNO055 failed to get calibration" );
     }
 
     return system;
@@ -187,16 +204,19 @@ int BNO055::checkCalibration( unsigned char* gyro, unsigned char* accel, unsigne
 
 
 
-BNO055::Status BNO055::checkCalibration()
+BNO055::Calibration BNO055::getCalibration()
 {
-    Status ret{};
+    unsigned char system;
+    unsigned char gyro;
+    unsigned char accel;
+    unsigned char mag;
 
-    int err = bno055_get_all_calib_stat( &ret.system, &ret.gyro, &ret.accel, &ret.mag );
+    int err = bno055_get_all_calib_stat( &system, &gyro, &accel, &mag );
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 3, err ), "CARRT Pico BNO055 failed to get calibration" );
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 4, err ), "CARRT Pico BNO055 failed to get calibration" );
     }
 
-    return ret;
+    return Calibration{ system, gyro, accel, mag };
 }

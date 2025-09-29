@@ -28,7 +28,7 @@
 
 namespace BNO055
 {
-    struct Status
+    struct Calibration
     {
         unsigned char system;
         unsigned char gyro;
@@ -38,15 +38,16 @@ namespace BNO055
 
     void init();
 
+    float getHeading();
 
-    std::optional<std::uint8_t> checkMagCalibration();
-    std::optional<std::uint8_t> checkAccelCalibration();
-    std::optional<std::uint8_t> checkGyroCalibration();
-    std::optional<std::uint8_t> checkSysCalibration();
+    std::optional<std::uint8_t> getMagCalibration();
+    std::optional<std::uint8_t> getAccelCalibration();
+    std::optional<std::uint8_t> getGyroCalibration();
+    std::optional<std::uint8_t> getSysCalibration();
    
-    int checkCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag );
+    int getCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag );
 
-    Status checkCalibration();
+    Calibration getCalibration();
     
 };
 

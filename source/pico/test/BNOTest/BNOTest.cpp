@@ -102,21 +102,21 @@ int main()
 
         for ( int i = 0; i < 20; ++i ) 
         {
-            auto m = BNO055::checkMagCalibration();
+            auto m = BNO055::getMagCalibration();
             if ( m )
                 std::cout << "Mag calib = " << static_cast<int>( *m ) << std::endl;
-            auto a = BNO055::checkAccelCalibration();
+            auto a = BNO055::getAccelCalibration();
             if ( a )
                 std::cout << "Accel calib = " << static_cast<int>( *a ) << std::endl;
-            auto g = BNO055::checkGyroCalibration();
+            auto g = BNO055::getGyroCalibration();
             if ( g )
                 std::cout << "Gyro calib = " << static_cast<int>( *g ) << std::endl;
-            auto s = BNO055::checkSysCalibration();
+            auto s = BNO055::getSysCalibration();
             if ( s )
                 std::cout << "Sys calib = " << static_cast<int>( *s ) << std::endl;
 
-            BNO055::Status sts{ BNO055::checkCalibration() };
-                std::cout << "Status is " << std::endl;
+            BNO055::Calibration sts{ BNO055::getCalibration() };
+                std::cout << "Calibration is " << std::endl;
                 std::cout << "mag: " << static_cast<int>( sts.mag ) << std::endl;
                 std::cout << "accel: " << static_cast<int>( sts.accel ) << std::endl;
                 std::cout << "gyro: " << static_cast<int>( sts.gyro ) << std::endl;
