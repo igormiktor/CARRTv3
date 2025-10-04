@@ -124,67 +124,60 @@ float BNO055::getHeading()
 
 
 
-std::optional<std::uint8_t> BNO055::getMagCalibration()
+std::uint8_t BNO055::getMagCalibration()
 {
     unsigned char calib{};
     std::int8_t err{ bno055_get_mag_calib_stat( &calib ) };
 
     if ( err )
     {
-        return std::nullopt;
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 3, err ), "CARRT Pico BNO055 failed to get cheading" );
     }
-    else
-    {
-        return static_cast<std::uint8_t>( calib );
-    }
+
+    return static_cast<std::uint8_t>( calib );
 }
 
 
-std::optional<std::uint8_t> BNO055::getAccelCalibration()
+std::uint8_t BNO055::getAccelCalibration()
 {
     unsigned char calib{};
     std::int8_t err{ bno055_get_accel_calib_stat( &calib ) };
 
     if ( err )
     {
-        return std::nullopt;
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 4, err ), "CARRT Pico BNO055 failed to get cheading" );
     }
-    else
-    {
-        return static_cast<std::uint8_t>( calib );
-    }
+
+    return static_cast<std::uint8_t>( calib );
+
 }
 
 
-std::optional<std::uint8_t> BNO055::getGyroCalibration()
+std::uint8_t BNO055::getGyroCalibration()
 {
     unsigned char calib{};
     std::int8_t err{ bno055_get_gyro_calib_stat( &calib ) };
 
     if ( err )
     {
-        return std::nullopt;
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 5, err ), "CARRT Pico BNO055 failed to get cheading" );
     }
-    else
-    {
-        return static_cast<std::uint8_t>( calib );
-    }
+
+    return static_cast<std::uint8_t>( calib );
 }
 
 
-std::optional<std::uint8_t> BNO055::getSysCalibration()
+std::uint8_t BNO055::getSysCalibration()
 {
     unsigned char calib{};
     std::int8_t err{ bno055_get_sys_calib_stat( &calib ) };
 
     if ( err )
     {
-        return std::nullopt;
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 6, err ), "CARRT Pico BNO055 failed to get cheading" );
     }
-    else
-    {
-        return static_cast<std::uint8_t>( calib );
-    }
+
+    return static_cast<std::uint8_t>( calib );
 }
 
 
@@ -196,7 +189,7 @@ int BNO055::getCalibration( unsigned char* gyro, unsigned char* accel, unsigned 
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 3, err ), "CARRT Pico BNO055 failed to get calibration" );
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 7, err ), "CARRT Pico BNO055 failed to get calibration" );
     }
 
     return system;
@@ -215,7 +208,7 @@ BNO055::Calibration BNO055::getCalibration()
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 4, err ), "CARRT Pico BNO055 failed to get calibration" );
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 8, err ), "CARRT Pico BNO055 failed to get calibration" );
     }
 
     return Calibration{ system, gyro, accel, mag };

@@ -52,6 +52,7 @@ int main()
 
     while ( calib_mag + calib_accel + calib_gyro < 9 )
     {
+        sleep_ms( 3000 );
         bno055_get_mag_calib_stat( &calib_mag );
         bno055_get_accel_calib_stat( &calib_accel );
         bno055_get_gyro_calib_stat( &calib_gyro );
@@ -59,11 +60,9 @@ int main()
 
         printf( "Calib status (M, A, G, S): %u, %u, %u, %u \n", 
                 calib_mag, calib_accel, calib_gyro, calib_sys ); 
-
-        sleep_ms( 3000 );
     }
 
-    puts( "Achieved full calibration!\n" );
+    puts( "\nAchieved full calibration!\n" );
 
     for ( int i = 0; i < 10000; ++i )
     {

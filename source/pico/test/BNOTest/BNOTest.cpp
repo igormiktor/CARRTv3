@@ -98,49 +98,23 @@ int main()
         // Init I2C
         I2C::initI2C();
 
-        BNO055::init();
-
-        for ( int i = 0; i < 20; ++i ) 
-        {
-            auto m = BNO055::getMagCalibration();
-            if ( m )
-                std::cout << "Mag calib = " << static_cast<int>( *m ) << std::endl;
-            auto a = BNO055::getAccelCalibration();
-            if ( a )
-                std::cout << "Accel calib = " << static_cast<int>( *a ) << std::endl;
-            auto g = BNO055::getGyroCalibration();
-            if ( g )
-                std::cout << "Gyro calib = " << static_cast<int>( *g ) << std::endl;
-            auto s = BNO055::getSysCalibration();
-            if ( s )
-                std::cout << "Sys calib = " << static_cast<int>( *s ) << std::endl;
-
-            BNO055::Calibration sts{ BNO055::getCalibration() };
-                std::cout << "Calibration is " << std::endl;
-                std::cout << "mag: " << static_cast<int>( sts.mag ) << std::endl;
-                std::cout << "accel: " << static_cast<int>( sts.accel ) << std::endl;
-                std::cout << "gyro: " << static_cast<int>( sts.gyro ) << std::endl;
-                std::cout << "sys: " << static_cast<int>( sts.system ) << std::endl;
-
-            
-
-            sleep_ms( 15000 );
-        }
-
-
         gpio_init( CARRTPICO_HEARTBEAT_LED );
         gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
-
-        multicore_launch_core1( startCore1 );
 
         SerialCommandProcessor scp( rpi0 );
         scp.registerCommand<TimerControlCmd>( kTimerControl );
         scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
 
+        // Make sure we wait long enough for BNO055 to go through powerup
+        sleep_ms( 1000 );
 
+        BNO055::init();
 
-
+        bool calibrated{ false };
         bool ledState = false;
+
+        multicore_launch_core1( startCore1 );
+
         while ( true ) 
         {
             uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
@@ -174,6 +148,30 @@ int main()
                         }
                         gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                         ledState = !ledState;
+
+                        if ( calibrated )
+                        {
+                            float heading{ BNO055::getHeading() };
+                            std::cout << "Heading: " << heading << std::endl;
+                            int calibM{ BNO055::getMagCalibration() };
+                            std::cout << "Calib-M: " << calibM << std::endl;
+                            int calibS = BNO055::getSysCalibration();
+                            std::cout << "Calib-S: " << calibS << std::endl;
+                        }
+                        else
+                        {
+                            auto status{ BNO055::getCalibration() };
+                            std::cout << "Calib status (M, A, G, S): " << static_cast<int>( status.mag ) << ", " 
+                                << static_cast<int>( status.accel ) << ", " 
+                                << static_cast<int>( status.gyro ) << ", " 
+                                << static_cast<int>( status.system ) << std::endl;
+
+                            if ( BNO055::calibrationSuccess( status ) )
+                            {
+                                calibrated = true;
+                                std::cout << "BNO055 calibrated!" << std::endl;
+                            }
+                        }
                         break;
                         
                     case Event::kEightSecondTimerEvent:

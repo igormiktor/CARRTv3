@@ -30,20 +30,27 @@ namespace BNO055
 {
     struct Calibration
     {
-        unsigned char system;
-        unsigned char gyro;
-        unsigned char accel;
         unsigned char mag;
+        unsigned char accel;
+        unsigned char gyro;
+        unsigned char system;
     };
+
+    constexpr std::uint8_t  kCalibrationSuccess{ 3 };
+
+    bool inline calibrationSuccess( const Calibration& status ) 
+    {
+        return ( status.mag + status.accel + status.gyro + status.system ) == 4*kCalibrationSuccess;
+    }
 
     void init();
 
     float getHeading();
 
-    std::optional<std::uint8_t> getMagCalibration();
-    std::optional<std::uint8_t> getAccelCalibration();
-    std::optional<std::uint8_t> getGyroCalibration();
-    std::optional<std::uint8_t> getSysCalibration();
+    std::uint8_t getMagCalibration();
+    std::uint8_t getAccelCalibration();
+    std::uint8_t getGyroCalibration();
+    std::uint8_t getSysCalibration();
    
     int getCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag );
 
