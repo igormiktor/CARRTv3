@@ -211,5 +211,5 @@ BNO055::Calibration BNO055::getCalibration()
         throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 8, err ), "CARRT Pico BNO055 failed to get calibration" );
     }
 
-    return Calibration{ system, gyro, accel, mag };
+    return Calibration{ .mag = mag, .accel = accel, .gyro = gyro, .system = system };
 }
