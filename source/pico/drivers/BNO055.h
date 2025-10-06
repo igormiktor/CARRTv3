@@ -38,7 +38,7 @@ namespace BNO055
 
     constexpr std::uint8_t  kCalibrationSuccess{ 3 };
 
-    bool inline calibrationSuccess( const Calibration& status ) 
+    inline bool calibrationGood( const Calibration& status ) 
     {
         return ( status.mag + status.accel + status.gyro + status.system ) == 4*kCalibrationSuccess;
     }
