@@ -68,7 +68,7 @@ public:
     // Tries to insert an event into the queue;
     // returns true if successful, false if the
     // queue if full and the event cannot be inserted
-    bool queueEvent( int eventCode, int eventParam, uint32_t eventTime = 0, EventPriority pri = kLowPriority );
+    bool queueEvent( int eventCode, int eventParam = 0, uint32_t eventTime = 0, EventPriority pri = kLowPriority );
 
     // This function returns the next event
     bool getNextEvent( int* eventCode, int* eventParam, uint32_t* eventTime = NULL );
