@@ -26,15 +26,26 @@
 
 namespace 
 {
-    // These all happen in Core1 so no atomics needed
+    // These all happen in Core0 so no atomics needed
     bool  sSendTimerEvents;
     bool  sSendNavEvents;
     bool  sSendEncoderEvents;
-
+    bool  sInCalibrationMode;
+    bool  sNavCalibrated;
+    // These are shared Core0 and Core1 and require atomics
+    
 }
 
 
 
+void PicoState::initialize() noexcept
+{
+    sSendTimerEvents    = false;
+    sSendNavEvents      = false;
+    sSendEncoderEvents  = false;
+    sInCalibrationMode  = false;
+    sNavCalibrated      = false;
+}
 
 
 bool PicoState::sendTimerEvents( bool newVal ) noexcept
@@ -49,6 +60,7 @@ bool PicoState::wantTimerEvents() noexcept
     return sSendTimerEvents;
 }
 
+
 bool PicoState::sendNavEvents( bool newVal ) noexcept
 {
     bool oldVal = sSendNavEvents;
@@ -61,6 +73,7 @@ bool PicoState::wantNavEvents() noexcept
     return sSendNavEvents;
 }
 
+
 bool PicoState::sendEncoderEvents( bool newVal ) noexcept
 {
     bool oldVal = sSendEncoderEvents;
@@ -72,6 +85,7 @@ bool PicoState::wantEncoderEvents() noexcept
 {
     return sSendEncoderEvents;
 }
+
 
 void PicoState::allSendEventOn() noexcept
 {
@@ -87,5 +101,30 @@ void PicoState::allSendEventsOff() noexcept
     sSendEncoderEvents = false;
 }
 
+
+bool PicoState::calibrationInProgress() noexcept
+{
+    return sInCalibrationMode;
+}
+
+bool PicoState::calibrationInProgress( bool newVal ) noexcept
+{
+    bool oldVal = sInCalibrationMode;
+    sInCalibrationMode = newVal;
+    return oldVal;
+}
+
+
+bool PicoState::navCalibrated() noexcept    
+{
+    return sNavCalibrated;
+}  
+
+bool PicoState::navCalibrated( bool newVal ) noexcept
+{
+    bool oldVal = sNavCalibrated;
+    sNavCalibrated = newVal;
+    return oldVal;
+}
 
 
