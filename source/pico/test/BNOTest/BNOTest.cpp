@@ -1,12 +1,18 @@
-#include "CarrtPicoDefines.h"
-#include "EventManager.h"
 #include "BNO055.h"
+#include "CarrtPicoDefines.h"
+#include "Core1.h"
+#include "CoreAtomic.hpp"
+#include "EventManager.h"
 #include "I2C.h"
+#include "PicoOutputUtils.hpp"
+#include "CarrtPicoReset.h"
+#include "PicoState.h"
 #include "SerialCommands.h"
-#include "SerialLinkPico.h"
 #include "SerialCommandProcessor.h"
+#include "SerialLinkPico.h"
 
 #include <iostream>
+
 #include "pico/binary_info.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -16,69 +22,30 @@
 #include "hardware/timer.h"
 #include "hardware/uart.h"
 
-#include "CoreAtomic.hpp"
 
 bi_decl( bi_1pin_with_name( CARRTPICO_HEARTBEAT_LED, "On-board LED for blinking" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
 
 
-
-bool timerCallback( repeating_timer_t* ) 
-{
-    static int eighthSecCount = 0;
-
-    ++eighthSecCount;
-    eighthSecCount %= 64;
-
-    // Queue nav update events every 1/8 second
-    // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-    Events().queueEvent( Event::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
-
-    if ( ( eighthSecCount % 2 ) == 0 )
-    {
-        // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        Events().queueEvent( Event::kQuarterSecondTimerEvent, ( (eighthSecCount / 2) % 4 ) );
-    }
-
-    if ( ( eighthSecCount % 8 ) == 0 )
-    {
-        // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
-       }
-
-    if ( eighthSecCount == 0 )
-    {
-        Events().queueEvent( Event::kEightSecondTimerEvent, 0 );
-    }
-
-    return true;
-}
-
-
-
-void startCore1() 
-{
-    std::cout << "This is core " << get_core_num() << std::endl;
-
-    alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
-
-    repeating_timer_t timer;
-    // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
-    if ( !alarm_pool_add_repeating_timer_ms( core1AlarmPool, -125, timerCallback, NULL, &timer ) ) 
-    {
-        std::cout << "Failed to add timer\n" << std::endl;
-    }
-
-    while ( 1 )
-    {
-        // tight_loop_contents();
-        sleep_ms( 100 );
-    }
-}
-
-
 bool gSendTimerEvents{ false };
+
+
+bool checkAndReportCalibration( EventManager& events, SerialLink& link )
+{
+    auto status{ BNO055::getCalibration() };
+    SendCalibrationStatusCmd calibStatus( status.mag, status.accel, status.gyro, status.system );
+    calibStatus.takeAction( events, link );
+    output2cout( 
+        "Calib status (M, A, G, S): ", 
+        static_cast<int>( status.mag ), 
+        static_cast<int>( status.accel ),
+        static_cast<int>( status.gyro ), 
+        static_cast<int>( status.system ) 
+    );
+    return BNO055::calibrationGood( status );
+}
+
 
 
 int main()
@@ -86,6 +53,7 @@ int main()
     try
     {
         CoreAtomic::CAtomicInitializer theInitializationIsDone;
+        PicoState::initialize();
 
         stdio_init_all();
 
@@ -106,14 +74,21 @@ int main()
         scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
 
         // Make sure we wait long enough for BNO055 to go through powerup
-        sleep_ms( 1000 );
+        sleep_ms( 650 );        // Minimum wait for BNO055 to powerup
 
         BNO055::init();
 
-        bool calibrated{ false };
+        // Tell RPi0 we are ready to receive commands
+        PicoReadyCmd picoReady( to_ms_since_boot( get_absolute_time() ) );
+        picoReady.sendOut( rpi0 );
+
         bool ledState = false;
 
-        multicore_launch_core1( startCore1 );
+        Core1::launchCore1();
+
+        sleep_ms( 500 );
+
+        Core1::queueEventForCore1( Core1::kBNO055InitDelay, 7000 );
 
         while ( true ) 
         {
@@ -149,8 +124,10 @@ int main()
                         gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                         ledState = !ledState;
 
-                        if ( calibrated )
+                        if ( PicoState::navCalibrated() )
                         {
+                            // Testing
+                            // Send nav events...
                             float heading{ BNO055::getHeading() };
                             std::cout << "Heading: " << heading << std::endl;
                             int calibM{ BNO055::getMagCalibration() };
@@ -158,18 +135,17 @@ int main()
                             int calibS = BNO055::getSysCalibration();
                             std::cout << "Calib-S: " << calibS << std::endl;
                         }
-                        else
+                        else if ( PicoState::calibrationInProgress() )
                         {
-                            auto status{ BNO055::getCalibration() };
-                            std::cout << "Calib status (M, A, G, S): " << static_cast<int>( status.mag ) << ", " 
-                                << static_cast<int>( status.accel ) << ", " 
-                                << static_cast<int>( status.gyro ) << ", " 
-                                << static_cast<int>( status.system ) << std::endl;
-
-                            if ( BNO055::calibrationSuccess( status ) )
+                            bool status = checkAndReportCalibration( Events(), rpi0 );
+                            if ( status )
                             {
-                                calibrated = true;
-                                std::cout << "BNO055 calibrated!" << std::endl;
+                                PicoState::navCalibrated( true );
+                                PicoState::calibrationInProgress( false );
+
+                                output2cout( "BNO055 calibrated!" );
+                                PicoReadyNavCmd navReady( to_ms_since_boot( get_absolute_time() ) );
+                                navReady.takeAction( Events(), rpi0 );
                             }
                         }
                         break;
@@ -182,10 +158,48 @@ int main()
                             eightSec.sendOut( rpi0 );
                         }
                         break;
+
+
+                    case Event::kSendCalibrationInfoEvent:
+                    {
+                        bool status = checkAndReportCalibration( Events(), rpi0 );
+                        bool oldStatus = PicoState::navCalibrated( status );
+                        if ( status != oldStatus )
+                        {
+                            if ( status )
+                            {
+                                output2cout( "Gone from not calibrated to calibrated" );
+                                PicoState::calibrationInProgress( false ); 
+                                
+                                PicoReadyNavCmd navReady( to_ms_since_boot( get_absolute_time() ) );
+                                navReady.takeAction( Events(), rpi0 );
+                            }
+                            else
+                            {
+                                output2cout( "Gone from calibrated to not calibrated" );
+                                // TODO something...
+                                PicoState::calibrationInProgress( true );
+                            }
+                        }
+                        break;   
+                    }  
+                        
+                    case Event::kBeginCalibrationEvent:
+                        output2cout( "Got begin calibration event" );
+                        PicoState::navCalibrated( false );
+                        // Reset BNO055??
+                        break;
+
+
+                    case Event::kPicoResetEvent:
+                        // TODO Reset Pico
+                        PicoReset::reset( rpi0 );
+                        break;
                 }
+
                 if ( Events().hasEventQueueOverflowed() )
                 {
-                    std::cout << "Event queue overflowed" << std::endl;
+                    output2cout( "Event queue overflowed" );
                     ErrorReportCmd errCmd( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ) );
                     errCmd.sendOut( rpi0 );
                     Events().resetEventQueueOverflowFlag();
