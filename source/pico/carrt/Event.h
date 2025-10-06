@@ -34,8 +34,13 @@ enum Event : int
     kEightSecondTimerEvent,
 
     // Nav update events
+    kInitNavEvent,
     kNavUpdateEvent,
     kNavDriftCorrectionEvent,
+
+    // Calibration events
+    kBeginCalibrationEvent,
+    kSendCalibrationInfoEvent,
 
     // Encoder events
     kEncoderLeftEvent,
@@ -49,6 +54,9 @@ enum Event : int
 
     // Keypad events
     kKeypadButtonHitEvent,
+
+    // Reset
+    kPicoResetEvent,
 
     // Test events
     kGpioInterruptTestFallingEvent,
