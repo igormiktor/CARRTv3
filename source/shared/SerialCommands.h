@@ -315,6 +315,63 @@ public:
 
 
 
+class RequestCalibrationStatusCmd : public NoContentCmd 
+{
+public:
+
+    RequestCalibrationStatusCmd() noexcept;
+    RequestCalibrationStatusCmd( CommandId id ) noexcept;
+
+    virtual ~RequestCalibrationStatusCmd() = default;
+
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class SendCalibrationStatusCmd : public SerialCommand
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t >;
+
+    SendCalibrationStatusCmd() noexcept;
+    SendCalibrationStatusCmd( TheData t ) noexcept; 
+    SendCalibrationStatusCmd( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept;
+    SendCalibrationStatusCmd( CommandId id );
+
+    virtual ~SendCalibrationStatusCmd() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct SerialMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 class ErrorReportCmd : public SerialCommand
 {
 public:

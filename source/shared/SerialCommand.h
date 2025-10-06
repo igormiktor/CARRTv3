@@ -58,7 +58,7 @@ enum CommandId : std::uint8_t
     // Calibration cmds       
     kBeginCalibration           = 0x30,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
     kRequestCalibStatus         = 0x31,             // Request status of BNO055 calibration (return with kSendCalibStatus)
-    kSendCalibStatus            = 0x32,             // Send status of BNO055 calibration (contains one-byte status)
+    kSendCalibStatus            = 0x32,             // Send status of BNO055 calibration (contains 4 x one-byte status values M-A-G-S )
     kSendCalibProfileToPico     = 0x33,             // Sending a calibration profile to Pico (follow by calibration profile data)
     kRequestCalibProfileFmPico  = 0x34,             // Request a calibration profile from Pico (reply with kSendCalibProfileToRPi0)
     kSendCalibProfileToRPi0     = 0x35,             // Send a calibration profile to RPi0 (followed by calibration profile data)
@@ -298,7 +298,7 @@ public:
     virtual std::uint8_t getId() const noexcept override;
 
 
-private:
+protected:
 
     CommandId   mId;
 
