@@ -23,9 +23,26 @@
 #ifndef Core1_h
 #define Core1_h
 
+#include <cstdint>
 
-void launchCore1();
 
-bool isRunningCore1();
+namespace Core1
+{
+    enum Core1Events : int
+    {
+        kNullCore1Event     = 0,
+
+        kBNO055InitDelay    = 1,
+
+        kLastCore1Event     = 255
+    };
+
+
+    void launchCore1();
+
+    void queueEventForCore1( std::uint8_t event, int waitMs );
+
+    bool isRunningCore1();
+}
 
 #endif  // Core1.h

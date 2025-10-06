@@ -1,7 +1,7 @@
 /*
     Core1.cpp - Code that runs on CARRT-Pico Core 1
 
-    Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 #include "EventManager.h"
 
 #include "CarrtError.h"
+#include "PicoOutputUtils.hpp"
+#include "PicoState.h"
 
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -37,19 +39,36 @@
 
 
 
-bool timerCallback( repeating_timer_t* ); 
-void core1Main();
+
+namespace
+{
+    struct EventForCore1
+    {
+        int     kind;
+        int     param;
+    };
+
+    queue_t sCore0toCore1Events{ nullptr };
+    alarm_pool_t* sCore1AlarmPool{ nullptr };
+
+    std::int64_t adhocCallback( alarm_id_t alarm, void* userData );
+    bool timerCallback( repeating_timer_t* ); 
+    void core1Main();
+}
 
 
 
 /*
-*   To be called from Core0 
+*   To be called from Core0
 *
 *   This code actually runs on Core0
 */
 
-void launchCore1()
+void Core1::launchCore1()
 {
+//    queue_init( sCore0toCore1Events, sizeof( EventForCore1 ), SIZE_OF_CORE0_TO_CORE1_QUEUE );
+    queue_init_with_spinlock( &sCore0toCore1Events, sizeof( EventForCore1 ), SIZE_OF_CORE0_TO_CORE1_QUEUE, spin_lock_claim_unused( true ) );
+
     multicore_launch_core1( core1Main );
 
     // Wait for it to start up
@@ -63,84 +82,125 @@ void launchCore1()
 
 
 
+void Core1::queueEventForCore1( std::uint8_t event, int waitMs )
+{
+    bool isFull = queue_is_full( &sCore0toCore1Events );
+    EventForCore1 evt{ .kind = event, .param = waitMs };
+    bool success = queue_try_add( &sCore0toCore1Events, &evt );
+    output2cout( "isFull: ", isFull, ", success: ", success );
+    if ( !success )
+    {
+        throw CarrtError( makePicoErrorId( PicoError::kPicoMulticoreError, 1, 2 ), "CARRT Pico failed to post to Core1 queue" );
+    }
+}
+
+
 // Code above here runs on Core0
 
 // Code below here runs on Core1
 
 
-/*
-*   The main() for Core1 
-*
-*   This code actually runs on Core1
-*/
-
-void core1Main() 
+namespace
 {
-    repeating_timer_t timer{};
 
 
-    alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
-    if ( core1AlarmPool && alarm_pool_add_repeating_timer_ms( core1AlarmPool, -125, timerCallback, NULL, &timer ) )
+    /*
+    *   The main() for Core1 
+    *
+    *   This code actually runs on Core1
+    */
+
+    void core1Main() 
     {
-        // Success; send the success code
-        multicore_fifo_push_blocking( CORE1_SUCCESS );
+        repeating_timer_t timer{};
+
+        sCore1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
+        if ( sCore1AlarmPool && alarm_pool_add_repeating_timer_ms( sCore1AlarmPool, -125, timerCallback, NULL, &timer ) )
+        {
+            // Success; send the success code
+            multicore_fifo_push_blocking( CORE1_SUCCESS );
+        }
+        else
+        {
+            // Failure; send the failure code
+            multicore_fifo_push_blocking( CORE1_FAILURE );
+
+            // Pico core0 will report the error to RPi0 
+            // RPi0 will do whatever is appropriate with it (potentially cycle power to Pico)
+        }
+
+        while ( 1 )
+        {
+#if 1
+            if ( queue_is_empty( &sCore0toCore1Events ) )
+            {
+                // Let core1 sleep, we're just processing timer callbacks...
+                sleep_ms( 20 );
+            }
+            else
+            {
+                EventForCore1 evt{ 0, 0 };
+                queue_remove_blocking( &sCore0toCore1Events, &evt );
+                switch( evt.kind )
+                {
+                    case Core1::kBNO055InitDelay: 
+                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), adhocCallback, reinterpret_cast<void *>( Event::kBeginCalibrationEvent ), true );
+
+                    default:
+                        break;
+                }
+            }
+#endif // if 0
+//            sleep_ms( 20 );
+//            tight_loop_contents();       // Tight loop really isn't needed here
+        }
     }
-    else
+
+
+    std::int64_t adhocCallback( alarm_id_t alarm, void* userData )
     {
-        // Failure; send the failure code
-        multicore_fifo_push_blocking( CORE1_FAILURE );
-
-        // Pico core0 will report the error to RPi0 
-        // RPi0 will do whatever is appropriate with it (potentially cycle power to Pico)
+        int eventType{ reinterpret_cast<int>( userData ) };
+        Events().queueEvent( eventType );
+        return 0;
     }
 
-    while ( 1 )
+
+    bool timerCallback( repeating_timer_t* ) 
     {
+        // Argument is not used...
 
-        // Let core1 sleep, we're just processing timer callbacks...
-        sleep_ms( 20 );
-        // tight_loop_contents();       // Tight loop really isn't needed here
+        static int eighthSecCount{ 0 };
+
+        uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
+
+        ++eighthSecCount;
+        eighthSecCount %= 64;
+
+        // Queue nav update events every 1/8 second
+        // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
+        Events().queueEvent( kNavUpdateEvent, eighthSecCount % 8, timeTick, EventManager::kHighPriority );
+
+        if ( ( eighthSecCount % 2 ) == 0 )
+        {
+            // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
+            Events().queueEvent( kQuarterSecondTimerEvent, ( (eighthSecCount / 2) % 4 ), timeTick );
+        }
+
+        if ( ( eighthSecCount % 8 ) == 0 )
+        {
+            // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
+            Events().queueEvent( kOneSecondTimerEvent, ( eighthSecCount / 8 ), timeTick );
+        }
+
+        if ( eighthSecCount == 0 )
+        {
+            Events().queueEvent( kEightSecondTimerEvent, 0, timeTick );
+            Events().queueEvent( Event::kSendCalibrationInfoEvent );
+        }
+
+        return true;
     }
+
+
 }
-
-
-
-bool timerCallback( repeating_timer_t* ) 
-{
-    // Argument is not used...
-
-    static int eighthSecCount{ 0 };
-
-    uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
-
-    ++eighthSecCount;
-    eighthSecCount %= 64;
-
-    // Queue nav update events every 1/8 second
-    // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-    Events().queueEvent( kNavUpdateEvent, eighthSecCount % 8, timeTick, EventManager::kHighPriority );
-
-    if ( ( eighthSecCount % 2 ) == 0 )
-    {
-        // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        Events().queueEvent( kQuarterSecondTimerEvent, ( (eighthSecCount / 2) % 4 ), timeTick );
-    }
-
-    if ( ( eighthSecCount % 8 ) == 0 )
-    {
-        // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        Events().queueEvent( kOneSecondTimerEvent, ( eighthSecCount / 8 ), timeTick );
-        // Events().queueEvent( Event::kPulsePicoLed, 0 );     // Don't need time tick
-    }
-
-    if ( eighthSecCount == 0 )
-    {
-        Events().queueEvent( kEightSecondTimerEvent, 0, timeTick );
-    }
-
-    return true;
-}
-
-
-
 

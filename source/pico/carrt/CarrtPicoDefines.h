@@ -147,7 +147,7 @@
 #define CORE1_SUCCESS      1234
 #define CORE1_FAILURE      21
 
-
+#define SIZE_OF_CORE0_TO_CORE1_QUEUE            8
 
 
 // **************************************************************
