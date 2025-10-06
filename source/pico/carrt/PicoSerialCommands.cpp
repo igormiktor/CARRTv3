@@ -23,7 +23,6 @@
 
 #include "SerialCommands.h"
 
-#include "CarrtPicoReset.h"
 #include "EventManager.h"
 #include "PicoOutputUtils.hpp"
 #include "PicoState.h"
@@ -109,7 +108,7 @@ void NoContentCmd::readIn( SerialLink& link )
 void NoContentCmd::sendOut( SerialLink& link )
 {
     // Send the ID, it's the only thing we need to send
-    link.put( static_cast<std::uint8_t>( kNullMsg ) );
+    link.put( static_cast<std::uint8_t>( mId ) );
 }
 
 bool NoContentCmd::needsAction() const noexcept
@@ -184,7 +183,8 @@ PicoReadyCmd::PicoReadyCmd( CommandId id )
 void PicoReadyCmd::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
+    output2cout( "Error:  Pico should never receive PicoReadyCmd" );
 }
 
 void PicoReadyCmd::sendOut( SerialLink& link )
@@ -357,8 +357,8 @@ ResetCmd::ResetCmd( CommandId id ) noexcept
 void ResetCmd::takeAction( EventManager& events, SerialLink& link )
 {
     output2cout( "Pico commanded to reset by RPi0" );
-
-    PicoReset::reset( link );
+    events.queueEvent( Event::kPicoResetEvent, 0, 0, EventManager::kHighPriority );
+    mNeedsAction = false;
 }
 
 
@@ -456,7 +456,7 @@ void TimerControlCmd::takeAction( EventManager& events, SerialLink& link )
 {
     bool val = std::get<0>( mContent.mMsg );
     PicoState::sendTimerEvents( val );
-    output2cout( "Timer events to RPi0 turned ", val );    
+    output2cout( "Timer events to RPi0 turned to ", val );    
     mNeedsAction = false;
 }
 
@@ -484,11 +484,92 @@ BeginCalibrationCmd::BeginCalibrationCmd( CommandId id ) noexcept
 
 void BeginCalibrationCmd::takeAction( EventManager& events, SerialLink& link )
 {
-    // TODO trigger BNO055 calibration
+    output2cout( "Got a calibration cmd: Trigger calibration" );
+    events.queueEvent( Event::kBeginCalibrationEvent );
+    mNeedsAction = false;
+}
 
-    output2cout( "Got a calibration cmd: TODO -- Trigger calibration (code not written)" );
 
-    // When done, need to send PicoReadyNavCmd
+
+
+/*********************************************************************************************/
+
+
+
+
+
+RequestCalibrationStatusCmd::RequestCalibrationStatusCmd() noexcept
+: NoContentCmd( kRequestCalibStatus )
+{
+    // Nothing to do
+}
+
+RequestCalibrationStatusCmd::RequestCalibrationStatusCmd( CommandId id ) noexcept
+: NoContentCmd( id )
+{
+    // Nothing to do
+}
+
+
+void RequestCalibrationStatusCmd::takeAction( EventManager& events, SerialLink& link )
+{
+    output2cout( "Got a request calib status cmd" );
+    events.queueEvent( Event::kSendCalibrationInfoEvent );
+    mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+
+SendCalibrationStatusCmd::SendCalibrationStatusCmd() noexcept
+: SerialCommand( kSendCalibStatus ), mContent( kSendCalibStatus ), mNeedsAction{ false }
+{}
+
+SendCalibrationStatusCmd::SendCalibrationStatusCmd( TheData t ) noexcept
+: SerialCommand( kSendCalibStatus ), mContent( kSendCalibStatus, t ), mNeedsAction{ true }
+{}
+
+
+SendCalibrationStatusCmd::SendCalibrationStatusCmd( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept
+: SerialCommand( kSendCalibStatus ), mContent( kSendCalibStatus, std::make_tuple( mag, accel, gyro, sys) ), mNeedsAction{ true }
+{}
+
+
+SendCalibrationStatusCmd::SendCalibrationStatusCmd( CommandId id )
+: SerialCommand( id ), mContent( kSendCalibStatus ), mNeedsAction{ false }
+{
+    if ( id != kSendCalibStatus ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kSendCalibStatus ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void SendCalibrationStatusCmd::readIn( SerialLink& link )
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+
+void SendCalibrationStatusCmd::sendOut( SerialLink& link )
+{
+    mContent.sendOut( link );
+}
+
+
+
+void SendCalibrationStatusCmd::takeAction( EventManager& events, SerialLink& link )
+{
+    sendOut( link );
+    mNeedsAction = false;
 }
 
 
