@@ -21,7 +21,7 @@
 
 
 
-#define EVENTMANAGER_EVENT_QUEUE_SIZE		24
+#define EVENTMANAGER_EVENT_QUEUE_SIZE		32
 
 
 #include "EventManager.h"
