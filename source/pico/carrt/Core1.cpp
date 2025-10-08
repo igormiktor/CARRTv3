@@ -83,12 +83,10 @@ void Core1::launchCore1()
 
 void Core1::queueEventForCore1( std::uint8_t event, int waitMs )
 {
-    bool isFull = queue_is_full( &sCore0toCore1Events );
     EventForCore1 evt{ .kind = event, .param = waitMs };
-    bool success = queue_try_add( &sCore0toCore1Events, &evt );
-    output2cout( "isFull: ", isFull, ", success: ", success );
-    if ( !success )
+    if ( !queue_try_add( &sCore0toCore1Events, &evt ) )
     {
+        // These get added very rarely, so impossible to have a full queue unless something else is very wrong
         throw CarrtError( makePicoErrorId( PicoError::kPicoMulticoreError, 1, 2 ), "CARRT Pico failed to post to Core1 queue" );
     }
 }
