@@ -48,10 +48,10 @@ namespace
         int     param;
     };
 
-    queue_t sCore0toCore1Events{ nullptr };
+    queue_t sCore0toCore1Events{};
     alarm_pool_t* sCore1AlarmPool{ nullptr };
 
-    std::int64_t adhocCallback( alarm_id_t alarm, void* userData );
+    std::int64_t alarmCallback( alarm_id_t alarm, void* userData );
     bool timerCallback( repeating_timer_t* ); 
     void core1Main();
 }
@@ -66,8 +66,7 @@ namespace
 
 void Core1::launchCore1()
 {
-//    queue_init( sCore0toCore1Events, sizeof( EventForCore1 ), SIZE_OF_CORE0_TO_CORE1_QUEUE );
-    queue_init_with_spinlock( &sCore0toCore1Events, sizeof( EventForCore1 ), SIZE_OF_CORE0_TO_CORE1_QUEUE, spin_lock_claim_unused( true ) );
+    queue_init( &sCore0toCore1Events, sizeof( EventForCore1 ), SIZE_OF_CORE0_TO_CORE1_QUEUE );
 
     multicore_launch_core1( core1Main );
 
@@ -95,14 +94,17 @@ void Core1::queueEventForCore1( std::uint8_t event, int waitMs )
 }
 
 
+
 // Code above here runs on Core0
+
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 // Code below here runs on Core1
 
 
+
 namespace
 {
-
 
     /*
     *   The main() for Core1 
@@ -131,7 +133,6 @@ namespace
 
         while ( 1 )
         {
-#if 1
             if ( queue_is_empty( &sCore0toCore1Events ) )
             {
                 // Let core1 sleep, we're just processing timer callbacks...
@@ -144,25 +145,27 @@ namespace
                 switch( evt.kind )
                 {
                     case Core1::kBNO055InitDelay: 
-                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), adhocCallback, reinterpret_cast<void *>( Event::kBeginCalibrationEvent ), true );
+                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, reinterpret_cast<void *>( Event::kBeginCalibrationEvent ), true );
 
                     default:
                         break;
                 }
             }
-#endif // if 0
-//            sleep_ms( 20 );
-//            tight_loop_contents();       // Tight loop really isn't needed here
+//          tight_loop_contents();       // Tight loop really isn't needed here
         }
     }
 
 
-    std::int64_t adhocCallback( alarm_id_t alarm, void* userData )
+
+    std::int64_t alarmCallback( alarm_id_t, void* userData )
     {
+        // Argument isn't used
+
         int eventType{ reinterpret_cast<int>( userData ) };
         Events().queueEvent( eventType );
         return 0;
     }
+
 
 
     bool timerCallback( repeating_timer_t* ) 
