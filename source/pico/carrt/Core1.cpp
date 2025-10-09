@@ -133,7 +133,7 @@ namespace
         {
             if ( queue_is_empty( &sCore0toCore1Events ) )
             {
-                // Let core1 sleep, we're just processing timer callbacks...
+                // Let Core1 sleep, Core1 is just processing timer/alarm callbacks and interrupts...
                 sleep_ms( 20 );
             }
             else
