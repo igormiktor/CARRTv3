@@ -24,6 +24,7 @@
 
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
+#include "Delays.h"
 
 #include "CarrtError.h"
 #include "PicoOutputUtils.hpp"
@@ -134,7 +135,7 @@ namespace
             if ( queue_is_empty( &sCore0toCore1Events ) )
             {
                 // Let Core1 sleep, Core1 is just processing timer/alarm callbacks and interrupts...
-                sleep_ms( 20 );
+                CarrtPico::sleep( 10ms );
             }
             else
             {

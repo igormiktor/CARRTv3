@@ -25,6 +25,7 @@
 #include "PicoOutputUtils.hpp"
 #include "SerialCommands.h"
 #include "SerialLinkPico.h"
+#include "Delays.h"
 
 #include "pico/stdlib.h"
 #include "hardware/sync.h"
@@ -39,14 +40,14 @@ void PicoReset::reset( SerialLink& rpi0 )
 
     output2cout( "Pico reseting via watchdog_reboot" );
     
-    sleep_ms( 100 );
+    CarrtPico::sleep( 100ms );
 
     watchdog_reboot( 0, SRAM_END, 0 ); 
 
     // Wait for the reset to happen
     while ( 1 )
     {
-        sleep_ms( 100 );
+        CarrtPico::sleep( 100ms );
     }
 }
 

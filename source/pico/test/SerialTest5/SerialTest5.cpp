@@ -1,6 +1,6 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
-
+#include "Delays.h"
 #include "SerialCommands.h"
 #include "SerialLinkPico.h"
 #include "SerialCommandProcessor.h"
@@ -72,7 +72,7 @@ void startCore1()
     while ( 1 )
     {
         // tight_loop_contents();
-        sleep_ms( 100 );
+        CarrtPico::sleep( 100ms );
     }
 }
 
@@ -172,7 +172,7 @@ int main()
             {
                 cmd.value()->takeAction( Events(), rpi0 );
             }
-            sleep_ms( 25 );
+            CarrtPico::sleep( 25ms );
         }
     }
 

@@ -32,6 +32,8 @@
 #include "PicoOutputUtils.hpp"
 #include "CarrtPicoReset.h"
 
+#include "Delays.h"
+
 #include "BNO055.h"
 #include "I2C.h"
 #include "SerialLinkPico.h"
@@ -129,7 +131,7 @@ int main()
     // Just spin and put HeartBeatLed on fast strobe
     while ( 1 )
     {
-        sleep_ms( 100 );
+        CarrtPico::sleep( 100ms );
         HeartBeatLed::toggle();
 
         // See if we get a sent a reset command
@@ -181,7 +183,7 @@ void initializeFailableHardware()
     BNO055::init();
 
     // Launch Core1
-    launchCore1();
+    Core1::launchCore1();
 }
 
 
