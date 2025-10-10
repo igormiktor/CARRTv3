@@ -2,6 +2,7 @@
 set( DRVR_HDR_LIST
     BNO055/bno055.h   
     BNO055.h
+    Delays.h
     Encoders.h
     HeartBeatLed.h 
     I2C.h 

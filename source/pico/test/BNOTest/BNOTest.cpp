@@ -2,6 +2,7 @@
 #include "CarrtPicoDefines.h"
 #include "Core1.h"
 #include "CoreAtomic.hpp"
+#include "Delays.h"
 #include "EventManager.h"
 #include "I2C.h"
 #include "PicoOutputUtils.hpp"
@@ -50,6 +51,8 @@ bool checkAndReportCalibration( EventManager& events, SerialLink& link )
 
 int main()
 {
+    using CarrtPico::delay;
+
     try
     {
         CoreAtomic::CAtomicInitializer theInitializationIsDone;
@@ -59,6 +62,7 @@ int main()
 
         std::cout << "This is CARRT Pico" << std::endl;
         std::cout << "This is core " << get_core_num() << std::endl;
+
 
         // Initialise UART for data
         SerialLinkPico rpi0;
@@ -74,7 +78,7 @@ int main()
         scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
 
         // Make sure we wait long enough for BNO055 to go through powerup
-        sleep_ms( 650 );        // Minimum wait for BNO055 to powerup
+        CarrtPico::sleep( 650ms );        // Minimum wait for BNO055 to powerup
 
         BNO055::init();
 
@@ -86,7 +90,7 @@ int main()
 
         Core1::launchCore1();
 
-        sleep_ms( 500 );
+        CarrtPico::sleep( 500ms );
 
         Core1::queueEventForCore1( Core1::kBNO055InitDelay, 7000 );
 
@@ -211,7 +215,7 @@ int main()
             {
                 cmd.value()->takeAction( Events(), rpi0 );
             }
-            sleep_ms( 25 );
+            CarrtPico::sleep( 25ms );
         }
     }
 
