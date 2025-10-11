@@ -34,6 +34,7 @@
 
 void PicoReset::reset( SerialLink& rpi0 )
 {
+    // This performs a "reboot" reset (so don't care about queues overflowing )
     // Let RPi0 know we are going to reset
     ResetCmd resetMsg;
     resetMsg.sendOut( rpi0 );
@@ -48,6 +49,21 @@ void PicoReset::reset( SerialLink& rpi0 )
     while ( 1 )
     {
         CarrtPico::sleep( 100ms );
+    }
+}
+
+
+void PicoReset::fatalReset()
+{
+    // This performs a "reboot" reset after falling off the end of main
+    // Only things we can rely on are low-level pico SDK functionality 
+     
+    watchdog_reboot( 0, SRAM_END, 0 ); 
+
+    // Wait for the reset to happen
+    while ( 1 )
+    {
+         tight_loop_contents(); 
     }
 }
 
