@@ -40,7 +40,7 @@ void checkAndReportCalibration( EventManager& events, SerialLink& link )
     bool oldStatus = PicoState::navCalibrated( status );
     if ( status != oldStatus )
     {
-        // Send message to RPi0 that Nav Status is updated
+        // Send message to RPi0 that Nav Status change and set Pico state accordingly
         PicoNavStatusUpdateCmd navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
         navReadyStatus.takeAction( events, link );
         PicoState::calibrationInProgress( !status ); 
@@ -56,6 +56,7 @@ void checkAndReportCalibration( EventManager& events, SerialLink& link )
     }
     else
     {
+        // If calibration status unchanged, just send normal calibration report
         SendCalibrationStatusCmd calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
         calibStatus.takeAction( events, link );
     }
@@ -63,6 +64,26 @@ void checkAndReportCalibration( EventManager& events, SerialLink& link )
     output2cout( "Calib status (M, A, G, S): ", static_cast<int>( calibData.mag ), static_cast<int>( calibData.accel ), 
         static_cast<int>( calibData.gyro ), static_cast<int>( calibData.system ) );
 }
+
+
+void initializeBNO055( EventManager& events )
+{
+    // Note this call likely to include internal delay of 600ms
+    BNO055::init();
+
+    // Because delay built into init(), can trigger BeginCalibration without delay
+    events.queueEvent( kBNO055BeginCalibrationEvent );
+}
+
+
+void resetBNO055( EventManager& events )
+{
+    // Note this call is followed by 650ms delay before we can call init()
+    BNO055::reset();
+    PicoState::navCalibrated( false );
+    Core1::queueEventForCore1( kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
+}
+
 
 
 
@@ -77,9 +98,13 @@ int main()
 
         stdio_init_all();
 
-        std::cout << "This is CARRT Pico" << std::endl;
-        std::cout << "This is core " << get_core_num() << std::endl;
+        output2cout( "This is CARRT Pico" );
 
+        // Start Core1 and queue a future event to trigger initialization of BNO055
+        Core1::launchCore1();
+        // If we get here, guaranteed Core1 is running and in its main event loop
+        // So perfect time to queue this future event
+        Core1::queueEventForCore1( kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
 
         // Initialise UART for data
         SerialLinkPico rpi0;
@@ -94,22 +119,15 @@ int main()
         scp.registerCommand<TimerControlCmd>( kTimerControl );
         scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
 
-        // Make sure we wait long enough for BNO055 to go through powerup
-        CarrtPico::sleep( 650ms );        // Minimum wait for BNO055 to powerup
-
-        BNO055::init();
-
         // Tell RPi0 we are ready to receive commands
         PicoReadyCmd picoReady( to_ms_since_boot( get_absolute_time() ) );
         picoReady.sendOut( rpi0 );
 
+
+        // Test only:  queue a BO055 reset in 15 seconds
+        Core1::queueEventForCore1( kBNO055ResetEvent, 15000 );
+
         bool ledState = false;
-
-        Core1::launchCore1();
-
-        // If we get here, guaranteed Core1 is running and in its main event loop
-        // So perfect time to send
-        Core1::queueEventForCore1( kBNO055InitDelay, 650 );
 
         while ( true ) 
         {
@@ -121,12 +139,23 @@ int main()
             {
                 switch ( eventCode )
                 {
+                    case kBNO055InitializeEvent:
+                        output2cout( "Got BNO055 initialize event" );
+                        initializeBNO055( Events() );
+                        break;
+
+                    case kBNO055ResetEvent:
+                        output2cout( "Got BNO055 reset event" );
+                        resetBNO055( Events() );
+                        break;
+
                     case Event::kNavUpdateEvent:
                         // std::cout << "Nav " << eventParam << std::endl;
                         if ( PicoState::navCalibrated() )
                         {
                             float heading = BNO055::getHeading();
                             output2cout( "Hdg: ", heading, "T" );
+                            // TODO send to RPi0
                         }
                         break;
                         
@@ -167,7 +196,7 @@ int main()
                         checkAndReportCalibration( Events(), rpi0 );
                         break;
 
-                    case Event::kBeginCalibrationEvent:
+                    case Event::kBNO055BeginCalibrationEvent:
                         output2cout( "Got begin calibration event" );
                         PicoState::navCalibrated( false );
                         PicoState::calibrationInProgress( true );
@@ -213,6 +242,8 @@ int main()
     {
         std::cerr << "Error of unknown type." << std::endl;
     }
+
+    PicoReset::fatalReset();
 
     return 0;
 }

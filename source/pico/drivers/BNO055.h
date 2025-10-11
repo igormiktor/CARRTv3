@@ -83,7 +83,9 @@ namespace BNO055
     }
 
 
-    void init();    // May include long delays of 600ms due to internal mode switches                   
+    void init();    // May include long delays of 600ms due to internal mode switches    
+    void reset();   // Requires kWaitAfterPowerOnReset before then calling init()
+               
 
     float getHeading();
 

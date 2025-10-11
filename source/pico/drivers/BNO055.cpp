@@ -85,17 +85,17 @@ void BNO055::init()
     sBno055.bus_read = I2C::receive;
     sBno055.delay_msec = BNO055::delayMsec;
 
-    int err = bno055_init( &sBno055 );
+    int err = bno055_init( &sBno055 );                          // No delay calls
 
     // Set the power mode as NORMAL 
-    err += bno055_set_power_mode( BNO055_POWER_MODE_NORMAL );
+    err += bno055_set_power_mode( BNO055_POWER_MODE_NORMAL );   // No delay calls
 
     // Re-map the axes to what we need for our configuration
-    err += bno055_set_axis_remap_value( BNO055_REMAP_X_Y );
-    err += bno055_set_remap_z_sign( 1 );
+    err += bno055_set_axis_remap_value( BNO055_REMAP_X_Y );     // No delay calls
+    err += bno055_set_remap_z_sign( 1 );                        // No delay calls
 
     // Set mode of the BNO055 to NDOF (9 Degs of Freedom, Fused)
-    err += bno055_set_operation_mode( BNO055_OPERATION_MODE_NDOF );
+    err += bno055_set_operation_mode( BNO055_OPERATION_MODE_NDOF );     // Big delay calls (600ms)
 
     if ( err )
     {
@@ -210,4 +210,16 @@ BNO055::Calibration BNO055::getCalibration()
     }
 
     return Calibration{ .mag = mag, .accel = accel, .gyro = gyro, .system = system };
+}
+
+
+
+void BNO055::reset()
+{
+    int err = bno055_set_sys_rst( BNO055_BIT_ENABLE );
+
+    if ( err )
+    {
+        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 9, err ), "CARRT Pico BNO055 init failed" );
+    }
 }
