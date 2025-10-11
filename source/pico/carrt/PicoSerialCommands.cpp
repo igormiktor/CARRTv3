@@ -485,7 +485,7 @@ BeginCalibrationCmd::BeginCalibrationCmd( CommandId id ) noexcept
 void BeginCalibrationCmd::takeAction( EventManager& events, SerialLink& link )
 {
     output2cout( "Got a calibration cmd: Trigger calibration" );
-    events.queueEvent( Event::kBeginCalibrationEvent );
+    events.queueEvent( Event::kBNO055BeginCalibrationEvent );
     mNeedsAction = false;
 }
 
