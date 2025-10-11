@@ -97,8 +97,6 @@ void BNO055::init()
     // Set mode of the BNO055 to NDOF (9 Degs of Freedom, Fused)
     err += bno055_set_operation_mode( BNO055_OPERATION_MODE_NDOF );
 
-    sleep_ms( 10 );
-
     if ( err )
     {
         throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 1, err ), "CARRT Pico BNO055 init failed" );
