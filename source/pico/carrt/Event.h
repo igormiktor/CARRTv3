@@ -41,6 +41,7 @@ enum Event : int
     kBNO055InitializeEvent,
     kBNO055BeginCalibrationEvent,
     kSendCalibrationInfoEvent,
+    kBNO055ResetEvent,
 
     // Encoder events
     kEncoderLeftEvent,

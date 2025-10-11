@@ -144,10 +144,19 @@ namespace
                 switch( evt.kind )
                 {
                     case kBNO055InitializeEvent: 
-                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, reinterpret_cast<void *>( kBNO055InitializeEvent ), true );
+                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, 
+                            reinterpret_cast<void *>( kBNO055InitializeEvent ), true );
+                        break;
 
                     case kBNO055BeginCalibrationEvent: 
-                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, reinterpret_cast<void *>( kBNO055BeginCalibrationEvent ), true );
+                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, 
+                            reinterpret_cast<void *>( kBNO055BeginCalibrationEvent ), true );
+                        break;
+
+                    case kBNO055ResetEvent:
+                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, 
+                            reinterpret_cast<void *>( kBNO055ResetEvent ), true );
+                        break;
 
                     default:
                         break;
