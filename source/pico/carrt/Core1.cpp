@@ -143,8 +143,11 @@ namespace
                 queue_remove_blocking( &sCore0toCore1Events, &evt );
                 switch( evt.kind )
                 {
-                    case kBNO055InitDelay: 
-                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, reinterpret_cast<void *>( kBeginCalibrationEvent ), true );
+                    case kBNO055InitializeEvent: 
+                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, reinterpret_cast<void *>( kBNO055InitializeEvent ), true );
+
+                    case kBNO055BeginCalibrationEvent: 
+                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, reinterpret_cast<void *>( kBNO055BeginCalibrationEvent ), true );
 
                     default:
                         break;
