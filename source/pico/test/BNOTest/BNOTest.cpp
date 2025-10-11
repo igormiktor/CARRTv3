@@ -32,19 +32,36 @@ bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, 
 bool gSendTimerEvents{ false };
 
 
-bool checkAndReportCalibration( EventManager& events, SerialLink& link )
+void checkAndReportCalibration( EventManager& events, SerialLink& link )
 {
-    auto status{ BNO055::getCalibration() };
-    SendCalibrationStatusCmd calibStatus( status.mag, status.accel, status.gyro, status.system );
-    calibStatus.takeAction( events, link );
-    output2cout( 
-        "Calib status (M, A, G, S): ", 
-        static_cast<int>( status.mag ), 
-        static_cast<int>( status.accel ),
-        static_cast<int>( status.gyro ), 
-        static_cast<int>( status.system ) 
-    );
-    return BNO055::calibrationGood( status );
+    auto calibData{ BNO055::getCalibration() };
+    bool status = BNO055::calibrationGood( calibData );
+
+    bool oldStatus = PicoState::navCalibrated( status );
+    if ( status != oldStatus )
+    {
+        // Send message to RPi0 that Nav Status is updated
+        PicoNavStatusUpdateCmd navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+        navReadyStatus.takeAction( events, link );
+        PicoState::calibrationInProgress( !status ); 
+        
+        if ( status )
+        {
+            output2cout( "Gone from not calibrated to CALIBRATED" );
+        }
+        else
+        {
+            output2cout( "Gone from calibrated to NOT CALIBRATED" );
+        }
+    }
+    else
+    {
+        SendCalibrationStatusCmd calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+        calibStatus.takeAction( events, link );
+    }
+
+    output2cout( "Calib status (M, A, G, S): ", static_cast<int>( calibData.mag ), static_cast<int>( calibData.accel ), 
+        static_cast<int>( calibData.gyro ), static_cast<int>( calibData.system ) );
 }
 
 
@@ -90,9 +107,9 @@ int main()
 
         Core1::launchCore1();
 
-        CarrtPico::sleep( 500ms );
-
-        Core1::queueEventForCore1( Core1::kBNO055InitDelay, 7000 );
+        // If we get here, guaranteed Core1 is running and in its main event loop
+        // So perfect time to send
+        Core1::queueEventForCore1( kBNO055InitDelay, 650 );
 
         while ( true ) 
         {
@@ -106,6 +123,11 @@ int main()
                 {
                     case Event::kNavUpdateEvent:
                         // std::cout << "Nav " << eventParam << std::endl;
+                        if ( PicoState::navCalibrated() )
+                        {
+                            float heading = BNO055::getHeading();
+                            output2cout( "Hdg: ", heading, "T" );
+                        }
                         break;
                         
                     case Event::kQuarterSecondTimerEvent:
@@ -125,33 +147,11 @@ int main()
                             TimerEventCmd oneSec( TimerEventCmd::k1SecondEvent, eventParam, timeTick );
                             oneSec.sendOut( rpi0 );
                         }
+                        break;
+
+                    case kPulsePicoLedEvent:
                         gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                         ledState = !ledState;
-
-                        if ( PicoState::navCalibrated() )
-                        {
-                            // Testing
-                            // Send nav events...
-                            float heading{ BNO055::getHeading() };
-                            std::cout << "Heading: " << heading << std::endl;
-                            int calibM{ BNO055::getMagCalibration() };
-                            std::cout << "Calib-M: " << calibM << std::endl;
-                            int calibS = BNO055::getSysCalibration();
-                            std::cout << "Calib-S: " << calibS << std::endl;
-                        }
-                        else if ( PicoState::calibrationInProgress() )
-                        {
-                            bool status = checkAndReportCalibration( Events(), rpi0 );
-                            if ( status )
-                            {
-                                PicoState::navCalibrated( true );
-                                PicoState::calibrationInProgress( false );
-
-                                output2cout( "BNO055 calibrated!" );
-                                PicoReadyNavCmd navReady( to_ms_since_boot( get_absolute_time() ) );
-                                navReady.takeAction( Events(), rpi0 );
-                            }
-                        }
                         break;
                         
                     case Event::kEightSecondTimerEvent:
@@ -163,37 +163,16 @@ int main()
                         }
                         break;
 
-
                     case Event::kSendCalibrationInfoEvent:
-                    {
-                        bool status = checkAndReportCalibration( Events(), rpi0 );
-                        bool oldStatus = PicoState::navCalibrated( status );
-                        if ( status != oldStatus )
-                        {
-                            if ( status )
-                            {
-                                output2cout( "Gone from not calibrated to calibrated" );
-                                PicoState::calibrationInProgress( false ); 
-                                
-                                PicoReadyNavCmd navReady( to_ms_since_boot( get_absolute_time() ) );
-                                navReady.takeAction( Events(), rpi0 );
-                            }
-                            else
-                            {
-                                output2cout( "Gone from calibrated to not calibrated" );
-                                // TODO something...
-                                PicoState::calibrationInProgress( true );
-                            }
-                        }
-                        break;   
-                    }  
-                        
+                        checkAndReportCalibration( Events(), rpi0 );
+                        break;
+
                     case Event::kBeginCalibrationEvent:
                         output2cout( "Got begin calibration event" );
                         PicoState::navCalibrated( false );
+                        PicoState::calibrationInProgress( true );
                         // Reset BNO055??
                         break;
-
 
                     case Event::kPicoResetEvent:
                         // TODO Reset Pico

@@ -99,18 +99,18 @@ private:
 
 
 
-class PicoReadyNavCmd : public SerialCommand 
+class PicoNavStatusUpdateCmd : public SerialCommand 
 {
 public:
 
-    using TheData = std::tuple< std::uint32_t >;
+    using TheData = std::tuple< bool, std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t >;
 
-    PicoReadyNavCmd() noexcept;
-    PicoReadyNavCmd( TheData t ) noexcept; 
-    PicoReadyNavCmd( std::uint32_t time ) noexcept;
-    PicoReadyNavCmd( CommandId id );
+    PicoNavStatusUpdateCmd() noexcept;
+    PicoNavStatusUpdateCmd( TheData t ) noexcept; 
+    PicoNavStatusUpdateCmd( bool status, std::uint8_t m, std::uint8_t a, std::uint8_t g, std::uint8_t s ) noexcept;
+    PicoNavStatusUpdateCmd( CommandId id );
 
-    virtual ~PicoReadyNavCmd() = default;
+    virtual ~PicoNavStatusUpdateCmd() = default;
 
 
     virtual void readIn( SerialLink& link ) override;

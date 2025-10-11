@@ -82,7 +82,7 @@ void Core1::launchCore1()
 
 
 
-void Core1::queueEventForCore1( std::uint8_t event, int waitMs )
+void Core1::queueEventForCore1( int event, int waitMs )
 {
     EventForCore1 evt{ .kind = event, .param = waitMs };
     if ( !queue_try_add( &sCore0toCore1Events, &evt ) )
@@ -143,8 +143,8 @@ namespace
                 queue_remove_blocking( &sCore0toCore1Events, &evt );
                 switch( evt.kind )
                 {
-                    case Core1::kBNO055InitDelay: 
-                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, reinterpret_cast<void *>( Event::kBeginCalibrationEvent ), true );
+                    case kBNO055InitDelay: 
+                        alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, reinterpret_cast<void *>( kBeginCalibrationEvent ), true );
 
                     default:
                         break;
@@ -182,22 +182,31 @@ namespace
         // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
         Events().queueEvent( kNavUpdateEvent, eighthSecCount % 8, timeTick, EventManager::kHighPriority );
 
+        // Quarter second events
         if ( ( eighthSecCount % 2 ) == 0 )
         {
             // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
             Events().queueEvent( kQuarterSecondTimerEvent, ( (eighthSecCount / 2) % 4 ), timeTick );
         }
 
+        // 1 second events
         if ( ( eighthSecCount % 8 ) == 0 )
         {
             // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
             Events().queueEvent( kOneSecondTimerEvent, ( eighthSecCount / 8 ), timeTick );
+            Events().queueEvent( kPulsePicoLedEvent );
+
+            if ( PicoState::calibrationInProgress() )
+            {
+                Events().queueEvent(  kSendCalibrationInfoEvent );
+            }
         }
 
+        // 8 second events
         if ( eighthSecCount == 0 )
         {
             Events().queueEvent( kEightSecondTimerEvent, 0, timeTick );
-            Events().queueEvent( Event::kSendCalibrationInfoEvent );
+            Events().queueEvent( kSendCalibrationInfoEvent );
         }
 
         return true;

@@ -26,21 +26,15 @@
 #include <cstdint>
 
 
+
+
 namespace Core1
 {
-    enum Core1Events : int
-    {
-        kNullCore1Event     = 0,
-
-        kBNO055InitDelay    = 1,
-
-        kLastCore1Event     = 255
-    };
 
 
     void launchCore1();
 
-    void queueEventForCore1( std::uint8_t event, int waitMs );
+    void queueEventForCore1( int event, int waitMs );
 
     bool isRunningCore1();
 }

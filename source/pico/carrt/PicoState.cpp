@@ -30,10 +30,10 @@ namespace
     bool  sSendTimerEvents;
     bool  sSendNavEvents;
     bool  sSendEncoderEvents;
-    bool  sInCalibrationMode;
     bool  sNavCalibrated;
+
     // These are shared Core0 and Core1 and require atomics
-    
+    CoreAtomic::CAtomic<bool> sInCalibrationMode;
 }
 
 
@@ -43,8 +43,9 @@ void PicoState::initialize() noexcept
     sSendTimerEvents    = false;
     sSendNavEvents      = false;
     sSendEncoderEvents  = false;
-    sInCalibrationMode  = false;
     sNavCalibrated      = false;
+    
+    sInCalibrationMode  = false;
 }
 
 

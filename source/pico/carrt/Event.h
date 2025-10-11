@@ -34,7 +34,7 @@ enum Event : int
     kEightSecondTimerEvent,
 
     // Nav update events
-    kInitNavEvent,
+//    kInitNavEvent,
     kNavUpdateEvent,
     kNavDriftCorrectionEvent,
 
@@ -47,7 +47,7 @@ enum Event : int
     kEncoderRightEvent,
 
     // Pulse LEDs events
-    kPulsePicoLed,
+    kPulsePicoLedEvent,
 
     // Battery events
     kBatteryLowEvent,
@@ -57,6 +57,9 @@ enum Event : int
 
     // Reset
     kPicoResetEvent,
+
+    // Core0 -> Core1 -> COre0 events
+    kBNO055InitDelay,
 
     // Test events
     kGpioInterruptTestFallingEvent,

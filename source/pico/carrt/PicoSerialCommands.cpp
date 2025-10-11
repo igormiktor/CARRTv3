@@ -207,41 +207,41 @@ void PicoReadyCmd::takeAction( EventManager&, SerialLink& link )
 
 
 
-PicoReadyNavCmd::PicoReadyNavCmd() noexcept 
-: SerialCommand( kPicoReadyNav ), mContent( kPicoReadyNav ), mNeedsAction{ false } 
+PicoNavStatusUpdateCmd::PicoNavStatusUpdateCmd() noexcept 
+: SerialCommand( kPicoNavStatusUpdate ), mContent( kPicoNavStatusUpdate ), mNeedsAction{ false } 
 {}
 
-PicoReadyNavCmd::PicoReadyNavCmd( TheData t ) noexcept 
-: SerialCommand( kPicoReadyNav ), mContent( kPicoReadyNav, t ), mNeedsAction{ true }
+PicoNavStatusUpdateCmd::PicoNavStatusUpdateCmd( TheData t ) noexcept 
+: SerialCommand( kPicoNavStatusUpdate ), mContent( kPicoNavStatusUpdate, t ), mNeedsAction{ true }
 {} 
 
-PicoReadyNavCmd::PicoReadyNavCmd( std::uint32_t time ) noexcept 
-: SerialCommand( kPicoReadyNav ), mContent( kPicoReadyNav, static_cast<std::uint32_t>( time ) ), mNeedsAction{ true } 
+PicoNavStatusUpdateCmd::PicoNavStatusUpdateCmd( bool status, std::uint8_t m, std::uint8_t a, std::uint8_t g, std::uint8_t s ) noexcept 
+: SerialCommand( kPicoNavStatusUpdate ), mContent( kPicoNavStatusUpdate, std::make_tuple( status, m, a, g, s ) ), mNeedsAction{ true } 
 {}
 
-PicoReadyNavCmd::PicoReadyNavCmd( CommandId id ) 
-: SerialCommand( id ), mContent( kPicoReadyNav ), mNeedsAction{ false }
+PicoNavStatusUpdateCmd::PicoNavStatusUpdateCmd( CommandId id ) 
+: SerialCommand( id ), mContent( kPicoNavStatusUpdate ), mNeedsAction{ false }
 { 
-    if ( id != kPicoReadyNav ) 
+    if ( id != kPicoNavStatusUpdate ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kPicoReadyNav ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kPicoNavStatusUpdate ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
 
 
-void PicoReadyNavCmd::readIn( SerialLink& link ) 
+void PicoNavStatusUpdateCmd::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
 }
 
-void PicoReadyNavCmd::sendOut( SerialLink& link )
+void PicoNavStatusUpdateCmd::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 }
 
-void PicoReadyNavCmd::takeAction( EventManager&, SerialLink& link ) 
+void PicoNavStatusUpdateCmd::takeAction( EventManager&, SerialLink& link ) 
 {
     // Only action is to send it
     sendOut( link );
@@ -695,7 +695,7 @@ void DebugLinkCmd::takeAction( EventManager& events, SerialLink& link )
         case kPicoReady:
             break;
 
-        case kPicoReadyNav:
+        case kPicoNavStatusUpdate:
             break;
 
         case kPicoSaysStop:

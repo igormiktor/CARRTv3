@@ -43,7 +43,7 @@ enum CommandId : std::uint8_t
     // Msgs from Pico
     kPicoReady                  = 0x01,             // Pico sends once ready to start receiving messages (Pico initiates serial comms with this message)
                                                     // If Pico fails to be ready, error report instead (via kErrorReportFromPico)
-    kPicoReadyNav               = 0x02,             // Sent by Pico once Nav ready and ready to do stuff (bytes 2-5 -> uint32_t time hack for sync)
+    kPicoNavStatusUpdate        = 0x02,             // Sent by Pico first time Nav calibrated and whenever calibration status changes (byte 2 -> status boolean)
     kPicoSaysStop               = 0x0F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
 
     // Messages (to Pico). Errors send by kErrorReportFromPico msg
