@@ -26,9 +26,44 @@
 #include <optional>
 
 
+/* 
+    Wait from power-on or soft reset to any I2C comms (e.g., initializing BNO055):  650ms
+
+    Wait after mode switch (e.g., from CONFIGMODE to NDOF ):  600ms (according to notes in bno055.c driver and INCLUDED IN DRIVER CODDE)
+*/
+
+/*
+Keen observation. It has been known for quite some time that the system calibration indicator is jumping around, but the data is still reliable. 
+After analysis we found the issue to be simply in the status indicator, not the data itself. We have a software fix for it, if we ever change 
+the BNO055 firmware programmed at the factory. For now the workaround is simply to ignore this value.
+
+Therefore we recommend that as long as Magnetometer is 3/3, and Gyroscope is 3/3, the data can be trusted. Pitch and Roll are more accurate 
+with accelerometer calibration, but the impact is far smaller than Gyroscope or Magnetometer calibration. Especially in your case you mention 
+that the application is a wearable, then I doubt there is a significant impact on the use-case between 1 and 2 degrees of error on the pitch and roll.
+
+From: https://community.bosch-sensortec.com/mems-sensors-forum-jrmujtaw/post/bno055-calibration-staus-not-stable-SxucRX9zo6bAbeT
+
+**********
+
+Calibration values reflect Android definitions (https://developer.android.com/reference/android/hardware/SensorManager#SENSOR_STATUS_ACCURACY_HIGH)
+
+    - UNRELIABLE (0)    The values returned by this sensor cannot be trusted, calibration is needed or the environment doesn't allow readings
+    - LOW (1)           This sensor is reporting data with low accuracy, calibration with the environment is needed
+    - MEDIUM (2)        This sensor is reporting data with an average level of accuracy, calibration with the environment may improve the readings
+    - HIGH (3)          This sensor is reporting data with maximum accuracy        
+
+*/
+
+
 namespace BNO055
 {
-    struct Calibration
+
+    constexpr int           kWaitAfterPowerOnReset{ 650 };      // milliseconds
+    constexpr int           kWaitAfterModeChange( 600 );        // milliseconds
+    constexpr std::uint8_t  kCalibrationHigh{ 3 };              // 3 = High; 0 = Unreliable
+
+
+    struct Calibration      // Always listed in order M-A-G-S
     {
         unsigned char mag;
         unsigned char accel;
@@ -36,14 +71,19 @@ namespace BNO055
         unsigned char system;
     };
 
-    constexpr std::uint8_t  kCalibrationSuccess{ 3 };
-
     inline bool calibrationGood( const Calibration& status ) 
     {
-        return ( status.mag + status.accel + status.gyro + status.system ) == 4*kCalibrationSuccess;
+        return ( status.mag + status.accel + status.gyro + status.system ) == 4*kCalibrationHigh;
     }
 
-    void init();
+    inline bool calibrationGoodEnough( const Calibration& status )
+    {
+        // Mag and Gyro are "High", Accel and System are not "Unreliable"
+        return (status.mag == kCalibrationHigh) && status.accel && (status.gyro == kCalibrationHigh) && status.system;
+    }
+
+
+    void init();    // May include long delays of 600ms due to internal mode switches                   
 
     float getHeading();
 
