@@ -34,12 +34,12 @@ enum Event : int
     kEightSecondTimerEvent,
 
     // Nav update events
-//    kInitNavEvent,
     kNavUpdateEvent,
     kNavDriftCorrectionEvent,
 
-    // Calibration events
-    kBeginCalibrationEvent,
+    // BNO055 events
+    kBNO055InitializeEvent,
+    kBNO055BeginCalibrationEvent,
     kSendCalibrationInfoEvent,
 
     // Encoder events
