@@ -27,13 +27,13 @@
 namespace 
 {
     // These all happen in Core0 so no atomics needed
-    bool  sSendTimerEvents;
-    bool  sSendNavEvents;
-    bool  sSendEncoderEvents;
-    bool  sNavCalibrated;
+    bool  sSendTimerEvents{ false };
+    bool  sSendNavEvents{ false };
+    bool  sSendEncoderEvents{ false };
+    bool  sNavCalibrated{ false };
 
     // These are shared Core0 and Core1 and require atomics
-    CoreAtomic::CAtomic<bool> sInCalibrationMode;
+    CoreAtomic::CAtomic<bool> sInCalibrationMode{ false };
 }
 
 
@@ -88,7 +88,7 @@ bool PicoState::wantEncoderEvents() noexcept
 }
 
 
-void PicoState::allSendEventOn() noexcept
+void PicoState::allSendEventsOn() noexcept
 {
     sSendTimerEvents = true;
     sSendNavEvents = true;

@@ -74,6 +74,7 @@ void sendReady( SerialLinkPico& link );
 int main()
 {
     CoreAtomic::CAtomicInitializer theInitializationIsDone;
+    PicoState::initialize();
 
     initializeFailSafeHardware();
 
@@ -82,19 +83,19 @@ int main()
 
     try
     {
-        // Force creation of the singleton
-        PicoState::allSendEventsOff();
-
         initializeFailableHardware();
 
         output2cout( "CARRT Pico started, hardware initialized, both cores running." );
     
         // Set up command processor
         SerialCommandProcessor scp( rpi0 );
-        // TODO load it up with commands...
+        setupCommandProcessor( scp );
     
         // Report we are started and ready to receive commands
         sendReady( rpi0 );
+
+        // TESTING
+        PicoState::allSendEventsOn();
 
         MainProcess::runMainEventLoop( Events(), scp, rpi0  );
     }
@@ -127,7 +128,7 @@ int main()
     }
 
 
-    output2cout( "Pico frozen with fast LED strobe" );
+    output2cout( "Pico frozen and displaying fast LED strobe" );
     // Just spin and put HeartBeatLed on fast strobe
     while ( 1 )
     {
@@ -170,6 +171,9 @@ void initializeFailSafeHardware()
 
     // Set up the encoders;
     Encoders::initEncoders();
+
+    // Initialize state
+    PicoState::initialize();
 }
 
 
@@ -179,11 +183,13 @@ void initializeFailableHardware()
 {
     // These function calls may throw
 
-    // Initialize the BNO055 (but we need to verify calibration is complete later on)
-    BNO055::init();
-
     // Launch Core1
     Core1::launchCore1();
+
+    // If we get here, guaranteed Core1 is running and in its main event loop
+    // So perfect time to queue this future event ti triggle initialization of BNO055.
+    // BNO055 needs nearly 1 sec to be ready to accept I2C )
+    Core1::queueEventForCore1( kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
 }
 
 
@@ -193,19 +199,21 @@ void setupCommandProcessor( SerialCommandProcessor& scp )
     // Only register those commands/messages we actually can receive
     // Commands/messages that are only outgoing don't need to be registered
     scp.registerCommand<NullCmd>( kNullMsg );
-//    scp.registerCommand<PicoReadyCmd>( kPicoReady );
-//    scp.registerCommand<PicoReadyNavCmd>( kPicoReadyNav );
-//    scp.registerCommand<PicoSaysStopCmd>( kPicoSaysStop );
-    scp.registerCommand<BeginCalibrationCmd>( kBeginCalibration );
+//  scp.registerCommand<PicoReadyCmd>( kPicoReady );
+//  scp.registerCommand<PicoNavStatusUpdateCmd>( kPicoNavStatusUpdate );
+//  scp.registerCommand<PicoSaysStopCmd>( kPicoSaysStop );
     scp.registerCommand<PauseCmd>( kPauseMsg );
     scp.registerCommand<ResumeCmd>( kResumeMsg );
     scp.registerCommand<ResetCmd>( kResetMsg );
-//    scp.registerCommand<TimerEventCmd>( kTimerEvent );
+    scp.registerCommand<BeginCalibrationCmd>( kBeginCalibration );
+    scp.registerCommand<RequestCalibrationStatusCmd>( kRequestCalibStatus );
+//  scp.registerCommand<SendCalibrationStatusCmd>( kSendCalibStatus );
+    scp.registerCommand<ResetBNO055Cmd>( kResetBNO055 );
+//  scp.registerCommand<TimerEventCmd>( kTimerEvent );
     scp.registerCommand<TimerControlCmd>( kTimerControl );
+//  scp.registerCommand<NavUpdateCmd>( kTimerNavUpdate );
+    scp.registerCommand<NavUpdateControlCmd>( kNavUpdateControl );
     scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
-
-
-
 }
 
 

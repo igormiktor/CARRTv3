@@ -29,7 +29,7 @@ bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) T
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
 
 
-bool gSendTimerEvents{ false };
+
 
 
 void checkAndReportCalibration( EventManager& events, SerialLink& link )
@@ -150,28 +150,27 @@ int main()
                         break;
 
                     case Event::kNavUpdateEvent:
-                        // std::cout << "Nav " << eventParam << std::endl;
-                        if ( PicoState::navCalibrated() )
+                        if ( PicoState::navCalibrated() && PicoState::wantNavEvents() )
                         {
                             float heading = BNO055::getHeading();
                             output2cout( "Hdg: ", heading, "T" );
-                            // TODO send to RPi0
+                            NavUpdateCmd navUpdate( heading, timeTick );
+                            navUpdate.takeAction( Events(), rpi0 );
                         }
                         break;
                         
                     case Event::kQuarterSecondTimerEvent:
                         // std::cout << "1/4 " << eventParam << std::endl;
-                        if ( gSendTimerEvents )
+                        if ( PicoState::wantTimerEvents() )
                         {
-                            // std::cout << "1/4 " << eventParam << ", " << gSendTimerEvents << std::endl;
+                            // std::cout << "1/4 " << eventParam << ", " << PicoState::wantTimerEvents() << std::endl;
                             TimerEventCmd qtrSec( TimerEventCmd::k1QuarterSecondEvent, eventParam, timeTick );
                             qtrSec.sendOut( rpi0 );
                         }
                         break;
                         
                     case Event::kOneSecondTimerEvent:
-                        // std::cout << "1 s " << eventParam << std::endl;
-                        if ( gSendTimerEvents )
+                        if ( PicoState::wantTimerEvents() )
                         {
                             TimerEventCmd oneSec( TimerEventCmd::k1SecondEvent, eventParam, timeTick );
                             oneSec.sendOut( rpi0 );
@@ -184,8 +183,7 @@ int main()
                         break;
                         
                     case Event::kEightSecondTimerEvent:
-                        // std::cout << "8 s " << eventParam << std::endl;
-                        if ( gSendTimerEvents )
+                        if ( PicoState::wantTimerEvents() )
                         {
                             TimerEventCmd eightSec( TimerEventCmd::k8SecondEvent, eventParam, timeTick );
                             eightSec.sendOut( rpi0 );
@@ -200,7 +198,6 @@ int main()
                         output2cout( "Got begin calibration event" );
                         PicoState::navCalibrated( false );
                         PicoState::calibrationInProgress( true );
-                        // Reset BNO055??
                         break;
 
                     case Event::kPicoResetEvent:

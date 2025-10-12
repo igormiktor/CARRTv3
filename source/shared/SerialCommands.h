@@ -372,6 +372,101 @@ private:
 
 
 
+class ResetBNO055Cmd : public NoContentCmd 
+{
+public:
+
+    ResetBNO055Cmd() noexcept;
+    ResetBNO055Cmd( CommandId id ) noexcept;
+
+    virtual ~ResetBNO055Cmd() = default;
+
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class NavUpdateCmd : public SerialCommand
+{
+public:
+
+    using TheData = std::tuple< float, std::uint32_t >;
+
+    NavUpdateCmd() noexcept;
+    NavUpdateCmd( TheData t ) noexcept; 
+    NavUpdateCmd( float heading, std::uint32_t time ) noexcept;
+    NavUpdateCmd( CommandId id );
+
+    virtual ~NavUpdateCmd() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct SerialMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class NavUpdateControlCmd : public SerialCommand
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t >;
+
+    NavUpdateControlCmd() noexcept;
+    NavUpdateControlCmd( TheData t ) noexcept; 
+    NavUpdateControlCmd( bool val ) noexcept;
+    NavUpdateControlCmd( CommandId id );
+
+    virtual ~NavUpdateControlCmd() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct SerialMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 class ErrorReportCmd : public SerialCommand
 {
 public:

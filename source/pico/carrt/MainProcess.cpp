@@ -2,7 +2,7 @@
     MainProcess.cpp - CARRT-Pico's main function.  Runs the primary event loop
     and dispaches to other code as needed.
 
-    Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,9 +23,11 @@
 
 #include "MainProcess.h"
 
+#include "BNO055.h"
 #include "CarrtPicoDefines.h"
 #include "CarrtPicoReset.h"
 #include "Core1.h"
+#include "Delays.h"
 #include "EventManager.h"
 #include "HeartBeatLed.h"
 
@@ -54,8 +56,9 @@ namespace MainProcess
     void checkForErrors( EventManager& events, SerialLinkPico& rpi0 );
     void processEvent( EventManager& events, SerialLinkPico& rpi0 );
     void processMessage( EventManager& events, SerialCommandProcessor& scp, SerialLinkPico& rpi0 );
-    void dispatchEvent( SerialLinkPico& rpi0, int eventCode, int eventParam, uint32_t eventTime );
+    void dispatchEvent( EventManager& events, SerialLinkPico& rpi0, int eventCode, int eventParam, uint32_t eventTime );
 
+    void doInitializeBNO055Event( EventManager& events );
     void doNavUpdateEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime );
     void doQuarterSecondTimerEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime );
     void doOneSecondTimerEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime );
@@ -67,11 +70,12 @@ namespace MainProcess
     void doBeginCalibration();
     void doPauseMsg();
     void doResumeMsg();
-    void doResetMsg();
+    void doResetMsg( SerialLinkPico& link );
 
-    void doReplyWithCalibrationStatus();
+    void doCheckAndReportCalibration( EventManager& events, SerialLinkPico& link );
     void doProcessCalibrationProfile();
     void doReplyWithCalibrationProfile();
+    void doBNO055Reset();
 
     void doDrivingStatusUpdate();
     void doRequestBatteryLevel();
@@ -95,6 +99,7 @@ void MainProcess::runMainEventLoop( EventManager& events, SerialCommandProcessor
         checkForErrors( events, rpi0 );
         processEvent( events, rpi0 );
         processMessage( events, scp, rpi0 );
+        // CarrtPico::sleep( 10ms );
     }
 }
 
@@ -114,7 +119,7 @@ void MainProcess::processEvent( EventManager& events, SerialLinkPico& rpi0 )
 
     if ( events.getNextEvent( &eventCode, &eventParam, &eventTime ) )
     {
-        dispatchEvent( rpi0, eventCode, eventParam, eventTime );
+        dispatchEvent( events, rpi0, eventCode, eventParam, eventTime );
     }
 
     if ( events.hasEventQueueOverflowed() )
@@ -137,10 +142,18 @@ void MainProcess::processMessage( EventManager& events, SerialCommandProcessor& 
 
 
 
-void MainProcess::dispatchEvent( SerialLinkPico& rpi0, int eventCode, int eventParam, uint32_t eventTime )
+void MainProcess::dispatchEvent( EventManager& events, SerialLinkPico& rpi0, int eventCode, int eventParam, uint32_t eventTime )
 {
     switch ( eventCode )
     {
+        case kBNO055InitializeEvent:
+            doInitializeBNO055Event( events );
+            break;
+
+        case kBNO055ResetEvent:
+            doBNO055Reset();
+            break;
+
         case kNavUpdateEvent:
             doNavUpdateEvent( rpi0, eventParam, eventTime );
             break;
@@ -157,6 +170,36 @@ void MainProcess::dispatchEvent( SerialLinkPico& rpi0, int eventCode, int eventP
             doEightSecondTimerEvent( rpi0, eventParam, eventTime );
             break;
 
+        case kPulsePicoLedEvent:
+            HeartBeatLed::toggle();
+            break;
+                        
+        case Event::kSendCalibrationInfoEvent:
+            doCheckAndReportCalibration( events, rpi0 );
+            break;
+
+        case Event::kBNO055BeginCalibrationEvent:
+            doBeginCalibration();
+            break;
+
+        case Event::kPicoResetEvent:
+            // TODO Reset Pico
+            PicoReset::reset( rpi0 );
+            break;
+
+        case kPauseMsg:                     // Pico to pause event processing
+            doPauseMsg();
+            break;
+
+        case kResumeMsg:                    // Pico to resume event processing  
+            doResumeMsg();
+            break;
+
+        case kResetMsg:                     // Pico to reses itself (ack by sending kPicoReady)
+            doResetMsg( rpi0 );
+            break;
+
+
 
         default:
             doUnknownEvent( rpi0, eventCode );
@@ -172,10 +215,6 @@ void MainProcess::dispatchMessage( uint8_t cmd )
         // Messages (to Pico); acknowledged from Pico with same Msg & second byte (non-zero 2nd byte -> error code)
         case kNullMsg:                      // Null message; simply acknowledge (no extra bytes)
             doNullMsg();
-            break;
-
-        case kStartCore1:                // Pico to start Core1  
-            doStartCore1Msg();
             break;
 
         case kBeginCalibration:             // Pico to begin calibration (of BNO055)
@@ -240,16 +279,40 @@ void MainProcess::dispatchMessage( uint8_t cmd )
 #endif // #if 0
 
 
+
+void MainProcess::doInitializeBNO055Event( EventManager& events )
+{
+    // Note this call includse internal delay of ~600ms
+    BNO055::init();
+
+    // Because delay built into BNO055init() at driver level, can trigger BeginCalibration without delay
+    events.queueEvent( kBNO055BeginCalibrationEvent );
+    
+    output2cout( "Got BNO055 initialize event" );
+}
+
+
+
+void MainProcess::doBNO055Reset()
+{
+    // Note this call is followed by 650ms wait before we can call init()
+    BNO055::reset();
+    PicoState::navCalibrated( false );
+    Core1::queueEventForCore1( kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
+
+    output2cout( "Got BNO055 reset event" );
+}
+
+
+
 void MainProcess::doNavUpdateEvent( SerialLinkPico& rpi0, int eventParam, uint32_t eventTime )
 {
-    if ( PicoState::wantNavEvents() )
+    if ( PicoState::navCalibrated() && PicoState::wantNavEvents() )
     {
-
-/*
-    SerialLink::putMsg( kTimerNavUpdate );
-    SerialLink::put( eventTime );
-    SerialLink::put( eventParam );
-*/
+        float heading = BNO055::getHeading();
+        NavUpdateCmd navUpdate( heading, eventTime );
+        navUpdate.sendOut( rpi0 );
+        output2cout( "Sent Hdg: ", heading );
     }
 }
 
@@ -291,24 +354,24 @@ void MainProcess::doEightSecondTimerEvent( SerialLinkPico& rpi0, int eventParam,
 
 
 
-void MainProcess::doUnknownEvent( SerialLinkPico& rpi0, int eventCode )
+void MainProcess::doUnknownEvent( SerialLinkPico& link, int eventCode )
 {
     output2cout( "Warning: Pico received unknown event: ",  eventCode );
     
     int errCode{ makePicoErrorId( kPicoMainProcessError, 1, eventCode ) };
     ErrorReportCmd errRpt( kPicoNonFatalError, errCode );
-    errRpt.sendOut( rpi0 );
+    errRpt.sendOut( link );
 }
 
 
 
-void MainProcess::doEventQueueOverflowed( SerialLinkPico& rpi0 )
+void MainProcess::doEventQueueOverflowed( SerialLinkPico& link )
 {
     output2cout( "Event queue overflowed" );
 
     int errCode{ makePicoErrorId( kPicoMainProcessError, 2, 0 ) };
     ErrorReportCmd errRpt( kPicoNonFatalError, errCode );
-    errRpt.sendOut( rpi0 );
+    errRpt.sendOut( link );
 }
 
 
@@ -331,15 +394,6 @@ void MainProcess::doPauseMsg()
 
 
 
-void MainProcess::doBeginCalibration()
-{
-    output2cout( "Received begin calibration msg from RPi0" );
-
-    // TODO  Start the calibration process
-}
-
-
-
 void MainProcess::doResumeMsg()
 {
     output2cout( "Received Resume cmd from RPi0" );
@@ -349,17 +403,52 @@ void MainProcess::doResumeMsg()
 
 
 
-void MainProcess::doResetMsg()
+void MainProcess::doResetMsg( SerialLinkPico& link )
 {
+    PicoReset::reset( link );
+}
+
+
+void MainProcess::doBeginCalibration()
+{
+    output2cout( "Got begin calibration event" );
+    PicoState::navCalibrated( false );
+    PicoState::calibrationInProgress( true );
 }
 
 
 
-void MainProcess::doReplyWithCalibrationStatus()
+void MainProcess::doCheckAndReportCalibration( EventManager& events, SerialLinkPico& link )
 {
-    output2cout( "Received request calibration status" );
+    auto calibData{ BNO055::getCalibration() };
+    bool status = BNO055::calibrationGood( calibData );
 
-// TODO  Get calibration status and report it
+    bool oldStatus = PicoState::navCalibrated( status );
+    if ( status != oldStatus )
+    {
+        // Send message to RPi0 that Nav Status changed and set Pico state accordingly
+        PicoNavStatusUpdateCmd navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+        navReadyStatus.takeAction( events, link );
+        PicoState::calibrationInProgress( !status ); 
+        
+        if ( status )
+        {
+            output2cout( "Gone from not calibrated to CALIBRATED" );
+        }
+        else
+        {
+            output2cout( "Gone from calibrated to NOT CALIBRATED" );
+        }
+    }
+    else
+    {
+        // If calibration status unchanged, just send normal calibration report
+        SendCalibrationStatusCmd calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+        calibStatus.takeAction( events, link );
+    }
+
+    output2cout( "Calib status (M, A, G, S): ", static_cast<int>( calibData.mag ), static_cast<int>( calibData.accel ), 
+        static_cast<int>( calibData.gyro ), static_cast<int>( calibData.system ) );
 }
 
 

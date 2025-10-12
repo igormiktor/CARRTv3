@@ -485,7 +485,7 @@ BeginCalibrationCmd::BeginCalibrationCmd( CommandId id ) noexcept
 void BeginCalibrationCmd::takeAction( EventManager& events, SerialLink& link )
 {
     output2cout( "Got a calibration cmd: Trigger calibration" );
-    events.queueEvent( Event::kBNO055BeginCalibrationEvent );
+    events.queueEvent( kBNO055BeginCalibrationEvent );
     mNeedsAction = false;
 }
 
@@ -514,7 +514,7 @@ RequestCalibrationStatusCmd::RequestCalibrationStatusCmd( CommandId id ) noexcep
 void RequestCalibrationStatusCmd::takeAction( EventManager& events, SerialLink& link )
 {
     output2cout( "Got a request calib status cmd" );
-    events.queueEvent( Event::kSendCalibrationInfoEvent );
+    events.queueEvent( kSendCalibrationInfoEvent );
     mNeedsAction = false;
 }
 
@@ -522,7 +522,6 @@ void RequestCalibrationStatusCmd::takeAction( EventManager& events, SerialLink& 
 
 
 /*********************************************************************************************/
-
 
 
 
@@ -569,6 +568,138 @@ void SendCalibrationStatusCmd::sendOut( SerialLink& link )
 void SendCalibrationStatusCmd::takeAction( EventManager& events, SerialLink& link )
 {
     sendOut( link );
+    mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+
+ResetBNO055Cmd::ResetBNO055Cmd() noexcept
+: NoContentCmd( kResetBNO055 )
+{
+    // Nothing to do
+}
+
+ResetBNO055Cmd::ResetBNO055Cmd( CommandId id ) noexcept
+: NoContentCmd( id )
+{
+    // Nothing to do
+}
+
+
+void ResetBNO055Cmd::takeAction( EventManager& events, SerialLink& link )
+{
+    output2cout( "Got a reset BNO055 cmd" );
+    events.queueEvent( kBNO055ResetEvent );
+    mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+NavUpdateCmd::NavUpdateCmd() noexcept
+: SerialCommand( kTimerNavUpdate ), mContent( kTimerNavUpdate ), mNeedsAction{ false }
+{}
+
+NavUpdateCmd::NavUpdateCmd( TheData t ) noexcept
+: SerialCommand( kTimerNavUpdate ), mContent( kTimerNavUpdate, t ), mNeedsAction{ true }
+{}
+
+
+NavUpdateCmd::NavUpdateCmd(  float heading, std::uint32_t time  ) noexcept
+: SerialCommand( kTimerNavUpdate ), mContent( kTimerNavUpdate, std::make_tuple( heading, time ) ), mNeedsAction{ true }
+{}
+
+
+NavUpdateCmd::NavUpdateCmd( CommandId id )
+: SerialCommand( kTimerNavUpdate ), mContent( kTimerNavUpdate ), mNeedsAction{ false }
+{
+    if ( id != kTimerNavUpdate ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kTimerNavUpdate ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void NavUpdateCmd::readIn( SerialLink& link )
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+
+void NavUpdateCmd::sendOut( SerialLink& link )
+{
+    mContent.sendOut( link );
+}
+
+
+
+void NavUpdateCmd::takeAction( EventManager& events, SerialLink& link )
+{
+    sendOut( link );
+    mNeedsAction = false;
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+NavUpdateControlCmd::NavUpdateControlCmd() noexcept 
+: SerialCommand( kNavUpdateControl ), mContent( kNavUpdateControl ), mNeedsAction{ false } 
+{}
+
+NavUpdateControlCmd::NavUpdateControlCmd( TheData t ) noexcept 
+: SerialCommand( kNavUpdateControl ), mContent( kNavUpdateControl, t ), mNeedsAction{ true } 
+{} 
+
+NavUpdateControlCmd::NavUpdateControlCmd( bool val ) noexcept 
+: SerialCommand( kNavUpdateControl ), mContent( kNavUpdateControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+{}
+
+NavUpdateControlCmd::NavUpdateControlCmd( CommandId id ) 
+: SerialCommand( id ), mContent( kNavUpdateControl ), mNeedsAction{ false }
+{ 
+    if ( id != kNavUpdateControl ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kNavUpdateControl ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void NavUpdateControlCmd::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+void NavUpdateControlCmd::sendOut( SerialLink& link )
+{
+    // This never sent from Pico
+}
+
+void NavUpdateControlCmd::takeAction( EventManager& events, SerialLink& link ) 
+{
+    bool val = std::get<0>( mContent.mMsg );
+    PicoState::sendNavEvents( val );
+    output2cout( "Nav update events to RPi0 turned to ", val );    
     mNeedsAction = false;
 }
 
@@ -706,7 +837,7 @@ void DebugLinkCmd::takeAction( EventManager& events, SerialLink& link )
         case kTimerEvent:
             break;
 
-        case kTimerControl:
+        case kNavUpdateControl:
             break;
 
 
@@ -714,11 +845,11 @@ void DebugLinkCmd::takeAction( EventManager& events, SerialLink& link )
         case kRequestCalibStatus:
             break;
 
-        case kSendCalibProfileToPico:
-            break;
+//        case kSendCalibProfileToPico:
+//            break;
 
-        case kRequestCalibProfileFmPico:
-            break;
+//        case kRequestCalibProfileFmPico:
+//            break;
 
 
         // Navigation events

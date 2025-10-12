@@ -39,7 +39,7 @@ namespace PicoState
     bool sendEncoderEvents( bool newVal  ) noexcept;        // Returns prior value
     bool wantEncoderEvents() noexcept;                      // Returns value
 
-    void allSendEventOn() noexcept;
+    void allSendEventsOn() noexcept;
     void allSendEventsOff() noexcept;
 
     bool navCalibrated() noexcept;                          // Return status of nav calibration

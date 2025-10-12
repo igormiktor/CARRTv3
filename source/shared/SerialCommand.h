@@ -55,18 +55,21 @@ enum CommandId : std::uint8_t
     kTimerEvent                 = 0x21,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type; 4th byte time hack)
     kTimerControl               = 0x22,             // To pico to start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)
 
-    // Calibration cmds       
+    // BNO005 cmds       
     kBeginCalibration           = 0x30,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
     kRequestCalibStatus         = 0x31,             // Request status of BNO055 calibration (return with kSendCalibStatus)
     kSendCalibStatus            = 0x32,             // Send status of BNO055 calibration (contains 4 x one-byte status values M-A-G-S )
-    kSendCalibProfileToPico     = 0x33,             // Sending a calibration profile to Pico (follow by calibration profile data)
-    kRequestCalibProfileFmPico  = 0x34,             // Request a calibration profile from Pico (reply with kSendCalibProfileToRPi0)
-    kSendCalibProfileToRPi0     = 0x35,             // Send a calibration profile to RPi0 (followed by calibration profile data)
+    kResetBNO055                = 0x33,             // RPi to Pico command to reset BNO055
+//  kSendCalibProfileToPico     = 0x34,             // Sending a calibration profile to Pico (follow by calibration profile data)
+//  kRequestCalibProfileFmPico  = 0x35,             // Request a calibration profile from Pico (reply with kSendCalibProfileToRPi0)
+//  kSendCalibProfileToRPi0     = 0x36,             // Send a calibration profile to RPi0 (followed by calibration profile data)
 
     // Navigation events
     kTimerNavUpdate             = 0x40,             // Navigation timer (1/8 sec) from Pico to RPi0 (info in following bytes)
-    kDrivingStatusUpdate        = 0x41,             // From RPi0 to Pico (2nd byte provides driving status)
-    kEncoderUpdate              = 0x42,             // From Pico to RPi0, 2nd byte = L count; 3rd byte = R count; followed by time hack
+    kNavUpdateControl           = 0x41,             // From RPi0 to Pico to start/stop sending of NavUpdates (2nd byte -> 0/1 = stop/start)
+    kDrivingStatusUpdate        = 0x42,             // From RPi0 to Pico (2nd byte provides driving status)
+    kEncoderUpdate              = 0x43,             // From Pico to RPi0, 2nd byte = L count; 3rd byte = R count; followed by time hack
+    kEncoderUpdateControl       = 0x44,             // From RPi0 to Pico to start/stop sending of encoder udpates (2nd byte -> 0/1 = stop/start)
  
     // Battery info
     kRequestBatteryLevel        = 0x50,             // From RPi0 to Pico requesting battery level (2nd byte = which battery: 0 = IC, 1 = Motor)
