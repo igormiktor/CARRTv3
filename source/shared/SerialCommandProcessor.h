@@ -24,11 +24,13 @@
 
 
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <memory>
 
 #include "SerialCommand.h"
+#include "CarrtError.h"
+
 
 
 
@@ -51,6 +53,10 @@ public:
     void registerCommand( CommandId id )
     {
         static_assert( std::is_base_of<SerialCommand, T>::value, "CommandFactory::registerCmd: commands must derive from SerialCommand" );
+        if ( mCreators.find( id ) != mCreators.end() )
+        {
+            throw CarrtError( makeSharedErrorId( kSerialCmdDupeError, 1, id ), "Id dupe at registation" );
+        }
         mCreators[id] = &creator<T>;
     }
 
@@ -61,8 +67,8 @@ public:
         {
             return it->second( id );
         }
-        // If we can find the id, return a special command, UnknownCmd.
-        int err = makeSharedErrorId( kSerialCmdUnknownCmd, 1, id );
+        // If we cannot find the id, return a special command, UnknownCmd.
+        int err = makeSharedErrorId( kSerialCmdUnknownError, 1, id );
         return std::unique_ptr<SerialCommand>( new UnknownCmd(  id, err ) );
     }
 
@@ -77,7 +83,7 @@ private:
     }
 
     typedef CmdPtr (*PCreator)( CommandId );
-    std::map<std::uint8_t, PCreator> mCreators;
+    std::unordered_map<std::uint8_t, PCreator> mCreators;
 };
 
 

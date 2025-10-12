@@ -116,8 +116,9 @@ enum RPi0Error : int
 
 enum CommonError : int
 {
-    kSerialCmdReadError     = 60,
-    kSerialCmdUnknownCmd    = 61
+    kSerialCmdReadError         = 60,
+    kSerialCmdDupeError         = 61,
+    kSerialCmdUnknownError      = 62
 };
 
 

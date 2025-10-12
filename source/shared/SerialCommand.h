@@ -155,7 +155,8 @@ public:
                 }
                 else
                 {
-                    throw CarrtError( makePicoErrorId( kSerialCmdReadError, 1, 1 ), "Couldn't read serial message in lamba" );
+                    // TODO: Fix to throw both Pico and RPi errors (accordingly)
+                    throw CarrtError( makeSharedErrorId( kSerialCmdReadError, 1, 1 ), "Couldn't read serial message in lamba" );
                 }
             }, 
             link 
