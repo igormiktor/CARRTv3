@@ -33,11 +33,14 @@ namespace PicoState
     bool sendTimerEvents( bool newVal ) noexcept;           // Returns prior value
     bool wantTimerEvents() noexcept;                        // Returns value
 
-    bool sendNavEvents( bool newVal  ) noexcept;            // Returns prior value
+    bool sendNavEvents( bool newVal ) noexcept;             // Returns prior value
     bool wantNavEvents() noexcept;                          // Returns value
 
-    bool sendEncoderEvents( bool newVal  ) noexcept;        // Returns prior value
+    bool sendEncoderEvents( bool newVal ) noexcept;         // Returns prior value
     bool wantEncoderEvents() noexcept;                      // Returns value
+
+    bool sendCalibrationEvents( bool newVal ) noexcept;     // Returns prior value
+    bool wantCalibrationEvents() noexcept;                  // Returns value
 
     void allSendEventsOn() noexcept;
     void allSendEventsOff() noexcept;

@@ -47,8 +47,8 @@ enum CommandId : std::uint8_t
     kPicoSaysStop               = 0x0F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
 
     // Messages (to Pico). Errors send by kErrorReportFromPico msg
-    kPauseMsg                   = 0x10,             // Pico to pause event processing
-    kResumeMsg                  = 0x11,             // Pico to resume event processing  
+    kMsgControlMsg              = 0x10,               // Pico to turn on or off various types of messages sent over Serial Link
+
     kResetMsg                   = 0x1F,             // Pico to reset itself (ack by sending kResetMsg back, then followed by kPicoReady)
 
     // Timer events

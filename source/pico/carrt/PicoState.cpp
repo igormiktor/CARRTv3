@@ -30,6 +30,8 @@ namespace
     bool  sSendTimerEvents{ false };
     bool  sSendNavEvents{ false };
     bool  sSendEncoderEvents{ false };
+    bool  sSendCalibrationEvents{ false };
+
     bool  sNavCalibrated{ false };
 
     // These are shared Core0 and Core1 and require atomics
@@ -40,12 +42,13 @@ namespace
 
 void PicoState::initialize() noexcept
 {
-    sSendTimerEvents    = false;
-    sSendNavEvents      = false;
-    sSendEncoderEvents  = false;
-    sNavCalibrated      = false;
+    sSendTimerEvents        = false;
+    sSendNavEvents          = false;
+    sSendEncoderEvents      = false;
+    sSendCalibrationEvents  = false;
+    sNavCalibrated          = false;
     
-    sInCalibrationMode  = false;
+    sInCalibrationMode      = false;
 }
 
 
@@ -83,6 +86,19 @@ bool PicoState::sendEncoderEvents( bool newVal ) noexcept
 }
 
 bool PicoState::wantEncoderEvents() noexcept
+{
+    return sSendEncoderEvents;
+}
+
+
+bool PicoState::sendCalibrationEvents( bool newVal ) noexcept
+{
+    bool oldVal = sSendCalibrationEvents;
+    sSendCalibrationEvents = newVal;
+    return oldVal;
+}
+
+bool PicoState::wantCalibrationEvents() noexcept
 {
     return sSendEncoderEvents;
 }

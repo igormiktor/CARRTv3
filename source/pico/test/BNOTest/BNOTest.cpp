@@ -115,7 +115,7 @@ int main()
         gpio_init( CARRTPICO_HEARTBEAT_LED );
         gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
 
-        SerialCommandProcessor scp( rpi0 );
+        SerialCommandProcessor scp( 10, rpi0 );
         scp.registerCommand<TimerControlCmd>( kTimerControl );
         scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
 

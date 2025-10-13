@@ -128,6 +128,7 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
     if ( status != oldStatus )
     {
         // Send message to RPi0 that Nav Status changed and set Pico state accordingly
+        // These go out even if don't want normal Calibration msgs
         PicoNavStatusUpdateCmd navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
         navReadyStatus.takeAction( events, link );
         PicoState::calibrationInProgress( !status ); 
@@ -143,9 +144,12 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
     }
     else
     {
-        // If calibration status unchanged, just send normal calibration report
-        SendCalibrationStatusCmd calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
-        calibStatus.takeAction( events, link );
+        if ( PicoState::wantCalibrationEvents() )
+        {
+            // If calibration status unchanged, just send normal calibration report
+            SendCalibrationStatusCmd calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+            calibStatus.takeAction( events, link );
+        }
     }
 
     output2cout( "Calib status (M, A, G, S): ", static_cast<int>( calibData.mag ), static_cast<int>( calibData.accel ), 

@@ -284,53 +284,51 @@ void PicoSaysStopCmd::takeAction( EventManager& events, SerialLink& link )
 
 
 
-PauseCmd::PauseCmd() noexcept
-: NoContentCmd( kPauseMsg )
-{
-    // Nothing to do
-}
+EventControlCmd::EventControlCmd() noexcept 
+: SerialCommand( kMsgControlMsg ), mContent( kMsgControlMsg ), mNeedsAction{ false } 
+{}
 
-PauseCmd::PauseCmd( CommandId id ) noexcept
-: NoContentCmd( id )
-{
-    // Nothing to do
-}
+EventControlCmd::EventControlCmd( TheData t ) noexcept 
+: SerialCommand( kMsgControlMsg ), mContent( kMsgControlMsg, t ), mNeedsAction{ true } 
+{} 
 
+EventControlCmd::EventControlCmd( bool val ) noexcept 
+: SerialCommand( kMsgControlMsg ), mContent( kMsgControlMsg, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+{}
 
-void PauseCmd::takeAction( EventManager& events, SerialLink& link )
-{
-    // TODO implement a pause in Pico
-
-    output2cout( "Got a pause cmd: TODO -- implement a pause in Pico (not yet coded)" );
-}
-
-
-
-
-/*********************************************************************************************/
-
-
-
-
-
-ResumeCmd::ResumeCmd() noexcept
-: NoContentCmd( kResumeMsg )
-{
-    // Nothing to do
-}
-
-ResumeCmd::ResumeCmd( CommandId id ) noexcept
-: NoContentCmd( id )
-{
-    // Nothing to do
+EventControlCmd::EventControlCmd( CommandId id ) 
+: SerialCommand( id ), mContent( kMsgControlMsg ), mNeedsAction{ false }
+{ 
+    if ( id != kMsgControlMsg ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kMsgControlMsg ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
 }
 
 
-void ResumeCmd::takeAction( EventManager& events, SerialLink& link )
+void EventControlCmd::readIn( SerialLink& link ) 
 {
-    // TODO resume Pico (from a pause)
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
 
-    output2cout( "Got a resume cmd: TODO resume Pico (from a pause)" );
+void EventControlCmd::sendOut( SerialLink& link )
+{
+    // This never sent from Pico
+}
+
+void EventControlCmd::takeAction( EventManager& events, SerialLink& link ) 
+{
+    std::uint8_t val = std::get<0>( mContent.mMsg );
+
+    PicoState::sendTimerEvents( val & kTimerMsgMask );
+    PicoState::sendNavEvents( val & kNavMsgMask );
+    PicoState::sendEncoderEvents( val & kEncoderMsgMask );
+    PicoState::sendCalibrationEvents( val & kCalibrationMsgMask );
+
+    output2cout( "Timer events to RPi0 turned to ", val );    
+    mNeedsAction = false;
 }
 
 
@@ -812,10 +810,7 @@ void DebugLinkCmd::takeAction( EventManager& events, SerialLink& link )
         case kBeginCalibration:
             break;
 
-        case kPauseMsg:
-            break;
-
-        case kResumeMsg:
+        case kMsgControlMsg:
             break;
 
         case kResetMsg:

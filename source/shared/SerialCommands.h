@@ -156,37 +156,48 @@ public:
 
 
 
-class PauseCmd : public NoContentCmd 
+class EventControlCmd  : public SerialCommand
 {
 public:
 
-    PauseCmd() noexcept;
-    PauseCmd( CommandId id ) noexcept;
+    using TheData = std::tuple< std::uint8_t >;
 
-    virtual ~PauseCmd() = default;
+    enum Masks : std::uint8_t
+    {
+        kNavMsgMask             = 0x01,
+        kTimerMsgMask           = 0x02,
+        kEncoderMsgMask         = 0x04,
+        kCalibrationMsgMask     = 0x08,
 
+        kAllMsgsOff             = 0x00,
+        kAllMsgsOn              = 0xFF
+    };
+
+    EventControlCmd() noexcept;
+    EventControlCmd( TheData t ) noexcept; 
+    EventControlCmd( bool val ) noexcept;
+    EventControlCmd( CommandId id );
+
+    virtual ~EventControlCmd() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
-};
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
 
 
+private:
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    struct SerialMessage<TheData>  mContent;
 
-
-
-class ResumeCmd : public NoContentCmd 
-{
-public:
-
-    ResumeCmd() noexcept;
-    ResumeCmd( CommandId id ) noexcept;
-
-    virtual ~ResumeCmd() = default;
-
-
-    virtual void takeAction( EventManager& events, SerialLink& link ) override;
-};
+    bool    mNeedsAction;
+};;
 
 
 
