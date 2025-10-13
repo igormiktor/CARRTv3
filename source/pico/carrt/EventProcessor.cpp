@@ -1,0 +1,61 @@
+/*
+    EventProcessor.h - Implementation of class to register event handlers 
+    and process/dispatch  events accordingly.
+
+    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+#include "EventProcessor.h"
+
+#include "CarrtError.h"
+#include "EventManager.h"
+#include "PicoOutputUtils.hpp"
+#include "SerialCommands.h"
+
+
+
+
+void EventProcessor::dispatchOneEvent( EventManager& events, SerialLink& link ) const
+{
+    int eventCode;
+    int eventParam;
+    uint32_t eventTime;
+
+    if ( events.getNextEvent( &eventCode, &eventParam, &eventTime ) )
+    {
+        auto handler{ mHandlers.find( eventCode ) };
+        if ( handler == mHandlers.end() )
+        {
+            handleUnknownEvent( events, link, eventCode, eventParam, eventTime );
+        }
+        else
+        {
+            handler->second->handleEvent( events, link, eventCode, eventParam, eventTime );
+        }
+    }
+
+}
+
+
+void EventProcessor::handleUnknownEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, uint32_t eventTime ) const
+{
+    output2cout( "Warning: Pico received unknown event: ",  eventCode );
+    
+    int errCode{ makePicoErrorId( kPicoEventProcessorError, 1, eventCode ) };
+    ErrorReportCmd errRpt( kPicoNonFatalError, errCode );
+    errRpt.sendOut( link ); 
+}

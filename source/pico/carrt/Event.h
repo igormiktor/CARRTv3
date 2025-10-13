@@ -35,13 +35,12 @@ enum Event : int
 
     // Nav update events
     kNavUpdateEvent,
-    kNavDriftCorrectionEvent,
 
     // BNO055 events
     kBNO055InitializeEvent,
+    kBNO055ResetEvent,
     kBNO055BeginCalibrationEvent,
     kSendCalibrationInfoEvent,
-    kBNO055ResetEvent,
 
     // Encoder events
     kEncoderLeftEvent,
@@ -53,14 +52,8 @@ enum Event : int
     // Battery events
     kBatteryLowEvent,
 
-    // Keypad events
-    kKeypadButtonHitEvent,
-
     // Reset
     kPicoResetEvent,
-
-    // Core0 -> Core1 -> COre0 events
-    kBNO055InitDelay,
 
     // Test events
     kGpioInterruptTestFallingEvent,

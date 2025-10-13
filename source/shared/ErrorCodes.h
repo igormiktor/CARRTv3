@@ -83,8 +83,11 @@ enum PicoError : int
     kPicoI2cBNO055Error         = 3, 
     kPicoMainProcessError       = 4,
     kPicoSerialCommandError     = 5,
+    kPicoEventProcessorError    = 6,
 
     kPicoCritSectionError       = 10,
+
+    kPicoGotErrorEvent          = 20,
 
     kPicoTestError              = 98,
     kPicoLastError              = 99
@@ -116,9 +119,10 @@ enum RPi0Error : int
 
 enum CommonError : int
 {
-    kSerialCmdReadError         = 60,
-    kSerialCmdDupeError         = 61,
-    kSerialCmdUnknownError      = 62
+    kSerialCmdReadError         = 80,
+    kSerialCmdDupeError         = 81,
+    kSerialCmdUnknownError      = 82,
+    kEventHandlerDupeError      = 83
 };
 
 

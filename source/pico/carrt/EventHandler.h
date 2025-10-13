@@ -1,8 +1,7 @@
 /*
-    MainProcess.h - Functions that manage CARRT-Pico's main function.  These run the primary event loop
-    and dispaches to other code as needed.
+    EventHandler.h - A base class to handle events.
 
-    Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,14 +18,28 @@
 */
 
 
+#ifndef EventHandler_h
+#define EventHandler_h
+
+
+#include <cstdint>
+
 class EventManager;
-class SerialLinkPico;
-class EventProcessor;
-class SerialCommandProcessor;
+class SerialLink;
 
 
-namespace MainProcess
+class EventHandler 
 {
-    void runMainEventLoop( EventManager& events, EventProcessor& ep, SerialCommandProcessor& scp, SerialLinkPico& rpi0 );
-}
+public:
+
+    EventHandler() = default;
+    virtual ~EventHandler() = default;
+
+    virtual void handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const = 0;
+};
+
+
+
+
+#endif  // EventHandler_h
 

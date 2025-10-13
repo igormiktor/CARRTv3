@@ -33,7 +33,6 @@
 
 
 
-
 SerialCommandProcessor::SerialCommandProcessor( SerialLink& link )
 : mLink{ link }
 {
@@ -65,3 +64,15 @@ std::optional<SerialCommandProcessor::CmdPtr> SerialCommandProcessor::receiveCom
         return std::nullopt; 
     }
 }
+
+
+
+void SerialCommandProcessor::dispatchOneSerialCommand( EventManager& events, SerialLink& link )
+{
+    auto cmd{ receiveCommandIfAvailable() };
+    if ( cmd )
+    {
+        cmd.value()->takeAction( events, link );
+    }
+}
+

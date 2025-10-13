@@ -3,7 +3,9 @@ add_executable( CarrtPico
         CarrtPicoMain.cpp
         CarrtPicoReset.cpp
         Core1.cpp
+        EventHandlers.cpp
         EventManager.cpp 
+        EventProcessor.cpp
         MainProcess.cpp
         PicoSerialCommands.cpp
         PicoState.cpp

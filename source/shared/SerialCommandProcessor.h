@@ -88,6 +88,7 @@ private:
 
 
 
+class EventManager;
 
 class SerialCommandProcessor
 {
@@ -103,6 +104,8 @@ public:
     SerialCommandProcessor( SerialCommandProcessor&& ) = delete;
     SerialCommandProcessor& operator=( const SerialCommandProcessor& ) = delete;
     SerialCommandProcessor& operator=( SerialCommandProcessor&& ) = delete;
+
+    void dispatchOneSerialCommand( EventManager& events, SerialLink& link );
 
     std::optional<CmdPtr> receiveCommandIfAvailable();
 

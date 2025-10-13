@@ -26,7 +26,10 @@
 #include "CarrtPicoDefines.h"
 #include "Core1.h"
 #include "Encoders.h"
+#include "EventHandlers.h"
 #include "EventManager.h"
+#include "EventProcessor.h"
+
 #include "HeartBeatLed.h"
 #include "MainProcess.h"
 #include "PicoOutputUtils.hpp"
@@ -60,11 +63,14 @@
 
 
 
-void initializeFailSafeHardware();
-void initializeFailableHardware();
-void setupCommandProcessor( SerialCommandProcessor& scp );
-void sendReady( SerialLinkPico& link );
-
+namespace
+{
+    void initializeFailSafeHardware();
+    void initializeFailableHardware();
+    void setupCommandProcessor( SerialCommandProcessor& scp );
+    void setupEventProcessor( EventProcessor& ep );
+    void sendReady( SerialLinkPico& link );
+}
 
 
 
@@ -90,6 +96,10 @@ int main()
         // Set up command processor
         SerialCommandProcessor scp( rpi0 );
         setupCommandProcessor( scp );
+
+        // Set up event processor
+        EventProcessor ep;
+        setupEventProcessor( ep );
     
         // Report we are started and ready to receive commands
         sendReady( rpi0 );
@@ -97,7 +107,7 @@ int main()
         // TESTING
         PicoState::allSendEventsOn();
 
-        MainProcess::runMainEventLoop( Events(), scp, rpi0  );
+        MainProcess::runMainEventLoop( Events(), ep, scp, rpi0 );
     }
 
     catch( const CarrtError& e )
@@ -154,72 +164,100 @@ int main()
 
 
 
-void initializeFailSafeHardware()
+namespace
 {
-    // Nothing in this function throws or even fails
 
-#if USE_CARRTPICO_STDIO
-    // Initialize C/C++ stdio (used for status output and debugging)
-    stdio_init_all();
-#endif 
+    void initializeFailSafeHardware()
+    {
+        // Nothing in this function throws or even fails
 
-    // Set up Pico's I2C (to talk with BNO055)
-    I2C::initI2C();
+    #if USE_CARRTPICO_STDIO
+        // Initialize C/C++ stdio (used for status output and debugging)
+        stdio_init_all();
+    #endif 
 
-    // Initialize the heartbeat LED
-    HeartBeatLed::initialize();
+        // Set up Pico's I2C (to talk with BNO055)
+        I2C::initI2C();
 
-    // Set up the encoders;
-    Encoders::initEncoders();
+        // Initialize the heartbeat LED
+        HeartBeatLed::initialize();
 
-    // Initialize state
-    PicoState::initialize();
-}
+        // Set up the encoders;
+        Encoders::initEncoders();
 
-
-
-
-void initializeFailableHardware()
-{
-    // These function calls may throw
-
-    // Launch Core1
-    Core1::launchCore1();
-
-    // If we get here, guaranteed Core1 is running and in its main event loop
-    // So perfect time to queue this future event ti triggle initialization of BNO055.
-    // BNO055 needs nearly 1 sec to be ready to accept I2C )
-    Core1::queueEventForCore1( kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
-}
+        // Initialize state
+        PicoState::initialize();
+    }
 
 
 
-void setupCommandProcessor( SerialCommandProcessor& scp )
-{
-    // Only register those commands/messages we actually can receive
-    // Commands/messages that are only outgoing don't need to be registered
-    scp.registerCommand<NullCmd>( kNullMsg );
-//  scp.registerCommand<PicoReadyCmd>( kPicoReady );
-//  scp.registerCommand<PicoNavStatusUpdateCmd>( kPicoNavStatusUpdate );
-//  scp.registerCommand<PicoSaysStopCmd>( kPicoSaysStop );
-    scp.registerCommand<PauseCmd>( kPauseMsg );
-    scp.registerCommand<ResumeCmd>( kResumeMsg );
-    scp.registerCommand<ResetCmd>( kResetMsg );
-    scp.registerCommand<BeginCalibrationCmd>( kBeginCalibration );
-    scp.registerCommand<RequestCalibrationStatusCmd>( kRequestCalibStatus );
-//  scp.registerCommand<SendCalibrationStatusCmd>( kSendCalibStatus );
-    scp.registerCommand<ResetBNO055Cmd>( kResetBNO055 );
-//  scp.registerCommand<TimerEventCmd>( kTimerEvent );
-    scp.registerCommand<TimerControlCmd>( kTimerControl );
-//  scp.registerCommand<NavUpdateCmd>( kTimerNavUpdate );
-    scp.registerCommand<NavUpdateControlCmd>( kNavUpdateControl );
-    scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
-}
+
+    void initializeFailableHardware()
+    {
+        // These function calls may throw
+
+        // Launch Core1
+        Core1::launchCore1();
+
+        // If we get here, guaranteed Core1 is running and in its main event loop
+        // So perfect time to queue this future event ti triggle initialization of BNO055.
+        // BNO055 needs nearly 1 sec to be ready to accept I2C )
+        Core1::queueEventForCore1( kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
+    }
 
 
 
-void sendReady( SerialLinkPico& link )
-{
-    PicoReadyCmd ready( kPicoReady );
-    ready.sendOut( link );
-}
+    void setupCommandProcessor( SerialCommandProcessor& scp )
+    {
+        // Only register those commands/messages we actually can receive
+        // Commands/messages that are only outgoing don't need to be registered
+        scp.registerCommand<NullCmd>( kNullMsg );
+    //  scp.registerCommand<PicoReadyCmd>( kPicoReady );
+    //  scp.registerCommand<PicoNavStatusUpdateCmd>( kPicoNavStatusUpdate );
+    //  scp.registerCommand<PicoSaysStopCmd>( kPicoSaysStop );
+        scp.registerCommand<PauseCmd>( kPauseMsg );
+        scp.registerCommand<ResumeCmd>( kResumeMsg );
+        scp.registerCommand<ResetCmd>( kResetMsg );
+        scp.registerCommand<BeginCalibrationCmd>( kBeginCalibration );
+        scp.registerCommand<RequestCalibrationStatusCmd>( kRequestCalibStatus );
+    //  scp.registerCommand<SendCalibrationStatusCmd>( kSendCalibStatus );
+        scp.registerCommand<ResetBNO055Cmd>( kResetBNO055 );
+    //  scp.registerCommand<TimerEventCmd>( kTimerEvent );
+        scp.registerCommand<TimerControlCmd>( kTimerControl );
+    //  scp.registerCommand<NavUpdateCmd>( kTimerNavUpdate );
+        scp.registerCommand<NavUpdateControlCmd>( kNavUpdateControl );
+        scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+    }
+
+
+
+    void setupEventProcessor( EventProcessor& ep )
+    {
+        ep.registerHandler<NullEventHandler>( kNullEvent );
+
+        ep.registerHandler<QuarterSecondTimerHandler>( kQuarterSecondTimerEvent );
+        ep.registerHandler<OneSecondTimerHandler>( kOneSecondTimerEvent );
+        ep.registerHandler<EightSecondTimerHandler>( kEightSecondTimerEvent );
+
+        ep.registerHandler<NavUpdateHandler>( kNavUpdateEvent );
+        ep.registerHandler<InitializeBNO055Handler>( kBNO055InitializeEvent );
+        ep.registerHandler<BNO055ResetHandler>( kBNO055ResetEvent );
+        ep.registerHandler<BeginCalibrationHandler>( kBNO055BeginCalibrationEvent );
+        ep.registerHandler<SendCalibrationInfoHandler>( kSendCalibrationInfoEvent );
+
+        ep.registerHandler<PulsePicoLedHandler>( kPulsePicoLedEvent );
+
+        ep.registerHandler<PicoResetHandler>( kPicoResetEvent );
+
+        ep.registerHandler<ErrorEventHandler>( kErrorEvent );
+    }
+
+
+
+    void sendReady( SerialLinkPico& link )
+    {
+        PicoReadyCmd ready( kPicoReady );
+        ready.sendOut( link );
+    }
+
+}   // namespace
