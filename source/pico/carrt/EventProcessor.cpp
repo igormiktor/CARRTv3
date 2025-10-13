@@ -28,6 +28,11 @@
 
 
 
+EventProcessor::EventProcessor( int reserveSize )
+{
+    mHandlers.reserve( reserveSize );
+}
+
 
 void EventProcessor::dispatchOneEvent( EventManager& events, SerialLink& link ) const
 {

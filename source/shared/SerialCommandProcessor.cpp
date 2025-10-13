@@ -32,9 +32,18 @@
 
 
 
+CommandFactory::CommandFactory( int reserveSize )
+{
+    mCreators.reserve( reserveSize );
+}
 
-SerialCommandProcessor::SerialCommandProcessor( SerialLink& link )
-: mLink{ link }
+
+
+
+
+
+SerialCommandProcessor::SerialCommandProcessor( int reserveSize, SerialLink& link )
+: mFactory{ reserveSize }, mLink{ link }
 {
     // Nothing else to do
 }

@@ -74,6 +74,8 @@ namespace
 
 
 
+constexpr int kSerialCommandReserveSize     = 20;
+constexpr int kEventHandlerReserveSize      = 24;
 
 
 
@@ -94,11 +96,11 @@ int main()
         output2cout( "CARRT Pico started, hardware initialized, both cores running." );
     
         // Set up command processor
-        SerialCommandProcessor scp( rpi0 );
+        SerialCommandProcessor scp( kSerialCommandReserveSize, rpi0 );
         setupCommandProcessor( scp );
 
         // Set up event processor
-        EventProcessor ep;
+        EventProcessor ep( kEventHandlerReserveSize );
         setupEventProcessor( ep );
     
         // Report we are started and ready to receive commands

@@ -60,7 +60,6 @@ namespace MainProcess
     void doUnknownEvent( SerialLinkPico& rpi0, int eventCode );
 
     void doTestPicoReportError();
-
 };
 
 

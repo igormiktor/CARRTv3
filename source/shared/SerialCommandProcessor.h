@@ -40,7 +40,7 @@ public:
 
     using CmdPtr = typename std::unique_ptr<SerialCommand>;
 
-    CommandFactory() = default;
+    CommandFactory( int reserveSize );
     ~CommandFactory() = default;
     
     CommandFactory( const CommandFactory& ) = delete;
@@ -96,7 +96,7 @@ public:
 
     using CmdPtr = typename CommandFactory::CmdPtr;
 
-    SerialCommandProcessor( SerialLink& link );
+    SerialCommandProcessor( int reserveSize, SerialLink& link );
 
     ~SerialCommandProcessor() = default;
     

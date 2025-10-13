@@ -24,6 +24,7 @@
 #include "BNO055.h"
 #include "CarrtPicoReset.h"
 #include "Core1.h"
+#include "CarrtError.h"
 #include "EventManager.h"
 #include "HeartBeatLed.h"
 #include "PicoOutputUtils.hpp"

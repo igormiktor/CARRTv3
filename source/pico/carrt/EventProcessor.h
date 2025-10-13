@@ -38,7 +38,7 @@ public:
 
     using EventHandlerPtr = typename std::unique_ptr<EventHandler>;
 
-    EventProcessor() = default;
+    EventProcessor( int reserveSize );
 
     ~EventProcessor() = default;
     
