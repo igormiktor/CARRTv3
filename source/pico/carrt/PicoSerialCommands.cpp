@@ -322,10 +322,10 @@ void EventControlCmd::takeAction( EventManager& events, SerialLink& link )
 {
     std::uint8_t val = std::get<0>( mContent.mMsg );
 
-    PicoState::sendTimerEvents( val & kTimerMsgMask );
-    PicoState::sendNavEvents( val & kNavMsgMask );
-    PicoState::sendEncoderEvents( val & kEncoderMsgMask );
-    PicoState::sendCalibrationEvents( val & kCalibrationMsgMask );
+    PicoState::sendTimerMsgs( val & kTimerMsgMask );
+    PicoState::sendNavMsgs( val & kNavMsgMask );
+    PicoState::sendEncoderMsgs( val & kEncoderMsgMask );
+    PicoState::sendCalibrationMsgs( val & kCalibrationMsgMask );
 
     output2cout( "Timer events to RPi0 turned to ", val );    
     mNeedsAction = false;
@@ -453,7 +453,7 @@ void TimerControlCmd::sendOut( SerialLink& link )
 void TimerControlCmd::takeAction( EventManager& events, SerialLink& link ) 
 {
     bool val = std::get<0>( mContent.mMsg );
-    PicoState::sendTimerEvents( val );
+    PicoState::sendTimerMsgs( val );
     output2cout( "Timer events to RPi0 turned to ", val );    
     mNeedsAction = false;
 }
@@ -696,7 +696,7 @@ void NavUpdateControlCmd::sendOut( SerialLink& link )
 void NavUpdateControlCmd::takeAction( EventManager& events, SerialLink& link ) 
 {
     bool val = std::get<0>( mContent.mMsg );
-    PicoState::sendNavEvents( val );
+    PicoState::sendNavMsgs( val );
     output2cout( "Nav update events to RPi0 turned to ", val );    
     mNeedsAction = false;
 }

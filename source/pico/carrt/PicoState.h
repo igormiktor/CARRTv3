@@ -30,20 +30,20 @@ namespace PicoState
 
     void initialize() noexcept;                             // Initialize stuff
 
-    bool sendTimerEvents( bool newVal ) noexcept;           // Returns prior value
-    bool wantTimerEvents() noexcept;                        // Returns value
+    bool sendTimerMsgs( bool newVal ) noexcept;           // Returns prior value
+    bool wantTimerMsgs() noexcept;                        // Returns value
 
-    bool sendNavEvents( bool newVal ) noexcept;             // Returns prior value
-    bool wantNavEvents() noexcept;                          // Returns value
+    bool sendNavMsgs( bool newVal ) noexcept;             // Returns prior value
+    bool wantNavMsgs() noexcept;                          // Returns value
 
-    bool sendEncoderEvents( bool newVal ) noexcept;         // Returns prior value
-    bool wantEncoderEvents() noexcept;                      // Returns value
+    bool sendEncoderMsgs( bool newVal ) noexcept;         // Returns prior value
+    bool wantEncoderMsgs() noexcept;                      // Returns value
 
-    bool sendCalibrationEvents( bool newVal ) noexcept;     // Returns prior value
-    bool wantCalibrationEvents() noexcept;                  // Returns value
+    bool sendCalibrationMsgs( bool newVal ) noexcept;     // Returns prior value
+    bool wantCalibrationMsgs() noexcept;                  // Returns value
 
-    void allSendEventsOn() noexcept;
-    void allSendEventsOff() noexcept;
+    void allMsgsSendOn() noexcept;
+    void allMsgsSendOff() noexcept;
 
     bool navCalibrated() noexcept;                          // Return status of nav calibration
     bool navCalibrated( bool newVal ) noexcept;             // Set value of nav calibration; returns prior value

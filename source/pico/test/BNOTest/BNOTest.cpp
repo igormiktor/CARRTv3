@@ -150,7 +150,7 @@ int main()
                         break;
 
                     case Event::kNavUpdateEvent:
-                        if ( PicoState::navCalibrated() && PicoState::wantNavEvents() )
+                        if ( PicoState::navCalibrated() && PicoState::wantNavMsgs() )
                         {
                             float heading = BNO055::getHeading();
                             output2cout( "Hdg: ", heading, "T" );
@@ -161,16 +161,16 @@ int main()
                         
                     case Event::kQuarterSecondTimerEvent:
                         // std::cout << "1/4 " << eventParam << std::endl;
-                        if ( PicoState::wantTimerEvents() )
+                        if ( PicoState::wantTimerMsgs() )
                         {
-                            // std::cout << "1/4 " << eventParam << ", " << PicoState::wantTimerEvents() << std::endl;
+                            // std::cout << "1/4 " << eventParam << ", " << PicoState::wantTimerMsgs() << std::endl;
                             TimerEventCmd qtrSec( TimerEventCmd::k1QuarterSecondEvent, eventParam, timeTick );
                             qtrSec.sendOut( rpi0 );
                         }
                         break;
                         
                     case Event::kOneSecondTimerEvent:
-                        if ( PicoState::wantTimerEvents() )
+                        if ( PicoState::wantTimerMsgs() )
                         {
                             TimerEventCmd oneSec( TimerEventCmd::k1SecondEvent, eventParam, timeTick );
                             oneSec.sendOut( rpi0 );
@@ -183,7 +183,7 @@ int main()
                         break;
                         
                     case Event::kEightSecondTimerEvent:
-                        if ( PicoState::wantTimerEvents() )
+                        if ( PicoState::wantTimerMsgs() )
                         {
                             TimerEventCmd eightSec( TimerEventCmd::k8SecondEvent, eventParam, timeTick );
                             eightSec.sendOut( rpi0 );

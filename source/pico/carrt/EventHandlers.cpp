@@ -45,7 +45,7 @@ void NullEventHandler::handleEvent( EventManager& events, SerialLink& link, int 
 
 void QuarterSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
 {
-    if ( PicoState::wantTimerEvents() )
+    if ( PicoState::wantTimerMsgs() )
     {
         TimerEventCmd timerEvt( TimerEventCmd::k1QuarterSecondEvent, eventParam, eventTime );
         timerEvt.sendOut( link ); 
@@ -55,7 +55,7 @@ void QuarterSecondTimerHandler::handleEvent( EventManager& events, SerialLink& l
 
 void OneSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
 {
-    if ( PicoState::wantTimerEvents() )
+    if ( PicoState::wantTimerMsgs() )
     {
         TimerEventCmd timerEvt( TimerEventCmd::k1SecondEvent, eventParam, eventTime );
         timerEvt.sendOut( link ); 
@@ -65,7 +65,7 @@ void OneSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link,
 
 void EightSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
 {
-    if ( PicoState::wantTimerEvents() )
+    if ( PicoState::wantTimerMsgs() )
     {
         TimerEventCmd timerEvt( TimerEventCmd::k8SecondEvent, eventParam, eventTime );
         timerEvt.sendOut( link ); 
@@ -78,7 +78,7 @@ void EightSecondTimerHandler::handleEvent( EventManager& events, SerialLink& lin
 
 void NavUpdateHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
 {
-    if ( PicoState::navCalibrated() && PicoState::wantNavEvents() )
+    if ( PicoState::navCalibrated() && PicoState::wantNavMsgs() )
     {
         float heading = BNO055::getHeading();
         NavUpdateCmd navUpdate( heading, eventTime );
@@ -144,7 +144,7 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
     }
     else
     {
-        if ( PicoState::wantCalibrationEvents() )
+        if ( PicoState::wantCalibrationMsgs() )
         {
             // If calibration status unchanged, just send normal calibration report
             SendCalibrationStatusCmd calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );

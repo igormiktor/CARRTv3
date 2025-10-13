@@ -27,10 +27,10 @@
 namespace 
 {
     // These all happen in Core0 so no atomics needed
-    bool  sSendTimerEvents{ false };
-    bool  sSendNavEvents{ false };
-    bool  sSendEncoderEvents{ false };
-    bool  sSendCalibrationEvents{ false };
+    bool  sSendTimerMsgs{ false };
+    bool  sSendNavMsgs{ false };
+    bool  sSendEncoderMsgs{ false };
+    bool  sSendCalibrationMsgs{ false };
 
     bool  sNavCalibrated{ false };
 
@@ -42,80 +42,82 @@ namespace
 
 void PicoState::initialize() noexcept
 {
-    sSendTimerEvents        = false;
-    sSendNavEvents          = false;
-    sSendEncoderEvents      = false;
-    sSendCalibrationEvents  = false;
+    sSendTimerMsgs          = false;
+    sSendNavMsgs            = false;
+    sSendEncoderMsgs        = false;
+    sSendCalibrationMsgs    = false;
     sNavCalibrated          = false;
     
     sInCalibrationMode      = false;
 }
 
 
-bool PicoState::sendTimerEvents( bool newVal ) noexcept
+bool PicoState::sendTimerMsgs( bool newVal ) noexcept
 {
-    bool oldVal = sSendTimerEvents;
-    sSendTimerEvents = newVal;
+    bool oldVal = sSendTimerMsgs;
+    sSendTimerMsgs = newVal;
     return oldVal;
 }
 
-bool PicoState::wantTimerEvents() noexcept
+bool PicoState::wantTimerMsgs() noexcept
 {
-    return sSendTimerEvents;
+    return sSendTimerMsgs;
 }
 
 
-bool PicoState::sendNavEvents( bool newVal ) noexcept
+bool PicoState::sendNavMsgs( bool newVal ) noexcept
 {
-    bool oldVal = sSendNavEvents;
-    sSendNavEvents = newVal;
+    bool oldVal = sSendNavMsgs;
+    sSendNavMsgs = newVal;
     return oldVal;
 }
 
-bool PicoState::wantNavEvents() noexcept
+bool PicoState::wantNavMsgs() noexcept
 {
-    return sSendNavEvents;
+    return sSendNavMsgs;
 }
 
 
-bool PicoState::sendEncoderEvents( bool newVal ) noexcept
+bool PicoState::sendEncoderMsgs( bool newVal ) noexcept
 {
-    bool oldVal = sSendEncoderEvents;
-    sSendEncoderEvents = newVal;
+    bool oldVal = sSendEncoderMsgs;
+    sSendEncoderMsgs = newVal;
     return oldVal;
 }
 
-bool PicoState::wantEncoderEvents() noexcept
+bool PicoState::wantEncoderMsgs() noexcept
 {
-    return sSendEncoderEvents;
+    return sSendEncoderMsgs;
 }
 
 
-bool PicoState::sendCalibrationEvents( bool newVal ) noexcept
+bool PicoState::sendCalibrationMsgs( bool newVal ) noexcept
 {
-    bool oldVal = sSendCalibrationEvents;
-    sSendCalibrationEvents = newVal;
+    bool oldVal = sSendCalibrationMsgs;
+    sSendCalibrationMsgs = newVal;
     return oldVal;
 }
 
-bool PicoState::wantCalibrationEvents() noexcept
+bool PicoState::wantCalibrationMsgs() noexcept
 {
-    return sSendEncoderEvents;
+    return sSendEncoderMsgs;
 }
 
 
-void PicoState::allSendEventsOn() noexcept
+void PicoState::allMsgsSendOn() noexcept
 {
-    sSendTimerEvents = true;
-    sSendNavEvents = true;
-    sSendEncoderEvents = true;
+    sSendTimerMsgs          = true;
+    sSendNavMsgs            = true;
+    sSendEncoderMsgs        = true;
+    sSendCalibrationMsgs    = true;
 }
 
-void PicoState::allSendEventsOff() noexcept
+void PicoState::allMsgsSendOff() noexcept
 {
-    sSendTimerEvents = false;
-    sSendNavEvents = false;
-    sSendEncoderEvents = false;
+    sSendTimerMsgs          = false;
+    sSendNavMsgs            = false;
+    sSendEncoderMsgs        = false;
+    sSendCalibrationMsgs    = false;
 }
 
 

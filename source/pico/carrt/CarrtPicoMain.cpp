@@ -107,7 +107,7 @@ int main()
         sendReady( rpi0 );
 
         // TESTING
-        PicoState::allSendEventsOn();
+        PicoState::allMsgsSendOn();
 
         MainProcess::runMainEventLoop( Events(), ep, scp, rpi0 );
     }
