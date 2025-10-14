@@ -55,6 +55,7 @@ namespace MainProcess
 {
     void runMainEventLoop( EventManager& events, EventProcessor& ep, SerialCommandProcessor& scp, SerialLinkPico& rpi0 );
     void checkForErrors( EventManager& events, SerialLinkPico& rpi0 );
+    void doHouseKeeping();
 
     void doEventQueueOverflowed( SerialLinkPico& rpi0 );
     void doUnknownEvent( SerialLinkPico& rpi0, int eventCode );
@@ -72,6 +73,7 @@ void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep, Se
         checkForErrors( events, rpi0 );
         ep.dispatchOneEvent( events, rpi0 );
         scp.dispatchOneSerialCommand( events, rpi0 );
+        doHouseKeeping();
         // CarrtPico::sleep( 10ms );
     }
 }
@@ -80,6 +82,14 @@ void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep, Se
 void MainProcess::checkForErrors( EventManager& events, SerialLinkPico& rpi0 )
 {
     // Notionally a place to check for memory exhaustion, etc..
+
+}
+
+
+void MainProcess::doHouseKeeping()
+{
+    // Synch calibration and calibration in progress ()
+    PicoState::calibrationInProgress( !PicoState::navCalibrated() );
 }
 
 

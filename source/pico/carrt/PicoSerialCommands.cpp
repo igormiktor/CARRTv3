@@ -23,6 +23,7 @@
 
 #include "SerialCommands.h"
 
+#include "BNO055.h"
 #include "EventManager.h"
 #include "PicoOutputUtils.hpp"
 #include "PicoState.h"
@@ -324,6 +325,7 @@ void EventControlCmd::takeAction( EventManager& events, SerialLink& link )
 
     PicoState::sendTimerMsgs( val & kTimerMsgMask );
     PicoState::sendNavMsgs( val & kNavMsgMask );
+    PicoState::sendNavStatusMsgs( val & kNavStatusMask );
     PicoState::sendEncoderMsgs( val & kEncoderMsgMask );
     PicoState::sendCalibrationMsgs( val & kCalibrationMsgMask );
 
@@ -512,7 +514,15 @@ RequestCalibrationStatusCmd::RequestCalibrationStatusCmd( CommandId id ) noexcep
 void RequestCalibrationStatusCmd::takeAction( EventManager& events, SerialLink& link )
 {
     output2cout( "Got a request calib status cmd" );
-    events.queueEvent( kSendCalibrationInfoEvent );
+
+    // Even if PicoState::wantNavStatusMsgs() is false, we always respond to direct request
+    auto calibData{ BNO055::getCalibration() };
+    bool status = BNO055::calibrationGood( calibData );
+
+    PicoState::navCalibrated( status );
+    PicoNavStatusUpdateCmd navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+    navReadyStatus.takeAction( events, link );
+
     mNeedsAction = false;
 }
 

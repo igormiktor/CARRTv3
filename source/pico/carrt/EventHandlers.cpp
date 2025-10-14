@@ -124,22 +124,25 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
     auto calibData{ BNO055::getCalibration() };
     bool status = BNO055::calibrationGood( calibData );
 
+    // Set Pico state accordingly
     bool oldStatus = PicoState::navCalibrated( status );
+
     if ( status != oldStatus )
     {
-        // Send message to RPi0 that Nav Status changed and set Pico state accordingly
-        // These go out even if don't want normal Calibration msgs
-        PicoNavStatusUpdateCmd navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
-        navReadyStatus.takeAction( events, link );
-        PicoState::calibrationInProgress( !status ); 
-        
+        // Send message to RPi0 that Nav Status changed
+        if ( PicoState::wantNavStatusMsgs() )
+        {
+            PicoNavStatusUpdateCmd navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+            navReadyStatus.takeAction( events, link );
+        }   
+
         if ( status )
         {
-            output2cout( "Gone from not calibrated to CALIBRATED" );
+            output2cout( "Changed from not calibrated to CALIBRATED" );
         }
         else
         {
-            output2cout( "Gone from calibrated to NOT CALIBRATED" );
+            output2cout( "Changed from calibrated to NOT CALIBRATED" );
         }
     }
     else
@@ -192,7 +195,7 @@ void PicoResetHandler::handleEvent( EventManager& events, SerialLink& link, int 
 
 void ErrorEventHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
 {
-    output2cout( "Got an error event in the event queue" );
+    output2cout( "Got an error event in the event queue", eventParam );
 
     int errCode{ makePicoErrorId( kPicoGotErrorEvent, 1, eventParam ) };
     ErrorReportCmd errRpt( kPicoNonFatalError, errCode );

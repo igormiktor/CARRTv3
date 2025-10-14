@@ -29,6 +29,7 @@ namespace
     // These all happen in Core0 so no atomics needed
     bool  sSendTimerMsgs{ false };
     bool  sSendNavMsgs{ false };
+    bool  sSendNavStatusMsgs{ false };
     bool  sSendEncoderMsgs{ false };
     bool  sSendCalibrationMsgs{ false };
 
@@ -75,6 +76,19 @@ bool PicoState::sendNavMsgs( bool newVal ) noexcept
 bool PicoState::wantNavMsgs() noexcept
 {
     return sSendNavMsgs;
+}
+
+
+bool PicoState::sendNavStatusMsgs( bool newVal ) noexcept
+{
+    bool oldVal = sSendNavStatusMsgs;
+    sSendNavStatusMsgs = newVal;
+    return oldVal;
+}
+
+bool PicoState::wantNavStatusMsgs() noexcept
+{
+    return sSendNavStatusMsgs;
 }
 
 

@@ -165,9 +165,10 @@ public:
     enum Masks : std::uint8_t
     {
         kNavMsgMask             = 0x01,
-        kTimerMsgMask           = 0x02,
-        kEncoderMsgMask         = 0x04,
-        kCalibrationMsgMask     = 0x08,
+        kNavStatusMask          = 0x02,
+        kTimerMsgMask           = 0x04,
+        kEncoderMsgMask         = 0x08,
+        kCalibrationMsgMask     = 0x10,
 
         kAllMsgsOff             = 0x00,
         kAllMsgsOn              = 0xFF
