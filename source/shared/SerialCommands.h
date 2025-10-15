@@ -156,7 +156,7 @@ public:
 
 
 
-class EventControlCmd  : public SerialCommand
+class MsgControlCmd  : public SerialCommand
 {
 public:
 
@@ -174,12 +174,12 @@ public:
         kAllMsgsOn              = 0xFF
     };
 
-    EventControlCmd() noexcept;
-    EventControlCmd( TheData t ) noexcept; 
-    EventControlCmd( bool val ) noexcept;
-    EventControlCmd( CommandId id );
+    MsgControlCmd() noexcept;
+    MsgControlCmd( TheData t ) noexcept; 
+    MsgControlCmd( bool val ) noexcept;
+    MsgControlCmd( CommandId id );
 
-    virtual ~EventControlCmd() = default;
+    virtual ~MsgControlCmd() = default;
 
 
     virtual void readIn( SerialLink& link ) override;

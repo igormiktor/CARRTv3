@@ -285,19 +285,19 @@ void PicoSaysStopCmd::takeAction( EventManager& events, SerialLink& link )
 
 
 
-EventControlCmd::EventControlCmd() noexcept 
+MsgControlCmd::MsgControlCmd() noexcept 
 : SerialCommand( kMsgControlMsg ), mContent( kMsgControlMsg ), mNeedsAction{ false } 
 {}
 
-EventControlCmd::EventControlCmd( TheData t ) noexcept 
+MsgControlCmd::MsgControlCmd( TheData t ) noexcept 
 : SerialCommand( kMsgControlMsg ), mContent( kMsgControlMsg, t ), mNeedsAction{ true } 
 {} 
 
-EventControlCmd::EventControlCmd( bool val ) noexcept 
+MsgControlCmd::MsgControlCmd( bool val ) noexcept 
 : SerialCommand( kMsgControlMsg ), mContent( kMsgControlMsg, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
 {}
 
-EventControlCmd::EventControlCmd( CommandId id ) 
+MsgControlCmd::MsgControlCmd( CommandId id ) 
 : SerialCommand( id ), mContent( kMsgControlMsg ), mNeedsAction{ false }
 { 
     if ( id != kMsgControlMsg ) 
@@ -308,18 +308,18 @@ EventControlCmd::EventControlCmd( CommandId id )
 }
 
 
-void EventControlCmd::readIn( SerialLink& link ) 
+void MsgControlCmd::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
 }
 
-void EventControlCmd::sendOut( SerialLink& link )
+void MsgControlCmd::sendOut( SerialLink& link )
 {
     // This never sent from Pico
 }
 
-void EventControlCmd::takeAction( EventManager& events, SerialLink& link ) 
+void MsgControlCmd::takeAction( EventManager& events, SerialLink& link ) 
 {
     std::uint8_t val = std::get<0>( mContent.mMsg );
 

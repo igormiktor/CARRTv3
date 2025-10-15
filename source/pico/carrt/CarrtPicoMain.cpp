@@ -217,7 +217,7 @@ namespace
     //  scp.registerCommand<PicoReadyCmd>( kPicoReady );
     //  scp.registerCommand<PicoNavStatusUpdateCmd>( kPicoNavStatusUpdate );
     //  scp.registerCommand<PicoSaysStopCmd>( kPicoSaysStop );
-        scp.registerCommand<EventControlCmd>( kMsgControlMsg );
+        scp.registerCommand<MsgControlCmd>( kMsgControlMsg );
         scp.registerCommand<ResetCmd>( kResetMsg );
         scp.registerCommand<BeginCalibrationCmd>( kBeginCalibration );
         scp.registerCommand<RequestCalibrationStatusCmd>( kRequestCalibStatus );
