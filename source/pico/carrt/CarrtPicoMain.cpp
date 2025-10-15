@@ -221,7 +221,7 @@ namespace
         scp.registerCommand<ResetCmd>( kResetMsg );
         scp.registerCommand<BeginCalibrationCmd>( kBeginCalibration );
         scp.registerCommand<RequestCalibrationStatusCmd>( kRequestCalibStatus );
-    //  scp.registerCommand<SendCalibrationStatusCmd>( kSendCalibStatus );
+    //  scp.registerCommand<SendCalibrationInfoCmd>( kSendCalibInfo );
         scp.registerCommand<ResetBNO055Cmd>( kResetBNO055 );
     //  scp.registerCommand<TimerEventCmd>( kTimerEvent );
         scp.registerCommand<TimerControlCmd>( kTimerControl );

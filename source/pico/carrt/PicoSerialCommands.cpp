@@ -536,46 +536,46 @@ void RequestCalibrationStatusCmd::takeAction( EventManager& events, SerialLink& 
 
 
 
-SendCalibrationStatusCmd::SendCalibrationStatusCmd() noexcept
-: SerialCommand( kSendCalibStatus ), mContent( kSendCalibStatus ), mNeedsAction{ false }
+SendCalibrationInfoCmd::SendCalibrationInfoCmd() noexcept
+: SerialCommand( kSendCalibInfo ), mContent( kSendCalibInfo ), mNeedsAction{ false }
 {}
 
-SendCalibrationStatusCmd::SendCalibrationStatusCmd( TheData t ) noexcept
-: SerialCommand( kSendCalibStatus ), mContent( kSendCalibStatus, t ), mNeedsAction{ true }
-{}
-
-
-SendCalibrationStatusCmd::SendCalibrationStatusCmd( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept
-: SerialCommand( kSendCalibStatus ), mContent( kSendCalibStatus, std::make_tuple( mag, accel, gyro, sys) ), mNeedsAction{ true }
+SendCalibrationInfoCmd::SendCalibrationInfoCmd( TheData t ) noexcept
+: SerialCommand( kSendCalibInfo ), mContent( kSendCalibInfo, t ), mNeedsAction{ true }
 {}
 
 
-SendCalibrationStatusCmd::SendCalibrationStatusCmd( CommandId id )
-: SerialCommand( id ), mContent( kSendCalibStatus ), mNeedsAction{ false }
+SendCalibrationInfoCmd::SendCalibrationInfoCmd( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept
+: SerialCommand( kSendCalibInfo ), mContent( kSendCalibInfo, std::make_tuple( mag, accel, gyro, sys) ), mNeedsAction{ true }
+{}
+
+
+SendCalibrationInfoCmd::SendCalibrationInfoCmd( CommandId id )
+: SerialCommand( id ), mContent( kSendCalibInfo ), mNeedsAction{ false }
 {
-    if ( id != kSendCalibStatus ) 
+    if ( id != kSendCalibInfo ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kSendCalibStatus ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialCommandError, 1, kSendCalibInfo ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
 
 
-void SendCalibrationStatusCmd::readIn( SerialLink& link )
+void SendCalibrationInfoCmd::readIn( SerialLink& link )
 {
     mContent.readIn( link );
     mNeedsAction = true;
 }
 
 
-void SendCalibrationStatusCmd::sendOut( SerialLink& link )
+void SendCalibrationInfoCmd::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 }
 
 
 
-void SendCalibrationStatusCmd::takeAction( EventManager& events, SerialLink& link )
+void SendCalibrationInfoCmd::takeAction( EventManager& events, SerialLink& link )
 {
     sendOut( link );
     mNeedsAction = false;

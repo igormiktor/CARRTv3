@@ -47,7 +47,7 @@ enum CommandId : std::uint8_t
     kPicoSaysStop               = 0x0F,             // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
 
     // Messages (to Pico). Errors send by kErrorReportFromPico msg
-    kMsgControlMsg              = 0x10,               // Pico to turn on or off various types of messages sent over Serial Link
+    kMsgControlMsg              = 0x10,             // Pico to turn on or off various types of messages sent over Serial Link
 
     kResetMsg                   = 0x1F,             // Pico to reset itself (ack by sending kResetMsg back, then followed by kPicoReady)
 
@@ -57,8 +57,8 @@ enum CommandId : std::uint8_t
 
     // BNO005 cmds       
     kBeginCalibration           = 0x30,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
-    kRequestCalibStatus         = 0x31,             // Request status of BNO055 calibration (return with kSendCalibStatus)
-    kSendCalibStatus            = 0x32,             // Send status of BNO055 calibration (contains 4 x one-byte status values M-A-G-S )
+    kRequestCalibStatus         = 0x31,             // Request status of BNO055 calibration (return with kPicoNavStatusUpdate)
+    kSendCalibInfo              = 0x32,             // Send status of BNO055 calibration (contains 4 x one-byte status values M-A-G-S )
     kResetBNO055                = 0x33,             // RPi to Pico command to reset BNO055
 //  kSendCalibProfileToPico     = 0x34,             // Sending a calibration profile to Pico (follow by calibration profile data)
 //  kRequestCalibProfileFmPico  = 0x35,             // Request a calibration profile from Pico (reply with kSendCalibProfileToRPi0)

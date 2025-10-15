@@ -346,18 +346,18 @@ public:
 
 
 
-class SendCalibrationStatusCmd : public SerialCommand
+class SendCalibrationInfoCmd : public SerialCommand
 {
 public:
 
     using TheData = std::tuple< std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t >;
 
-    SendCalibrationStatusCmd() noexcept;
-    SendCalibrationStatusCmd( TheData t ) noexcept; 
-    SendCalibrationStatusCmd( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept;
-    SendCalibrationStatusCmd( CommandId id );
+    SendCalibrationInfoCmd() noexcept;
+    SendCalibrationInfoCmd( TheData t ) noexcept; 
+    SendCalibrationInfoCmd( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept;
+    SendCalibrationInfoCmd( CommandId id );
 
-    virtual ~SendCalibrationStatusCmd() = default;
+    virtual ~SendCalibrationInfoCmd() = default;
 
 
     virtual void readIn( SerialLink& link ) override;

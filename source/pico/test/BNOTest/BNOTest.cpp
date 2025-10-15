@@ -57,7 +57,7 @@ void checkAndReportCalibration( EventManager& events, SerialLink& link )
     else
     {
         // If calibration status unchanged, just send normal calibration report
-        SendCalibrationStatusCmd calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+        SendCalibrationInfoCmd calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
         calibStatus.takeAction( events, link );
     }
 
