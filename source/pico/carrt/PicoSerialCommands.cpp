@@ -273,7 +273,9 @@ PicoSaysStopCmd::PicoSaysStopCmd( CommandId id ) noexcept
 
 void PicoSaysStopCmd::takeAction( EventManager& events, SerialLink& link )
 {
-    // Nothing to do (outgoing command)
+    output2cout( "Pico sends stop to RPI0" );
+    sendOut( link );
+    mNeedsAction = false;
 }
 
 
@@ -811,98 +813,13 @@ void DebugLinkCmd::takeAction( EventManager& events, SerialLink& link )
     // Lets negate the values, flip the order, and send them back
     auto [ val1, val2 ] = mContent.mMsg;
 
- 
     switch ( val1 )
     {
-        case kNullMsg:
-            break;
-
-        case kBeginCalibration:
-            break;
-
-        case kMsgControlMsg:
-            break;
-
-        case kResetMsg:
-            break;
-
-
-        // Msgs from Pico
-        case kPicoReady:
-            break;
-
-        case kPicoNavStatusUpdate:
-            break;
-
-        case kPicoSaysStop:
-            break;
-
-
-        // Timer events (from Pico)
-        case kTimerEvent:
-            break;
-
-        case kNavUpdateControl:
-            break;
-
-
-        // Calibration cmds       
-        case kRequestCalibStatus:
-            break;
-
-//        case kSendCalibProfileToPico:
-//            break;
-
-//        case kRequestCalibProfileFmPico:
-//            break;
-
-
-        // Navigation events
-        case kTimerNavUpdate:
-            break;
-
-        case kDrivingStatusUpdate:
-            break;
-
-        case kEncoderUpdate:
-            break;
-
-
-        // Battery info
-        case kRequestBatteryLevel:
-            break;
-
-        case kBatteryLevelUpdate:
-            break;
-
-        case kBatteryLowAlert:
-            break;
-
-
-        // Error reports
-        case kErrorReportFromPico:
-            break;
-
-
-        // Unknown command
-        case kUnknownCommand:
-            break;
-
-
-        // Debugging events
-        case kTestPicoReportError:
-            break;
-
-        case kExtendedMsg:
-            break;
 
         default: 
             val1 *= -1;
             val2 *= -1;
             DebugLinkCmd reply( val2, val1 );
-            // auto [ v1, v2 ] = reply.mContent.mMsg;
-            // debugM( "DebugLinkCmd sending" );
-            // debugV( v1, v2 );
             reply.sendOut( link );
             break;
     }
