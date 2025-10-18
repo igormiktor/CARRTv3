@@ -108,9 +108,9 @@ int main()
 
         multicore_launch_core1( startCore1 );
 
-        SerialCommandProcessor scp( rpi0 );
-        scp.registerCommand<TimerControlCmd>( kTimerControl );
-        scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+        SerialMessageProcessor smp( rpi0 );
+        smp.registerMessage<TimerControlMsg>( kTimerControl );
+        smp.registerMessage<DebugLinkMsg>( kDebugSerialLink );
 
 
         bool ledState = false;
@@ -133,7 +133,7 @@ int main()
                         if ( gSendTimerEvents )
                         {
                             // std::cout << "1/4 " << eventParam << ", " << gSendTimerEvents << std::endl;
-                            TimerEventCmd qtrSec( TimerEventCmd::k1QuarterSecondEvent, eventParam, timeTick );
+                            TimerEventMsg qtrSec( TimerEventMsg::k1QuarterSecondEvent, eventParam, timeTick );
                             qtrSec.sendOut( rpi0 );
                         }
                         break;
@@ -142,7 +142,7 @@ int main()
                         // std::cout << "1 s " << eventParam << std::endl;
                         if ( gSendTimerEvents )
                         {
-                            TimerEventCmd oneSec( TimerEventCmd::k1SecondEvent, eventParam, timeTick );
+                            TimerEventMsg oneSec( TimerEventMsg::k1SecondEvent, eventParam, timeTick );
                             oneSec.sendOut( rpi0 );
                         }
                         gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
@@ -153,7 +153,7 @@ int main()
                         // std::cout << "8 s " << eventParam << std::endl;
                         if ( gSendTimerEvents )
                         {
-                            TimerEventCmd eightSec( TimerEventCmd::k8SecondEvent, eventParam, timeTick );
+                            TimerEventMsg eightSec( TimerEventMsg::k8SecondEvent, eventParam, timeTick );
                             eightSec.sendOut( rpi0 );
                         }
                         break;
@@ -161,16 +161,16 @@ int main()
                 if ( Events().hasEventQueueOverflowed() )
                 {
                     std::cout << "Event queue overflowed" << std::endl;
-                    ErrorReportCmd errCmd( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ) );
-                    errCmd.sendOut( rpi0 );
+                    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ) );
+                    errMsg.sendOut( rpi0 );
                     Events().resetEventQueueOverflowFlag();
                 }
             }
 
-            auto cmd{ scp.receiveCommandIfAvailable() };
-            if ( cmd )
+            auto msg{ smp.receiveMessageIfAvailable() };
+            if ( msg )
             {
-                cmd.value()->takeAction( Events(), rpi0 );
+                msg.value()->takeAction( Events(), rpi0 );
             }
             CarrtPico::sleep( 25ms );
         }

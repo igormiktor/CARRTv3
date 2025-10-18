@@ -22,11 +22,11 @@
 class EventManager;
 class SerialLinkPico;
 class EventProcessor;
-class SerialCommandProcessor;
+class SerialMessageProcessor;
 
 
 namespace MainProcess
 {
-    void runMainEventLoop( EventManager& events, EventProcessor& ep, SerialCommandProcessor& scp, SerialLinkPico& rpi0 );
+    void runMainEventLoop( EventManager& events, EventProcessor& ep, SerialMessageProcessor& smp, SerialLinkPico& rpi0 );
 }
 

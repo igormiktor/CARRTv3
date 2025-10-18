@@ -1,5 +1,5 @@
 /*
-    SerialMessage.h - Serial Command structure for CARRT3 communications
+    RawMessage.h - Serial Message structure for CARRT3 communications
     between the RPI and Pico.  This file is shared by both the
     RPI and Pico code bases.
 
@@ -20,8 +20,8 @@
 */
 
 
-#ifndef SerialCommand_h
-#define SerialCommand_h
+#ifndef SerialMessage_h
+#define SerialMessage_h
 
 #include <cstdint>
 #include <tuple>
@@ -36,7 +36,7 @@
 
 
 
-enum CommandId : std::uint8_t
+enum MessageId : std::uint8_t
 {
     kNullMsg                    = 0x00,
 
@@ -55,11 +55,11 @@ enum CommandId : std::uint8_t
     kTimerEvent                 = 0x21,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type; 4th byte time hack)
     kTimerControl               = 0x22,             // To pico to start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)
 
-    // BNO005 cmds       
+    // BNO005 msgs       
     kBeginCalibration           = 0x30,             // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
     kRequestCalibStatus         = 0x31,             // Request status of BNO055 calibration (return with kPicoNavStatusUpdate)
     kSendCalibInfo              = 0x32,             // Send status of BNO055 calibration (contains 4 x one-byte status values M-A-G-S )
-    kResetBNO055                = 0x33,             // RPi to Pico command to reset BNO055
+    kResetBNO055                = 0x33,             // RPi to Pico message to reset BNO055
 //  kSendCalibProfileToPico     = 0x34,             // Sending a calibration profile to Pico (follow by calibration profile data)
 //  kRequestCalibProfileFmPico  = 0x35,             // Request a calibration profile from Pico (reply with kSendCalibProfileToRPi0)
 //  kSendCalibProfileToRPi0     = 0x36,             // Send a calibration profile to RPi0 (followed by calibration profile data)
@@ -79,15 +79,15 @@ enum CommandId : std::uint8_t
     // Error reports
     kErrorReportFromPico        = 0xE0,             // Pico sends a bool fatal flag (bool in a uint8_t) and error code (int) in following bytes (3-6)
 
-    // Unknown command
-    kUnknownCommand             = 0xEE,             // Never transmitted; used to designate an unknown command received; contains error code (int)
+    // Unknown message
+    kUnknownMessage             = 0xEE,             // Never transmitted; used to designate an unknown message received; contains error code (int)
 
     // Debugging events
     kTestPicoReportError        = 0xF2,             // RPi0 sends to Pico asking to report an error (bytes 2-5 contain error code to send back)
 
     kDebugSerialLink            = 0xFE,             // RPi0 or Pico sends messages to debug/test the serial link; data is two int values
 
-    kExtendedMsg                = 0xFF              // Indicates an extended msg; read next byte for extended command
+    kExtendedMsg                = 0xFF              // Indicates an extended msg; read next byte for extended message
 };
 
 
@@ -96,7 +96,7 @@ enum SerialExtendedMsg : std::uint8_t
 {
     kNullExtMsg                 = 0x00,
 
-    // Debugging extended cmds
+    // Debugging extended msgs
     kTestExtendedMsg            = 0xF0,
 
     kTriggerError               = 0xFF
@@ -124,14 +124,14 @@ concept IsTuple = is_tuple_v<std::remove_cvref_t<T>>;
 
 
 template<IsTuple TTuple>
-struct SerialMessage
+struct RawMessage
 {
 public:
 
-    SerialMessage( CommandId id ) noexcept
+    RawMessage( MessageId id ) noexcept
     : mId{ id }, mMsg{} {}
 
-    SerialMessage( CommandId id, TTuple t ) noexcept
+    RawMessage( MessageId id, TTuple t ) noexcept
     : mId{ id }, mMsg{ t } {}
 
 
@@ -155,7 +155,7 @@ public:
                 }
                 else
                 {
-                    throw CarrtError( makeSharedErrorId( kSerialCmdReadError, 1, 1 ), "Couldn't read serial message in lamba" );
+                    throw CarrtError( makeSharedErrorId( kSerialMsgReadError, 1, 1 ), "Couldn't read serial message in lamba" );
                 }
             }, 
             link 
@@ -197,7 +197,7 @@ public:
     }
 
 
-    CommandId   mId;
+    MessageId   mId;
     TTuple      mMsg;
 
 };
@@ -211,13 +211,13 @@ public:
 class EventManager;
 
 
-class SerialCommand 
+class SerialMessage 
 {
 public:
 
-    SerialCommand( CommandId id ) noexcept {}
+    SerialMessage( MessageId id ) noexcept {}
 
-    virtual ~SerialCommand() = default;
+    virtual ~SerialMessage() = default;
 
     virtual void readIn( SerialLink& link ) = 0;
 
@@ -240,20 +240,20 @@ public:
 
 
 // Common to both RPi0 and Pico, but each has its own implementation
-// This lets us handle unknown commands gracefully 
-// But can't really continue operation becuase serial pipe is now potentially corrupt after unknown command
-class UnknownCmd : public SerialCommand 
+// This lets us handle unknown messages gracefully 
+// But can't really continue operation because serial pipe is now potentially corrupt after unknown message
+class UnknownMsg : public SerialMessage 
 {
 public:
 
     using TheData = std::tuple< std::uint8_t, int >;
 
-    UnknownCmd() noexcept;
-    UnknownCmd( TheData t ) noexcept; 
-    UnknownCmd( std::uint8_t, int errorCode ) noexcept;
-    UnknownCmd( CommandId id );
+    UnknownMsg() noexcept;
+    UnknownMsg( TheData t ) noexcept; 
+    UnknownMsg( std::uint8_t, int errorCode ) noexcept;
+    UnknownMsg( MessageId id );
 
-    virtual ~UnknownCmd() = default;
+    virtual ~UnknownMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -269,7 +269,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>  mContent;
+    struct RawMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -277,17 +277,17 @@ private:
 
 
 
-// Commands with no content (just commmand ID) are common. This is a base class for those
+// Messages with no content (just commmand ID) are common. This is a base class for those
 // Common to both RPi0 and Pico, but each has its own implementation
 
-class NoContentCmd : public SerialCommand 
+class NoContentMsg : public SerialMessage 
 {
 public:
 
-    NoContentCmd( std::uint8_t id ) noexcept;
-    NoContentCmd( CommandId id ) noexcept;
+    NoContentMsg( std::uint8_t id ) noexcept;
+    NoContentMsg( MessageId id ) noexcept;
 
-    virtual ~NoContentCmd() = default;
+    virtual ~NoContentMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -303,7 +303,7 @@ public:
 
 protected:
 
-    CommandId   mId;
+    MessageId   mId;
 
     bool    mNeedsAction;
 };
@@ -312,4 +312,4 @@ protected:
 
 
 
-#endif // SerialCommand_h
+#endif // SerialMessage_h

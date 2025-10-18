@@ -72,10 +72,10 @@ public:
 
 
     // Writing functions
-    inline void putMsgType( char cmd )
-        { putByte( static_cast<uint8_t>( cmd ) );}
-    inline void putMsgType( std::uint8_t cmd )  
-        { putByte( cmd ); }
+    inline void putMsgType( char msg )
+        { putByte( static_cast<uint8_t>( msg ) );}
+    inline void putMsgType( std::uint8_t msg )  
+        { putByte( msg ); }
     inline void put( char c )                   
         { putByte( c ); }
     inline void put( std::uint8_t c )           

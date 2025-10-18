@@ -41,7 +41,7 @@ void checkAndReportCalibration( EventManager& events, SerialLink& link )
     if ( status != oldStatus )
     {
         // Send message to RPi0 that Nav Status change and set Pico state accordingly
-        PicoNavStatusUpdateCmd navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+        PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
         navReadyStatus.takeAction( events, link );
         PicoState::calibrationInProgress( !status ); 
         
@@ -57,7 +57,7 @@ void checkAndReportCalibration( EventManager& events, SerialLink& link )
     else
     {
         // If calibration status unchanged, just send normal calibration report
-        SendCalibrationInfoCmd calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+        SendCalibrationInfoMsg calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
         calibStatus.takeAction( events, link );
     }
 
@@ -115,12 +115,12 @@ int main()
         gpio_init( CARRTPICO_HEARTBEAT_LED );
         gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
 
-        SerialCommandProcessor scp( 10, rpi0 );
-        scp.registerCommand<TimerControlCmd>( kTimerControl );
-        scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+        SerialMessageProcessor smp( 10, rpi0 );
+        smp.registerMessage<TimerControlMsg>( kTimerControl );
+        smp.registerMessage<DebugLinkMsg>( kDebugSerialLink );
 
-        // Tell RPi0 we are ready to receive commands
-        PicoReadyCmd picoReady( to_ms_since_boot( get_absolute_time() ) );
+        // Tell RPi0 we are ready to receive messages
+        PicoReadyMsg picoReady( to_ms_since_boot( get_absolute_time() ) );
         picoReady.sendOut( rpi0 );
 
 
@@ -154,7 +154,7 @@ int main()
                         {
                             float heading = BNO055::getHeading();
                             output2cout( "Hdg: ", heading, "T" );
-                            NavUpdateCmd navUpdate( heading, timeTick );
+                            NavUpdateMsg navUpdate( heading, timeTick );
                             navUpdate.takeAction( Events(), rpi0 );
                         }
                         break;
@@ -164,7 +164,7 @@ int main()
                         if ( PicoState::wantTimerMsgs() )
                         {
                             // std::cout << "1/4 " << eventParam << ", " << PicoState::wantTimerMsgs() << std::endl;
-                            TimerEventCmd qtrSec( TimerEventCmd::k1QuarterSecondEvent, eventParam, timeTick );
+                            TimerEventMsg qtrSec( TimerEventMsg::k1QuarterSecondEvent, eventParam, timeTick );
                             qtrSec.sendOut( rpi0 );
                         }
                         break;
@@ -172,7 +172,7 @@ int main()
                     case Event::kOneSecondTimerEvent:
                         if ( PicoState::wantTimerMsgs() )
                         {
-                            TimerEventCmd oneSec( TimerEventCmd::k1SecondEvent, eventParam, timeTick );
+                            TimerEventMsg oneSec( TimerEventMsg::k1SecondEvent, eventParam, timeTick );
                             oneSec.sendOut( rpi0 );
                         }
                         break;
@@ -185,7 +185,7 @@ int main()
                     case Event::kEightSecondTimerEvent:
                         if ( PicoState::wantTimerMsgs() )
                         {
-                            TimerEventCmd eightSec( TimerEventCmd::k8SecondEvent, eventParam, timeTick );
+                            TimerEventMsg eightSec( TimerEventMsg::k8SecondEvent, eventParam, timeTick );
                             eightSec.sendOut( rpi0 );
                         }
                         break;
@@ -209,16 +209,16 @@ int main()
                 if ( Events().hasEventQueueOverflowed() )
                 {
                     output2cout( "Event queue overflowed" );
-                    ErrorReportCmd errCmd( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ) );
-                    errCmd.sendOut( rpi0 );
+                    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ) );
+                    errMsg.sendOut( rpi0 );
                     Events().resetEventQueueOverflowFlag();
                 }
             }
 
-            auto cmd{ scp.receiveCommandIfAvailable() };
-            if ( cmd )
+            auto msg{ smp.receiveMessageIfAvailable() };
+            if ( msg )
             {
-                cmd.value()->takeAction( Events(), rpi0 );
+                msg.value()->takeAction( Events(), rpi0 );
             }
             CarrtPico::sleep( 25ms );
         }

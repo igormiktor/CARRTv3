@@ -53,7 +53,7 @@
 
 namespace MainProcess
 {
-    void runMainEventLoop( EventManager& events, EventProcessor& ep, SerialCommandProcessor& scp, SerialLinkPico& rpi0 );
+    void runMainEventLoop( EventManager& events, EventProcessor& ep, SerialMessageProcessor& smp, SerialLinkPico& rpi0 );
     void checkForErrors( EventManager& events, SerialLinkPico& rpi0 );
     void doHouseKeeping();
 
@@ -66,13 +66,13 @@ namespace MainProcess
 
 
 
-void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep, SerialCommandProcessor& scp, SerialLinkPico& rpi0 )
+void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep, SerialMessageProcessor& smp, SerialLinkPico& rpi0 )
 {
     while ( 1 )
     {
         checkForErrors( events, rpi0 );
         ep.dispatchOneEvent( events, rpi0 );
-        scp.dispatchOneSerialCommand( events, rpi0 );
+        smp.dispatchOneSerialMessage( events, rpi0 );
         doHouseKeeping();
         // CarrtPico::sleep( 10ms );
     }
@@ -98,14 +98,14 @@ void MainProcess::doEventQueueOverflowed( SerialLinkPico& link )
     output2cout( "Event queue overflowed" );
 
     int errCode{ makePicoErrorId( kPicoMainProcessError, 1, 0 ) };
-    ErrorReportCmd errRpt( kPicoNonFatalError, errCode );
+    ErrorReportMsg errRpt( kPicoNonFatalError, errCode );
     errRpt.sendOut( link );
 }
 
 
 void MainProcess::doTestPicoReportError()
 {
-    output2cout( "Received test Pico error report cmd from RPi0" );
+    output2cout( "Received test Pico error report msg from RPi0" );
             
     throw CarrtError( makePicoErrorId( PicoError::kPicoTestError, 1, 0 ), "CARRT Pico test error sent by request" );
 }

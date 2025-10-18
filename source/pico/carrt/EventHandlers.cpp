@@ -47,7 +47,7 @@ void QuarterSecondTimerHandler::handleEvent( EventManager& events, SerialLink& l
 {
     if ( PicoState::wantTimerMsgs() )
     {
-        TimerEventCmd timerEvt( TimerEventCmd::k1QuarterSecondEvent, eventParam, eventTime );
+        TimerEventMsg timerEvt( TimerEventMsg::k1QuarterSecondEvent, eventParam, eventTime );
         timerEvt.sendOut( link ); 
     }
 }
@@ -57,7 +57,7 @@ void OneSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link,
 {
     if ( PicoState::wantTimerMsgs() )
     {
-        TimerEventCmd timerEvt( TimerEventCmd::k1SecondEvent, eventParam, eventTime );
+        TimerEventMsg timerEvt( TimerEventMsg::k1SecondEvent, eventParam, eventTime );
         timerEvt.sendOut( link ); 
     }
 }
@@ -67,7 +67,7 @@ void EightSecondTimerHandler::handleEvent( EventManager& events, SerialLink& lin
 {
     if ( PicoState::wantTimerMsgs() )
     {
-        TimerEventCmd timerEvt( TimerEventCmd::k8SecondEvent, eventParam, eventTime );
+        TimerEventMsg timerEvt( TimerEventMsg::k8SecondEvent, eventParam, eventTime );
         timerEvt.sendOut( link ); 
     }
 }
@@ -81,7 +81,7 @@ void NavUpdateHandler::handleEvent( EventManager& events, SerialLink& link, int 
     if ( PicoState::navCalibrated() && PicoState::wantNavMsgs() )
     {
         float heading = BNO055::getHeading();
-        NavUpdateCmd navUpdate( heading, eventTime );
+        NavUpdateMsg navUpdate( heading, eventTime );
         navUpdate.sendOut( link );
         output2cout( "Sent Hdg: ", heading );
     }
@@ -132,7 +132,7 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
         // Send message to RPi0 that Nav Status changed
         if ( PicoState::wantNavStatusMsgs() )
         {
-            PicoNavStatusUpdateCmd navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+            PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
             navReadyStatus.takeAction( events, link );
         }   
 
@@ -150,7 +150,7 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
         if ( PicoState::wantCalibrationMsgs() )
         {
             // If calibration status unchanged, just send normal calibration report
-            SendCalibrationInfoCmd calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+            SendCalibrationInfoMsg calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
             calibStatus.takeAction( events, link );
         }
     }
@@ -198,7 +198,7 @@ void ErrorEventHandler::handleEvent( EventManager& events, SerialLink& link, int
     output2cout( "Got an error event in the event queue", eventParam );
 
     int errCode{ makePicoErrorId( kPicoGotErrorEvent, 1, eventParam ) };
-    ErrorReportCmd errRpt( kPicoNonFatalError, errCode );
+    ErrorReportMsg errRpt( kPicoNonFatalError, errCode );
     errRpt.sendOut( link );
 }
 

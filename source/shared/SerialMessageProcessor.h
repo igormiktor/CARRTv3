@@ -1,5 +1,5 @@
 /*
-    SerialMessageProcessor.h - Master processor for Serial Commands for both 
+    SerialMessageProcessor.h - Master processor for Serial Messages for both 
     the RPI and Pico.  This file is shared by both the RPI and Pico code bases.
 
     Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
@@ -19,8 +19,8 @@
 */
 
 
-#ifndef SerialCommandProcessor_h
-#define SerialCommandProcessor_h
+#ifndef SerialMessageProcessor_h
+#define SerialMessageProcessor_h
 
 
 
@@ -34,55 +34,55 @@
 
 
 
-class CommandFactory
+class MessageFactory
 {
 public:
 
-    using CmdPtr = typename std::unique_ptr<SerialCommand>;
+    using MsgPtr = typename std::unique_ptr<SerialMessage>;
 
-    CommandFactory( int reserveSize );
-    ~CommandFactory() = default;
+    MessageFactory( int reserveSize );
+    ~MessageFactory() = default;
     
-    CommandFactory( const CommandFactory& ) = delete;
-    CommandFactory( CommandFactory&& ) = delete;
-    CommandFactory& operator=( const CommandFactory& ) = delete;
-    CommandFactory& operator=( CommandFactory&& ) = delete;
+    MessageFactory( const MessageFactory& ) = delete;
+    MessageFactory( MessageFactory&& ) = delete;
+    MessageFactory& operator=( const MessageFactory& ) = delete;
+    MessageFactory& operator=( MessageFactory&& ) = delete;
 
 
     template <typename T>
-    void registerCommand( CommandId id )
+    void registerMessage( MessageId id )
     {
-        static_assert( std::is_base_of<SerialCommand, T>::value, "CommandFactory::registerCmd: commands must derive from SerialCommand" );
+        static_assert( std::is_base_of<SerialMessage, T>::value, "MessageFactory::registerMessage(): Messages must derive from SerialMessage" );
         if ( mCreators.find( id ) != mCreators.end() )
         {
-            throw CarrtError( makeSharedErrorId( kSerialCmdDupeError, 1, id ), "Id dupe at registation" );
+            throw CarrtError( makeSharedErrorId( kSerialMsgDupeError, 1, id ), "Id dupe at registation" );
         }
         mCreators[id] = &creator<T>;
     }
 
-    CmdPtr createCommand( CommandId id ) 
+    MsgPtr createMessage( MessageId id ) 
     {
         auto it = mCreators.find( id );
         if ( it != mCreators.end() )  
         {
             return it->second( id );
         }
-        // If we cannot find the id, return a special command, UnknownCmd.
-        int err = makeSharedErrorId( kSerialCmdUnknownError, 1, id );
-        return std::unique_ptr<SerialCommand>( new UnknownCmd(  id, err ) );
+        // If we cannot find the id, return a special message, UnknownMsg.
+        int err = makeSharedErrorId( kSerialMsgUnknownError, 1, id );
+        return std::unique_ptr<SerialMessage>( new UnknownMsg(  id, err ) );
     }
 
 
 private:
 
     template <typename T>
-    static CmdPtr creator( CommandId id )
+    static MsgPtr creator( MessageId id )
     {
-        // All SerialCommands must have a constructor that takes a uint8_t parameter (the ID)
-        return CmdPtr( new T( id ) );
+        // All SerialMessages must have a constructor that takes a uint8_t parameter (the ID)
+        return MsgPtr( new T( id ) );
     }
 
-    typedef CmdPtr (*PCreator)( CommandId );
+    typedef MsgPtr (*PCreator)( MessageId );
     std::unordered_map<std::uint8_t, PCreator> mCreators;
 };
 
@@ -90,40 +90,40 @@ private:
 
 class EventManager;
 
-class SerialCommandProcessor
+class SerialMessageProcessor
 {
 public:
 
-    using CmdPtr = typename CommandFactory::CmdPtr;
+    using MsgPtr = typename MessageFactory::MsgPtr;
 
-    SerialCommandProcessor( int reserveSize, SerialLink& link );
+    SerialMessageProcessor( int reserveSize, SerialLink& link );
 
-    ~SerialCommandProcessor() = default;
+    ~SerialMessageProcessor() = default;
     
-    SerialCommandProcessor( const SerialCommandProcessor& ) = delete;
-    SerialCommandProcessor( SerialCommandProcessor&& ) = delete;
-    SerialCommandProcessor& operator=( const SerialCommandProcessor& ) = delete;
-    SerialCommandProcessor& operator=( SerialCommandProcessor&& ) = delete;
+    SerialMessageProcessor( const SerialMessageProcessor& ) = delete;
+    SerialMessageProcessor( SerialMessageProcessor&& ) = delete;
+    SerialMessageProcessor& operator=( const SerialMessageProcessor& ) = delete;
+    SerialMessageProcessor& operator=( SerialMessageProcessor&& ) = delete;
 
-    void dispatchOneSerialCommand( EventManager& events, SerialLink& link );
+    void dispatchOneSerialMessage( EventManager& events, SerialLink& link );
 
-    std::optional<CmdPtr> receiveCommandIfAvailable();
+    std::optional<MsgPtr> receiveMessageIfAvailable();
 
     template <typename T> 
-    void registerCommand( CommandId id )
+    void registerMessage( MessageId id )
     {
-        mFactory.registerCommand<T>( id );
+        mFactory.registerMessage<T>( id );
     }
 
 
 
 private:
 
-    inline CmdPtr createCommandFromSerialLink( std::uint8_t id ) { return createCommandFromSerialLink( static_cast<CommandId>( id ) ); }
-    CmdPtr createCommandFromSerialLink( CommandId id );
+    inline MsgPtr createMessageFromSerialLink( std::uint8_t id ) { return createMessageFromSerialLink( static_cast<MessageId>( id ) ); }
+    MsgPtr createMessageFromSerialLink( MessageId id );
 
 
-    CommandFactory      mFactory;
+    MessageFactory      mFactory;
     SerialLink&         mLink;
 
 
@@ -134,4 +134,4 @@ private:
 
 
 
-#endif      // SerialCommandProcessor_h
+#endif      // SerialMessageProcessor_h

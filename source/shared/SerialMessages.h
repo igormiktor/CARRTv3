@@ -1,5 +1,5 @@
 /*
-    SerialMessages.h - The actual Serial Commands for CARRT3 communications
+    SerialMessages.h - The actual Serial Messages for CARRT3 communications
     between the RPI and Pico.  This file is shared by both the
     RPI and Pico code bases.
 
@@ -20,8 +20,8 @@
 */
 
 
-#ifndef SerialCommands_h
-#define SerialCommands_h
+#ifndef SerialMessages_h
+#define SerialMessages_h
 
 
 
@@ -35,21 +35,21 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//    All the actual Serial Commands follow (except for the UnknownCmd, which is in SerialMessage.h)
+//    All the actual Serial Messages follow (except for the UnknownMsg, which is in SerialMessage.h)
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-class NullCmd : public NoContentCmd 
+class NullMsg : public NoContentMsg 
 {
 public:
 
-    NullCmd() noexcept;
-    NullCmd( CommandId id ) noexcept;
+    NullMsg() noexcept;
+    NullMsg( MessageId id ) noexcept;
 
-    virtual ~NullCmd() = default;
+    virtual ~NullMsg() = default;
 
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
@@ -61,18 +61,18 @@ public:
 
 
 
-class PicoReadyCmd : public SerialCommand 
+class PicoReadyMsg : public SerialMessage 
 {
 public:
 
     using TheData = std::tuple< std::uint32_t >;
 
-    PicoReadyCmd() noexcept;
-    PicoReadyCmd( TheData t ) noexcept; 
-    PicoReadyCmd( std::uint32_t time ) noexcept;
-    PicoReadyCmd( CommandId id );
+    PicoReadyMsg() noexcept;
+    PicoReadyMsg( TheData t ) noexcept; 
+    PicoReadyMsg( std::uint32_t time ) noexcept;
+    PicoReadyMsg( MessageId id );
 
-    virtual ~PicoReadyCmd() = default;
+    virtual ~PicoReadyMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -88,7 +88,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>  mContent;
+    struct RawMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -99,18 +99,18 @@ private:
 
 
 
-class PicoNavStatusUpdateCmd : public SerialCommand 
+class PicoNavStatusUpdateMsg : public SerialMessage 
 {
 public:
 
     using TheData = std::tuple< bool, std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t >;
 
-    PicoNavStatusUpdateCmd() noexcept;
-    PicoNavStatusUpdateCmd( TheData t ) noexcept; 
-    PicoNavStatusUpdateCmd( bool status, std::uint8_t m, std::uint8_t a, std::uint8_t g, std::uint8_t s ) noexcept;
-    PicoNavStatusUpdateCmd( CommandId id );
+    PicoNavStatusUpdateMsg() noexcept;
+    PicoNavStatusUpdateMsg( TheData t ) noexcept; 
+    PicoNavStatusUpdateMsg( bool status, std::uint8_t m, std::uint8_t a, std::uint8_t g, std::uint8_t s ) noexcept;
+    PicoNavStatusUpdateMsg( MessageId id );
 
-    virtual ~PicoNavStatusUpdateCmd() = default;
+    virtual ~PicoNavStatusUpdateMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -126,7 +126,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>  mContent;
+    struct RawMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -137,14 +137,14 @@ private:
 
 
 
-class PicoSaysStopCmd : public NoContentCmd 
+class PicoSaysStopMsg : public NoContentMsg 
 {
 public:
 
-    PicoSaysStopCmd() noexcept;
-    PicoSaysStopCmd( CommandId id ) noexcept;
+    PicoSaysStopMsg() noexcept;
+    PicoSaysStopMsg( MessageId id ) noexcept;
 
-    virtual ~PicoSaysStopCmd() = default;
+    virtual ~PicoSaysStopMsg() = default;
 
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
@@ -156,7 +156,7 @@ public:
 
 
 
-class MsgControlCmd  : public SerialCommand
+class MsgControlMsg  : public SerialMessage
 {
 public:
 
@@ -174,12 +174,12 @@ public:
         kAllMsgsOn              = 0xFF
     };
 
-    MsgControlCmd() noexcept;
-    MsgControlCmd( TheData t ) noexcept; 
-    MsgControlCmd( bool val ) noexcept;
-    MsgControlCmd( CommandId id );
+    MsgControlMsg() noexcept;
+    MsgControlMsg( TheData t ) noexcept; 
+    MsgControlMsg( bool val ) noexcept;
+    MsgControlMsg( MessageId id );
 
-    virtual ~MsgControlCmd() = default;
+    virtual ~MsgControlMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -195,7 +195,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>  mContent;
+    struct RawMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };;
@@ -206,14 +206,14 @@ private:
 
 
 
-class ResetCmd : public NoContentCmd 
+class ResetMsg : public NoContentMsg 
 {
 public:
 
-    ResetCmd() noexcept;
-    ResetCmd( CommandId id ) noexcept;
+    ResetMsg() noexcept;
+    ResetMsg( MessageId id ) noexcept;
 
-    virtual ~ResetCmd() = default;
+    virtual ~ResetMsg() = default;
 
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
@@ -225,7 +225,7 @@ public:
 
 
 
-class TimerEventCmd : public SerialCommand
+class TimerEventMsg : public SerialMessage
 {
 public:
 
@@ -238,12 +238,12 @@ public:
         k8SecondEvent = 32
     };
 
-    TimerEventCmd() noexcept;
-    TimerEventCmd( TheData t ) noexcept; 
-    TimerEventCmd( std::uint8_t which, int count, uint32_t time ) noexcept;
-    TimerEventCmd( CommandId id );
+    TimerEventMsg() noexcept;
+    TimerEventMsg( TheData t ) noexcept; 
+    TimerEventMsg( std::uint8_t which, int count, uint32_t time ) noexcept;
+    TimerEventMsg( MessageId id );
 
-    virtual ~TimerEventCmd() = default;
+    virtual ~TimerEventMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -259,7 +259,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>  mContent;
+    struct RawMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -270,18 +270,18 @@ private:
 
 
 
-class TimerControlCmd : public SerialCommand
+class TimerControlMsg : public SerialMessage
 {
 public:
 
     using TheData = std::tuple< std::uint8_t >;
 
-    TimerControlCmd() noexcept;
-    TimerControlCmd( TheData t ) noexcept; 
-    TimerControlCmd( bool val ) noexcept;
-    TimerControlCmd( CommandId id );
+    TimerControlMsg() noexcept;
+    TimerControlMsg( TheData t ) noexcept; 
+    TimerControlMsg( bool val ) noexcept;
+    TimerControlMsg( MessageId id );
 
-    virtual ~TimerControlCmd() = default;
+    virtual ~TimerControlMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -297,7 +297,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>  mContent;
+    struct RawMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -308,14 +308,14 @@ private:
 
 
 
-class BeginCalibrationCmd : public NoContentCmd 
+class BeginCalibrationMsg : public NoContentMsg 
 {
 public:
 
-    BeginCalibrationCmd() noexcept;
-    BeginCalibrationCmd( CommandId id ) noexcept;
+    BeginCalibrationMsg() noexcept;
+    BeginCalibrationMsg( MessageId id ) noexcept;
 
-    virtual ~BeginCalibrationCmd() = default;
+    virtual ~BeginCalibrationMsg() = default;
 
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
@@ -327,14 +327,14 @@ public:
 
 
 
-class RequestCalibrationStatusCmd : public NoContentCmd 
+class RequestCalibrationStatusMsg : public NoContentMsg 
 {
 public:
 
-    RequestCalibrationStatusCmd() noexcept;
-    RequestCalibrationStatusCmd( CommandId id ) noexcept;
+    RequestCalibrationStatusMsg() noexcept;
+    RequestCalibrationStatusMsg( MessageId id ) noexcept;
 
-    virtual ~RequestCalibrationStatusCmd() = default;
+    virtual ~RequestCalibrationStatusMsg() = default;
 
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
@@ -346,18 +346,18 @@ public:
 
 
 
-class SendCalibrationInfoCmd : public SerialCommand
+class SendCalibrationInfoMsg : public SerialMessage
 {
 public:
 
     using TheData = std::tuple< std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t >;
 
-    SendCalibrationInfoCmd() noexcept;
-    SendCalibrationInfoCmd( TheData t ) noexcept; 
-    SendCalibrationInfoCmd( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept;
-    SendCalibrationInfoCmd( CommandId id );
+    SendCalibrationInfoMsg() noexcept;
+    SendCalibrationInfoMsg( TheData t ) noexcept; 
+    SendCalibrationInfoMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept;
+    SendCalibrationInfoMsg( MessageId id );
 
-    virtual ~SendCalibrationInfoCmd() = default;
+    virtual ~SendCalibrationInfoMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -373,7 +373,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>  mContent;
+    struct RawMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -384,14 +384,14 @@ private:
 
 
 
-class ResetBNO055Cmd : public NoContentCmd 
+class ResetBNO055Msg : public NoContentMsg 
 {
 public:
 
-    ResetBNO055Cmd() noexcept;
-    ResetBNO055Cmd( CommandId id ) noexcept;
+    ResetBNO055Msg() noexcept;
+    ResetBNO055Msg( MessageId id ) noexcept;
 
-    virtual ~ResetBNO055Cmd() = default;
+    virtual ~ResetBNO055Msg() = default;
 
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
@@ -403,18 +403,18 @@ public:
 
 
 
-class NavUpdateCmd : public SerialCommand
+class NavUpdateMsg : public SerialMessage
 {
 public:
 
     using TheData = std::tuple< float, std::uint32_t >;
 
-    NavUpdateCmd() noexcept;
-    NavUpdateCmd( TheData t ) noexcept; 
-    NavUpdateCmd( float heading, std::uint32_t time ) noexcept;
-    NavUpdateCmd( CommandId id );
+    NavUpdateMsg() noexcept;
+    NavUpdateMsg( TheData t ) noexcept; 
+    NavUpdateMsg( float heading, std::uint32_t time ) noexcept;
+    NavUpdateMsg( MessageId id );
 
-    virtual ~NavUpdateCmd() = default;
+    virtual ~NavUpdateMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -430,7 +430,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>  mContent;
+    struct RawMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -441,18 +441,18 @@ private:
 
 
 
-class NavUpdateControlCmd : public SerialCommand
+class NavUpdateControlMsg : public SerialMessage
 {
 public:
 
     using TheData = std::tuple< std::uint8_t >;
 
-    NavUpdateControlCmd() noexcept;
-    NavUpdateControlCmd( TheData t ) noexcept; 
-    NavUpdateControlCmd( bool val ) noexcept;
-    NavUpdateControlCmd( CommandId id );
+    NavUpdateControlMsg() noexcept;
+    NavUpdateControlMsg( TheData t ) noexcept; 
+    NavUpdateControlMsg( bool val ) noexcept;
+    NavUpdateControlMsg( MessageId id );
 
-    virtual ~NavUpdateControlCmd() = default;
+    virtual ~NavUpdateControlMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -468,7 +468,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>  mContent;
+    struct RawMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -479,18 +479,18 @@ private:
 
 
 
-class ErrorReportCmd : public SerialCommand
+class ErrorReportMsg : public SerialMessage
 {
 public:
 
     using TheData = std::tuple< std::uint8_t, int >;
 
-    ErrorReportCmd() noexcept;
-    ErrorReportCmd( TheData t ) noexcept; 
-    ErrorReportCmd( bool val, int errorCode ) noexcept;
-    ErrorReportCmd( CommandId id );
+    ErrorReportMsg() noexcept;
+    ErrorReportMsg( TheData t ) noexcept; 
+    ErrorReportMsg( bool val, int errorCode ) noexcept;
+    ErrorReportMsg( MessageId id );
 
-    virtual ~ErrorReportCmd() = default;
+    virtual ~ErrorReportMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -506,7 +506,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>  mContent;
+    struct RawMessage<TheData>  mContent;
 
     bool    mNeedsAction;
 };
@@ -517,18 +517,18 @@ private:
 
 
 
-class DebugLinkCmd : public SerialCommand
+class DebugLinkMsg : public SerialMessage
 {
 public:
 
     using TheData = std::tuple< int, int >;
 
-    DebugLinkCmd() noexcept;
-    DebugLinkCmd( TheData t ) noexcept; 
-    DebugLinkCmd( int val1, int val2 ) noexcept;
-    DebugLinkCmd( CommandId id );
+    DebugLinkMsg() noexcept;
+    DebugLinkMsg( TheData t ) noexcept; 
+    DebugLinkMsg( int val1, int val2 ) noexcept;
+    DebugLinkMsg( MessageId id );
 
-    virtual ~DebugLinkCmd() = default;
+    virtual ~DebugLinkMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
@@ -544,7 +544,7 @@ public:
 
 private:
 
-    struct SerialMessage<TheData>   mContent;
+    struct RawMessage<TheData>   mContent;
 
     bool    mNeedsAction;
 };
@@ -560,4 +560,4 @@ private:
 
 
 
-#endif // SerialCommands_h
+#endif // SerialMessages_h

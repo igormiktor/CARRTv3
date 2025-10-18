@@ -67,15 +67,15 @@ namespace
 {
     void initializeFailSafeHardware();
     void initializeFailableHardware();
-    void setupCommandProcessor( SerialCommandProcessor& scp );
+    void setupMessageProcessor( SerialMessageProcessor& smp );
     void setupEventProcessor( EventProcessor& ep );
     void sendReady( SerialLinkPico& link );
 }
 
 
 
-constexpr int kSerialCommandReserveSize     = 20;
-constexpr int kEventHandlerReserveSize      = 24;
+constexpr int kSerialMessageHandlerReserveSize  = 20;
+constexpr int kEventHandlerReserveSize          = 24;
 
 
 
@@ -95,27 +95,27 @@ int main()
 
         output2cout( "CARRT Pico started, hardware initialized, both cores running." );
     
-        // Set up command processor
-        SerialCommandProcessor scp( kSerialCommandReserveSize, rpi0 );
-        setupCommandProcessor( scp );
+        // Set up message processor
+        SerialMessageProcessor smp( kSerialMessageHandlerReserveSize, rpi0 );
+        setupMessageProcessor( smp );
 
         // Set up event processor
         EventProcessor ep( kEventHandlerReserveSize );
         setupEventProcessor( ep );
     
-        // Report we are started and ready to receive commands
+        // Report we are started and ready to receive messages
         sendReady( rpi0 );
 
         // TESTING
         PicoState::allMsgsSendOn();
 
-        MainProcess::runMainEventLoop( Events(), ep, scp, rpi0 );
+        MainProcess::runMainEventLoop( Events(), ep, smp, rpi0 );
     }
 
     catch( const CarrtError& e )
     {
         // Report the error...
-        ErrorReportCmd err( kPicoFatalError, e.errorCode() ); 
+        ErrorReportMsg err( kPicoFatalError, e.errorCode() ); 
         err.sendOut( rpi0 );
 
         output2cout( "Fatal error ", e.errorCode(), ' ', e.what() );
@@ -124,7 +124,7 @@ int main()
     catch( const std::exception& e )
     {
         int errCode{ makePicoErrorId( kPicoMainError, 1, 0 ) };
-        ErrorReportCmd err( kPicoFatalError, errCode ); 
+        ErrorReportMsg err( kPicoFatalError, errCode ); 
         err.sendOut( rpi0 );
 
         output2cout( "Fatal error of unexpected nature", e.what() );
@@ -133,7 +133,7 @@ int main()
     catch( ... )
     {    
         int errCode{ makePicoErrorId( kPicoMainError, 2, 0 ) };
-        ErrorReportCmd err( kPicoFatalError, errCode ); 
+        ErrorReportMsg err( kPicoFatalError, errCode ); 
         err.sendOut( rpi0 );
 
         output2cout( "Fatal error of unknown type" );
@@ -147,7 +147,7 @@ int main()
         CarrtPico::sleep( 100ms );
         HeartBeatLed::toggle();
 
-        // See if we get a sent a reset command
+        // See if we get a sent a reset message
         if ( rpi0.isReadable() )
         {
             auto msgType = rpi0.getMsgType();
@@ -209,25 +209,25 @@ namespace
 
 
 
-    void setupCommandProcessor( SerialCommandProcessor& scp )
+    void setupMessageProcessor( SerialMessageProcessor& smp )
     {
-        // Only register those commands/messages we actually can receive
-        // Commands/messages that are only outgoing don't need to be registered
-        scp.registerCommand<NullCmd>( kNullMsg );
-    //  scp.registerCommand<PicoReadyCmd>( kPicoReady );
-    //  scp.registerCommand<PicoNavStatusUpdateCmd>( kPicoNavStatusUpdate );
-    //  scp.registerCommand<PicoSaysStopCmd>( kPicoSaysStop );
-        scp.registerCommand<MsgControlCmd>( kMsgControlMsg );
-        scp.registerCommand<ResetCmd>( kResetMsg );
-        scp.registerCommand<BeginCalibrationCmd>( kBeginCalibration );
-        scp.registerCommand<RequestCalibrationStatusCmd>( kRequestCalibStatus );
-    //  scp.registerCommand<SendCalibrationInfoCmd>( kSendCalibInfo );
-        scp.registerCommand<ResetBNO055Cmd>( kResetBNO055 );
-    //  scp.registerCommand<TimerEventCmd>( kTimerEvent );
-        scp.registerCommand<TimerControlCmd>( kTimerControl );
-    //  scp.registerCommand<NavUpdateCmd>( kTimerNavUpdate );
-        scp.registerCommand<NavUpdateControlCmd>( kNavUpdateControl );
-        scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+        // Only register those messages we actually can receive
+        // Messages that are only outgoing don't need to be registered
+        smp.registerMessage<NullMsg>( kNullMsg );
+    //  smp.registerMessage<PicoReadyMsg>( kPicoReady );
+    //  smp.registerMessage<PicoNavStatusUpdateMsg>( kPicoNavStatusUpdate );
+    //  smp.registerMessage<PicoSaysStopMsg>( kPicoSaysStop );
+        smp.registerMessage<MsgControlMsg>( kMsgControlMsg );
+        smp.registerMessage<ResetMsg>( kResetMsg );
+        smp.registerMessage<BeginCalibrationMsg>( kBeginCalibration );
+        smp.registerMessage<RequestCalibrationStatusMsg>( kRequestCalibStatus );
+    //  smp.registerMessage<SendCalibrationInfoMsg>( kSendCalibInfo );
+        smp.registerMessage<ResetBNO055Msg>( kResetBNO055 );
+    //  smp.registerMessage<TimerEventMsg>( kTimerEvent );
+        smp.registerMessage<TimerControlMsg>( kTimerControl );
+    //  smp.registerMessage<NavUpdateMsg>( kTimerNavUpdate );
+        smp.registerMessage<NavUpdateControlMsg>( kNavUpdateControl );
+        smp.registerMessage<DebugLinkMsg>( kDebugSerialLink );
     }
 
 
@@ -257,7 +257,7 @@ namespace
 
     void sendReady( SerialLinkPico& link )
     {
-        PicoReadyCmd ready( kPicoReady );
+        PicoReadyMsg ready( kPicoReady );
         ready.sendOut( link );
     }
 

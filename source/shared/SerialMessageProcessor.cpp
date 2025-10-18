@@ -1,5 +1,5 @@
 /*
-    SerialMessageProcessor.cpp - Master processor for Serial Commands for both 
+    SerialMessageProcessor.cpp - Master processor for Serial Messages for both 
     the RPI and Pico.  This file is shared by both the RPI and Pico code bases.
 
     Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
@@ -32,7 +32,7 @@
 
 
 
-CommandFactory::CommandFactory( int reserveSize )
+MessageFactory::MessageFactory( int reserveSize )
 {
     mCreators.reserve( reserveSize );
 }
@@ -42,7 +42,7 @@ CommandFactory::CommandFactory( int reserveSize )
 
 
 
-SerialCommandProcessor::SerialCommandProcessor( int reserveSize, SerialLink& link )
+SerialMessageProcessor::SerialMessageProcessor( int reserveSize, SerialLink& link )
 : mFactory{ reserveSize }, mLink{ link }
 {
     // Nothing else to do
@@ -50,23 +50,23 @@ SerialCommandProcessor::SerialCommandProcessor( int reserveSize, SerialLink& lin
 
 
 
-SerialCommandProcessor::CmdPtr SerialCommandProcessor::createCommandFromSerialLink( CommandId id )
+SerialMessageProcessor::MsgPtr SerialMessageProcessor::createMessageFromSerialLink( MessageId id )
 {
-//    SerialCommand* cmdPtr = mFactory.createCommand( id );
-//    auto cmd = std::make_unique<SerialCommand>( cmdPtr );
-    auto cmd = mFactory.createCommand( id );
-    cmd->readIn( mLink );
-    return  cmd;
+//    SerialMessage* MsgPtr = mFactory.createMessage( id );
+//    auto msg = std::make_unique<SerialMessage>( MsgPtr );
+    auto msg = mFactory.createMessage( id );
+    msg->readIn( mLink );
+    return  msg;
 }
 
 
 
-std::optional<SerialCommandProcessor::CmdPtr> SerialCommandProcessor::receiveCommandIfAvailable()
+std::optional<SerialMessageProcessor::MsgPtr> SerialMessageProcessor::receiveMessageIfAvailable()
 {
-    auto cmdId = mLink.getMsgType();
-    if ( cmdId )
+    auto msgId = mLink.getMsgType();
+    if ( msgId )
     {
-        return createCommandFromSerialLink( *cmdId );
+        return createMessageFromSerialLink( *msgId );
     }
     else
     {
@@ -76,12 +76,12 @@ std::optional<SerialCommandProcessor::CmdPtr> SerialCommandProcessor::receiveCom
 
 
 
-void SerialCommandProcessor::dispatchOneSerialCommand( EventManager& events, SerialLink& link )
+void SerialMessageProcessor::dispatchOneSerialMessage( EventManager& events, SerialLink& link )
 {
-    auto cmd{ receiveCommandIfAvailable() };
-    if ( cmd )
+    auto msg{ receiveMessageIfAvailable() };
+    if ( msg )
     {
-        cmd.value()->takeAction( events, link );
+        msg.value()->takeAction( events, link );
     }
 }
 
