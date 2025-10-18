@@ -1,9 +1,9 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
 #include "Delays.h"
-#include "SerialCommands.h"
+#include "SerialMessages.h"
 #include "SerialLinkPico.h"
-#include "SerialCommandProcessor.h"
+#include "SerialMessageProcessor.h"
 
 #include <iostream>
 #include "pico/binary_info.h"

@@ -1,7 +1,7 @@
 add_executable( SerialTest5
         SerialTest5.cpp
         ../../carrt/EventManager.cpp 
-        ../../carrt/PicoSerialCommands.cpp
+        ../../carrt/PicoSerialMessages.cpp
         ../../carrt/PicoState.cpp
 )
         

@@ -1,5 +1,5 @@
 /*
-    SerialCommands.h - The actual Serial Commands for CARRT3 communications
+    SerialMessages.h - The actual Serial Commands for CARRT3 communications
     between the RPI and Pico.  This file is shared by both the
     RPI and Pico code bases.
 
@@ -25,7 +25,7 @@
 
 
 
-#include "SerialCommand.h"
+#include "SerialMessage.h"
 
 #include "SerialLink.h"
 #include "CarrtError.h"
@@ -35,7 +35,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//    All the actual Serial Commands follow (except for the UnknownCmd, which is in SerialCommand.h)
+//    All the actual Serial Commands follow (except for the UnknownCmd, which is in SerialMessage.h)
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -23,7 +23,7 @@
 #include "CarrtPicoReset.h"
 
 #include "PicoOutputUtils.hpp"
-#include "SerialCommands.h"
+#include "SerialMessages.h"
 #include "SerialLinkPico.h"
 #include "Delays.h"
 

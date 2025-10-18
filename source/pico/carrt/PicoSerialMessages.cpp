@@ -1,5 +1,5 @@
 /*
-    PicoSerialCommands.cpp - Serial Commands for CARRT3 communications
+    PicoSerialMessages.cpp - Serial Commands for CARRT3 communications
     between the RPI and Pico.  This file contains the Pico commands.
 
     Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
@@ -21,7 +21,7 @@
 
 
 
-#include "SerialCommands.h"
+#include "SerialMessages.h"
 
 #include "BNO055.h"
 #include "EventManager.h"

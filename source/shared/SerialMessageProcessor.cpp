@@ -1,5 +1,5 @@
 /*
-    SerialCommandProcessor.cpp - Master processor for Serial Commands for both 
+    SerialMessageProcessor.cpp - Master processor for Serial Commands for both 
     the RPI and Pico.  This file is shared by both the RPI and Pico code bases.
 
     Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
@@ -19,14 +19,14 @@
 */
 
 
-#include "SerialCommandProcessor.h"
+#include "SerialMessageProcessor.h"
 
 
 #include <map>
 #include <string>
 #include <memory>
 
-#include "SerialCommand.h"
+#include "SerialMessage.h"
 #include "SerialLink.h"
 
 

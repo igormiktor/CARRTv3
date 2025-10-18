@@ -32,8 +32,8 @@
 #include "EventProcessor.h"
 #include "HeartBeatLed.h"
 
-#include "SerialCommands.h"
-#include "SerialCommandProcessor.h"
+#include "SerialMessages.h"
+#include "SerialMessageProcessor.h"
 #include "SerialLinkPico.h"
 #include "CarrtError.h"
 

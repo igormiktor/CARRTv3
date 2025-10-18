@@ -29,7 +29,7 @@
 #include "HeartBeatLed.h"
 #include "PicoOutputUtils.hpp"
 #include "PicoState.h"
-#include "SerialCommands.h"
+#include "SerialMessages.h"
 #include "SerialLink.h"
 
 

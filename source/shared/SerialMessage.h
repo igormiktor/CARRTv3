@@ -1,5 +1,5 @@
 /*
-    SerialCommand.h - Serial Command structure for CARRT3 communications
+    SerialMessage.h - Serial Command structure for CARRT3 communications
     between the RPI and Pico.  This file is shared by both the
     RPI and Pico code bases.
 

@@ -8,8 +8,8 @@
 #include "PicoOutputUtils.hpp"
 #include "CarrtPicoReset.h"
 #include "PicoState.h"
-#include "SerialCommands.h"
-#include "SerialCommandProcessor.h"
+#include "SerialMessages.h"
+#include "SerialMessageProcessor.h"
 #include "SerialLinkPico.h"
 
 #include <iostream>

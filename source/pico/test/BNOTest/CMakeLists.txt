@@ -3,7 +3,7 @@ add_executable( BNOTest
         ../../carrt/CarrtPicoReset.cpp
         ../../carrt/Core1.cpp
         ../../carrt/EventManager.cpp 
-        ../../carrt/PicoSerialCommands.cpp
+        ../../carrt/PicoSerialMessages.cpp
         ../../carrt/PicoState.cpp
 )
         

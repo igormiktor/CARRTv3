@@ -42,8 +42,8 @@
 #include "SerialLinkPico.h"
 
 #include "CarrtError.h"
-#include "SerialCommands.h"
-#include "SerialCommandProcessor.h"
+#include "SerialMessages.h"
+#include "SerialMessageProcessor.h"
 #include "DebugUtils.hpp"
 
 #include "PicoState.h"
