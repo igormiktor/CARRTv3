@@ -517,6 +517,44 @@ private:
 
 
 
+class TestPicoErrorRptMsg : public SerialMessage
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t, int >;
+
+    TestPicoErrorRptMsg() noexcept;
+    TestPicoErrorRptMsg( TheData t ) noexcept; 
+    TestPicoErrorRptMsg( bool makeItFatal, int errorCodeToTest ) noexcept;
+    TestPicoErrorRptMsg( MessageId id );
+
+    virtual ~TestPicoErrorRptMsg() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct RawMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 class DebugLinkMsg : public SerialMessage
 {
 public:

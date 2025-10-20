@@ -227,6 +227,7 @@ namespace
         smp.registerMessage<TimerControlMsg>( kTimerControl );
     //  smp.registerMessage<NavUpdateMsg>( kTimerNavUpdate );
         smp.registerMessage<NavUpdateControlMsg>( kNavUpdateControl );
+        smp.registerMessage<TestPicoErrorRptMsg>( kTestPicoReportError );
         smp.registerMessage<DebugLinkMsg>( kDebugSerialLink );
     }
 

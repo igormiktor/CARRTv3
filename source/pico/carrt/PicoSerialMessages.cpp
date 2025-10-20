@@ -64,6 +64,7 @@ UnknownMsg::UnknownMsg( MessageId id )
 void UnknownMsg::readIn( SerialLink& link ) 
 {
     // Unknown message; don't try to read it in.
+    mNeedsAction = true;
 }
 
 void UnknownMsg::sendOut( SerialLink& link )
@@ -75,9 +76,12 @@ void UnknownMsg::sendOut( SerialLink& link )
 
 void UnknownMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
-    // Only action is to send the message out
-    sendOut( link );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        // Only action is to send the message out
+        sendOut( link );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -135,7 +139,7 @@ std::uint8_t NoContentMsg::getId() const noexcept
 NullMsg::NullMsg() noexcept
 : NoContentMsg( kNullMsg )
 {
-    // Nothing to do
+    mNeedsAction = true;
 }
 
 NullMsg::NullMsg( MessageId id ) noexcept
@@ -147,7 +151,13 @@ NullMsg::NullMsg( MessageId id ) noexcept
 
 void NullMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    // Null msg, so nothing to do
+    // Only action is to send it
+    if ( mNeedsAction )
+    {
+        output2cout( "Send Null msg" );
+        sendOut( link );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -195,9 +205,12 @@ void PicoReadyMsg::sendOut( SerialLink& link )
 
 void PicoReadyMsg::takeAction( EventManager&, SerialLink& link ) 
 {
-    // Only action is to send it
-    sendOut( link );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        // Only action is to send it
+        sendOut( link );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -244,9 +257,12 @@ void PicoNavStatusUpdateMsg::sendOut( SerialLink& link )
 
 void PicoNavStatusUpdateMsg::takeAction( EventManager&, SerialLink& link ) 
 {
-    // Only action is to send it
-    sendOut( link );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        // Only action is to send it
+        sendOut( link );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -261,7 +277,7 @@ void PicoNavStatusUpdateMsg::takeAction( EventManager&, SerialLink& link )
 PicoSaysStopMsg::PicoSaysStopMsg() noexcept
 : NoContentMsg( kPicoSaysStop )
 {
-    // Nothing to do
+    mNeedsAction = true;
 }
 
 PicoSaysStopMsg::PicoSaysStopMsg( MessageId id ) noexcept
@@ -273,9 +289,12 @@ PicoSaysStopMsg::PicoSaysStopMsg( MessageId id ) noexcept
 
 void PicoSaysStopMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    output2cout( "Pico sends stop to RPI0" );
-    sendOut( link );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        output2cout( "Pico sends stop to RPI0" );
+        sendOut( link );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -323,16 +342,19 @@ void MsgControlMsg::sendOut( SerialLink& link )
 
 void MsgControlMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
-    std::uint8_t val = std::get<0>( mContent.mMsg );
+    if ( mNeedsAction )
+    {
+        std::uint8_t val = std::get<0>( mContent.mMsg );
 
-    PicoState::sendTimerMsgs( val & kTimerMsgMask );
-    PicoState::sendNavMsgs( val & kNavMsgMask );
-    PicoState::sendNavStatusMsgs( val & kNavStatusMask );
-    PicoState::sendEncoderMsgs( val & kEncoderMsgMask );
-    PicoState::sendCalibrationMsgs( val & kCalibrationMsgMask );
+        PicoState::sendTimerMsgs( val & kTimerMsgMask );
+        PicoState::sendNavMsgs( val & kNavMsgMask );
+        PicoState::sendNavStatusMsgs( val & kNavStatusMask );
+        PicoState::sendEncoderMsgs( val & kEncoderMsgMask );
+        PicoState::sendCalibrationMsgs( val & kCalibrationMsgMask );
 
-    output2cout( "Timer events to RPi0 turned to ", val );    
-    mNeedsAction = false;
+        output2cout( "Timer events to RPi0 turned to ", val );    
+        mNeedsAction = false;
+    }
 }
 
 
@@ -346,7 +368,7 @@ void MsgControlMsg::takeAction( EventManager& events, SerialLink& link )
 ResetMsg::ResetMsg() noexcept
 : NoContentMsg( kResetMsg )
 {
-    // Nothing to do
+    mNeedsAction = true;
 }
 
 ResetMsg::ResetMsg( MessageId id ) noexcept
@@ -358,9 +380,12 @@ ResetMsg::ResetMsg( MessageId id ) noexcept
 
 void ResetMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    output2cout( "Pico got message from RPi0 to reset" );
-    events.queueEvent( Event::kPicoResetEvent, 0, 0, EventManager::kHighPriority );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        output2cout( "Pico got message from RPi0 to reset" );
+        events.queueEvent( Event::kPicoResetEvent, 0, 0, EventManager::kHighPriority );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -407,9 +432,12 @@ void TimerEventMsg::sendOut( SerialLink& link )
 
 void TimerEventMsg::takeAction( EventManager&, SerialLink& link ) 
 {
-    // Only action is to send it
-    sendOut( link );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        // Only action is to send it
+        sendOut( link );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -456,10 +484,13 @@ void TimerControlMsg::sendOut( SerialLink& link )
 
 void TimerControlMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
-    bool val = std::get<0>( mContent.mMsg );
-    PicoState::sendTimerMsgs( val );
-    output2cout( "Timer events to RPi0 turned to ", val );    
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        bool val = std::get<0>( mContent.mMsg );
+        PicoState::sendTimerMsgs( val );
+        output2cout( "Timer events to RPi0 turned to ", val );    
+        mNeedsAction = false;
+    }
 }
 
 
@@ -474,7 +505,7 @@ void TimerControlMsg::takeAction( EventManager& events, SerialLink& link )
 BeginCalibrationMsg::BeginCalibrationMsg() noexcept
 : NoContentMsg( kBeginCalibration )
 {
-    // Nothing to do
+    mNeedsAction = true;
 }
 
 BeginCalibrationMsg::BeginCalibrationMsg( MessageId id ) noexcept
@@ -486,9 +517,12 @@ BeginCalibrationMsg::BeginCalibrationMsg( MessageId id ) noexcept
 
 void BeginCalibrationMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    output2cout( "Got a calibration msg: Trigger calibration" );
-    events.queueEvent( kBNO055BeginCalibrationEvent );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        output2cout( "Got a calibration msg: Trigger calibration" );
+        events.queueEvent( kBNO055BeginCalibrationEvent );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -503,7 +537,7 @@ void BeginCalibrationMsg::takeAction( EventManager& events, SerialLink& link )
 RequestCalibrationStatusMsg::RequestCalibrationStatusMsg() noexcept
 : NoContentMsg( kRequestCalibStatus )
 {
-    // Nothing to do
+    mNeedsAction = true;
 }
 
 RequestCalibrationStatusMsg::RequestCalibrationStatusMsg( MessageId id ) noexcept
@@ -515,17 +549,20 @@ RequestCalibrationStatusMsg::RequestCalibrationStatusMsg( MessageId id ) noexcep
 
 void RequestCalibrationStatusMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    output2cout( "Got a request calib status msg" );
+    if ( mNeedsAction )
+    {
+        output2cout( "Got a request calib status msg" );
 
-    // Even if PicoState::wantNavStatusMsgs() is false, we always respond to direct request
-    auto calibData{ BNO055::getCalibration() };
-    bool status = BNO055::calibrationGood( calibData );
+        // Even if PicoState::wantNavStatusMsgs() is false, we always respond to direct request
+        auto calibData{ BNO055::getCalibration() };
+        bool status = BNO055::calibrationGood( calibData );
 
-    PicoState::navCalibrated( status );
-    PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
-    navReadyStatus.takeAction( events, link );
+        PicoState::navCalibrated( status );
+        PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+        navReadyStatus.takeAction( events, link );
 
-    mNeedsAction = false;
+        mNeedsAction = false;
+    }
 }
 
 
@@ -577,8 +614,11 @@ void SendCalibrationInfoMsg::sendOut( SerialLink& link )
 
 void SendCalibrationInfoMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    sendOut( link );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        sendOut( link );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -593,7 +633,7 @@ void SendCalibrationInfoMsg::takeAction( EventManager& events, SerialLink& link 
 ResetBNO055Msg::ResetBNO055Msg() noexcept
 : NoContentMsg( kResetBNO055 )
 {
-    // Nothing to do
+    mNeedsAction = true;
 }
 
 ResetBNO055Msg::ResetBNO055Msg( MessageId id ) noexcept
@@ -605,9 +645,12 @@ ResetBNO055Msg::ResetBNO055Msg( MessageId id ) noexcept
 
 void ResetBNO055Msg::takeAction( EventManager& events, SerialLink& link )
 {
-    output2cout( "Got a reset BNO055 msg" );
-    events.queueEvent( kBNO055ResetEvent );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        output2cout( "Got a reset BNO055 msg" );
+        events.queueEvent( kBNO055ResetEvent );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -659,8 +702,11 @@ void NavUpdateMsg::sendOut( SerialLink& link )
 
 void NavUpdateMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    sendOut( link );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        sendOut( link );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -707,10 +753,13 @@ void NavUpdateControlMsg::sendOut( SerialLink& link )
 
 void NavUpdateControlMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
-    bool val = std::get<0>( mContent.mMsg );
-    PicoState::sendNavMsgs( val );
-    output2cout( "Nav update events to RPi0 turned to ", val );    
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        bool val = std::get<0>( mContent.mMsg );
+        PicoState::sendNavMsgs( val );
+        output2cout( "Nav update events to RPi0 turned to ", val );    
+        mNeedsAction = false;
+    }
 }
 
 
@@ -758,9 +807,70 @@ void ErrorReportMsg::sendOut( SerialLink& link )
 
 void ErrorReportMsg::takeAction( EventManager&, SerialLink& link ) 
 {
-    // Only action is to send the message out
-    sendOut( link );
-    mNeedsAction = false;
+    if ( mNeedsAction )
+    {
+        // Only action is to send the message out
+        sendOut( link );
+        mNeedsAction = false;
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+TestPicoErrorRptMsg::TestPicoErrorRptMsg() noexcept 
+: SerialMessage( kTestPicoReportError ), mContent( kTestPicoReportError ), mNeedsAction{ false } 
+{}
+
+TestPicoErrorRptMsg::TestPicoErrorRptMsg( TheData t ) noexcept 
+: SerialMessage( kTestPicoReportError ), mContent( kTestPicoReportError, t ), mNeedsAction{ true } 
+{} 
+
+TestPicoErrorRptMsg::TestPicoErrorRptMsg( bool makeItFatal, int errorCodeToReport ) noexcept 
+: SerialMessage( kTestPicoReportError ), mContent( kTestPicoReportError, std::make_tuple( static_cast<std::uint8_t>( makeItFatal ), errorCodeToReport ) ), 
+    mNeedsAction{ true } 
+{}
+
+TestPicoErrorRptMsg::TestPicoErrorRptMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kTestPicoReportError ), mNeedsAction{ false }
+{ 
+    if ( id != kTestPicoReportError ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kTestPicoReportError ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void TestPicoErrorRptMsg::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+void TestPicoErrorRptMsg::sendOut( SerialLink& link )
+{
+    // Pico never sends this message out (only receives)
+    // Instead seend the requested error msg
+    auto [ fatal, errorCode ] = mContent.mMsg;
+    ErrorReportMsg errRptAsRqstd( fatal, errorCode );
+    errRptAsRqstd.sendOut( link );
+    output2cout( "As test sent error msg: fatal?: ", fatal, ", error code: ", errorCode );
+}
+
+void TestPicoErrorRptMsg::takeAction( EventManager&, SerialLink& link ) 
+{
+    // Create the requested error report and send it
+    if ( mNeedsAction )
+    {
+        sendOut( link );
+        mNeedsAction = false;
+    }
 }
 
 
@@ -810,20 +920,23 @@ void DebugLinkMsg::sendOut( SerialLink& link )
 
 void DebugLinkMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
-    // Lets negate the values, flip the order, and send them back
-    auto [ val1, val2 ] = mContent.mMsg;
-
-    switch ( val1 )
+    if ( mNeedsAction )
     {
+        // Lets negate the values, flip the order, and send them back
+        auto [ val1, val2 ] = mContent.mMsg;
 
-        default: 
-            val1 *= -1;
-            val2 *= -1;
-            DebugLinkMsg reply( val2, val1 );
-            reply.sendOut( link );
-            break;
+        switch ( val1 )
+        {
+
+            default: 
+                val1 *= -1;
+                val2 *= -1;
+                DebugLinkMsg reply( val2, val1 );
+                reply.sendOut( link );
+                break;
+        }
+        mNeedsAction = false;
     }
-    mNeedsAction = false;
 }
 
 
