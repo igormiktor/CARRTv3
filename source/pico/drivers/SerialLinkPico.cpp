@@ -97,9 +97,10 @@ std::optional<std::uint32_t> SerialLinkPico::get4Bytes()
     // there is data to read
     if ( isReadable() )
     {   
-        Transfer t;
-        uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, reinterpret_cast<std::uint8_t*>( &t.c ), 4 );
-        return t.u;
+        RawData r;
+//        uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, reinterpret_cast<std::uint8_t*>( &t.c ), 4 );
+        uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, r.c(), 4 );
+        return r.u();
     }
     else
     {

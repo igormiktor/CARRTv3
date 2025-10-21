@@ -25,9 +25,12 @@
 
 
 
-
+#include <array>
+#include <bit>
 #include <cstdint>
+#include <cstring>
 #include <optional>
+
 
 class SerialLink
 {
@@ -81,18 +84,19 @@ public:
     inline void put( std::uint8_t c )           
         { putByte( c ); }
     inline void put( int i )                    
-        { Transfer t{}; t.i = i; put4Bytes( t.c ); }
+        { RawData r( i ); put4Bytes( r.c() ); }
     inline void put( std::uint32_t u )          
-        { Transfer t{}; t.u = u; put4Bytes( t.c ); }
+        { RawData r( u ); put4Bytes( r.c() ); }
     inline void put( float f )                 
-        { Transfer t{}; t.f = f; put4Bytes( t.c ); }
+        { RawData r( f ); put4Bytes( r.c() ); }
 
 
 protected:
 
     // Only derived classes can create a SerialLink
     SerialLink() = default;     
-    
+
+#if 0  // Turn off, remove soonish
     union Transfer
     {
         std::uint8_t    c[4];
@@ -100,7 +104,47 @@ protected:
         std::uint32_t   u;
         float           f;
     };
+#endif
 
+    class RawData
+    {
+    public:
+        using RawDataT = std::array<uint8_t, 4>;
+
+        RawData() = default;
+        RawData( std::uint8_t* cc )
+            { c( cc ); }
+        RawData( int ii )
+            { i( ii ); }
+        RawData( uint32_t uu )
+            { u( uu ); }
+        RawData( float ff )
+            { f( ff ); }
+
+        std::uint8_t* c()
+            { return mRaw.data(); }
+
+        void c( std::uint8_t* cc )
+            { std::memcpy( mRaw.data(), cc, 4 ); }
+
+        int i()
+            { return std::bit_cast<int>( mRaw ); }
+        void i( int ii )
+            { mRaw = std::bit_cast<RawDataT>( ii ); }
+
+        std::uint32_t u()
+            { return std::bit_cast<uint32_t>( mRaw ); }
+        void u( std::uint32_t uu )
+            { mRaw = std::bit_cast<RawDataT>( uu ); }
+
+        float f()
+            { return std::bit_cast<float>( mRaw ); }
+        void f( float ff )
+            { mRaw = std::bit_cast<RawDataT>( ff ); }
+
+    private:
+        RawDataT    mRaw;
+    };
 
 private:
 

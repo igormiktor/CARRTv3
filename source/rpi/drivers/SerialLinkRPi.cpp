@@ -146,9 +146,9 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
 
 std::optional<uint32_t> SerialLinkRPi::get4Bytes()
 {
-    Transfer t{};
-    t.u = 0;
-    auto numRead = read( mSerialPort, &t.c, 4 );
+    RawData r( 0 );
+
+    auto numRead = read( mSerialPort, r.c(), 4 );
     if ( numRead == 0 )
     {
         // EOF == buffer empty
@@ -157,7 +157,7 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
 
     if ( numRead == 4 )
     {
-        return t.u;
+        return r.u();
     }
     
     if ( numRead < 4 && errno == 0 )
@@ -169,9 +169,9 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
         {
             for ( int j{ 0 }, i{ numRead }; i < 4; i++, j++ )
             {
-                t.c[i] = buf[j];
+               r.c()[i] = buf[j];
             }
-            return t.u;
+            return r.u();
         }
     }
     

@@ -40,9 +40,8 @@ std::optional<float> SerialLink::getFloat()
     auto got = get4Bytes(); 
     if ( got )
     {
-        Transfer t{};
-        t.u = *got;
-        return t.f;
+        RawData r( *got );
+        return r.f();
     }
     else 
         return std::nullopt; 
