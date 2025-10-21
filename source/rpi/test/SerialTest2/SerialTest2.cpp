@@ -1,4 +1,4 @@
-#include "SerialCommand.h"
+#include "SerialMessage.h"
 
 // C library headers
 #include <stdio.h>

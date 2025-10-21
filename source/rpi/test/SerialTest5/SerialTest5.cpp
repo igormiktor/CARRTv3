@@ -2,8 +2,8 @@
 #include <string>
 
 #include "SerialLinkRPi.h"
-#include "SerialCommands.h"
-#include "SerialCommandProcessor.h"
+#include "SerialMessages.h"
+#include "SerialMessageProcessor.h"
 #include "Clock.h"
 
 
@@ -12,7 +12,7 @@
 
 void doDebugLinkTest( int val1, int val2, SerialLink& link )
 {
-    DebugLinkCmd cmd0( val1, val2 );
+    DebugLinkMsg cmd0( val1, val2 );
     cmd0.sendOut( link ); 
     std::cout << "Sent debug link cmd: " << val1 << ", " << val2 << std::endl;
 }
@@ -58,11 +58,11 @@ int main()
 
     std::cout << "Serial link test" << std::endl;
 
-    SerialCommandProcessor scp( pico );
-    scp.registerCommand<TimerEventCmd>( kTimerEvent );
-    scp.registerCommand<TimerControlCmd>( kTimerControl );
-    scp.registerCommand<ErrorReportCmd>( kErrorReportFromPico );
-    scp.registerCommand<DebugLinkCmd>( kDebugSerialLink );
+    SerialMessageProcessor smp( 32, pico );
+    smp.registerMessage<TimerEventMsg>( kTimerEvent );
+    smp.registerMessage<TimerControlMsg>( kTimerControl );
+    smp.registerMessage<ErrorReportMsg>( kErrorReportFromPico );
+    smp.registerMessage<DebugLinkMsg>( kDebugSerialLink );
 
     std::cout << "Tests begin" << std::endl;
 
@@ -77,7 +77,7 @@ int main()
 
         while ( keepGoing )
         {
-            auto cmd{ scp.receiveCommandIfAvailable() };
+            auto cmd{ smp.receiveMessageIfAvailable() };
             if ( cmd )
             {
                 EventManager events;
@@ -108,7 +108,7 @@ int main()
                     timerEventsOn = true;
                 }
                 std::cout << "************ Timer Events turned on? " << timerEventsOn << std::endl;
-                TimerControlCmd toggleTimerEvts( timerEventsOn );
+                TimerControlMsg toggleTimerEvts( timerEventsOn );
                 toggleTimerEvts.sendOut( pico );
                 lastToggle = Clock::millis();
             }

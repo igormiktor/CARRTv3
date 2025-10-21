@@ -1,4 +1,4 @@
-#include "SerialCommand.h"
+#include "SerialMessage.h"
 #include "SerialLinkRPi.h"
 
 #include "DebugUtils.hpp"

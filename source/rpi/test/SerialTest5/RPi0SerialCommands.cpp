@@ -1,5 +1,5 @@
 /*
-    RPi0SerialCommands.cpp - Serial Commands for CARRT3 communications
+    RPi0SerialMessages.cpp - Serial Commands for CARRT3 communications
     between the RPI and Pico.  This file contains the Pico commands.
 
     Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
@@ -21,7 +21,7 @@
 
 
 
-#include "SerialCommands.h"
+#include "SerialMessages.h"
 
 #include <iostream>
 
@@ -40,31 +40,31 @@ class EventManager;
 
 
 
-TimerEventCmd::TimerEventCmd() noexcept 
-: SerialCommand( kTimerEvent ), mContent( kTimerEvent ), mNeedsAction{ false } 
+TimerEventMsg::TimerEventMsg() noexcept 
+: SerialMessage( kTimerEvent ), mContent( kTimerEvent ), mNeedsAction{ false } 
 {}
 
-TimerEventCmd::TimerEventCmd( TheData t ) noexcept 
-: SerialCommand( kTimerEvent ), mContent( kTimerEvent, t ), mNeedsAction{ true }
+TimerEventMsg::TimerEventMsg( TheData t ) noexcept 
+: SerialMessage( kTimerEvent ), mContent( kTimerEvent, t ), mNeedsAction{ true }
 {} 
 
-TimerEventCmd::TimerEventCmd( std::uint8_t which, int count, std::uint32_t time ) noexcept 
-: SerialCommand( kTimerEvent ), mContent( kTimerEvent, std::make_tuple( which, count, time ) ), mNeedsAction{ true } 
+TimerEventMsg::TimerEventMsg( std::uint8_t which, int count, std::uint32_t time ) noexcept 
+: SerialMessage( kTimerEvent ), mContent( kTimerEvent, std::make_tuple( which, count, time ) ), mNeedsAction{ true } 
 {}
 
-TimerEventCmd::TimerEventCmd( CommandId id ) 
-: SerialCommand( id ), mContent( kTimerEvent ), mNeedsAction{ false }
+TimerEventMsg::TimerEventMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kTimerEvent ), mNeedsAction{ false }
 { 
     if ( id != kTimerEvent ) 
     { 
-        throw CarrtError( makeRpi0ErrorId( kRPi0SerialCommandError, 1, kTimerEvent ), "Id mismatch at creation" ); 
+        throw CarrtError( makeRpi0ErrorId( kRPi0SerialMessageError, 1, kTimerEvent ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
 
 
 
-void TimerEventCmd::readIn( SerialLink& link ) 
+void TimerEventMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
@@ -72,14 +72,14 @@ void TimerEventCmd::readIn( SerialLink& link )
 
 
 
-void TimerEventCmd::sendOut( SerialLink& link )
+void TimerEventMsg::sendOut( SerialLink& link )
 {
     // RPi0 never sends these out; only receives
 }
 
 
 
-void TimerEventCmd::takeAction( EventManager&, SerialLink& link ) 
+void TimerEventMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     // For the test just print out
     auto [ kind, count, time ] = mContent.mMsg;
@@ -115,31 +115,31 @@ void TimerEventCmd::takeAction( EventManager&, SerialLink& link )
 
 
 
-TimerControlCmd::TimerControlCmd() noexcept 
-: SerialCommand( kTimerControl ), mContent( kTimerControl ), mNeedsAction{ false } 
+TimerControlMsg::TimerControlMsg() noexcept 
+: SerialMessage( kTimerControl ), mContent( kTimerControl ), mNeedsAction{ false } 
 {}
 
-TimerControlCmd::TimerControlCmd( TheData t ) noexcept 
-: SerialCommand( kTimerControl ), mContent( kTimerControl, t ), mNeedsAction{ true } 
+TimerControlMsg::TimerControlMsg( TheData t ) noexcept 
+: SerialMessage( kTimerControl ), mContent( kTimerControl, t ), mNeedsAction{ true } 
 {} 
 
-TimerControlCmd::TimerControlCmd( bool val ) noexcept 
-: SerialCommand( kTimerControl ), mContent( kTimerControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+TimerControlMsg::TimerControlMsg( bool val ) noexcept 
+: SerialMessage( kTimerControl ), mContent( kTimerControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
 {}
 
-TimerControlCmd::TimerControlCmd( CommandId id ) 
-: SerialCommand( id ), mContent( kTimerControl ), mNeedsAction{ false }
+TimerControlMsg::TimerControlMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kTimerControl ), mNeedsAction{ false }
 { 
     if ( id != kTimerControl ) 
     { 
-        throw CarrtError( makeRpi0ErrorId( kRPi0SerialCommandError, 1, kTimerControl ), "Id mismatch at creation" ); 
+        throw CarrtError( makeRpi0ErrorId( kRPi0SerialMessageError, 1, kTimerControl ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
 
 
 
-void TimerControlCmd::readIn( SerialLink& link ) 
+void TimerControlMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
@@ -147,14 +147,14 @@ void TimerControlCmd::readIn( SerialLink& link )
 
 
 
-void TimerControlCmd::sendOut( SerialLink& link )
+void TimerControlMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 }
 
 
 
-void TimerControlCmd::takeAction( EventManager&, SerialLink& link ) 
+void TimerControlMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     // RPi0 action is to send it out...
     sendOut( link );
@@ -169,32 +169,32 @@ void TimerControlCmd::takeAction( EventManager&, SerialLink& link )
 
 
 
-ErrorReportCmd::ErrorReportCmd() noexcept 
-: SerialCommand( kErrorReportFromPico ), mContent( kErrorReportFromPico ), mNeedsAction{ false } 
+ErrorReportMsg::ErrorReportMsg() noexcept 
+: SerialMessage( kErrorReportFromPico ), mContent( kErrorReportFromPico ), mNeedsAction{ false } 
 {}
 
-ErrorReportCmd::ErrorReportCmd( TheData t ) noexcept 
-: SerialCommand( kErrorReportFromPico ), mContent( kErrorReportFromPico, t ), mNeedsAction{ true } 
+ErrorReportMsg::ErrorReportMsg( TheData t ) noexcept 
+: SerialMessage( kErrorReportFromPico ), mContent( kErrorReportFromPico, t ), mNeedsAction{ true } 
 {} 
 
-ErrorReportCmd::ErrorReportCmd( bool val, int errorCode ) noexcept 
-: SerialCommand( kErrorReportFromPico ), mContent( kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ) ), 
+ErrorReportMsg::ErrorReportMsg( bool val, int errorCode ) noexcept 
+: SerialMessage( kErrorReportFromPico ), mContent( kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ) ), 
     mNeedsAction{ true } 
 {}
 
-ErrorReportCmd::ErrorReportCmd( CommandId id ) 
-: SerialCommand( id ), mContent( kErrorReportFromPico ), mNeedsAction{ false }
+ErrorReportMsg::ErrorReportMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kErrorReportFromPico ), mNeedsAction{ false }
 { 
     if ( id != kErrorReportFromPico ) 
     { 
-        throw CarrtError( makeRpi0ErrorId( kRPi0SerialCommandError, 1, kErrorReportFromPico ), "Id mismatch at creation" ); 
+        throw CarrtError( makeRpi0ErrorId( kRPi0SerialMessageError, 1, kErrorReportFromPico ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
 
 
 
-void ErrorReportCmd::readIn( SerialLink& link ) 
+void ErrorReportMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
@@ -202,14 +202,14 @@ void ErrorReportCmd::readIn( SerialLink& link )
 
 
 
-void ErrorReportCmd::sendOut( SerialLink& link )
+void ErrorReportMsg::sendOut( SerialLink& link )
 {
     // These never sent from RPi0 (only recevied)
 }
 
 
 
-void ErrorReportCmd::takeAction( EventManager&, SerialLink& link ) 
+void ErrorReportMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     auto [ fatal, errCode ] = mContent.mMsg;
     std::cout << "Error from Pico: " << ( fatal ? "fatal" : "non-fatal" ) << "; error code " << errCode << std::endl;
@@ -225,31 +225,31 @@ void ErrorReportCmd::takeAction( EventManager&, SerialLink& link )
 
 
 
-DebugLinkCmd::DebugLinkCmd() noexcept 
-: SerialCommand( kDebugSerialLink ), mContent( kDebugSerialLink ), mNeedsAction{ false } 
+DebugLinkMsg::DebugLinkMsg() noexcept 
+: SerialMessage( kDebugSerialLink ), mContent( kDebugSerialLink ), mNeedsAction{ false } 
 {}
 
-DebugLinkCmd::DebugLinkCmd( TheData t ) noexcept 
-: SerialCommand( kDebugSerialLink ), mContent( kDebugSerialLink, t ), mNeedsAction{ true } 
+DebugLinkMsg::DebugLinkMsg( TheData t ) noexcept 
+: SerialMessage( kDebugSerialLink ), mContent( kDebugSerialLink, t ), mNeedsAction{ true } 
 {} 
 
-DebugLinkCmd::DebugLinkCmd( int val1, int val2 ) noexcept 
-: SerialCommand( kDebugSerialLink ), mContent( kDebugSerialLink, std::make_tuple( val1, val2 ) ), mNeedsAction{ true } 
+DebugLinkMsg::DebugLinkMsg( int val1, int val2 ) noexcept 
+: SerialMessage( kDebugSerialLink ), mContent( kDebugSerialLink, std::make_tuple( val1, val2 ) ), mNeedsAction{ true } 
 {}
 
-DebugLinkCmd::DebugLinkCmd( CommandId id ) 
-: SerialCommand( id ), mContent( kDebugSerialLink ), mNeedsAction{ false }          
+DebugLinkMsg::DebugLinkMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kDebugSerialLink ), mNeedsAction{ false }          
 { 
     if ( id != kDebugSerialLink ) 
     { 
-        throw CarrtError( makeRpi0ErrorId( kRPi0SerialCommandError, 1, kDebugSerialLink ), "Id mismatch at creation" ); 
+        throw CarrtError( makeRpi0ErrorId( kRPi0SerialMessageError, 1, kDebugSerialLink ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
 
 
 
-void DebugLinkCmd::readIn( SerialLink& link ) 
+void DebugLinkMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
     mNeedsAction = true;
@@ -257,14 +257,14 @@ void DebugLinkCmd::readIn( SerialLink& link )
 
 
 
-void DebugLinkCmd::sendOut( SerialLink& link )
+void DebugLinkMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 }
 
 
 
-void DebugLinkCmd::takeAction( EventManager&, SerialLink& link ) 
+void DebugLinkMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     // Let's display what we got
     auto [ val1, val2 ] = mContent.mMsg;
@@ -280,47 +280,47 @@ void DebugLinkCmd::takeAction( EventManager&, SerialLink& link )
 
 
 
-UnknownCmd::UnknownCmd() noexcept 
-: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand ), mNeedsAction{ false } 
+UnknownMsg::UnknownMsg() noexcept 
+: SerialMessage( kUnknownMessage ), mContent( kUnknownMessage ), mNeedsAction{ false } 
 {}
 
-UnknownCmd::UnknownCmd( TheData t ) noexcept 
-: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand, t ), mNeedsAction{ true } 
+UnknownMsg::UnknownMsg( TheData t ) noexcept 
+: SerialMessage( kUnknownMessage ), mContent( kUnknownMessage, t ), mNeedsAction{ true } 
 {} 
 
-UnknownCmd::UnknownCmd( std::uint8_t rcvdId, int errorCode ) noexcept 
-: SerialCommand( kUnknownCommand ), mContent( kUnknownCommand, std::make_tuple( rcvdId, errorCode ) ), 
+UnknownMsg::UnknownMsg( std::uint8_t rcvdId, int errorCode ) noexcept 
+: SerialMessage( kUnknownMessage ), mContent( kUnknownMessage, std::make_tuple( rcvdId, errorCode ) ), 
     mNeedsAction{ true } 
 {}
 
-UnknownCmd::UnknownCmd( CommandId id ) 
-: SerialCommand( id ), mContent( kUnknownCommand ), mNeedsAction{ false }
+UnknownMsg::UnknownMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kUnknownMessage ), mNeedsAction{ false }
 { 
-    if ( id != kUnknownCommand ) 
+    if ( id != kUnknownMessage ) 
     { 
-        throw CarrtError( makeRpi0ErrorId( kRPi0SerialCommandError, 1, kUnknownCommand ), "Id mismatch at creation" ); 
+        throw CarrtError( makeRpi0ErrorId( kRPi0SerialMessageError, 1, kUnknownMessage ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
 
 
 
-void UnknownCmd::readIn( SerialLink& link ) 
+void UnknownMsg::readIn( SerialLink& link ) 
 {
    // Unknown command, don't try to read it
 }
 
 
 
-void UnknownCmd::sendOut( SerialLink& link )
+void UnknownMsg::sendOut( SerialLink& link )
 {
-    // We don't send this Cmd out on link; doing this is an error
-    debugM( "Attempting to send an UnknownCmd on serial link" );
+    // We don't send this Msg out on link; doing this is an error
+    debugM( "Attempting to send an UnknownMsg on serial link" );
 }
 
 
 
-void UnknownCmd::takeAction( EventManager&, SerialLink& link ) 
+void UnknownMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     // this should do something to trigger error processing 
     auto [ id, errCode ] = mContent.mMsg;
