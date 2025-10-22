@@ -145,7 +145,7 @@ namespace OutputUtils
     }
 
     // This is the public function actually called in user code for std::cout output *only* when debugging enabled
-    // If DEBUGUTILS_ON, converts the arguments to 
+    // If USE_CARRTPICO_STDIO and DEBUGPICO are both "ON", converts the arguments to 
     //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
     //
     // Use debug2cout for code that should remain in the Pico executable (if Pico STDIO 
