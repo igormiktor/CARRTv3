@@ -770,6 +770,113 @@ void NavUpdateControlMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 
+DrivingStatusUpdateMsg::DrivingStatusUpdateMsg() noexcept 
+: SerialMessage( kDrivingStatusUpdate ), mContent( kDrivingStatusUpdate ), mNeedsAction{ false } 
+{}
+
+DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( TheData t ) noexcept 
+: SerialMessage( kDrivingStatusUpdate ), mContent( kDrivingStatusUpdate, t ), mNeedsAction{ true } 
+{} 
+
+DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( std::uint8_t driveStatus ) noexcept 
+: SerialMessage( kDrivingStatusUpdate ), mContent( kDrivingStatusUpdate, std::make_tuple( static_cast<std::uint8_t>( driveStatus ) ) ), mNeedsAction{ true } 
+{}
+
+DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kDrivingStatusUpdate ), mNeedsAction{ false }
+{ 
+    if ( id != kDrivingStatusUpdate ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kDrivingStatusUpdate ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void DrivingStatusUpdateMsg::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+void DrivingStatusUpdateMsg::sendOut( SerialLink& link )
+{
+    // This never sent from Pico
+}
+
+void DrivingStatusUpdateMsg::takeAction( EventManager& events, SerialLink& link ) 
+{
+    if ( mNeedsAction )
+    {
+        std::uint8_t val = std::get<0>( mContent.mMsg );
+
+        // TODO take whatever action is appropirate
+        output2cout( "RPi0 sent driving status ", val ); 
+        output2cout( "TODO - implement action" );   
+        mNeedsAction = false;
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+EncoderUpdateMsg::EncoderUpdateMsg() noexcept 
+: SerialMessage( kEncoderUpdate ), mContent( kEncoderUpdate ), mNeedsAction{ false } 
+{}
+
+EncoderUpdateMsg::EncoderUpdateMsg( TheData t ) noexcept 
+: SerialMessage( kEncoderUpdate ), mContent( kEncoderUpdate, t ), mNeedsAction{ true }
+{} 
+
+EncoderUpdateMsg::EncoderUpdateMsg( int left, int right, uint32_t time ) noexcept 
+: SerialMessage( kEncoderUpdate ), mContent( kEncoderUpdate, std::make_tuple( left, right, time ) ), mNeedsAction{ true } 
+{}
+
+EncoderUpdateMsg::EncoderUpdateMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kEncoderUpdate ), mNeedsAction{ false }
+{ 
+    if ( id != kEncoderUpdate ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kEncoderUpdate ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void EncoderUpdateMsg::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+void EncoderUpdateMsg::sendOut( SerialLink& link )
+{
+    mContent.sendOut( link );
+}
+
+void EncoderUpdateMsg::takeAction( EventManager&, SerialLink& link ) 
+{
+    if ( mNeedsAction )
+    {
+        // Only action is to send it
+        sendOut( link );
+        mNeedsAction = false;
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
 ErrorReportMsg::ErrorReportMsg() noexcept 
 : SerialMessage( kErrorReportFromPico ), mContent( kErrorReportFromPico ), mNeedsAction{ false } 
 {}
