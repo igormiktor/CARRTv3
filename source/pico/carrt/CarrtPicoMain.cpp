@@ -223,7 +223,7 @@ namespace
         smp.registerMessage<RequestCalibrationStatusMsg>( kRequestCalibStatus );
     //  smp.registerMessage<SendCalibrationInfoMsg>( kSendCalibInfo );
         smp.registerMessage<ResetBNO055Msg>( kResetBNO055 );
-    //  smp.registerMessage<TimerEventMsg>( kTimerEvent );
+    //  smp.registerMessage<TimerEventMsg>( kTimerEventMsg );
         smp.registerMessage<TimerControlMsg>( kTimerControl );
     //  smp.registerMessage<NavUpdateMsg>( kTimerNavUpdate );
         smp.registerMessage<NavUpdateControlMsg>( kNavUpdateControl );

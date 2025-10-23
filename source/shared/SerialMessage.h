@@ -52,7 +52,7 @@ enum MessageId : std::uint8_t
     kResetMsg                   = 0x1F,             // Pico to reset itself (ack by sending kResetMsg back, then followed by kPicoReady)
 
     // Timer events
-    kTimerEvent                 = 0x21,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type; 4th byte time hack)
+    kTimerEventMsg              = 0x21,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type; 4th byte time hack)
     kTimerControl               = 0x22,             // To pico to start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)
 
     // BNO005 msgs       

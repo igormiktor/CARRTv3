@@ -397,23 +397,23 @@ void ResetMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 TimerEventMsg::TimerEventMsg() noexcept 
-: SerialMessage( kTimerEvent ), mContent( kTimerEvent ), mNeedsAction{ false } 
+: SerialMessage( kTimerEventMsg ), mContent( kTimerEventMsg ), mNeedsAction{ false } 
 {}
 
 TimerEventMsg::TimerEventMsg( TheData t ) noexcept 
-: SerialMessage( kTimerEvent ), mContent( kTimerEvent, t ), mNeedsAction{ true }
+: SerialMessage( kTimerEventMsg ), mContent( kTimerEventMsg, t ), mNeedsAction{ true }
 {} 
 
 TimerEventMsg::TimerEventMsg( std::uint8_t which, int count, uint32_t time ) noexcept 
-: SerialMessage( kTimerEvent ), mContent( kTimerEvent, std::make_tuple( which, count, time ) ), mNeedsAction{ true } 
+: SerialMessage( kTimerEventMsg ), mContent( kTimerEventMsg, std::make_tuple( which, count, time ) ), mNeedsAction{ true } 
 {}
 
 TimerEventMsg::TimerEventMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kTimerEvent ), mNeedsAction{ false }
+: SerialMessage( id ), mContent( kTimerEventMsg ), mNeedsAction{ false }
 { 
-    if ( id != kTimerEvent ) 
+    if ( id != kTimerEventMsg ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kTimerEvent ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kTimerEventMsg ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
