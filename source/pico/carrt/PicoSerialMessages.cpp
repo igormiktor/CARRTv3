@@ -602,6 +602,7 @@ void SendCalibrationInfoMsg::readIn( SerialLink& link )
 {
     mContent.readIn( link );
     mNeedsAction = true;
+    output2cout( "Error: received a sendCalibrationInfoMsg");
 }
 
 
@@ -860,6 +861,234 @@ void EncoderUpdateMsg::sendOut( SerialLink& link )
 }
 
 void EncoderUpdateMsg::takeAction( EventManager&, SerialLink& link ) 
+{
+    if ( mNeedsAction )
+    {
+        // Only action is to send it
+        sendOut( link );
+        mNeedsAction = false;
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+EncoderUpdateControlMsg::EncoderUpdateControlMsg() noexcept 
+: SerialMessage( kEncoderUpdateControl ), mContent( kEncoderUpdateControl ), mNeedsAction{ false } 
+{}
+
+EncoderUpdateControlMsg::EncoderUpdateControlMsg( TheData t ) noexcept 
+: SerialMessage( kEncoderUpdateControl ), mContent( kEncoderUpdateControl, t ), mNeedsAction{ true } 
+{} 
+
+EncoderUpdateControlMsg::EncoderUpdateControlMsg( bool val ) noexcept 
+: SerialMessage( kEncoderUpdateControl ), mContent( kEncoderUpdateControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+{}
+
+EncoderUpdateControlMsg::EncoderUpdateControlMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kEncoderUpdateControl ), mNeedsAction{ false }
+{ 
+    if ( id != kEncoderUpdateControl ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kEncoderUpdateControl ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void EncoderUpdateControlMsg::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+void EncoderUpdateControlMsg::sendOut( SerialLink& link )
+{
+    // This never sent from Pico
+}
+
+void EncoderUpdateControlMsg::takeAction( EventManager& events, SerialLink& link ) 
+{
+    if ( mNeedsAction )
+    {
+        bool val = std::get<0>( mContent.mMsg );
+        PicoState::sendEncoderMsgs( val );
+        output2cout( "Encoder update events to RPi0 turned to ", val );    
+        mNeedsAction = false;
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+BatteryLevelRequestMsg::BatteryLevelRequestMsg() noexcept 
+: SerialMessage( kBatteryLevelRequest ), mContent( kBatteryLevelRequest ), mNeedsAction{ false } 
+{}
+
+BatteryLevelRequestMsg::BatteryLevelRequestMsg( TheData t ) noexcept 
+: SerialMessage( kBatteryLevelRequest ), mContent( kBatteryLevelRequest, t ), mNeedsAction{ true } 
+{} 
+
+BatteryLevelRequestMsg::BatteryLevelRequestMsg( std::uint8_t whichBattery ) noexcept 
+: SerialMessage( kBatteryLevelRequest ), mContent( kBatteryLevelRequest, std::make_tuple( static_cast<std::uint8_t>( whichBattery ) ) ), mNeedsAction{ true } 
+{}
+
+BatteryLevelRequestMsg::BatteryLevelRequestMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kBatteryLevelRequest ), mNeedsAction{ false }
+{ 
+    if ( id != kBatteryLevelRequest ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kBatteryLevelRequest ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void BatteryLevelRequestMsg::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+void BatteryLevelRequestMsg::sendOut( SerialLink& link )
+{
+    // This never sent from Pico
+}
+
+void BatteryLevelRequestMsg::takeAction( EventManager& events, SerialLink& link ) 
+{
+    if ( mNeedsAction )
+    {
+        std::uint8_t whichBattery = std::get<0>( mContent.mMsg );
+        if ( whichBattery == kIcBattery || whichBattery == kBothBatteries )
+        {
+            // TODO
+        }
+        else if ( whichBattery == kMotorBattery || whichBattery == kBothBatteries )
+        {
+            // TODO
+        }
+        else
+        {
+            output2cout( "Bad battery request code", whichBattery );
+            ErrorReportMsg err( false, makePicoErrorId( kPicoSerialMessageError, 2, whichBattery ) );
+        }
+
+        // TODO take whatever action is appropirate
+        output2cout( "RPi0 requested battery level for ", whichBattery ); 
+        output2cout( "TODO - implement action" );   
+        mNeedsAction = false;
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+BatteryLevelUpdateMsg::BatteryLevelUpdateMsg() noexcept 
+: SerialMessage( kBatteryLevelUpdate ), mContent( kBatteryLevelUpdate ), mNeedsAction{ false } 
+{}
+
+BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( TheData t ) noexcept 
+: SerialMessage( kBatteryLevelUpdate ), mContent( kBatteryLevelUpdate, t ), mNeedsAction{ true } 
+{} 
+
+BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( std::uint8_t whichBattery, float level ) noexcept 
+: SerialMessage( kBatteryLevelUpdate ), mContent( kBatteryLevelUpdate, std::make_tuple( whichBattery, level ) ), 
+    mNeedsAction{ true } 
+{}
+
+BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kBatteryLevelUpdate ), mNeedsAction{ false }
+{ 
+    if ( id != kBatteryLevelUpdate ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kBatteryLevelUpdate ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void BatteryLevelUpdateMsg::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+void BatteryLevelUpdateMsg::sendOut( SerialLink& link )
+{
+    mContent.sendOut( link );
+}
+
+void BatteryLevelUpdateMsg::takeAction( EventManager&, SerialLink& link ) 
+{
+    if ( mNeedsAction )
+    {
+        // Only action is to send it
+        sendOut( link );
+        mNeedsAction = false;
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+BatteryLowAlertMsg::BatteryLowAlertMsg() noexcept 
+: SerialMessage( kBatteryLowAlert ), mContent( kBatteryLowAlert ), mNeedsAction{ false } 
+{}
+
+BatteryLowAlertMsg::BatteryLowAlertMsg( TheData t ) noexcept 
+: SerialMessage( kBatteryLowAlert ), mContent( kBatteryLowAlert, t ), mNeedsAction{ true } 
+{} 
+
+BatteryLowAlertMsg::BatteryLowAlertMsg( std::uint8_t whichBattery, float level ) noexcept 
+: SerialMessage( kBatteryLowAlert ), mContent( kBatteryLowAlert, std::make_tuple( whichBattery, level ) ), 
+    mNeedsAction{ true } 
+{}
+
+BatteryLowAlertMsg::BatteryLowAlertMsg( MessageId id ) 
+: SerialMessage( id ), mContent( kBatteryLowAlert ), mNeedsAction{ false }
+{ 
+    if ( id != kBatteryLowAlert ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kBatteryLowAlert ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void BatteryLowAlertMsg::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+    output2cout( "Error: rcvd battery low alert" );
+}
+
+void BatteryLowAlertMsg::sendOut( SerialLink& link )
+{
+    mContent.sendOut( link );
+}
+
+void BatteryLowAlertMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {

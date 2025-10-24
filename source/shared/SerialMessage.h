@@ -72,7 +72,7 @@ enum MessageId : std::uint8_t
     kEncoderUpdateControl       = 0x44,             // From RPi0 to Pico to start/stop sending of encoder udpates (2nd byte -> 0/1 = stop/start)
  
     // Battery info
-    kRequestBatteryLevel        = 0x50,             // From RPi0 to Pico requesting battery level (2nd byte = which battery: 0 = IC, 1 = Motor)
+    kBatteryLevelRequest        = 0x50,             // From RPi0 to Pico requesting battery level (2nd byte = which battery: 0 = IC, 1 = Motor)
     kBatteryLevelUpdate         = 0x51,             // Pico to RPi0 battery V; 2nd byte = which battery; following 4 bytes V (float)
     kBatteryLowAlert            = 0x52,             // Pico to RPi0 alert that battery is low; 2nd byte = which battery; following 4 bytes V (float)
 

@@ -532,19 +532,178 @@ public:
 
     using TheData = std::tuple< int, int, std::uint32_t >;
 
-    enum : std::uint8_t
-    {
-        k1QuarterSecondEvent = 1,
-        k1SecondEvent = 4,
-        k8SecondEvent = 32
-    };
-
     EncoderUpdateMsg() noexcept;
     EncoderUpdateMsg( TheData t ) noexcept; 
     EncoderUpdateMsg( int left, int right, std::uint32_t time ) noexcept;
     EncoderUpdateMsg( MessageId id );
 
     virtual ~EncoderUpdateMsg() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct RawMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class EncoderUpdateControlMsg : public SerialMessage
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t >;
+
+    EncoderUpdateControlMsg() noexcept;
+    EncoderUpdateControlMsg( TheData t ) noexcept; 
+    EncoderUpdateControlMsg( bool val ) noexcept;
+    EncoderUpdateControlMsg( MessageId id );
+
+    virtual ~EncoderUpdateControlMsg() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct RawMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+// For the battery-related message classes
+enum : std::uint8_t
+{
+    kIcBattery,
+    kMotorBattery,
+    kBothBatteries
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class BatteryLevelRequestMsg : public SerialMessage
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t >;
+
+    BatteryLevelRequestMsg() noexcept;
+    BatteryLevelRequestMsg( TheData t ) noexcept; 
+    BatteryLevelRequestMsg( std::uint8_t whichBattery ) noexcept;
+    BatteryLevelRequestMsg( MessageId id );
+
+    virtual ~BatteryLevelRequestMsg() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct RawMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class BatteryLevelUpdateMsg : public SerialMessage
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t, float >;
+
+    BatteryLevelUpdateMsg() noexcept;
+    BatteryLevelUpdateMsg( TheData t ) noexcept; 
+    BatteryLevelUpdateMsg( std::uint8_t whichBattery, float level ) noexcept;
+    BatteryLevelUpdateMsg( MessageId id );
+
+    virtual ~BatteryLevelUpdateMsg() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct RawMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class BatteryLowAlertMsg : public SerialMessage
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t, float >;
+
+    BatteryLowAlertMsg() noexcept;
+    BatteryLowAlertMsg( TheData t ) noexcept; 
+    BatteryLowAlertMsg( std::uint8_t whichBattery, float level ) noexcept;
+    BatteryLowAlertMsg( MessageId id );
+
+    virtual ~BatteryLowAlertMsg() = default;
 
 
     virtual void readIn( SerialLink& link ) override;
