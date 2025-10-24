@@ -603,13 +603,18 @@ private:
 
 
 // For the battery-related message classes
-enum : std::uint8_t
+enum class Battery : std::uint8_t
 {
     kIcBattery,
     kMotorBattery,
-    kBothBatteries
+    kBothBatteries,
 };
 
+template <typename E>
+constexpr typename std::underlying_type<E>::type toUnderlying( E e ) noexcept 
+{
+    return static_cast<typename std::underlying_type<E>::type>( e );
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -624,7 +629,7 @@ public:
 
     BatteryLevelRequestMsg() noexcept;
     BatteryLevelRequestMsg( TheData t ) noexcept; 
-    BatteryLevelRequestMsg( std::uint8_t whichBattery ) noexcept;
+    BatteryLevelRequestMsg( Battery whichBattery ) noexcept;
     BatteryLevelRequestMsg( MessageId id );
 
     virtual ~BatteryLevelRequestMsg() = default;
@@ -662,7 +667,7 @@ public:
 
     BatteryLevelUpdateMsg() noexcept;
     BatteryLevelUpdateMsg( TheData t ) noexcept; 
-    BatteryLevelUpdateMsg( std::uint8_t whichBattery, float level ) noexcept;
+    BatteryLevelUpdateMsg( Battery whichBattery, float level ) noexcept;
     BatteryLevelUpdateMsg( MessageId id );
 
     virtual ~BatteryLevelUpdateMsg() = default;
@@ -700,7 +705,7 @@ public:
 
     BatteryLowAlertMsg() noexcept;
     BatteryLowAlertMsg( TheData t ) noexcept; 
-    BatteryLowAlertMsg( std::uint8_t whichBattery, float level ) noexcept;
+    BatteryLowAlertMsg( Battery whichBattery, float level ) noexcept;
     BatteryLowAlertMsg( MessageId id );
 
     virtual ~BatteryLowAlertMsg() = default;
