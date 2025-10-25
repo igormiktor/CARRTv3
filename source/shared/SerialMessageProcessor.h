@@ -50,40 +50,41 @@ public:
 
 
     template <typename T>
-    void registerMessage( MessageId id )
+    void registerMessage( MsgId id )
     {
         static_assert( std::is_base_of<SerialMessage, T>::value, "MessageFactory::registerMessage(): Messages must derive from SerialMessage" );
-        if ( mCreators.find( id ) != mCreators.end() )
+        std::uint8_t idNum = std::to_underlying( id );
+        if ( mCreators.find( idNum ) != mCreators.end() )
         {
-            throw CarrtError( makeSharedErrorId( kSerialMsgDupeError, 1, id ), "Id dupe at registation" );
+            throw CarrtError( makeSharedErrorId( kSerialMsgDupeError, 1, idNum ), "Id dupe at registation" );
         }
-        mCreators[id] = &creator<T>;
+        mCreators[idNum] = &creator<T>;
     }
 
-    MsgPtr createMessage( MessageId id ) 
+    MsgPtr createMessage( MsgId id ) 
     {
-        auto it = mCreators.find( id );
+        auto it = mCreators.find( std::to_underlying( id ) );
         if ( it != mCreators.end() )  
         {
             return it->second( id );
         }
         // If we cannot find the id, return a special message, UnknownMsg.
-        int err = makeSharedErrorId( kSerialMsgUnknownError, 1, id );
-        return std::unique_ptr<SerialMessage>( new UnknownMsg(  id, err ) );
+        int err = makeSharedErrorId( kSerialMsgUnknownError, 1, std::to_underlying( id ) );
+        return std::unique_ptr<SerialMessage>( new UnknownMsg(  std::to_underlying( id ), err ) );
     }
 
 
 private:
 
     template <typename T>
-    static MsgPtr creator( MessageId id )
+    static MsgPtr creator( MsgId id )
     {
         // All SerialMessages must have a constructor that takes a uint8_t parameter (the ID)
         return MsgPtr( new T( id ) );
     }
 
-    typedef MsgPtr (*PCreator)( MessageId );
-    std::unordered_map<std::uint8_t, PCreator> mCreators;
+    typedef MsgPtr (*PCreator)( MsgId );
+    std::unordered_map< std::uint8_t, PCreator > mCreators;
 };
 
 
@@ -110,7 +111,7 @@ public:
     std::optional<MsgPtr> receiveMessageIfAvailable();
 
     template <typename T> 
-    void registerMessage( MessageId id )
+    void registerMessage( MsgId id )
     {
         mFactory.registerMessage<T>( id );
     }
@@ -119,8 +120,8 @@ public:
 
 private:
 
-    inline MsgPtr createMessageFromSerialLink( std::uint8_t id ) { return createMessageFromSerialLink( static_cast<MessageId>( id ) ); }
-    MsgPtr createMessageFromSerialLink( MessageId id );
+    inline MsgPtr createMessageFromSerialLink( std::uint8_t id ) { return createMessageFromSerialLink( static_cast<MsgId>( id ) ); }
+    MsgPtr createMessageFromSerialLink( MsgId id );
 
 
     MessageFactory      mFactory;

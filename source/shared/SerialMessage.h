@@ -36,7 +36,7 @@
 
 
 
-enum MessageId : std::uint8_t
+enum class MsgId : std::uint8_t
 {
     kNullMsg,
 
@@ -112,10 +112,10 @@ struct RawMessage
 {
 public:
 
-    RawMessage( MessageId id ) noexcept
+    RawMessage( MsgId id ) noexcept
     : mId{ id }, mMsg{} {}
 
-    RawMessage( MessageId id, TTuple t ) noexcept
+    RawMessage( MsgId id, TTuple t ) noexcept
     : mId{ id }, mMsg{ t } {}
 
 
@@ -181,7 +181,7 @@ public:
     }
 
 
-    MessageId   mId;
+    MsgId   mId;
     TTuple      mMsg;
 
 };
@@ -199,7 +199,7 @@ class SerialMessage
 {
 public:
 
-    SerialMessage( MessageId id ) noexcept {}
+    SerialMessage( MsgId id ) noexcept {}
 
     virtual ~SerialMessage() = default;
 
@@ -211,7 +211,7 @@ public:
 
     virtual bool needsAction() const noexcept = 0;
 
-    virtual std::uint8_t getId() const noexcept = 0;
+    virtual MsgId getId() const noexcept = 0;
 
 };
 
@@ -235,7 +235,7 @@ public:
     UnknownMsg() noexcept;
     UnknownMsg( TheData t ) noexcept; 
     UnknownMsg( std::uint8_t, int errorCode ) noexcept;
-    UnknownMsg( MessageId id );
+    UnknownMsg( MsgId id );
 
     virtual ~UnknownMsg() = default;
 
@@ -248,14 +248,14 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
 
     struct RawMessage<TheData>  mContent;
 
-    bool    mNeedsAction;
+    bool   mNeedsAction;
 };
 
 
@@ -269,7 +269,7 @@ class NoContentMsg : public SerialMessage
 public:
 
     NoContentMsg( std::uint8_t id ) noexcept;
-    NoContentMsg( MessageId id ) noexcept;
+    NoContentMsg( MsgId id ) noexcept;
 
     virtual ~NoContentMsg() = default;
 
@@ -282,14 +282,14 @@ public:
 
     virtual bool needsAction() const noexcept override;
 
-    virtual std::uint8_t getId() const noexcept override;
+    virtual MsgId getId() const noexcept override;
 
 
 protected:
 
-    MessageId   mId;
+    MsgId   mId;
 
-    bool    mNeedsAction;
+    bool        mNeedsAction;
 };
 
 

@@ -116,8 +116,8 @@ int main()
         gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
 
         SerialMessageProcessor smp( 10, rpi0 );
-        smp.registerMessage<TimerControlMsg>( kTimerControl );
-        smp.registerMessage<DebugLinkMsg>( kDebugSerialLink );
+        smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
+        smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
 
         // Tell RPi0 we are ready to receive messages
         PicoReadyMsg picoReady( to_ms_since_boot( get_absolute_time() ) );

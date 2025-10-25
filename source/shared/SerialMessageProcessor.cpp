@@ -50,7 +50,7 @@ SerialMessageProcessor::SerialMessageProcessor( int reserveSize, SerialLink& lin
 
 
 
-SerialMessageProcessor::MsgPtr SerialMessageProcessor::createMessageFromSerialLink( MessageId id )
+SerialMessageProcessor::MsgPtr SerialMessageProcessor::createMessageFromSerialLink( MsgId id )
 {
 //    SerialMessage* MsgPtr = mFactory.createMessage( id );
 //    auto msg = std::make_unique<SerialMessage>( MsgPtr );
@@ -66,7 +66,7 @@ std::optional<SerialMessageProcessor::MsgPtr> SerialMessageProcessor::receiveMes
     auto msgId = mLink.getMsgType();
     if ( msgId )
     {
-        return createMessageFromSerialLink( *msgId );
+        return createMessageFromSerialLink( static_cast<MsgId> ( *msgId ) );
     }
     else
     {

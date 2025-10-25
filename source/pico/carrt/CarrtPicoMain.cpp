@@ -151,7 +151,7 @@ int main()
         if ( rpi0.isReadable() )
         {
             auto msgType = rpi0.getMsgType();
-            if ( msgType && *msgType == kResetMsg )
+            if ( msgType && *msgType == std::to_underlying( MsgId::kResetMsg ) )
             {
                 PicoReset::reset( rpi0 );
             }
@@ -213,22 +213,22 @@ namespace
     {
         // Only register those messages we actually can receive
         // Messages that are only outgoing don't need to be registered
-        smp.registerMessage<NullMsg>( kNullMsg );
-    //  smp.registerMessage<PicoReadyMsg>( kPicoReady );
-    //  smp.registerMessage<PicoNavStatusUpdateMsg>( kPicoNavStatusUpdate );
-    //  smp.registerMessage<PicoSaysStopMsg>( kPicoSaysStop );
-        smp.registerMessage<MsgControlMsg>( kMsgControlMsg );
-        smp.registerMessage<ResetMsg>( kResetMsg );
-        smp.registerMessage<BeginCalibrationMsg>( kBeginCalibration );
-        smp.registerMessage<RequestCalibrationStatusMsg>( kRequestCalibStatus );
-    //  smp.registerMessage<SendCalibrationInfoMsg>( kSendCalibInfo );
-        smp.registerMessage<ResetBNO055Msg>( kResetBNO055 );
-    //  smp.registerMessage<TimerEventMsg>( kTimerEventMsg );
-        smp.registerMessage<TimerControlMsg>( kTimerControl );
-    //  smp.registerMessage<NavUpdateMsg>( kTimerNavUpdate );
-        smp.registerMessage<NavUpdateControlMsg>( kNavUpdateControl );
-        smp.registerMessage<TestPicoErrorRptMsg>( kTestPicoReportError );
-        smp.registerMessage<DebugLinkMsg>( kDebugSerialLink );
+        smp.registerMessage<NullMsg>( MsgId::kNullMsg );
+    //  smp.registerMessage<PicoReadyMsg>( MsgId::kPicoReady );
+    //  smp.registerMessage<PicoNavStatusUpdateMsg>( MsgId::kPicoNavStatusUpdate );
+    //  smp.registerMessage<PicoSaysStopMsg>( MsgId::kPicoSaysStop );
+        smp.registerMessage<MsgControlMsg>( MsgId::kMsgControlMsg );
+        smp.registerMessage<ResetMsg>( MsgId::kResetMsg );
+        smp.registerMessage<BeginCalibrationMsg>( MsgId::kBeginCalibration );
+        smp.registerMessage<RequestCalibrationStatusMsg>( MsgId::kRequestCalibStatus );
+    //  smp.registerMessage<SendCalibrationInfoMsg>( MsgId::kSendCalibInfo );
+        smp.registerMessage<ResetBNO055Msg>( MsgId::kResetBNO055 );
+    //  smp.registerMessage<TimerEventMsg>( MsgId::kTimerEventMsg );
+        smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
+    //  smp.registerMessage<NavUpdateMsg>( MsgId::kTimerNavUpdate );
+        smp.registerMessage<NavUpdateControlMsg>( MsgId::kNavUpdateControl );
+        smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
+        smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
     }
 
 
@@ -257,8 +257,8 @@ namespace
 
 
     void sendReady( SerialLinkPico& link )
-    {
-        PicoReadyMsg ready( kPicoReady );
+    {   uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
+        PicoReadyMsg ready( timeTick );
         ready.sendOut( link );
     }
 

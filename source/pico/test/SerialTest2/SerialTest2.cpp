@@ -128,20 +128,20 @@ int main()
             {
                 case Event::kNavUpdateEvent:
                     std::cout << "Nav " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, MessageId::kTimerNavUpdate );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( MsgId::kTimerNavUpdate ) );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, MessageId::kTimerEventMsg );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( MsgId::kTimerEventMsg ) );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( TimerEventMsg::k1QuarterSecondEvent ) );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
                     
                 case Event::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, MessageId::kTimerEventMsg );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( MsgId::kTimerEventMsg ) );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( TimerEventMsg::k1SecondEvent ) );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
@@ -150,7 +150,7 @@ int main()
                     
                 case Event::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
-                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, MessageId::kTimerEventMsg );
+                    uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( MsgId::kTimerEventMsg ) );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( TimerEventMsg::k8SecondEvent ) );
                     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;

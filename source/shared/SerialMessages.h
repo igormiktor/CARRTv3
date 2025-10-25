@@ -47,7 +47,7 @@ class NullMsg : public NoContentMsg
 public:
 
     NullMsg() noexcept;
-    NullMsg( MessageId id ) noexcept;
+    NullMsg( MsgId id ) noexcept;
 
     virtual ~NullMsg() = default;
 
@@ -70,7 +70,7 @@ public:
     PicoReadyMsg() noexcept;
     PicoReadyMsg( TheData t ) noexcept; 
     PicoReadyMsg( std::uint32_t time ) noexcept;
-    PicoReadyMsg( MessageId id );
+    PicoReadyMsg( MsgId id );
 
     virtual ~PicoReadyMsg() = default;
 
@@ -83,7 +83,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -108,7 +108,7 @@ public:
     PicoNavStatusUpdateMsg() noexcept;
     PicoNavStatusUpdateMsg( TheData t ) noexcept; 
     PicoNavStatusUpdateMsg( bool status, std::uint8_t m, std::uint8_t a, std::uint8_t g, std::uint8_t s ) noexcept;
-    PicoNavStatusUpdateMsg( MessageId id );
+    PicoNavStatusUpdateMsg( MsgId id );
 
     virtual ~PicoNavStatusUpdateMsg() = default;
 
@@ -121,7 +121,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -142,7 +142,7 @@ class PicoSaysStopMsg : public NoContentMsg
 public:
 
     PicoSaysStopMsg() noexcept;
-    PicoSaysStopMsg( MessageId id ) noexcept;
+    PicoSaysStopMsg( MsgId id ) noexcept;
 
     virtual ~PicoSaysStopMsg() = default;
 
@@ -177,7 +177,7 @@ public:
     MsgControlMsg() noexcept;
     MsgControlMsg( TheData t ) noexcept; 
     MsgControlMsg( bool val ) noexcept;
-    MsgControlMsg( MessageId id );
+    MsgControlMsg( MsgId id );
 
     virtual ~MsgControlMsg() = default;
 
@@ -190,7 +190,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -211,7 +211,7 @@ class ResetMsg : public NoContentMsg
 public:
 
     ResetMsg() noexcept;
-    ResetMsg( MessageId id ) noexcept;
+    ResetMsg( MsgId id ) noexcept;
 
     virtual ~ResetMsg() = default;
 
@@ -241,7 +241,7 @@ public:
     TimerEventMsg() noexcept;
     TimerEventMsg( TheData t ) noexcept; 
     TimerEventMsg( std::uint8_t which, int count, uint32_t time ) noexcept;
-    TimerEventMsg( MessageId id );
+    TimerEventMsg( MsgId id );
 
     virtual ~TimerEventMsg() = default;
 
@@ -254,7 +254,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -279,7 +279,7 @@ public:
     TimerControlMsg() noexcept;
     TimerControlMsg( TheData t ) noexcept; 
     TimerControlMsg( bool val ) noexcept;
-    TimerControlMsg( MessageId id );
+    TimerControlMsg( MsgId id );
 
     virtual ~TimerControlMsg() = default;
 
@@ -292,7 +292,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -313,7 +313,7 @@ class BeginCalibrationMsg : public NoContentMsg
 public:
 
     BeginCalibrationMsg() noexcept;
-    BeginCalibrationMsg( MessageId id ) noexcept;
+    BeginCalibrationMsg( MsgId id ) noexcept;
 
     virtual ~BeginCalibrationMsg() = default;
 
@@ -332,7 +332,7 @@ class RequestCalibrationStatusMsg : public NoContentMsg
 public:
 
     RequestCalibrationStatusMsg() noexcept;
-    RequestCalibrationStatusMsg( MessageId id ) noexcept;
+    RequestCalibrationStatusMsg( MsgId id ) noexcept;
 
     virtual ~RequestCalibrationStatusMsg() = default;
 
@@ -355,7 +355,7 @@ public:
     SendCalibrationInfoMsg() noexcept;
     SendCalibrationInfoMsg( TheData t ) noexcept; 
     SendCalibrationInfoMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept;
-    SendCalibrationInfoMsg( MessageId id );
+    SendCalibrationInfoMsg( MsgId id );
 
     virtual ~SendCalibrationInfoMsg() = default;
 
@@ -368,7 +368,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -389,7 +389,7 @@ class ResetBNO055Msg : public NoContentMsg
 public:
 
     ResetBNO055Msg() noexcept;
-    ResetBNO055Msg( MessageId id ) noexcept;
+    ResetBNO055Msg( MsgId id ) noexcept;
 
     virtual ~ResetBNO055Msg() = default;
 
@@ -412,7 +412,7 @@ public:
     NavUpdateMsg() noexcept;
     NavUpdateMsg( TheData t ) noexcept; 
     NavUpdateMsg( float heading, std::uint32_t time ) noexcept;
-    NavUpdateMsg( MessageId id );
+    NavUpdateMsg( MsgId id );
 
     virtual ~NavUpdateMsg() = default;
 
@@ -425,7 +425,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -450,7 +450,7 @@ public:
     NavUpdateControlMsg() noexcept;
     NavUpdateControlMsg( TheData t ) noexcept; 
     NavUpdateControlMsg( bool val ) noexcept;
-    NavUpdateControlMsg( MessageId id );
+    NavUpdateControlMsg( MsgId id );
 
     virtual ~NavUpdateControlMsg() = default;
 
@@ -463,7 +463,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -497,7 +497,7 @@ public:
     DrivingStatusUpdateMsg() noexcept;
     DrivingStatusUpdateMsg( TheData t ) noexcept; 
     DrivingStatusUpdateMsg( Drive driveStatus ) noexcept;
-    DrivingStatusUpdateMsg( MessageId id );
+    DrivingStatusUpdateMsg( MsgId id );
 
     virtual ~DrivingStatusUpdateMsg() = default;
 
@@ -510,7 +510,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -535,7 +535,7 @@ public:
     EncoderUpdateMsg() noexcept;
     EncoderUpdateMsg( TheData t ) noexcept; 
     EncoderUpdateMsg( int left, int right, std::uint32_t time ) noexcept;
-    EncoderUpdateMsg( MessageId id );
+    EncoderUpdateMsg( MsgId id );
 
     virtual ~EncoderUpdateMsg() = default;
 
@@ -548,7 +548,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -573,7 +573,7 @@ public:
     EncoderUpdateControlMsg() noexcept;
     EncoderUpdateControlMsg( TheData t ) noexcept; 
     EncoderUpdateControlMsg( bool val ) noexcept;
-    EncoderUpdateControlMsg( MessageId id );
+    EncoderUpdateControlMsg( MsgId id );
 
     virtual ~EncoderUpdateControlMsg() = default;
 
@@ -586,7 +586,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -625,7 +625,7 @@ public:
     BatteryLevelRequestMsg() noexcept;
     BatteryLevelRequestMsg( TheData t ) noexcept; 
     BatteryLevelRequestMsg( Battery whichBattery ) noexcept;
-    BatteryLevelRequestMsg( MessageId id );
+    BatteryLevelRequestMsg( MsgId id );
 
     virtual ~BatteryLevelRequestMsg() = default;
 
@@ -638,7 +638,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -663,7 +663,7 @@ public:
     BatteryLevelUpdateMsg() noexcept;
     BatteryLevelUpdateMsg( TheData t ) noexcept; 
     BatteryLevelUpdateMsg( Battery whichBattery, float level ) noexcept;
-    BatteryLevelUpdateMsg( MessageId id );
+    BatteryLevelUpdateMsg( MsgId id );
 
     virtual ~BatteryLevelUpdateMsg() = default;
 
@@ -676,7 +676,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -701,7 +701,7 @@ public:
     BatteryLowAlertMsg() noexcept;
     BatteryLowAlertMsg( TheData t ) noexcept; 
     BatteryLowAlertMsg( Battery whichBattery, float level ) noexcept;
-    BatteryLowAlertMsg( MessageId id );
+    BatteryLowAlertMsg( MsgId id );
 
     virtual ~BatteryLowAlertMsg() = default;
 
@@ -714,7 +714,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -739,7 +739,7 @@ public:
     ErrorReportMsg() noexcept;
     ErrorReportMsg( TheData t ) noexcept; 
     ErrorReportMsg( bool val, int errorCode ) noexcept;
-    ErrorReportMsg( MessageId id );
+    ErrorReportMsg( MsgId id );
 
     virtual ~ErrorReportMsg() = default;
 
@@ -752,7 +752,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -777,7 +777,7 @@ public:
     TestPicoErrorRptMsg() noexcept;
     TestPicoErrorRptMsg( TheData t ) noexcept; 
     TestPicoErrorRptMsg( bool makeItFatal, int errorCodeToTest ) noexcept;
-    TestPicoErrorRptMsg( MessageId id );
+    TestPicoErrorRptMsg( MsgId id );
 
     virtual ~TestPicoErrorRptMsg() = default;
 
@@ -790,7 +790,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:
@@ -815,7 +815,7 @@ public:
     DebugLinkMsg() noexcept;
     DebugLinkMsg( TheData t ) noexcept; 
     DebugLinkMsg( int val1, int val2 ) noexcept;
-    DebugLinkMsg( MessageId id );
+    DebugLinkMsg( MsgId id );
 
     virtual ~DebugLinkMsg() = default;
 
@@ -828,7 +828,7 @@ public:
 
     virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
-    virtual std::uint8_t getId() const noexcept override { return mContent.mId; }
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
 
 
 private:

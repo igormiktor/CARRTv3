@@ -35,27 +35,25 @@
 
 
 
-
-
 UnknownMsg::UnknownMsg() noexcept 
-: SerialMessage( kUnknownMessage ), mContent( kUnknownMessage ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kUnknownMessage ), mContent( MsgId::kUnknownMessage ), mNeedsAction{ false } 
 {}
 
 UnknownMsg::UnknownMsg( TheData t ) noexcept 
-: SerialMessage( kUnknownMessage ), mContent( kUnknownMessage, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kUnknownMessage ), mContent( MsgId::kUnknownMessage, t ), mNeedsAction{ true } 
 {} 
 
 UnknownMsg::UnknownMsg( std::uint8_t rcvdId, int errorCode ) noexcept 
-: SerialMessage( kUnknownMessage ), mContent( kUnknownMessage, std::make_tuple( rcvdId, errorCode ) ), 
+: SerialMessage( MsgId::kUnknownMessage ), mContent( MsgId::kUnknownMessage, std::make_tuple( rcvdId, errorCode ) ), 
     mNeedsAction{ true } 
 {}
 
-UnknownMsg::UnknownMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kUnknownMessage ), mNeedsAction{ false }
+UnknownMsg::UnknownMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kUnknownMessage ), mNeedsAction{ false }
 { 
-    if ( id != kUnknownMessage ) 
+    if ( id != MsgId::kUnknownMessage ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kUnknownMessage ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kUnknownMessage ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -93,12 +91,12 @@ void UnknownMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 NoContentMsg::NoContentMsg( std::uint8_t id ) noexcept
-: SerialMessage( static_cast<MessageId>( id ) ), mId{ id }, mNeedsAction{ false } 
+: SerialMessage( static_cast<MsgId>( id ) ), mId{ id }, mNeedsAction{ false } 
 {
     // Nothing to do
 }
 
-NoContentMsg::NoContentMsg( MessageId id ) noexcept
+NoContentMsg::NoContentMsg( MsgId id ) noexcept
 : SerialMessage( id ), mId{ id }, mNeedsAction{ true }
 {
     // Nothing to do
@@ -121,9 +119,9 @@ bool NoContentMsg::needsAction() const noexcept
     return mNeedsAction; 
 }
 
-std::uint8_t NoContentMsg::getId() const noexcept
+MsgId NoContentMsg::getId() const noexcept
 { 
-    return static_cast<std::uint8_t>( mId ); 
+    return mId; 
 }
 
 
@@ -137,13 +135,13 @@ std::uint8_t NoContentMsg::getId() const noexcept
 
 
 NullMsg::NullMsg() noexcept
-: NoContentMsg( kNullMsg )
+: NoContentMsg( MsgId::kNullMsg )
 {
     mNeedsAction = true;
 }
 
-NullMsg::NullMsg( MessageId id ) noexcept
-: NoContentMsg( kNullMsg )
+NullMsg::NullMsg( MsgId id ) noexcept
+: NoContentMsg( MsgId::kNullMsg )
 {
     // Nothing to do
 }
@@ -169,23 +167,23 @@ void NullMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 PicoReadyMsg::PicoReadyMsg() noexcept 
-: SerialMessage( kPicoReady ), mContent( kPicoReady ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kPicoReady ), mContent( MsgId::kPicoReady ), mNeedsAction{ false } 
 {}
 
 PicoReadyMsg::PicoReadyMsg( TheData t ) noexcept 
-: SerialMessage( kPicoReady ), mContent( kPicoReady, t ), mNeedsAction{ true }
+: SerialMessage( MsgId::kPicoReady ), mContent( MsgId::kPicoReady, t ), mNeedsAction{ true }
 {} 
 
 PicoReadyMsg::PicoReadyMsg( std::uint32_t time ) noexcept 
-: SerialMessage( kPicoReady ), mContent( kPicoReady, std::make_tuple( static_cast<std::uint32_t>( time ) ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kPicoReady ), mContent( MsgId::kPicoReady, std::make_tuple( static_cast<std::uint32_t>( time ) ) ), mNeedsAction{ true } 
 {}
 
-PicoReadyMsg::PicoReadyMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kPicoReady ), mNeedsAction{ false }
+PicoReadyMsg::PicoReadyMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kPicoReady ), mNeedsAction{ false }
 { 
-    if ( id != kPicoReady ) 
+    if ( id != MsgId::kPicoReady ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kPicoReady ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kPicoReady ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -222,23 +220,23 @@ void PicoReadyMsg::takeAction( EventManager&, SerialLink& link )
 
 
 PicoNavStatusUpdateMsg::PicoNavStatusUpdateMsg() noexcept 
-: SerialMessage( kPicoNavStatusUpdate ), mContent( kPicoNavStatusUpdate ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kPicoNavStatusUpdate ), mContent( MsgId::kPicoNavStatusUpdate ), mNeedsAction{ false } 
 {}
 
 PicoNavStatusUpdateMsg::PicoNavStatusUpdateMsg( TheData t ) noexcept 
-: SerialMessage( kPicoNavStatusUpdate ), mContent( kPicoNavStatusUpdate, t ), mNeedsAction{ true }
+: SerialMessage( MsgId::kPicoNavStatusUpdate ), mContent( MsgId::kPicoNavStatusUpdate, t ), mNeedsAction{ true }
 {} 
 
 PicoNavStatusUpdateMsg::PicoNavStatusUpdateMsg( bool status, std::uint8_t m, std::uint8_t a, std::uint8_t g, std::uint8_t s ) noexcept 
-: SerialMessage( kPicoNavStatusUpdate ), mContent( kPicoNavStatusUpdate, std::make_tuple( status, m, a, g, s ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kPicoNavStatusUpdate ), mContent( MsgId::kPicoNavStatusUpdate, std::make_tuple( status, m, a, g, s ) ), mNeedsAction{ true } 
 {}
 
-PicoNavStatusUpdateMsg::PicoNavStatusUpdateMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kPicoNavStatusUpdate ), mNeedsAction{ false }
+PicoNavStatusUpdateMsg::PicoNavStatusUpdateMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kPicoNavStatusUpdate ), mNeedsAction{ false }
 { 
-    if ( id != kPicoNavStatusUpdate ) 
+    if ( id != MsgId::kPicoNavStatusUpdate ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kPicoNavStatusUpdate ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kPicoNavStatusUpdate ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -275,12 +273,12 @@ void PicoNavStatusUpdateMsg::takeAction( EventManager&, SerialLink& link )
 
 
 PicoSaysStopMsg::PicoSaysStopMsg() noexcept
-: NoContentMsg( kPicoSaysStop )
+: NoContentMsg( MsgId::kPicoSaysStop )
 {
     mNeedsAction = true;
 }
 
-PicoSaysStopMsg::PicoSaysStopMsg( MessageId id ) noexcept
+PicoSaysStopMsg::PicoSaysStopMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
     // Nothing to do
@@ -307,23 +305,23 @@ void PicoSaysStopMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 MsgControlMsg::MsgControlMsg() noexcept 
-: SerialMessage( kMsgControlMsg ), mContent( kMsgControlMsg ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kMsgControlMsg ), mContent( MsgId::kMsgControlMsg ), mNeedsAction{ false } 
 {}
 
 MsgControlMsg::MsgControlMsg( TheData t ) noexcept 
-: SerialMessage( kMsgControlMsg ), mContent( kMsgControlMsg, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kMsgControlMsg ), mContent( MsgId::kMsgControlMsg, t ), mNeedsAction{ true } 
 {} 
 
 MsgControlMsg::MsgControlMsg( bool val ) noexcept 
-: SerialMessage( kMsgControlMsg ), mContent( kMsgControlMsg, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kMsgControlMsg ), mContent( MsgId::kMsgControlMsg, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
 {}
 
-MsgControlMsg::MsgControlMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kMsgControlMsg ), mNeedsAction{ false }
+MsgControlMsg::MsgControlMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kMsgControlMsg ), mNeedsAction{ false }
 { 
-    if ( id != kMsgControlMsg ) 
+    if ( id != MsgId::kMsgControlMsg ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kMsgControlMsg ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kMsgControlMsg ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -366,12 +364,12 @@ void MsgControlMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 ResetMsg::ResetMsg() noexcept
-: NoContentMsg( kResetMsg )
+: NoContentMsg( MsgId::kResetMsg )
 {
     mNeedsAction = true;
 }
 
-ResetMsg::ResetMsg( MessageId id ) noexcept
+ResetMsg::ResetMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
     // Nothing to do
@@ -397,23 +395,23 @@ void ResetMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 TimerEventMsg::TimerEventMsg() noexcept 
-: SerialMessage( kTimerEventMsg ), mContent( kTimerEventMsg ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kTimerEventMsg ), mContent( MsgId::kTimerEventMsg ), mNeedsAction{ false } 
 {}
 
 TimerEventMsg::TimerEventMsg( TheData t ) noexcept 
-: SerialMessage( kTimerEventMsg ), mContent( kTimerEventMsg, t ), mNeedsAction{ true }
+: SerialMessage( MsgId::kTimerEventMsg ), mContent( MsgId::kTimerEventMsg, t ), mNeedsAction{ true }
 {} 
 
 TimerEventMsg::TimerEventMsg( std::uint8_t which, int count, uint32_t time ) noexcept 
-: SerialMessage( kTimerEventMsg ), mContent( kTimerEventMsg, std::make_tuple( which, count, time ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kTimerEventMsg ), mContent( MsgId::kTimerEventMsg, std::make_tuple( which, count, time ) ), mNeedsAction{ true } 
 {}
 
-TimerEventMsg::TimerEventMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kTimerEventMsg ), mNeedsAction{ false }
+TimerEventMsg::TimerEventMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kTimerEventMsg ), mNeedsAction{ false }
 { 
-    if ( id != kTimerEventMsg ) 
+    if ( id != MsgId::kTimerEventMsg ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kTimerEventMsg ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kTimerEventMsg ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -449,23 +447,23 @@ void TimerEventMsg::takeAction( EventManager&, SerialLink& link )
 
 
 TimerControlMsg::TimerControlMsg() noexcept 
-: SerialMessage( kTimerControl ), mContent( kTimerControl ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kTimerControl ), mContent( MsgId::kTimerControl ), mNeedsAction{ false } 
 {}
 
 TimerControlMsg::TimerControlMsg( TheData t ) noexcept 
-: SerialMessage( kTimerControl ), mContent( kTimerControl, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kTimerControl ), mContent( MsgId::kTimerControl, t ), mNeedsAction{ true } 
 {} 
 
 TimerControlMsg::TimerControlMsg( bool val ) noexcept 
-: SerialMessage( kTimerControl ), mContent( kTimerControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kTimerControl ), mContent( MsgId::kTimerControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
 {}
 
-TimerControlMsg::TimerControlMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kTimerControl ), mNeedsAction{ false }
+TimerControlMsg::TimerControlMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kTimerControl ), mNeedsAction{ false }
 { 
-    if ( id != kTimerControl ) 
+    if ( id != MsgId::kTimerControl ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kTimerControl ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kTimerControl ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -503,12 +501,12 @@ void TimerControlMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 BeginCalibrationMsg::BeginCalibrationMsg() noexcept
-: NoContentMsg( kBeginCalibration )
+: NoContentMsg( MsgId::kBeginCalibration )
 {
     mNeedsAction = true;
 }
 
-BeginCalibrationMsg::BeginCalibrationMsg( MessageId id ) noexcept
+BeginCalibrationMsg::BeginCalibrationMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
     // Nothing to do
@@ -535,12 +533,12 @@ void BeginCalibrationMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 RequestCalibrationStatusMsg::RequestCalibrationStatusMsg() noexcept
-: NoContentMsg( kRequestCalibStatus )
+: NoContentMsg( MsgId::kRequestCalibStatus )
 {
     mNeedsAction = true;
 }
 
-RequestCalibrationStatusMsg::RequestCalibrationStatusMsg( MessageId id ) noexcept
+RequestCalibrationStatusMsg::RequestCalibrationStatusMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
     // Nothing to do
@@ -574,25 +572,25 @@ void RequestCalibrationStatusMsg::takeAction( EventManager& events, SerialLink& 
 
 
 SendCalibrationInfoMsg::SendCalibrationInfoMsg() noexcept
-: SerialMessage( kSendCalibInfo ), mContent( kSendCalibInfo ), mNeedsAction{ false }
+: SerialMessage( MsgId::kSendCalibInfo ), mContent( MsgId::kSendCalibInfo ), mNeedsAction{ false }
 {}
 
 SendCalibrationInfoMsg::SendCalibrationInfoMsg( TheData t ) noexcept
-: SerialMessage( kSendCalibInfo ), mContent( kSendCalibInfo, t ), mNeedsAction{ true }
+: SerialMessage( MsgId::kSendCalibInfo ), mContent( MsgId::kSendCalibInfo, t ), mNeedsAction{ true }
 {}
 
 
 SendCalibrationInfoMsg::SendCalibrationInfoMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept
-: SerialMessage( kSendCalibInfo ), mContent( kSendCalibInfo, std::make_tuple( mag, accel, gyro, sys) ), mNeedsAction{ true }
+: SerialMessage( MsgId::kSendCalibInfo ), mContent( MsgId::kSendCalibInfo, std::make_tuple( mag, accel, gyro, sys) ), mNeedsAction{ true }
 {}
 
 
-SendCalibrationInfoMsg::SendCalibrationInfoMsg( MessageId id )
-: SerialMessage( id ), mContent( kSendCalibInfo ), mNeedsAction{ false }
+SendCalibrationInfoMsg::SendCalibrationInfoMsg( MsgId id )
+: SerialMessage( id ), mContent( MsgId::kSendCalibInfo ), mNeedsAction{ false }
 {
-    if ( id != kSendCalibInfo ) 
+    if ( id != MsgId::kSendCalibInfo ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kSendCalibInfo ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,std::to_underlying( MsgId::kSendCalibInfo ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -632,12 +630,12 @@ void SendCalibrationInfoMsg::takeAction( EventManager& events, SerialLink& link 
 
 
 ResetBNO055Msg::ResetBNO055Msg() noexcept
-: NoContentMsg( kResetBNO055 )
+: NoContentMsg( MsgId::kResetBNO055 )
 {
     mNeedsAction = true;
 }
 
-ResetBNO055Msg::ResetBNO055Msg( MessageId id ) noexcept
+ResetBNO055Msg::ResetBNO055Msg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
     // Nothing to do
@@ -663,25 +661,25 @@ void ResetBNO055Msg::takeAction( EventManager& events, SerialLink& link )
 
 
 NavUpdateMsg::NavUpdateMsg() noexcept
-: SerialMessage( kTimerNavUpdate ), mContent( kTimerNavUpdate ), mNeedsAction{ false }
+: SerialMessage( MsgId::kTimerNavUpdate ), mContent( MsgId::kTimerNavUpdate ), mNeedsAction{ false }
 {}
 
 NavUpdateMsg::NavUpdateMsg( TheData t ) noexcept
-: SerialMessage( kTimerNavUpdate ), mContent( kTimerNavUpdate, t ), mNeedsAction{ true }
+: SerialMessage( MsgId::kTimerNavUpdate ), mContent( MsgId::kTimerNavUpdate, t ), mNeedsAction{ true }
 {}
 
 
 NavUpdateMsg::NavUpdateMsg(  float heading, std::uint32_t time  ) noexcept
-: SerialMessage( kTimerNavUpdate ), mContent( kTimerNavUpdate, std::make_tuple( heading, time ) ), mNeedsAction{ true }
+: SerialMessage( MsgId::kTimerNavUpdate ), mContent( MsgId::kTimerNavUpdate, std::make_tuple( heading, time ) ), mNeedsAction{ true }
 {}
 
 
-NavUpdateMsg::NavUpdateMsg( MessageId id )
-: SerialMessage( kTimerNavUpdate ), mContent( kTimerNavUpdate ), mNeedsAction{ false }
+NavUpdateMsg::NavUpdateMsg( MsgId id )
+: SerialMessage( MsgId::kTimerNavUpdate ), mContent( MsgId::kTimerNavUpdate ), mNeedsAction{ false }
 {
-    if ( id != kTimerNavUpdate ) 
+    if ( id != MsgId::kTimerNavUpdate ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kTimerNavUpdate ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kTimerNavUpdate ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -719,23 +717,23 @@ void NavUpdateMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 NavUpdateControlMsg::NavUpdateControlMsg() noexcept 
-: SerialMessage( kNavUpdateControl ), mContent( kNavUpdateControl ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kNavUpdateControl ), mContent( MsgId::kNavUpdateControl ), mNeedsAction{ false } 
 {}
 
 NavUpdateControlMsg::NavUpdateControlMsg( TheData t ) noexcept 
-: SerialMessage( kNavUpdateControl ), mContent( kNavUpdateControl, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kNavUpdateControl ), mContent( MsgId::kNavUpdateControl, t ), mNeedsAction{ true } 
 {} 
 
 NavUpdateControlMsg::NavUpdateControlMsg( bool val ) noexcept 
-: SerialMessage( kNavUpdateControl ), mContent( kNavUpdateControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kNavUpdateControl ), mContent( MsgId::kNavUpdateControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
 {}
 
-NavUpdateControlMsg::NavUpdateControlMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kNavUpdateControl ), mNeedsAction{ false }
+NavUpdateControlMsg::NavUpdateControlMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kNavUpdateControl ), mNeedsAction{ false }
 { 
-    if ( id != kNavUpdateControl ) 
+    if ( id != MsgId::kNavUpdateControl ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kNavUpdateControl ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,std::to_underlying( MsgId::kNavUpdateControl ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -772,23 +770,23 @@ void NavUpdateControlMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 DrivingStatusUpdateMsg::DrivingStatusUpdateMsg() noexcept 
-: SerialMessage( kDrivingStatusUpdate ), mContent( kDrivingStatusUpdate ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kDrivingStatusUpdate ), mContent( MsgId::kDrivingStatusUpdate ), mNeedsAction{ false } 
 {}
 
 DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( TheData t ) noexcept 
-: SerialMessage( kDrivingStatusUpdate ), mContent( kDrivingStatusUpdate, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kDrivingStatusUpdate ), mContent( MsgId::kDrivingStatusUpdate, t ), mNeedsAction{ true } 
 {} 
 
 DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( Drive driveStatus ) noexcept 
-: SerialMessage( kDrivingStatusUpdate ), mContent( kDrivingStatusUpdate, std::make_tuple( std::to_underlying( driveStatus ) ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kDrivingStatusUpdate ), mContent( MsgId::kDrivingStatusUpdate, std::make_tuple( std::to_underlying( driveStatus ) ) ), mNeedsAction{ true } 
 {}
 
-DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kDrivingStatusUpdate ), mNeedsAction{ false }
+DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kDrivingStatusUpdate ), mNeedsAction{ false }
 { 
-    if ( id != kDrivingStatusUpdate ) 
+    if ( id != MsgId::kDrivingStatusUpdate ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kDrivingStatusUpdate ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kDrivingStatusUpdate ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -827,23 +825,23 @@ void DrivingStatusUpdateMsg::takeAction( EventManager& events, SerialLink& link 
 
 
 EncoderUpdateMsg::EncoderUpdateMsg() noexcept 
-: SerialMessage( kEncoderUpdate ), mContent( kEncoderUpdate ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kEncoderUpdate ), mContent( MsgId::kEncoderUpdate ), mNeedsAction{ false } 
 {}
 
 EncoderUpdateMsg::EncoderUpdateMsg( TheData t ) noexcept 
-: SerialMessage( kEncoderUpdate ), mContent( kEncoderUpdate, t ), mNeedsAction{ true }
+: SerialMessage( MsgId::kEncoderUpdate ), mContent( MsgId::kEncoderUpdate, t ), mNeedsAction{ true }
 {} 
 
 EncoderUpdateMsg::EncoderUpdateMsg( int left, int right, uint32_t time ) noexcept 
-: SerialMessage( kEncoderUpdate ), mContent( kEncoderUpdate, std::make_tuple( left, right, time ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kEncoderUpdate ), mContent( MsgId::kEncoderUpdate, std::make_tuple( left, right, time ) ), mNeedsAction{ true } 
 {}
 
-EncoderUpdateMsg::EncoderUpdateMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kEncoderUpdate ), mNeedsAction{ false }
+EncoderUpdateMsg::EncoderUpdateMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kEncoderUpdate ), mNeedsAction{ false }
 { 
-    if ( id != kEncoderUpdate ) 
+    if ( id != MsgId::kEncoderUpdate ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kEncoderUpdate ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kEncoderUpdate ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -879,23 +877,23 @@ void EncoderUpdateMsg::takeAction( EventManager&, SerialLink& link )
 
 
 EncoderUpdateControlMsg::EncoderUpdateControlMsg() noexcept 
-: SerialMessage( kEncoderUpdateControl ), mContent( kEncoderUpdateControl ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kEncoderUpdateControl ), mContent( MsgId::kEncoderUpdateControl ), mNeedsAction{ false } 
 {}
 
 EncoderUpdateControlMsg::EncoderUpdateControlMsg( TheData t ) noexcept 
-: SerialMessage( kEncoderUpdateControl ), mContent( kEncoderUpdateControl, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kEncoderUpdateControl ), mContent( MsgId::kEncoderUpdateControl, t ), mNeedsAction{ true } 
 {} 
 
 EncoderUpdateControlMsg::EncoderUpdateControlMsg( bool val ) noexcept 
-: SerialMessage( kEncoderUpdateControl ), mContent( kEncoderUpdateControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kEncoderUpdateControl ), mContent( MsgId::kEncoderUpdateControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
 {}
 
-EncoderUpdateControlMsg::EncoderUpdateControlMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kEncoderUpdateControl ), mNeedsAction{ false }
+EncoderUpdateControlMsg::EncoderUpdateControlMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kEncoderUpdateControl ), mNeedsAction{ false }
 { 
-    if ( id != kEncoderUpdateControl ) 
+    if ( id != MsgId::kEncoderUpdateControl ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kEncoderUpdateControl ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kEncoderUpdateControl ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -932,23 +930,23 @@ void EncoderUpdateControlMsg::takeAction( EventManager& events, SerialLink& link
 
 
 BatteryLevelRequestMsg::BatteryLevelRequestMsg() noexcept 
-: SerialMessage( kBatteryLevelRequest ), mContent( kBatteryLevelRequest ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kBatteryLevelRequest ), mContent( MsgId::kBatteryLevelRequest ), mNeedsAction{ false } 
 {}
 
 BatteryLevelRequestMsg::BatteryLevelRequestMsg( TheData t ) noexcept 
-: SerialMessage( kBatteryLevelRequest ), mContent( kBatteryLevelRequest, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kBatteryLevelRequest ), mContent( MsgId::kBatteryLevelRequest, t ), mNeedsAction{ true } 
 {} 
 
 BatteryLevelRequestMsg::BatteryLevelRequestMsg( Battery whichBattery ) noexcept 
-: SerialMessage( kBatteryLevelRequest ), mContent( kBatteryLevelRequest, std::make_tuple( std::to_underlying( whichBattery ) ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kBatteryLevelRequest ), mContent( MsgId::kBatteryLevelRequest, std::make_tuple( std::to_underlying( whichBattery ) ) ), mNeedsAction{ true } 
 {}
 
-BatteryLevelRequestMsg::BatteryLevelRequestMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kBatteryLevelRequest ), mNeedsAction{ false }
+BatteryLevelRequestMsg::BatteryLevelRequestMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kBatteryLevelRequest ), mNeedsAction{ false }
 { 
-    if ( id != kBatteryLevelRequest ) 
+    if ( id != MsgId::kBatteryLevelRequest ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kBatteryLevelRequest ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kBatteryLevelRequest ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -1000,24 +998,24 @@ void BatteryLevelRequestMsg::takeAction( EventManager& events, SerialLink& link 
 
 
 BatteryLevelUpdateMsg::BatteryLevelUpdateMsg() noexcept 
-: SerialMessage( kBatteryLevelUpdate ), mContent( kBatteryLevelUpdate ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kBatteryLevelUpdate ), mContent( MsgId::kBatteryLevelUpdate ), mNeedsAction{ false } 
 {}
 
 BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( TheData t ) noexcept 
-: SerialMessage( kBatteryLevelUpdate ), mContent( kBatteryLevelUpdate, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kBatteryLevelUpdate ), mContent( MsgId::kBatteryLevelUpdate, t ), mNeedsAction{ true } 
 {} 
 
 BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( Battery whichBattery, float level ) noexcept 
-: SerialMessage( kBatteryLevelUpdate ), mContent( kBatteryLevelUpdate, std::make_tuple( std::to_underlying( whichBattery ), level ) ), 
+: SerialMessage( MsgId::kBatteryLevelUpdate ), mContent( MsgId::kBatteryLevelUpdate, std::make_tuple( std::to_underlying( whichBattery ), level ) ), 
     mNeedsAction{ true } 
 {}
 
-BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kBatteryLevelUpdate ), mNeedsAction{ false }
+BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kBatteryLevelUpdate ), mNeedsAction{ false }
 { 
-    if ( id != kBatteryLevelUpdate ) 
+    if ( id != MsgId::kBatteryLevelUpdate ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kBatteryLevelUpdate ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kBatteryLevelUpdate ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -1053,24 +1051,24 @@ void BatteryLevelUpdateMsg::takeAction( EventManager&, SerialLink& link )
 
 
 BatteryLowAlertMsg::BatteryLowAlertMsg() noexcept 
-: SerialMessage( kBatteryLowAlert ), mContent( kBatteryLowAlert ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kBatteryLowAlert ), mContent( MsgId::kBatteryLowAlert ), mNeedsAction{ false } 
 {}
 
 BatteryLowAlertMsg::BatteryLowAlertMsg( TheData t ) noexcept 
-: SerialMessage( kBatteryLowAlert ), mContent( kBatteryLowAlert, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kBatteryLowAlert ), mContent( MsgId::kBatteryLowAlert, t ), mNeedsAction{ true } 
 {} 
 
 BatteryLowAlertMsg::BatteryLowAlertMsg( Battery whichBattery, float level ) noexcept 
-: SerialMessage( kBatteryLowAlert ), mContent( kBatteryLowAlert, std::make_tuple( std::to_underlying( whichBattery ), level ) ), 
+: SerialMessage( MsgId::kBatteryLowAlert ), mContent( MsgId::kBatteryLowAlert, std::make_tuple( std::to_underlying( whichBattery ), level ) ), 
     mNeedsAction{ true } 
 {}
 
-BatteryLowAlertMsg::BatteryLowAlertMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kBatteryLowAlert ), mNeedsAction{ false }
+BatteryLowAlertMsg::BatteryLowAlertMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kBatteryLowAlert ), mNeedsAction{ false }
 { 
-    if ( id != kBatteryLowAlert ) 
+    if ( id != MsgId::kBatteryLowAlert ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kBatteryLowAlert ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kBatteryLowAlert ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -1107,24 +1105,24 @@ void BatteryLowAlertMsg::takeAction( EventManager&, SerialLink& link )
 
 
 ErrorReportMsg::ErrorReportMsg() noexcept 
-: SerialMessage( kErrorReportFromPico ), mContent( kErrorReportFromPico ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico ), mNeedsAction{ false } 
 {}
 
 ErrorReportMsg::ErrorReportMsg( TheData t ) noexcept 
-: SerialMessage( kErrorReportFromPico ), mContent( kErrorReportFromPico, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, t ), mNeedsAction{ true } 
 {} 
 
 ErrorReportMsg::ErrorReportMsg( bool val, int errorCode ) noexcept 
-: SerialMessage( kErrorReportFromPico ), mContent( kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ) ), 
+: SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ) ), 
     mNeedsAction{ true } 
 {}
 
-ErrorReportMsg::ErrorReportMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kErrorReportFromPico ), mNeedsAction{ false }
+ErrorReportMsg::ErrorReportMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kErrorReportFromPico ), mNeedsAction{ false }
 { 
-    if ( id != kErrorReportFromPico ) 
+    if ( id != MsgId::kErrorReportFromPico ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kErrorReportFromPico ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kErrorReportFromPico ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -1160,24 +1158,24 @@ void ErrorReportMsg::takeAction( EventManager&, SerialLink& link )
 
 
 TestPicoErrorRptMsg::TestPicoErrorRptMsg() noexcept 
-: SerialMessage( kTestPicoReportError ), mContent( kTestPicoReportError ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kTestPicoReportError ), mContent( MsgId::kTestPicoReportError ), mNeedsAction{ false } 
 {}
 
 TestPicoErrorRptMsg::TestPicoErrorRptMsg( TheData t ) noexcept 
-: SerialMessage( kTestPicoReportError ), mContent( kTestPicoReportError, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kTestPicoReportError ), mContent( MsgId::kTestPicoReportError, t ), mNeedsAction{ true } 
 {} 
 
 TestPicoErrorRptMsg::TestPicoErrorRptMsg( bool makeItFatal, int errorCodeToReport ) noexcept 
-: SerialMessage( kTestPicoReportError ), mContent( kTestPicoReportError, std::make_tuple( static_cast<std::uint8_t>( makeItFatal ), errorCodeToReport ) ), 
+: SerialMessage( MsgId::kTestPicoReportError ), mContent( MsgId::kTestPicoReportError, std::make_tuple( static_cast<std::uint8_t>( makeItFatal ), errorCodeToReport ) ), 
     mNeedsAction{ true } 
 {}
 
-TestPicoErrorRptMsg::TestPicoErrorRptMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kTestPicoReportError ), mNeedsAction{ false }
+TestPicoErrorRptMsg::TestPicoErrorRptMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kTestPicoReportError ), mNeedsAction{ false }
 { 
-    if ( id != kTestPicoReportError ) 
+    if ( id != MsgId::kTestPicoReportError ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kTestPicoReportError ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kTestPicoReportError ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
@@ -1218,23 +1216,23 @@ void TestPicoErrorRptMsg::takeAction( EventManager&, SerialLink& link )
 
 
 DebugLinkMsg::DebugLinkMsg() noexcept 
-: SerialMessage( kDebugSerialLink ), mContent( kDebugSerialLink ), mNeedsAction{ false } 
+: SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink ), mNeedsAction{ false } 
 {}
 
 DebugLinkMsg::DebugLinkMsg( TheData t ) noexcept 
-: SerialMessage( kDebugSerialLink ), mContent( kDebugSerialLink, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, t ), mNeedsAction{ true } 
 {} 
 
 DebugLinkMsg::DebugLinkMsg( int val1, int val2 ) noexcept 
-: SerialMessage( kDebugSerialLink ), mContent( kDebugSerialLink, std::make_tuple( val1, val2 ) ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, std::make_tuple( val1, val2 ) ), mNeedsAction{ true } 
 {}
 
-DebugLinkMsg::DebugLinkMsg( MessageId id ) 
-: SerialMessage( id ), mContent( kDebugSerialLink ), mNeedsAction{ false }          
+DebugLinkMsg::DebugLinkMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kDebugSerialLink ), mNeedsAction{ false }          
 { 
-    if ( id != kDebugSerialLink ) 
+    if ( id != MsgId::kDebugSerialLink ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, kDebugSerialLink ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kDebugSerialLink ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
