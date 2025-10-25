@@ -61,7 +61,7 @@ void callbackLeftEncoder( uint, uint32_t events )
         direction = 1;;
     }
 
-    Events().queueEvent( kEncoderLeftEvent, direction, tick );
+    Events().queueEvent( EventId::kEncoderLeftEvent, direction, tick );
 
     return;
 }
@@ -91,7 +91,7 @@ void callbackRightEncoder( uint, uint32_t events )
         direction = 1;
     }
 
-    Events().queueEvent( kEncoderRightEvent, direction, tick );
+    Events().queueEvent( EventId::kEncoderRightEvent, direction, tick );
     
     return;
 }

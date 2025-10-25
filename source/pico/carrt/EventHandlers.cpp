@@ -34,7 +34,7 @@
 
 
 
-void NullEventHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void NullEventHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     output2cout( "Got a Null event" );
 }
@@ -43,7 +43,7 @@ void NullEventHandler::handleEvent( EventManager& events, SerialLink& link, int 
 // ********************** Timer event handlers
 
 
-void QuarterSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void QuarterSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     if ( PicoState::wantTimerMsgs() )
     {
@@ -53,7 +53,7 @@ void QuarterSecondTimerHandler::handleEvent( EventManager& events, SerialLink& l
 }
 
 
-void OneSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void OneSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     if ( PicoState::wantTimerMsgs() )
     {
@@ -63,7 +63,7 @@ void OneSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link,
 }
 
 
-void EightSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void EightSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     if ( PicoState::wantTimerMsgs() )
     {
@@ -76,7 +76,7 @@ void EightSecondTimerHandler::handleEvent( EventManager& events, SerialLink& lin
 // ********************** BNO055/navigation event handlers
 
 
-void NavUpdateHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void NavUpdateHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     if ( PicoState::navCalibrated() && PicoState::wantNavMsgs() )
     {
@@ -88,30 +88,30 @@ void NavUpdateHandler::handleEvent( EventManager& events, SerialLink& link, int 
 }
 
 
-void InitializeBNO055Handler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void InitializeBNO055Handler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     // Note this call includes internal delay of ~600ms
     BNO055::init();
 
     // Because delay built into BNO055init() at driver level, can trigger BeginCalibration without delay
-    events.queueEvent( kBNO055BeginCalibrationEvent );
+    events.queueEvent( EventId::kBNO055BeginCalibrationEvent );
     
     output2cout( "Got BNO055 initialize event" );
 }
 
 
-void BNO055ResetHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void BNO055ResetHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     // Note this call is followed by 650ms wait before we can call init()
     BNO055::reset();
     PicoState::navCalibrated( false );
-    Core1::queueEventForCore1( kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
+    Core1::queueEventForCore1( EventId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
 
     output2cout( "Got BNO055 reset event" );
 }
 
 
-void BeginCalibrationHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void BeginCalibrationHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     output2cout( "Got begin calibration event" );
     PicoState::navCalibrated( false );
@@ -119,7 +119,7 @@ void BeginCalibrationHandler::handleEvent( EventManager& events, SerialLink& lin
 }
 
 
-void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     auto calibData{ BNO055::getCalibration() };
     bool status = BNO055::calibrationGood( calibData );
@@ -169,7 +169,7 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
 // ********************** Pulse LED event handlers
 
 
-void PulsePicoLedHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void PulsePicoLedHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     HeartBeatLed::toggle();
 }
@@ -184,7 +184,7 @@ void PulsePicoLedHandler::handleEvent( EventManager& events, SerialLink& link, i
 // ********************** Pico Reset event handlers
 
 
-void PicoResetHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void PicoResetHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     PicoReset::reset( link );
 }
@@ -193,7 +193,7 @@ void PicoResetHandler::handleEvent( EventManager& events, SerialLink& link, int 
 // ********************** Error event handlers
 
 
-void ErrorEventHandler::handleEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, std::uint32_t eventTime ) const
+void ErrorEventHandler::handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
     output2cout( "Got an error event in the event queue", eventParam );
 

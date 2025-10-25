@@ -29,6 +29,7 @@
 #include "pico/stdlib.h"
 #include "pico/util/queue.h"
 
+#include <utility>
 
 #if 0
 #include "Utils/DebuggingMacros.h"
@@ -84,7 +85,7 @@ EventManager::EventManager()
 
 
 
-bool EventManager::getNextEvent( int* eventCode, int* param, uint32_t* time )
+bool EventManager::getNextEvent( EventId* eventCode, int* param, uint32_t* time )
 {
     Event e;
 
@@ -92,7 +93,7 @@ bool EventManager::getNextEvent( int* eventCode, int* param, uint32_t* time )
     if ( queue_try_remove( &mHighPriorityQueue, reinterpret_cast<void*>( &e ) )
         || queue_try_remove( &mLowPriorityQueue, reinterpret_cast<void*>( &e ) ) )
     {
-        *eventCode = e.mCode;
+        *eventCode = static_cast<EventId>( e.mCode );
         *param = e.mParam;
         if ( time )
         {
@@ -140,9 +141,9 @@ int EventManager::getNumEventsInQueue( EventPriority pri )
 
 
 
-bool EventManager::queueEvent( int eventCode, int eventParam, uint32_t eventTime, EventPriority pri )
+bool EventManager::queueEvent( EventId eventCode, int eventParam, uint32_t eventTime, EventPriority pri )
 {
-    Event e{ eventCode, eventParam, eventTime };
+    Event e{ std::to_underlying( eventCode ), eventParam, eventTime };
 
     // Don't block: caller deals with failure to add
     bool success = ( pri == kHighPriority ) ?

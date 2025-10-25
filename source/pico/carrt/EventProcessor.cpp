@@ -26,6 +26,8 @@
 #include "PicoOutputUtils.hpp"
 #include "SerialMessages.h"
 
+#include <utility>
+
 
 
 EventProcessor::EventProcessor( int reserveSize )
@@ -36,13 +38,13 @@ EventProcessor::EventProcessor( int reserveSize )
 
 void EventProcessor::dispatchOneEvent( EventManager& events, SerialLink& link ) const
 {
-    int eventCode;
+    EventId eventCode;
     int eventParam;
     uint32_t eventTime;
 
     if ( events.getNextEvent( &eventCode, &eventParam, &eventTime ) )
     {
-        auto handler{ mHandlers.find( eventCode ) };
+        auto handler{ mHandlers.find( std::to_underlying( eventCode ) ) };
         if ( handler == mHandlers.end() )
         {
             handleUnknownEvent( events, link, eventCode, eventParam, eventTime );
@@ -56,11 +58,11 @@ void EventProcessor::dispatchOneEvent( EventManager& events, SerialLink& link ) 
 }
 
 
-void EventProcessor::handleUnknownEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, uint32_t eventTime ) const
+void EventProcessor::handleUnknownEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, uint32_t eventTime ) const
 {
-    output2cout( "Warning: Pico received unknown event: ",  eventCode );
+    output2cout( "Warning: Pico received unknown event: ", std::to_underlying( eventCode ) );
     
-    int errCode{ makePicoErrorId( kPicoEventProcessorError, 1, eventCode ) };
+    int errCode{ makePicoErrorId( kPicoEventProcessorError, 1, std::to_underlying( eventCode ) ) };
     ErrorReportMsg errRpt( kPicoNonFatalError, errCode );
     errRpt.sendOut( link ); 
 }

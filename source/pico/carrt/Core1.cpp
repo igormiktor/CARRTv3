@@ -38,6 +38,7 @@
 #include "hardware/timer.h"
 #include "hardware/uart.h"
 
+#include <utility>
 
 
 
@@ -82,9 +83,9 @@ void Core1::launchCore1()
 
 
 
-void Core1::queueEventForCore1( int event, int waitMs )
+void Core1::queueEventForCore1( EventId event, int waitMs )
 {
-    EventForCore1 evt{ .kind = event, .param = waitMs };
+    EventForCore1 evt{ .kind = std::to_underlying( event ), .param = waitMs };
     if ( !queue_try_add( &sCore0toCore1Events, &evt ) )
     {
         // These get added very rarely, so impossible to have a full queue unless something else is very wrong
@@ -141,21 +142,22 @@ namespace
             {
                 EventForCore1 evt{ 0, 0 };
                 queue_remove_blocking( &sCore0toCore1Events, &evt );
-                switch( evt.kind )
+                EventId evtId = static_cast<EventId>( evt.kind );
+                switch( evtId )
                 {
-                    case kBNO055InitializeEvent: 
+                    case EventId::kBNO055InitializeEvent: 
                         alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, 
-                            reinterpret_cast<void *>( kBNO055InitializeEvent ), true );
+                            reinterpret_cast<void *>( std::to_underlying( EventId::kBNO055InitializeEvent ) ), true );
                         break;
 
-                    case kBNO055BeginCalibrationEvent: 
+                    case EventId::kBNO055BeginCalibrationEvent: 
                         alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, 
-                            reinterpret_cast<void *>( kBNO055BeginCalibrationEvent ), true );
+                            reinterpret_cast<void *>( std::to_underlying( EventId::kBNO055BeginCalibrationEvent ) ), true );
                         break;
 
-                    case kBNO055ResetEvent:
+                    case EventId::kBNO055ResetEvent:
                         alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, 
-                            reinterpret_cast<void *>( kBNO055ResetEvent ), true );
+                            reinterpret_cast<void *>( std::to_underlying( EventId::kBNO055ResetEvent ) ), true );
                         break;
 
                     default:
@@ -173,7 +175,7 @@ namespace
         // Argument isn't used
 
         int eventType{ reinterpret_cast<int>( userData ) };
-        Events().queueEvent( eventType );
+        Events().queueEvent( static_cast<EventId>( eventType ) );
         return 0;
     }
 
@@ -192,33 +194,33 @@ namespace
 
         // Queue nav update events every 1/8 second
         // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        Events().queueEvent( kNavUpdateEvent, eighthSecCount % 8, timeTick, EventManager::kHighPriority );
+        Events().queueEvent( EventId::kNavUpdateEvent, eighthSecCount % 8, timeTick, EventManager::kHighPriority );
 
         // Quarter second events
         if ( ( eighthSecCount % 2 ) == 0 )
         {
             // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-            Events().queueEvent( kQuarterSecondTimerEvent, ( (eighthSecCount / 2) % 4 ), timeTick );
+            Events().queueEvent( EventId::kQuarterSecondTimerEvent, ( (eighthSecCount / 2) % 4 ), timeTick );
         }
 
         // 1 second events
         if ( ( eighthSecCount % 8 ) == 0 )
         {
             // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-            Events().queueEvent( kOneSecondTimerEvent, ( eighthSecCount / 8 ), timeTick );
-            Events().queueEvent( kPulsePicoLedEvent );
+            Events().queueEvent( EventId::kOneSecondTimerEvent, ( eighthSecCount / 8 ), timeTick );
+            Events().queueEvent( EventId::kPulsePicoLedEvent );
 
             if ( PicoState::calibrationInProgress() )
             {
-                Events().queueEvent(  kSendCalibrationInfoEvent );
+                Events().queueEvent(  EventId::kSendCalibrationInfoEvent );
             }
         }
 
         // 8 second events
         if ( eighthSecCount == 0 )
         {
-            Events().queueEvent( kEightSecondTimerEvent, 0, timeTick );
-            Events().queueEvent( kSendCalibrationInfoEvent );
+            Events().queueEvent( EventId::kEightSecondTimerEvent, 0, timeTick );
+            Events().queueEvent( EventId::kSendCalibrationInfoEvent );
         }
 
         return true;

@@ -25,6 +25,7 @@
 #include <unordered_map>
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #include "Event.h"
 #include "EventHandler.h"
@@ -50,33 +51,35 @@ public:
     void dispatchOneEvent( EventManager& events, SerialLink& link ) const;
 
     template <typename T> 
-    void registerHandler( enum Event id ) 
+    void registerHandler( EventId id ) 
     {
         static_assert( std::is_base_of<EventHandler, T>::value, "EventProcessor::registerHandler: handlers must derive from EventHandler" );
-        if ( mHandlers.find( id ) != mHandlers.end() )
+        int idNum = std::to_underlying( id );
+        if ( mHandlers.find( idNum ) != mHandlers.end() )
         {
-            throw CarrtError( makeSharedErrorId( kEventHandlerDupeError, 1, id ), "Id dupe at event registation" );
+            throw CarrtError( makeSharedErrorId( kEventHandlerDupeError, 1, idNum ), "Id dupe at event registation" );
         }
-        mHandlers[id] = std::make_unique<T>();
+        mHandlers[idNum] = std::make_unique<T>();
     }
 
     // Useful in case T constructor needs arguments
     template <typename T> 
-    void registerHandler( enum Event id, T* ptr )
+    void registerHandler( EventId id, T* ptr )
     {
         static_assert( std::is_base_of<EventHandler, T>::value, "EventProcessor::registerHandler: handlers must derive from EventHandler" );
-        if ( mHandlers.find( id ) != mHandlers.end() )
+        int idNum = std::to_underlying( id );
+        if ( mHandlers.find( idNum ) != mHandlers.end() )
         {
-            throw CarrtError( makeSharedErrorId( kEventHandlerDupeError, 2, id ), "Id dupe at event registation" );
+            throw CarrtError( makeSharedErrorId( kEventHandlerDupeError, 2, idNum ), "Id dupe at event registation" );
         }
-        mHandlers[id] = std::unique_ptr<T>( ptr );
+        mHandlers[idNum] = std::unique_ptr<T>( ptr );
     }
 
 
 
 private:
 
-    void handleUnknownEvent( EventManager& events, SerialLink& link, int eventCode, int eventParam, uint32_t eventTime ) const;
+    void handleUnknownEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, uint32_t eventTime ) const;
 
     std::unordered_map<int, EventHandlerPtr> mHandlers;
 };
