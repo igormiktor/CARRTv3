@@ -59,10 +59,10 @@ int main()
     std::cout << "Serial link test" << std::endl;
 
     SerialMessageProcessor smp( 32, pico );
-    smp.registerMessage<TimerEventMsg>( kTimerEvent );
-    smp.registerMessage<TimerControlMsg>( kTimerControl );
-    smp.registerMessage<ErrorReportMsg>( kErrorReportFromPico );
-    smp.registerMessage<DebugLinkMsg>( kDebugSerialLink );
+    smp.registerMessage<TimerEventMsg>( MsgId::kTimerEventMsg );
+    smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
+    smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
+    smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
 
     std::cout << "Tests begin" << std::endl;
 
