@@ -485,18 +485,18 @@ public:
 
     using TheData = std::tuple< std::uint8_t >;
 
-    enum : std::uint8_t
+    enum class Drive : std::uint8_t
     {
         kStopped,
         kDrivingFwd,
         kDrivingBkwd,
         kTurningLeft,
-        kTurningRight 
+        kTurningRight, 
     };
 
     DrivingStatusUpdateMsg() noexcept;
     DrivingStatusUpdateMsg( TheData t ) noexcept; 
-    DrivingStatusUpdateMsg( std::uint8_t driveStatus ) noexcept;
+    DrivingStatusUpdateMsg( Drive driveStatus ) noexcept;
     DrivingStatusUpdateMsg( MessageId id );
 
     virtual ~DrivingStatusUpdateMsg() = default;
@@ -610,11 +610,6 @@ enum class Battery : std::uint8_t
     kBothBatteries,
 };
 
-template <typename E>
-constexpr typename std::underlying_type<E>::type toUnderlying( E e ) noexcept 
-{
-    return static_cast<typename std::underlying_type<E>::type>( e );
-}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

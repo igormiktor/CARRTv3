@@ -779,8 +779,8 @@ DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( TheData t ) noexcept
 : SerialMessage( kDrivingStatusUpdate ), mContent( kDrivingStatusUpdate, t ), mNeedsAction{ true } 
 {} 
 
-DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( std::uint8_t driveStatus ) noexcept 
-: SerialMessage( kDrivingStatusUpdate ), mContent( kDrivingStatusUpdate, std::make_tuple( static_cast<std::uint8_t>( driveStatus ) ) ), mNeedsAction{ true } 
+DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( Drive driveStatus ) noexcept 
+: SerialMessage( kDrivingStatusUpdate ), mContent( kDrivingStatusUpdate, std::make_tuple( std::to_underlying( driveStatus ) ) ), mNeedsAction{ true } 
 {}
 
 DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( MessageId id ) 
@@ -809,10 +809,10 @@ void DrivingStatusUpdateMsg::takeAction( EventManager& events, SerialLink& link 
 {
     if ( mNeedsAction )
     {
-        std::uint8_t val = std::get<0>( mContent.mMsg );
+        std::uint8_t driveStatus = std::get<0>( mContent.mMsg );
 
         // TODO take whatever action is appropirate
-        output2cout( "RPi0 sent driving status ", val ); 
+        output2cout( "RPi0 sent driving status ", driveStatus ); 
         output2cout( "TODO - implement action" );   
         mNeedsAction = false;
     }
@@ -940,7 +940,7 @@ BatteryLevelRequestMsg::BatteryLevelRequestMsg( TheData t ) noexcept
 {} 
 
 BatteryLevelRequestMsg::BatteryLevelRequestMsg( Battery whichBattery ) noexcept 
-: SerialMessage( kBatteryLevelRequest ), mContent( kBatteryLevelRequest, std::make_tuple( toUnderlying( whichBattery ) ) ), mNeedsAction{ true } 
+: SerialMessage( kBatteryLevelRequest ), mContent( kBatteryLevelRequest, std::make_tuple( std::to_underlying( whichBattery ) ) ), mNeedsAction{ true } 
 {}
 
 BatteryLevelRequestMsg::BatteryLevelRequestMsg( MessageId id ) 
@@ -970,11 +970,11 @@ void BatteryLevelRequestMsg::takeAction( EventManager& events, SerialLink& link 
     if ( mNeedsAction )
     {
         std::uint8_t whichBattery = std::get<0>( mContent.mMsg );
-        if ( whichBattery == toUnderlying( Battery::kIcBattery ) || whichBattery == toUnderlying( Battery::kBothBatteries ) )
+        if ( whichBattery == std::to_underlying( Battery::kIcBattery ) || whichBattery == std::to_underlying( Battery::kBothBatteries ) )
         {
             // TODO
         }
-        else if ( whichBattery == toUnderlying( Battery::kMotorBattery ) || whichBattery == toUnderlying( Battery::kBothBatteries ) )
+        else if ( whichBattery == std::to_underlying( Battery::kMotorBattery ) || whichBattery == std::to_underlying( Battery::kBothBatteries ) )
         {
             // TODO
         }
@@ -1008,7 +1008,7 @@ BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( TheData t ) noexcept
 {} 
 
 BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( Battery whichBattery, float level ) noexcept 
-: SerialMessage( kBatteryLevelUpdate ), mContent( kBatteryLevelUpdate, std::make_tuple( toUnderlying( whichBattery ), level ) ), 
+: SerialMessage( kBatteryLevelUpdate ), mContent( kBatteryLevelUpdate, std::make_tuple( std::to_underlying( whichBattery ), level ) ), 
     mNeedsAction{ true } 
 {}
 
@@ -1061,7 +1061,7 @@ BatteryLowAlertMsg::BatteryLowAlertMsg( TheData t ) noexcept
 {} 
 
 BatteryLowAlertMsg::BatteryLowAlertMsg( Battery whichBattery, float level ) noexcept 
-: SerialMessage( kBatteryLowAlert ), mContent( kBatteryLowAlert, std::make_tuple( toUnderlying( whichBattery ), level ) ), 
+: SerialMessage( kBatteryLowAlert ), mContent( kBatteryLowAlert, std::make_tuple( std::to_underlying( whichBattery ), level ) ), 
     mNeedsAction{ true } 
 {}
 
