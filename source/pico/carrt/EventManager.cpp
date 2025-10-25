@@ -85,7 +85,7 @@ EventManager::EventManager()
 
 
 
-bool EventManager::getNextEvent( EventId* eventCode, int* param, uint32_t* time )
+bool EventManager::getNextEvent( EvtId* eventCode, int* param, uint32_t* time )
 {
     Event e;
 
@@ -93,7 +93,7 @@ bool EventManager::getNextEvent( EventId* eventCode, int* param, uint32_t* time 
     if ( queue_try_remove( &mHighPriorityQueue, reinterpret_cast<void*>( &e ) )
         || queue_try_remove( &mLowPriorityQueue, reinterpret_cast<void*>( &e ) ) )
     {
-        *eventCode = static_cast<EventId>( e.mCode );
+        *eventCode = static_cast<EvtId>( e.mCode );
         *param = e.mParam;
         if ( time )
         {
@@ -141,7 +141,7 @@ int EventManager::getNumEventsInQueue( EventPriority pri )
 
 
 
-bool EventManager::queueEvent( EventId eventCode, int eventParam, uint32_t eventTime, EventPriority pri )
+bool EventManager::queueEvent( EvtId eventCode, int eventParam, uint32_t eventTime, EventPriority pri )
 {
     Event e{ std::to_underlying( eventCode ), eventParam, eventTime };
 

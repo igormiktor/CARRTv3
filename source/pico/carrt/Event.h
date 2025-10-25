@@ -24,7 +24,7 @@
 
 
 
-enum class EventId : int
+enum class EvtId : int
 {
     kNullEvent = 0,
 

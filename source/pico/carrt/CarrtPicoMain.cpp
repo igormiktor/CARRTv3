@@ -204,7 +204,7 @@ namespace
         // If we get here, guaranteed Core1 is running and in its main event loop
         // So perfect time to queue this future event ti triggle initialization of BNO055.
         // BNO055 needs nearly 1 sec to be ready to accept I2C )
-        Core1::queueEventForCore1( EventId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
+        Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
     }
 
 
@@ -235,23 +235,23 @@ namespace
 
     void setupEventProcessor( EventProcessor& ep )
     {
-        ep.registerHandler<NullEventHandler>( EventId::kNullEvent );
+        ep.registerHandler<NullEventHandler>( EvtId::kNullEvent );
 
-        ep.registerHandler<QuarterSecondTimerHandler>( EventId::kQuarterSecondTimerEvent );
-        ep.registerHandler<OneSecondTimerHandler>( EventId::kOneSecondTimerEvent );
-        ep.registerHandler<EightSecondTimerHandler>( EventId::kEightSecondTimerEvent );
+        ep.registerHandler<QuarterSecondTimerHandler>( EvtId::kQuarterSecondTimerEvent );
+        ep.registerHandler<OneSecondTimerHandler>( EvtId::kOneSecondTimerEvent );
+        ep.registerHandler<EightSecondTimerHandler>( EvtId::kEightSecondTimerEvent );
 
-        ep.registerHandler<NavUpdateHandler>( EventId::kNavUpdateEvent );
-        ep.registerHandler<InitializeBNO055Handler>( EventId::kBNO055InitializeEvent );
-        ep.registerHandler<BNO055ResetHandler>( EventId::kBNO055ResetEvent );
-        ep.registerHandler<BeginCalibrationHandler>( EventId::kBNO055BeginCalibrationEvent );
-        ep.registerHandler<SendCalibrationInfoHandler>( EventId::kSendCalibrationInfoEvent );
+        ep.registerHandler<NavUpdateHandler>( EvtId::kNavUpdateEvent );
+        ep.registerHandler<InitializeBNO055Handler>( EvtId::kBNO055InitializeEvent );
+        ep.registerHandler<BNO055ResetHandler>( EvtId::kBNO055ResetEvent );
+        ep.registerHandler<BeginCalibrationHandler>( EvtId::kBNO055BeginCalibrationEvent );
+        ep.registerHandler<SendCalibrationInfoHandler>( EvtId::kSendCalibrationInfoEvent );
 
-        ep.registerHandler<PulsePicoLedHandler>( EventId::kPulsePicoLedEvent );
+        ep.registerHandler<PulsePicoLedHandler>( EvtId::kPulsePicoLedEvent );
 
-        ep.registerHandler<PicoResetHandler>( EventId::kPicoResetEvent );
+        ep.registerHandler<PicoResetHandler>( EvtId::kPicoResetEvent );
 
-        ep.registerHandler<ErrorEventHandler>( EventId::kErrorEvent );
+        ep.registerHandler<ErrorEventHandler>( EvtId::kErrorEvent );
     }
 
 

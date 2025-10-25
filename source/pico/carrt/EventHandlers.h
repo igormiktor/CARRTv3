@@ -30,7 +30,7 @@ class NullEventHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -41,7 +41,7 @@ class QuarterSecondTimerHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -49,7 +49,7 @@ class OneSecondTimerHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -57,7 +57,7 @@ class EightSecondTimerHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -68,7 +68,7 @@ class NavUpdateHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -76,7 +76,7 @@ class InitializeBNO055Handler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -84,7 +84,7 @@ class BNO055ResetHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -92,7 +92,7 @@ class BeginCalibrationHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -100,7 +100,7 @@ class SendCalibrationInfoHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -117,7 +117,7 @@ class PulsePicoLedHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -134,7 +134,7 @@ class PicoResetHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 
@@ -145,7 +145,7 @@ class ErrorEventHandler : public EventHandler
 {
 public:
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 };
 
 

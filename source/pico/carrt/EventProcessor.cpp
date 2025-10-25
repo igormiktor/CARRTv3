@@ -38,7 +38,7 @@ EventProcessor::EventProcessor( int reserveSize )
 
 void EventProcessor::dispatchOneEvent( EventManager& events, SerialLink& link ) const
 {
-    EventId eventCode;
+    EvtId eventCode;
     int eventParam;
     uint32_t eventTime;
 
@@ -58,7 +58,7 @@ void EventProcessor::dispatchOneEvent( EventManager& events, SerialLink& link ) 
 }
 
 
-void EventProcessor::handleUnknownEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, uint32_t eventTime ) const
+void EventProcessor::handleUnknownEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, uint32_t eventTime ) const
 {
     output2cout( "Warning: Pico received unknown event: ", std::to_underlying( eventCode ) );
     

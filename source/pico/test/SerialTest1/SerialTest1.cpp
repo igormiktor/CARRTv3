@@ -23,23 +23,23 @@ bool timerCallback( repeating_timer_t* )
 
     // Queue nav update events every 1/8 second
     // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-    Events().queueEvent( Event::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
+    Events().queueEvent( EvtId::kNavUpdateEvent, eighthSecCount % 8, EventManager::kHighPriority );
 
     if ( ( eighthSecCount % 2 ) == 0 )
     {
         // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        Events().queueEvent( Event::kQuarterSecondTimerEvent, (eighthSecCount % 8) / 2 );
+        Events().queueEvent( EvtId::kQuarterSecondTimerEvent, (eighthSecCount % 8) / 2 );
     }
 
     if ( ( eighthSecCount % 8 ) == 0 )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
+        Events().queueEvent( EvtId::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
     }
 
     if ( eighthSecCount == 0 )
     {
-        Events().queueEvent( Event::kEightSecondTimerEvent, 0 );
+        Events().queueEvent( EvtId::kEightSecondTimerEvent, 0 );
     }
 
     return true;
@@ -117,29 +117,33 @@ int main()
     bool ledState = false;
     while ( true ) 
     {
-        int eventCode;
+        EvtId eventCode;
         int eventParam;
 
         if ( Events().getNextEvent( &eventCode, &eventParam ) )
         {
             switch ( eventCode )
             {
-                case Event::kNavUpdateEvent:
+                case EvtId::kNavUpdateEvent:
                     std::cout << "Nav " << eventParam << std::endl;
                     break;
                     
-                case Event::kQuarterSecondTimerEvent:
+                case EvtId::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
                     break;
                     
-                case Event::kOneSecondTimerEvent:
+                case EvtId::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
                     gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     ledState = !ledState;
                     break;
                     
-                case Event::kEightSecondTimerEvent:
+                case EvtId::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
+                    break;
+
+                default:
+                    // Others
                     break;
             }
             if ( Events().hasEventQueueOverflowed() )

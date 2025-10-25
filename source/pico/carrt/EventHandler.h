@@ -27,7 +27,7 @@
 class EventManager;
 class SerialLink;
 
-enum class EventId;
+enum class EvtId;
 
 class EventHandler 
 {
@@ -36,7 +36,7 @@ public:
     EventHandler() = default;
     virtual ~EventHandler() = default;
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, std::uint32_t eventTime ) const = 0;
+    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const = 0;
 };
 
 

@@ -26,7 +26,7 @@
 #include <cstdint>
 
 
-enum class EventId;
+enum class EvtId;
 
 
 namespace Core1
@@ -35,7 +35,7 @@ namespace Core1
 
     void launchCore1();
 
-    void queueEventForCore1( EventId event, int waitMs );
+    void queueEventForCore1( EvtId event, int waitMs );
 
     bool isRunningCore1();
 }

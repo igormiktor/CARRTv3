@@ -381,7 +381,7 @@ void ResetMsg::takeAction( EventManager& events, SerialLink& link )
     if ( mNeedsAction )
     {
         output2cout( "Pico got message from RPi0 to reset" );
-        events.queueEvent( EventId::kPicoResetEvent, 0, 0, EventManager::kHighPriority );
+        events.queueEvent( EvtId::kPicoResetEvent, 0, 0, EventManager::kHighPriority );
         mNeedsAction = false;
     }
 }
@@ -518,7 +518,7 @@ void BeginCalibrationMsg::takeAction( EventManager& events, SerialLink& link )
     if ( mNeedsAction )
     {
         output2cout( "Got a calibration msg: Trigger calibration" );
-        events.queueEvent( EventId::kBNO055BeginCalibrationEvent );
+        events.queueEvent( EvtId::kBNO055BeginCalibrationEvent );
         mNeedsAction = false;
     }
 }
@@ -647,7 +647,7 @@ void ResetBNO055Msg::takeAction( EventManager& events, SerialLink& link )
     if ( mNeedsAction )
     {
         output2cout( "Got a reset BNO055 msg" );
-        events.queueEvent( EventId::kBNO055ResetEvent );
+        events.queueEvent( EvtId::kBNO055ResetEvent );
         mNeedsAction = false;
     }
 }

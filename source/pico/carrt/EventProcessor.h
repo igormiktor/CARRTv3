@@ -51,7 +51,7 @@ public:
     void dispatchOneEvent( EventManager& events, SerialLink& link ) const;
 
     template <typename T> 
-    void registerHandler( EventId id ) 
+    void registerHandler( EvtId id ) 
     {
         static_assert( std::is_base_of<EventHandler, T>::value, "EventProcessor::registerHandler: handlers must derive from EventHandler" );
         int idNum = std::to_underlying( id );
@@ -64,7 +64,7 @@ public:
 
     // Useful in case T constructor needs arguments
     template <typename T> 
-    void registerHandler( EventId id, T* ptr )
+    void registerHandler( EvtId id, T* ptr )
     {
         static_assert( std::is_base_of<EventHandler, T>::value, "EventProcessor::registerHandler: handlers must derive from EventHandler" );
         int idNum = std::to_underlying( id );
@@ -79,7 +79,7 @@ public:
 
 private:
 
-    void handleUnknownEvent( EventManager& events, SerialLink& link, EventId eventCode, int eventParam, uint32_t eventTime ) const;
+    void handleUnknownEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, uint32_t eventTime ) const;
 
     std::unordered_map<int, EventHandlerPtr> mHandlers;
 };
