@@ -220,7 +220,11 @@ namespace
         if ( eighthSecCount == 0 )
         {
             Events().queueEvent( EvtId::kEightSecondTimerEvent, 0, timeTick );
-            Events().queueEvent( EvtId::kSendCalibrationInfoEvent );
+            if ( !PicoState::calibrationInProgress() )
+            {
+                // If calibrationInProgess, already sent one from 1-second events
+                Events().queueEvent( EvtId::kSendCalibrationInfoEvent );
+            }
         }
 
         return true;

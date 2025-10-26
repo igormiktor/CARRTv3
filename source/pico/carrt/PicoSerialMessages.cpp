@@ -628,6 +628,59 @@ void SendCalibrationInfoMsg::takeAction( EventManager& events, SerialLink& link 
 
 
 
+SetAutoCalibrateMsg::SetAutoCalibrateMsg() noexcept 
+: SerialMessage( MsgId::kSetAutoCalibrate ), mContent( MsgId::kSetAutoCalibrate ), mNeedsAction{ false } 
+{}
+
+SetAutoCalibrateMsg::SetAutoCalibrateMsg( TheData t ) noexcept 
+: SerialMessage( MsgId::kSetAutoCalibrate ), mContent( MsgId::kSetAutoCalibrate, t ), mNeedsAction{ true } 
+{} 
+
+SetAutoCalibrateMsg::SetAutoCalibrateMsg( bool val ) noexcept 
+: SerialMessage( MsgId::kSetAutoCalibrate ), mContent( MsgId::kSetAutoCalibrate, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+{}
+
+SetAutoCalibrateMsg::SetAutoCalibrateMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kSetAutoCalibrate ), mNeedsAction{ false }
+{ 
+    if ( id != MsgId::kSetAutoCalibrate ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kSetAutoCalibrate ) ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void SetAutoCalibrateMsg::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+}
+
+void SetAutoCalibrateMsg::sendOut( SerialLink& link )
+{
+    // This never sent from Pico
+}
+
+void SetAutoCalibrateMsg::takeAction( EventManager& events, SerialLink& link ) 
+{
+    if ( mNeedsAction )
+    {
+        bool val = std::get<0>( mContent.mMsg );
+        PicoState::wantAutoCalibrate( val );
+        output2cout( "Pico autocalibration set to ", val );    
+        mNeedsAction = false;
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
 
 ResetBNO055Msg::ResetBNO055Msg() noexcept
 : NoContentMsg( MsgId::kResetBNO055 )

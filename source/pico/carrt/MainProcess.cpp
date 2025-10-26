@@ -55,7 +55,7 @@ namespace MainProcess
 {
     void runMainEventLoop( EventManager& events, EventProcessor& ep, SerialMessageProcessor& smp, SerialLinkPico& rpi0 );
     void checkForErrors( EventManager& events, SerialLinkPico& rpi0 );
-    void doHouseKeeping();
+    void doHouseKeeping( EventManager& events, SerialLinkPico& rpi0 );
 
     void doEventQueueOverflowed( SerialLinkPico& rpi0 );
     void doUnknownEvent( SerialLinkPico& rpi0, int eventCode );
@@ -73,7 +73,7 @@ void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep, Se
         checkForErrors( events, rpi0 );
         ep.dispatchOneEvent( events, rpi0 );
         smp.dispatchOneSerialMessage( events, rpi0 );
-        doHouseKeeping();
+        doHouseKeeping( events, rpi0 );
         // CarrtPico::sleep( 10ms );
     }
 }
@@ -86,10 +86,19 @@ void MainProcess::checkForErrors( EventManager& events, SerialLinkPico& rpi0 )
 }
 
 
-void MainProcess::doHouseKeeping()
+void MainProcess::doHouseKeeping( EventManager& events, SerialLinkPico& rpi0 )
 {
-    // Synch calibration and calibration in progress ()
-    PicoState::calibrationInProgress( !PicoState::navCalibrated() );
+    // Synch calibration and calibration in progress
+    if ( PicoState::navCalibrated() )
+    {
+        // End calibration process
+        PicoState::calibrationInProgress( false );
+    }
+    else if ( PicoState::wantAutoCalibrate() && !PicoState::calibrationInProgress() )
+    {
+        // Trigger new calibration
+        events.queueEvent( EvtId::kBNO055BeginCalibrationEvent );
+    }
 }
 
 

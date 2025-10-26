@@ -384,6 +384,44 @@ private:
 
 
 
+class SetAutoCalibrateMsg : public SerialMessage
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t >;
+
+    SetAutoCalibrateMsg() noexcept;
+    SetAutoCalibrateMsg( TheData t ) noexcept; 
+    SetAutoCalibrateMsg( bool val ) noexcept;
+    SetAutoCalibrateMsg( MsgId id );
+
+    virtual ~SetAutoCalibrateMsg() = default;
+
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct RawMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 class ResetBNO055Msg : public NoContentMsg 
 {
 public:

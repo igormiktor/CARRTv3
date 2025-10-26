@@ -54,6 +54,9 @@ namespace PicoState
     bool calibrationInProgress() noexcept;                  // Are we in calibration mode
     bool calibrationInProgress( bool newVal ) noexcept;     // Set value of being in calibration mode; returns prior value
 
+    bool wantAutoCalibrate() noexcept;                      // Do we auto enter calibration mode whenever needed?
+    bool wantAutoCalibrate( bool newVal ) noexcept;         // Set value of auto entering calibration mode; returns prior value
+
 };
 
 

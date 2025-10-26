@@ -34,6 +34,7 @@ namespace
     bool  sSendCalibrationMsgs{ false };
 
     bool  sNavCalibrated{ false };
+    bool  sAutoCalibrateMode{ false }; 
 
     // These are shared Core0 and Core1 and require atomics
     CoreAtomic::CAtomic<bool> sInCalibrationMode{ false };
@@ -48,6 +49,7 @@ void PicoState::initialize() noexcept
     sSendEncoderMsgs        = false;
     sSendCalibrationMsgs    = false;
     sNavCalibrated          = false;
+    sAutoCalibrateMode      = false;
     
     sInCalibrationMode      = false;
 }
@@ -160,4 +162,16 @@ bool PicoState::navCalibrated( bool newVal ) noexcept
     return oldVal;
 }
 
+
+bool PicoState::wantAutoCalibrate() noexcept
+{
+    return sAutoCalibrateMode;
+}
+
+bool PicoState::wantAutoCalibrate( bool newVal ) noexcept
+{
+    bool oldVal = sAutoCalibrateMode;
+    sAutoCalibrateMode = newVal;
+    return oldVal;
+}
 
