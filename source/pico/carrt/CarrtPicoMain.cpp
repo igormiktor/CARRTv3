@@ -106,8 +106,9 @@ int main()
         // Report we are started and ready to receive messages
         sendReady( rpi0 );
 
-        // TESTING
+        // Default starting values (at least for now, RPi0 can change these via msg)
         PicoState::allMsgsSendOn();
+        PicoState::wantAutoCalibrate( true );
 
         MainProcess::runMainEventLoop( Events(), ep, smp, rpi0 );
     }
