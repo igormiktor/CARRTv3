@@ -30,6 +30,11 @@ namespace PicoState
 
     void initialize() noexcept;                             // Initialize stuff
 
+    // Have we finished start up of Pico 
+    // Everything through BNO initialized, but not necessarily calibrated)
+    bool startUpFinished( bool newval ) noexcept;           // Returns prior value
+    bool startUpFinished() noexcept;                        // Returns value
+
     bool sendTimerMsgs( bool newVal ) noexcept;             // Returns prior value
     bool wantTimerMsgs() noexcept;                          // Returns value
 

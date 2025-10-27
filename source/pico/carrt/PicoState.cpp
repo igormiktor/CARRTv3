@@ -27,12 +27,12 @@
 namespace 
 {
     // These all happen in Core0 so no atomics needed
+    bool  sStartUpFinished{ false };
     bool  sSendTimerMsgs{ false };
     bool  sSendNavMsgs{ false };
     bool  sSendNavStatusMsgs{ false };
     bool  sSendEncoderMsgs{ false };
     bool  sSendCalibrationMsgs{ false };
-
     bool  sNavCalibrated{ false };
     bool  sAutoCalibrateMode{ false }; 
 
@@ -44,14 +44,29 @@ namespace
 
 void PicoState::initialize() noexcept
 {
+    sStartUpFinished        = false;
     sSendTimerMsgs          = false;
     sSendNavMsgs            = false;
+    sSendNavStatusMsgs      = false;
     sSendEncoderMsgs        = false;
     sSendCalibrationMsgs    = false;
     sNavCalibrated          = false;
     sAutoCalibrateMode      = false;
     
     sInCalibrationMode      = false;
+}
+
+
+bool PicoState::startUpFinished( bool newVal ) noexcept
+{
+    bool oldVal = sStartUpFinished;
+    sStartUpFinished = newVal;
+    return oldVal;
+}
+
+bool PicoState::startUpFinished() noexcept
+{
+    return sStartUpFinished;
 }
 
 

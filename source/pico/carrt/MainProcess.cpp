@@ -73,7 +73,10 @@ void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep, Se
         checkForErrors( events, rpi0 );
         ep.dispatchOneEvent( events, rpi0 );
         smp.dispatchOneSerialMessage( events, rpi0 );
-        doHouseKeeping( events, rpi0 );
+        if ( PicoState::startUpFinished() )
+        {
+            doHouseKeeping( events, rpi0 );
+        }
         // CarrtPico::sleep( 10ms );
     }
 }

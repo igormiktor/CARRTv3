@@ -90,24 +90,29 @@ void NavUpdateHandler::handleEvent( EventManager& events, SerialLink& link, EvtI
 
 void InitializeBNO055Handler::handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
+    output2cout( "Got BNO055 initialize event" );
+
     // Note this call includes internal delay of ~600ms
     BNO055::init();
 
     // Because delay built into BNO055init() at driver level, can trigger BeginCalibration without delay
     events.queueEvent( EvtId::kBNO055BeginCalibrationEvent );
     
-    output2cout( "Got BNO055 initialize event" );
+    // And we are done with start up (also done after BNO055 reset) once BNO055 is initialized
+    PicoState::startUpFinished( true );
 }
 
 
 void BNO055ResetHandler::handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
+    output2cout( "Got BNO055 reset event" );
     // Note this call is followed by 650ms wait before we can call init()
     BNO055::reset();
     PicoState::navCalibrated( false );
     Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
 
-    output2cout( "Got BNO055 reset event" );
+    // While BNO055 resetting, we revert to "startup mode"
+    PicoState::startUpFinished( false );
 }
 
 
