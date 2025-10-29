@@ -23,6 +23,7 @@
 #include "Core1.h"
 
 #include "CarrtPicoDefines.h"
+#include "Encoders.h"
 #include "EventManager.h"
 #include "Delays.h"
 
@@ -158,6 +159,10 @@ namespace
                     case EvtId::kBNO055ResetEvent:
                         alarm_pool_add_alarm_in_ms( sCore1AlarmPool, static_cast<std::uint32_t>( evt.param ), alarmCallback, 
                             reinterpret_cast<void *>( std::to_underlying( EvtId::kBNO055ResetEvent ) ), true );
+                        break;
+
+                    case EvtId::kInitEncoders:
+                        Encoders::initEncoders();
                         break;
 
                     default:

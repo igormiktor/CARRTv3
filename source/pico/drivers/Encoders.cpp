@@ -29,6 +29,14 @@
 
 
 
+/***************************************************/
+
+// All this code intended to run on Core 1
+
+/***************************************************/
+
+
+
 
 namespace Encoders
 {
@@ -40,6 +48,7 @@ namespace Encoders
 
 void callbackLeftEncoder( uint, uint32_t events )
 {
+    // This function designed/configured to be called and run on Core1
     static uint32_t lastInterrupt = 0;
 
     uint32_t tick = to_ms_since_boot( get_absolute_time() );
@@ -70,6 +79,7 @@ void callbackLeftEncoder( uint, uint32_t events )
 
 void callbackRightEncoder( uint, uint32_t events )
 {
+    // This function designed/configured to be called and run on Core1
     static uint32_t lastInterrupt = 0;
 
     uint32_t tick = to_ms_since_boot( get_absolute_time() );
@@ -100,6 +110,7 @@ void callbackRightEncoder( uint, uint32_t events )
 
 void Encoders::initEncoders() noexcept
 {
+    // Call this from the core that will receive the interrupts
     configureEncoderGpio( CARRTPICO_ENCODER_LEFT_GPIO, callbackLeftEncoder ); 
     configureEncoderGpio( CARRTPICO_ENCODER_RIGHT_GPIO, callbackRightEncoder ); 
 }

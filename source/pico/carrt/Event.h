@@ -43,6 +43,7 @@ enum class EvtId : int
     kSendCalibrationInfoEvent,
 
     // Encoder events
+    kInitEncoders,
     kEncoderLeftEvent,
     kEncoderRightEvent,
 

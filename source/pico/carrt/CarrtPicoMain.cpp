@@ -185,8 +185,7 @@ namespace
         // Initialize the heartbeat LED
         HeartBeatLed::initialize();
 
-        // Set up the encoders;
-        Encoders::initEncoders();
+        // The encoders are set up on Core1
 
         // Initialize state
         PicoState::initialize();
@@ -206,6 +205,9 @@ namespace
         // So perfect time to queue this future event ti triggle initialization of BNO055.
         // BNO055 needs nearly 1 sec to be ready to accept I2C )
         Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
+
+        // Tell Core1 to initialize the encoders (so the interrupts go to Core1 )
+        Core1::queueEventForCore1( EvtId::kInitEncoders );
     }
 
 

@@ -35,7 +35,7 @@ namespace Core1
 
     void launchCore1();
 
-    void queueEventForCore1( EvtId event, int waitMs );
+    void queueEventForCore1( EvtId event, int waitMs = 0 );
 
     bool isRunningCore1();
 }
