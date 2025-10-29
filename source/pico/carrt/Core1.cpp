@@ -177,8 +177,6 @@ namespace
 
     std::int64_t alarmCallback( alarm_id_t, void* userData )
     {
-        // Argument isn't used
-
         int eventType{ reinterpret_cast<int>( userData ) };
         Events().queueEvent( static_cast<EvtId>( eventType ) );
         return 0;
@@ -188,8 +186,6 @@ namespace
 
     bool timerCallback( repeating_timer_t* ) 
     {
-        // Argument is not used...
-
         static int eighthSecCount{ 0 };
 
         uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
