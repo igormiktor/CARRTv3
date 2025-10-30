@@ -123,7 +123,7 @@ public:
     void readIn( SerialLink& link )
     {
         // Don't read ID, we already have it if we call this function
-        for_each( mMsg, 
+        forEach( mMsg, 
             []( SerialLink& lnk, auto& dataItem )
             {  
                 auto got = lnk.get( dataItem );
@@ -152,7 +152,7 @@ public:
     {
         // Send the ID, if we send the message
         link.put( static_cast<std::uint8_t>( mId ) );
-        for_each( mMsg, []( SerialLink& lnk, auto& dataItem ){ lnk.put( dataItem ); }, link );
+        forEach( mMsg, []( SerialLink& lnk, auto& dataItem ){ lnk.put( dataItem ); }, link );
     }
 
 
@@ -164,7 +164,7 @@ public:
         typename TCallable,                                                 // the callable to be invoked for each tuple item
         typename ...TArgs                                                   // other arguments to be passed to the callable
     >
-    void for_each( TupleT&& tuple, TCallable&& callable, TArgs&& ...args )
+    void forEach( TupleT&& tuple, TCallable&& callable, TArgs&& ...args )
     {
         if constexpr ( Index < Size )
         {
@@ -172,7 +172,7 @@ public:
 
             if constexpr ( Index + 1 < Size )
             {
-                for_each<Index + 1>( 
+                forEach<Index + 1>( 
                     std::forward<TupleT>( tuple ), 
                     std::forward<TCallable>( callable ),
                     std::forward<TArgs>( args )... 
