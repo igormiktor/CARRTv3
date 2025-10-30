@@ -182,9 +182,8 @@ public:
     }
 
 
-    MsgId   mId;
+    MsgId       mId;
     TTuple      mMsg;
-
 };
 
 
@@ -213,7 +212,6 @@ public:
     virtual bool needsAction() const noexcept = 0;
 
     virtual MsgId getId() const noexcept = 0;
-
 };
 
 
