@@ -115,6 +115,7 @@ namespace OutputUtils
         std::cout << std::forward<T>( head );
         if constexpr ( sizeof...(tail) )
         {
+            std::cout << ' ';  // Add a whitespace separator between outputs
             output2cout_( std::true_type{}, std::forward<V>( tail )... );
         }
         else
