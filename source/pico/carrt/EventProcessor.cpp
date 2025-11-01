@@ -23,7 +23,7 @@
 
 #include "CarrtError.h"
 #include "EventManager.h"
-#include "PicoOutputUtils.hpp"
+#include "OutputUtils.hpp"
 #include "SerialMessages.h"
 
 #include <utility>

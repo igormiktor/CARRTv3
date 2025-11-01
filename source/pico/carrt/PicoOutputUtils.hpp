@@ -1,5 +1,5 @@
 /*
-    PicoOutputUtils.hpp - Output code using policy types that drive template specialization and 
+    OutputUtils.hpp - Output code using policy types that drive template specialization and 
     function overloading that generate output code when requested and no code when not requested.  
     
     C++20 is required.
@@ -42,8 +42,8 @@
 
 
 
-#ifndef PicoOutputUtils_hpp
-#define PicoOutputUtils_hpp
+#ifndef OutputUtils_hpp
+#define OutputUtils_hpp
 
 #include <iostream>
 #include <type_traits>
@@ -166,5 +166,5 @@ using OutputUtils::output2cout;
 using OutputUtils::debug2cout;
 
 
-#endif  // PicoOutputUtils_hpp
+#endif  // OutputUtils_hpp
 

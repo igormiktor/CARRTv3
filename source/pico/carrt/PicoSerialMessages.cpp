@@ -25,7 +25,7 @@
 
 #include "BNO055.h"
 #include "EventManager.h"
-#include "PicoOutputUtils.hpp"
+#include "OutputUtils.hpp"
 #include "PicoState.h"
 
 #include "DebugUtils.hpp"

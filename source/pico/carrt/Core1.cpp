@@ -28,7 +28,7 @@
 #include "Delays.h"
 
 #include "CarrtError.h"
-#include "PicoOutputUtils.hpp"
+#include "OutputUtils.hpp"
 #include "PicoState.h"
 
 #include "pico/stdlib.h"

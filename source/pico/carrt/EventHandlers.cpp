@@ -27,7 +27,7 @@
 #include "CarrtError.h"
 #include "EventManager.h"
 #include "HeartBeatLed.h"
-#include "PicoOutputUtils.hpp"
+#include "OutputUtils.hpp"
 #include "PicoState.h"
 #include "SerialMessages.h"
 #include "SerialLink.h"
