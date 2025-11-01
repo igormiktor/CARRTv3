@@ -46,7 +46,6 @@
 #define PicoOutputUtils_hpp
 
 #include <iostream>
-#include <filesystem>
 #include <type_traits>
 #include <string>
 #include <iomanip>
