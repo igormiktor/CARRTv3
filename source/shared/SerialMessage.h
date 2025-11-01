@@ -212,6 +212,9 @@ public:
     virtual bool needsAction() const noexcept = 0;
 
     virtual MsgId getId() const noexcept = 0;
+
+    int getIdNum() const noexcept
+        { return static_cast<int>( getId() ); }
 };
 
 
