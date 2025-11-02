@@ -51,19 +51,55 @@
 #include <iomanip>
 
 
-#include "CarrtPicoDefines.h"
 
 
-#ifndef USE_CARRTPICO_STDIO
+#if BUILDING_FOR_PICO
+
+    #include "CarrtPicoDefines.h"
+
+    #ifndef USE_CARRTPICO_STDIO
+        #define USE_CARRTPICO_STDIO     0
+    #endif
+
+    #ifndef DEBUGPICO
+        #define DEBUGPICO   0
+    #endif
+
+    #define USE_CARRTPICO_DEBUG     ( DEBUGPICO && USE_CARRTPICO_STDIO )
+
+#else
+
     #define USE_CARRTPICO_STDIO     0
-#endif
+    #define USE_CARRTPICO_DEBUG     0
 
-#ifndef DEBUGPICO
-    #define DEBUGPICO 0
-#endif
+#endif // BUILDING_FOR_PICO
 
-#define DEBUG_AND_PICO_STDIO_ON    ( DEBUGPICO && USE_CARRTPICO_STDIO )
 
+#if BULDING_FOR_RPI0
+
+    #include "CarrtRpi0Defines.h"
+
+    #ifndef USE_CARRTRPI0_STDIO
+        #define USE_CARRTRPI0_STDIO     1
+    #endif
+
+
+    #ifndef DEBUGRPI0
+        #define DEBUGRPI0   0
+    #endif
+
+    #define USE_CARRTRPI0_DEBUG     ( DEBUGRPI0 && USE_CARRTRPI0_STDIO )
+
+#else
+
+    #define USE_CARRTRPI0_STDIO     0
+    #define USE_CARRTRPI0_DEBUG     0
+
+#endif // BULDING_FOR_RPI0
+
+
+#define USE_STDIO_OUPUT     ( USE_CARRTPICO_STDIO || USE_CARRTRPI0_STDIO )  
+#define USE_STDIO_DEBUG     ( USE_CARRTPICO_DEBUG || USE_CARRTRPI0_DEBUG )
 
 
 
@@ -93,7 +129,7 @@ namespace OutputUtils
     // When OutputUtilsPolicy == std::true_type, code for output to stdio (std::cout) is compiled.
     // When OutputUtilsPolicy == std::false_type, it is not.
 
-    using OutputUtilsPolicy = typename TypeSelect<USE_CARRTPICO_STDIO>::type;
+    using OutputUtilsPolicy = typename TypeSelect<USE_STDIO_OUPUT>::type;
 
 
     // OutputDebugPolicy is a type used to manage template instantiation and specialization,
@@ -102,7 +138,7 @@ namespace OutputUtils
     // When OutputDebugPolicy == std::true_type, code for debug output to stdio (std::cout) is compiled.
     // When OutputDebugPolicy == std::false_type, it is not.
 
-    using OutputDebugPolicy = typename TypeSelect<DEBUG_AND_PICO_STDIO_ON>::type;
+    using OutputDebugPolicy = typename TypeSelect<USE_STDIO_DEBUG>::type;
 
 
 
