@@ -72,7 +72,7 @@ void initializeBNO055( EventManager& events )
     BNO055::init();
 
     // Because delay built into init(), can trigger BeginCalibration without delay
-    events.queueEvent( kBNO055BeginCalibrationEvent );
+    events.queueEvent( EvtId::kBNO055BeginCalibrationEvent );
 }
 
 
@@ -81,7 +81,7 @@ void resetBNO055( EventManager& events )
     // Note this call is followed by 650ms delay before we can call init()
     BNO055::reset();
     PicoState::navCalibrated( false );
-    Core1::queueEventForCore1( kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
+    Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
 }
 
 
@@ -104,7 +104,7 @@ int main()
         Core1::launchCore1();
         // If we get here, guaranteed Core1 is running and in its main event loop
         // So perfect time to queue this future event
-        Core1::queueEventForCore1( kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
+        Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
 
         // Initialise UART for data
         SerialLinkPico rpi0;
@@ -125,31 +125,31 @@ int main()
 
 
         // Test only:  queue a BO055 reset in 15 seconds
-        Core1::queueEventForCore1( kBNO055ResetEvent, 15000 );
+        Core1::queueEventForCore1( EvtId::kBNO055ResetEvent, 15000 );
 
         bool ledState = false;
 
         while ( true ) 
         {
             uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
-            int eventCode{};
+            EvtId eventCode{};
             int eventParam{};
 
             if ( Events().getNextEvent( &eventCode, &eventParam ) )
             {
                 switch ( eventCode )
                 {
-                    case kBNO055InitializeEvent:
+                    case EvtId::kBNO055InitializeEvent:
                         output2cout( "Got BNO055 initialize event" );
                         initializeBNO055( Events() );
                         break;
 
-                    case kBNO055ResetEvent:
+                    case EvtId::kBNO055ResetEvent:
                         output2cout( "Got BNO055 reset event" );
                         resetBNO055( Events() );
                         break;
 
-                    case Event::kNavUpdateEvent:
+                    case EvtId::kNavUpdateEvent:
                         if ( PicoState::navCalibrated() && PicoState::wantNavMsgs() )
                         {
                             float heading = BNO055::getHeading();
@@ -159,7 +159,7 @@ int main()
                         }
                         break;
                         
-                    case Event::kQuarterSecondTimerEvent:
+                    case EvtId::kQuarterSecondTimerEvent:
                         // std::cout << "1/4 " << eventParam << std::endl;
                         if ( PicoState::wantTimerMsgs() )
                         {
@@ -169,7 +169,7 @@ int main()
                         }
                         break;
                         
-                    case Event::kOneSecondTimerEvent:
+                    case EvtId::kOneSecondTimerEvent:
                         if ( PicoState::wantTimerMsgs() )
                         {
                             TimerEventMsg oneSec( TimerEventMsg::k1SecondEvent, eventParam, timeTick );
@@ -177,12 +177,12 @@ int main()
                         }
                         break;
 
-                    case kPulsePicoLedEvent:
+                    case EvtId::kPulsePicoLedEvent:
                         gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                         ledState = !ledState;
                         break;
                         
-                    case Event::kEightSecondTimerEvent:
+                    case EvtId::kEightSecondTimerEvent:
                         if ( PicoState::wantTimerMsgs() )
                         {
                             TimerEventMsg eightSec( TimerEventMsg::k8SecondEvent, eventParam, timeTick );
@@ -190,19 +190,22 @@ int main()
                         }
                         break;
 
-                    case Event::kSendCalibrationInfoEvent:
+                    case EvtId::kSendCalibrationInfoEvent:
                         checkAndReportCalibration( Events(), rpi0 );
                         break;
 
-                    case Event::kBNO055BeginCalibrationEvent:
+                    case EvtId::kBNO055BeginCalibrationEvent:
                         output2cout( "Got begin calibration event" );
                         PicoState::navCalibrated( false );
                         PicoState::calibrationInProgress( true );
                         break;
 
-                    case Event::kPicoResetEvent:
+                    case EvtId::kPicoResetEvent:
                         // TODO Reset Pico
                         PicoReset::reset( rpi0 );
+                        break;
+
+                    default:
                         break;
                 }
 
