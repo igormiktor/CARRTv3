@@ -1,5 +1,6 @@
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
+#include "CarrtError.h"
 
 #include "shared/SerialMessage.h"
 
@@ -40,23 +41,23 @@ bool timerCallback( repeating_timer_t* )
 
     // Queue nav update events every 1/8 second
     // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
-    // Events().queueEvent( Event::kNavUpdateEvent, eighthSecCount % 8, 0, EventManager::kHighPriority );
+    // Events().queueEvent( EvtId::kNavUpdateEvent, eighthSecCount % 8, 0, EventManager::kHighPriority );
 
     if ( ( eighthSecCount % 2 ) == 0 )
     {
         // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        // Events().queueEvent( Event::kQuarterSecondTimerEvent, ( eighthSecCount % 4 ) );
+        // Events().queueEvent( EvtId::kQuarterSecondTimerEvent, ( eighthSecCount % 4 ) );
     }
 
     if ( ( eighthSecCount % 8 ) == 0 )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        Events().queueEvent( Event::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
+        Events().queueEvent( EvtId::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
      }
 
     if ( eighthSecCount == 0 )
     {
-        // Events().queueEvent( Event::kEightSecondTimerEvent, 0 );
+        // Events().queueEvent( EvtId::kEightSecondTimerEvent, 0 );
     }
 
     return true;
@@ -149,11 +150,11 @@ int main()
     gpio_set_irq_enabled_with_callback( GPIO_TEST_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, 
         true, gpioInterruptCallback );
 
-    bool ledState = false;
+//    bool ledState = false;
     std::cout << "Event processing start time is: " << to_ms_since_boot( get_absolute_time() ) << std::endl;
     while ( true ) 
     {
-        int eventCode;
+        EvtId eventCode;
         int eventParam;
         uint32_t eventTime;
 
@@ -161,50 +162,52 @@ int main()
         {
             switch ( eventCode )
             {
-                case Event::kNavUpdateEvent:
+                case EvtId::kNavUpdateEvent:
                     std::cout << "Nav " << eventParam << std::endl;
                     break;
                     
-                case Event::kQuarterSecondTimerEvent:
+                case EvtId::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
                     break;
                     
-                case Event::kOneSecondTimerEvent:
+                case EvtId::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
                     // gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     // ledState = !ledState;
                     break;
                     
-                case Event::kEightSecondTimerEvent:
+                case EvtId::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
                     break;
 
-                case Event::kIdentifyPicoCoreEvent:
+                case EvtId::kIdentifyPicoCoreEvent:
                     std::cout << "Core " << eventParam << std::endl;
                     break;
 
-                case Event::kGpioInterruptTestFallingEvent:
+                case EvtId::kGpioInterruptTestFallingEvent:
                     gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     std::cout << "GPIO Falling Event " << eventTime << std::endl;
                     std::cout << "ElapsedTime (usecs) " << elapsedTime << std::endl;
                     break;
 
-                case Event::kGpioInterruptTestRisingEvent:
+                case EvtId::kGpioInterruptTestRisingEvent:
                     gpio_put( CARRTPICO_HEARTBEAT_LED, 1 );
                     std::cout << "GPIO Rising Event " << eventTime << std::endl;
                     std::cout << "ElapsedTime (usecs) " << elapsedTime << std::endl;
                     break;
 
-                case Event::kGpioInterruptTestFailureEvent:
+                case EvtId::kGpioInterruptTestFailureEvent:
                     gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     std::cout << "GPIO neither rising nor falling (error) " << static_cast<uint>( eventParam ) << std::endl;
                     break;
 
-                case Event::kGpioInterruptWrongPinEvent:
-                    gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
-                    std::cout << "GPIO Interrupt wrong pin " << eventParam << std::endl;
-                    break;
+//                case EvtId::kGpioInterruptWrongPinEvent:
+//                    gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
+//                    std::cout << "GPIO Interrupt wrong pin " << eventParam << std::endl;
+//                    break;
 
+                default:
+                    break;
             }
             if ( Events().hasEventQueueOverflowed() )
             {
