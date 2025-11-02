@@ -35,6 +35,12 @@ option(
 )
 
 option( 
+    CARRT_RPI0_ENABLE_STDIO_OUTPUT
+    "Enable lots of stdio output.  Default: ON. Values: { OFF, ON }."
+    ON
+)
+
+option( 
     CARRT_ENABLE_DEBUGUTILS
     "Enable DebugUtils debugging outputs.  Default: ON. Values: { OFF, ON }."
     ON
@@ -46,6 +52,13 @@ option(
     OFF
 )
 
+
+
+if( CARRT_RPI0_ENABLE_STDIO_OUTPUT )
+    set( CARRT_RPI0_ENABLE_STDIO_OUTPUT_VAL 1 )
+else()
+    set( CARRT_RPI0_ENABLE_STDIO_OUTPUT_VAL 0 )
+endif()
 
 
 if( CARRT_ENABLE_DEBUGUTILS )

@@ -4,6 +4,7 @@ set( SHARED_HDR_LIST
     CarrtError.h 
     DebugUtils.hpp
     ErrorCodes.h 
+    OutputUtils.hpp
     SerialMessage.h 
     SerialMessageProcessor.h
     SerialLink.h 
@@ -22,11 +23,16 @@ if( BULDING_FOR_PICO )
         -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
         -DUSE_CARRTPICO_STDIO=${USE_CARRTPICO_STDIO_VAL}
         "$<$<CONFIG:DEBUG>:-DDEBUGPICO=1>" 
-        -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} -DBUILDING_FOR_PICO=1 
+        -DBUILDING_FOR_PICO=1 
     )
 endif()
 if( BULDING_FOR_RPI0 )
-    target_compile_definitions( shared_library PUBLIC -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} -DBUILDING_FOR_RPI0=1 )
+    target_compile_definitions( shared_library PUBLIC 
+        -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
+        -DUSE_CARRTRPI0_STDIO=${CARRT_RPI0_ENABLE_STDIO_OUTPUT_VAL}
+        "$<$<CONFIG:DEBUG>:-DDEBUGRPI0=1>" 
+        -DBUILDING_FOR_RPI0=1
+    )
 endif()
 target_include_directories( shared_library PUBLIC "${PROJECT_SOURCE_DIR}/carrt")
 target_include_directories( shared_library INTERFACE "${PROJECT_SOURCE_DIR}/shared" )

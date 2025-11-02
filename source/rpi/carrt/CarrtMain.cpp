@@ -3,6 +3,7 @@
 #include "CarrtPigpio.h"
 
 #include "DebugUtils.hpp"
+#include "OutputUtils.hpp"
 
 int main(int, char**)
 {
@@ -11,6 +12,8 @@ int main(int, char**)
     std::cout << "Hello, from CarrtRpi!\n";
 
     debugM( "This is a debug message" );
+
+    output2cout( "This is a conditional stdio message" );
 
     gpioTerminate();
 }
