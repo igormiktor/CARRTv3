@@ -58,7 +58,7 @@ enum class MsgId : std::uint8_t
     // BNO005 msgs       
     kBeginCalibration,          // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
     kRequestCalibStatus,        // Request status of BNO055 calibration (return with kPicoNavStatusUpdate)
-    kCalibrationInfoUpdate,             // Send status of BNO055 calibration (contains 4 x one-byte status values M-A-G-S )
+    kCalibrationInfoUpdate,     // Send status of BNO055 calibration (contains 4 x one-byte status values M-A-G-S )
     kSetAutoCalibrate,          // Set Pico auto-calibration mode (2nd byte is bool on/off (0/1) value)
     kResetBNO055,               // RPi to Pico message to reset BNO055
 

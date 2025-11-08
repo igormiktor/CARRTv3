@@ -340,16 +340,16 @@ public:
 
 
 
-class SendCalibrationInfoMsg : public SerialMessage
+class CalibrationInfoUpdateMsg : public SerialMessage
 {
 public:
 
     using TheData = std::tuple< std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t >;
 
-    SendCalibrationInfoMsg() noexcept;
-    SendCalibrationInfoMsg( TheData t ) noexcept; 
-    SendCalibrationInfoMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept;
-    SendCalibrationInfoMsg( MsgId id );
+    CalibrationInfoUpdateMsg() noexcept;
+    CalibrationInfoUpdateMsg( TheData t ) noexcept; 
+    CalibrationInfoUpdateMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept;
+    CalibrationInfoUpdateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 

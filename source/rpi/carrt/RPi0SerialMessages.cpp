@@ -597,21 +597,21 @@ void RequestCalibrationStatusMsg::takeAction( EventManager& events, SerialLink& 
 
 
 
-SendCalibrationInfoMsg::SendCalibrationInfoMsg() noexcept
+CalibrationInfoUpdateMsg::CalibrationInfoUpdateMsg() noexcept
 : SerialMessage( MsgId::kCalibrationInfoUpdate ), mContent( MsgId::kCalibrationInfoUpdate ), mNeedsAction{ false }
 {}
 
-SendCalibrationInfoMsg::SendCalibrationInfoMsg( TheData t ) noexcept
+CalibrationInfoUpdateMsg::CalibrationInfoUpdateMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kCalibrationInfoUpdate ), mContent( MsgId::kCalibrationInfoUpdate, t ), mNeedsAction{ true }
 {}
 
 
-SendCalibrationInfoMsg::SendCalibrationInfoMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept
+CalibrationInfoUpdateMsg::CalibrationInfoUpdateMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept
 : SerialMessage( MsgId::kCalibrationInfoUpdate ), mContent( MsgId::kCalibrationInfoUpdate, std::make_tuple( mag, accel, gyro, sys) ), mNeedsAction{ true }
 {}
 
 
-SendCalibrationInfoMsg::SendCalibrationInfoMsg( MsgId id )
+CalibrationInfoUpdateMsg::CalibrationInfoUpdateMsg( MsgId id )
 : SerialMessage( id ), mContent( MsgId::kCalibrationInfoUpdate ), mNeedsAction{ false }
 {
     if ( id != MsgId::kCalibrationInfoUpdate ) 
@@ -622,34 +622,38 @@ SendCalibrationInfoMsg::SendCalibrationInfoMsg( MsgId id )
 }
 
 
-void SendCalibrationInfoMsg::readIn( SerialLink& link )
+void CalibrationInfoUpdateMsg::readIn( SerialLink& link )
 {
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debug2cout( "RPi0 got SendCalibrationInfoMsg", getIdNum(), 
+    debug2cout( "RPi0 got CalibrationInfoUpdateMsg", getIdNum(), 
         static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
         static_cast<int>( std::get<2>( mContent.mMsg ) ), static_cast<int>( std::get<3>( mContent.mMsg ) ) );
 }
 
 
-void SendCalibrationInfoMsg::sendOut( SerialLink& link )
+void CalibrationInfoUpdateMsg::sendOut( SerialLink& link )
 {
-    mContent.sendOut( link );
+    // RPi0 should never send this
 
-    debug2cout( "Sent sendCalibrationInfoMsg", getIdNum(), 
+    output2cout( "Error: RPi0 tried to send CalibrationInfoUpdateMsg", getIdNum(), 
         static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
         static_cast<int>( std::get<2>( mContent.mMsg ) ), static_cast<int>( std::get<3>( mContent.mMsg ) ) );
+
 }
 
 
-
-void SendCalibrationInfoMsg::takeAction( EventManager& events, SerialLink& link )
+void CalibrationInfoUpdateMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        sendOut( link );
+        // TODO process the data in the message
         mNeedsAction = false;
+
+        output2cout ( "RPi0 processed CalibrationInfoMsg", getIdNum(), 
+        static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
+        static_cast<int>( std::get<2>( mContent.mMsg ) ), static_cast<int>( std::get<3>( mContent.mMsg ) ) ); 
     }
 }
 

@@ -155,7 +155,7 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
         if ( PicoState::wantCalibrationMsgs() )
         {
             // If calibration status unchanged, just send normal calibration report
-            SendCalibrationInfoMsg calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+            CalibrationInfoUpdateMsg calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
             calibStatus.takeAction( events, link );
         }
     }
