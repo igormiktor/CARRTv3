@@ -383,8 +383,8 @@ MsgControlMsg::MsgControlMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kMsgControlMsg ), mContent( MsgId::kMsgControlMsg, t ), mNeedsAction{ true } 
 {} 
 
-MsgControlMsg::MsgControlMsg( bool val ) noexcept 
-: SerialMessage( MsgId::kMsgControlMsg ), mContent( MsgId::kMsgControlMsg, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+MsgControlMsg::MsgControlMsg( std::uint8_t values ) noexcept 
+: SerialMessage( MsgId::kMsgControlMsg ), mContent( MsgId::kMsgControlMsg, std::make_tuple( values ) ), mNeedsAction{ true } 
 {}
 
 MsgControlMsg::MsgControlMsg( MsgId id ) 
@@ -415,21 +415,21 @@ void MsgControlMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        std::uint8_t val = std::get<0>( mContent.mMsg );
+        std::uint8_t values = std::get<0>( mContent.mMsg );
 
-        PicoState::sendTimerMsgs( val & kTimerMsgMask );
-        PicoState::sendNavMsgs( val & kNavMsgMask );
-        PicoState::sendNavStatusMsgs( val & kNavStatusMask );
-        PicoState::sendEncoderMsgs( val & kEncoderMsgMask );
-        PicoState::sendCalibrationMsgs( val & kCalibrationMsgMask );
+        PicoState::sendTimerMsgs( values & kTimerMsgMask );
+        PicoState::sendNavMsgs( values & kNavMsgMask );
+        PicoState::sendNavStatusMsgs( values & kNavStatusMask );
+        PicoState::sendEncoderMsgs( values & kEncoderMsgMask );
+        PicoState::sendCalibrationMsgs( values & kCalibrationMsgMask );
         mNeedsAction = false;
 
         output2cout( "MsgControlMsg received, new values are" );  
-        output2cout( " sendTimerMsgs", static_cast<bool>( val & kTimerMsgMask ) );
-        output2cout( " sendNavMsgs", static_cast<bool>( val & kNavMsgMask ) );
-        output2cout( " sendNavStatusMsgs", static_cast<bool>( val & kNavStatusMask ) );
-        output2cout( " sendEncoderMsgs", static_cast<bool>( val & kEncoderMsgMask ) );
-        output2cout( " sendCalibrationMsgs", static_cast<bool>( val & kCalibrationMsgMask ) );
+        output2cout( " sendTimerMsgs", static_cast<bool>( values & kTimerMsgMask ) );
+        output2cout( " sendNavMsgs", static_cast<bool>( values & kNavMsgMask ) );
+        output2cout( " sendNavStatusMsgs", static_cast<bool>( values & kNavStatusMask ) );
+        output2cout( " sendEncoderMsgs", static_cast<bool>( values & kEncoderMsgMask ) );
+        output2cout( " sendCalibrationMsgs", static_cast<bool>( values & kCalibrationMsgMask ) );
     }
 }
 

@@ -188,7 +188,7 @@ public:
 
     MsgControlMsg() noexcept;
     MsgControlMsg( TheData t ) noexcept; 
-    MsgControlMsg( bool val ) noexcept;
+    MsgControlMsg( std::uint8_t val ) noexcept;
     MsgControlMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
