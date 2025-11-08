@@ -227,7 +227,7 @@ namespace
         smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
         smp.registerMessage<BeginCalibrationMsg>( MsgId::kBeginCalibration );
         smp.registerMessage<RequestCalibrationStatusMsg>( MsgId::kRequestCalibStatus );
-    //  smp.registerMessage<SendCalibrationInfoMsg>( MsgId::kSendCalibInfo );
+    //  smp.registerMessage<SendCalibrationInfoMsg>( MsgId::kCalibrationInfoUpdate );
         smp.registerMessage<SetAutoCalibrateMsg>( MsgId::kSetAutoCalibrate );
         smp.registerMessage<ResetBNO055Msg>( MsgId::kResetBNO055 );
     //  smp.registerMessage<NavUpdateMsg>( MsgId::kTimerNavUpdate );

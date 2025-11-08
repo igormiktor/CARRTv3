@@ -661,25 +661,25 @@ void RequestCalibrationStatusMsg::takeAction( EventManager& events, SerialLink& 
 
 
 SendCalibrationInfoMsg::SendCalibrationInfoMsg() noexcept
-: SerialMessage( MsgId::kSendCalibInfo ), mContent( MsgId::kSendCalibInfo ), mNeedsAction{ false }
+: SerialMessage( MsgId::kCalibrationInfoUpdate ), mContent( MsgId::kCalibrationInfoUpdate ), mNeedsAction{ false }
 {}
 
 SendCalibrationInfoMsg::SendCalibrationInfoMsg( TheData t ) noexcept
-: SerialMessage( MsgId::kSendCalibInfo ), mContent( MsgId::kSendCalibInfo, t ), mNeedsAction{ true }
+: SerialMessage( MsgId::kCalibrationInfoUpdate ), mContent( MsgId::kCalibrationInfoUpdate, t ), mNeedsAction{ true }
 {}
 
 
 SendCalibrationInfoMsg::SendCalibrationInfoMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept
-: SerialMessage( MsgId::kSendCalibInfo ), mContent( MsgId::kSendCalibInfo, std::make_tuple( mag, accel, gyro, sys) ), mNeedsAction{ true }
+: SerialMessage( MsgId::kCalibrationInfoUpdate ), mContent( MsgId::kCalibrationInfoUpdate, std::make_tuple( mag, accel, gyro, sys) ), mNeedsAction{ true }
 {}
 
 
 SendCalibrationInfoMsg::SendCalibrationInfoMsg( MsgId id )
-: SerialMessage( id ), mContent( MsgId::kSendCalibInfo ), mNeedsAction{ false }
+: SerialMessage( id ), mContent( MsgId::kCalibrationInfoUpdate ), mNeedsAction{ false }
 {
-    if ( id != MsgId::kSendCalibInfo ) 
+    if ( id != MsgId::kCalibrationInfoUpdate ) 
     { 
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,std::to_underlying( MsgId::kSendCalibInfo ) ), "Id mismatch at creation" ); 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,std::to_underlying( MsgId::kCalibrationInfoUpdate ) ), "Id mismatch at creation" ); 
     } 
     // Note that it doesn't need action until loaded with data
 }
