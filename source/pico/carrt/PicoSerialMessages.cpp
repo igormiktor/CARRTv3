@@ -1374,21 +1374,26 @@ void TestPicoErrorRptMsg::readIn( SerialLink& link )
 void TestPicoErrorRptMsg::sendOut( SerialLink& link )
 {
     // Pico never sends this message out (only receives)
-    // Instead seend the requested error msg
-    auto [ fatal, errorCode ] = mContent.mMsg;
-    ErrorReportMsg errRptAsRqstd( fatal, errorCode );
-    errRptAsRqstd.sendOut( link );
-
-    output2cout( "Sent test error msg: fatal?", fatal, "error code", errorCode );
+    
+    output2cout( "Error: Pico sending TestPicoErrorRptMsg", getIdNum(), 
+        static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
-void TestPicoErrorRptMsg::takeAction( EventManager&, SerialLink& link ) 
+void TestPicoErrorRptMsg::takeAction( EventManager& evtMgr, SerialLink& link ) 
 {
     // Create the requested error report and send it
     if ( mNeedsAction )
     {
-        sendOut( link );
+        // Pico action consists of sending the requested error report
+
+        auto [ fatal, errorCode ] = mContent.mMsg;
+        ErrorReportMsg errRptAsRqstd( fatal, errorCode );
+        errRptAsRqstd.takeAction( evtMgr, link );
+
         mNeedsAction = false;
+
+        output2cout( "Pico Sent test error msg", 
+            ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ), "error code", errorCode );
     }
 }
 
