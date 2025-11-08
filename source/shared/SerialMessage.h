@@ -38,7 +38,8 @@
 
 enum class MsgId : std::uint8_t
 {
-    kNullMsg,
+    kPingMsg,
+    kPingReplyMsg,
 
     // Msgs from Pico
     kPicoReady,                 // Pico sends once ready to start receiving messages (Pico initiates serial comms with this message)
@@ -203,6 +204,10 @@ public:
 
     virtual ~SerialMessage() = default;
 
+    // Prohibit copying assignment
+    SerialMessage( const SerialMessage& ) = delete;
+    SerialMessage& operator=( const SerialMessage& ) = delete;
+
     virtual void readIn( SerialLink& link ) = 0;
 
     virtual void sendOut( SerialLink& link ) = 0;
@@ -291,7 +296,7 @@ protected:
 
     MsgId   mId;
 
-    bool        mNeedsAction;
+    bool    mNeedsAction;
 };
 
 

@@ -93,9 +93,9 @@ void UnknownMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 NoContentMsg::NoContentMsg( std::uint8_t id ) noexcept
-: SerialMessage( static_cast<MsgId>( id ) ), mId{ id }, mNeedsAction{ false } 
+: SerialMessage( static_cast<MsgId>( id ) ), mId{ id }, mNeedsAction{ true } 
 {
-    // Nothing to do
+    // Nothing to do (MsgID is only info we need to be able to send)
 }
 
 NoContentMsg::NoContentMsg( MsgId id ) noexcept
@@ -139,26 +139,81 @@ MsgId NoContentMsg::getId() const noexcept
 
 
 
-NullMsg::NullMsg() noexcept
-: NoContentMsg( MsgId::kNullMsg )
+PingMsg::PingMsg() noexcept
+: NoContentMsg( MsgId::kPingMsg ), mSender( true )
 {
-    mNeedsAction = true;
+    // Nothing else to do
 }
 
-NullMsg::NullMsg( MsgId id ) noexcept
-: NoContentMsg( MsgId::kNullMsg )
+PingMsg::PingMsg( MsgId id ) noexcept
+: NoContentMsg( MsgId::kPingMsg ), mSender( false )
+{
+    // Nothing else to do
+}
+
+
+void PingMsg::takeAction( EventManager& events, SerialLink& link )
+{
+    // Action depends on whether we are sender or receiver
+    if ( mNeedsAction )
+    {
+        if ( mSender )
+        {
+            sendOut( link );
+            mNeedsAction = false;
+
+            output2cout( "Sent ping to RPi0" );
+        }
+        else
+        {
+            // If we are receiver, we send PingReplyMsg
+            PingReplyMsg pingReply{};
+            pingReply.needsAction();
+        }
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+PingReplyMsg::PingReplyMsg() noexcept
+: NoContentMsg( MsgId::kPingReplyMsg ), mSender( true )
+{
+    // Nothing else to do
+}
+
+PingReplyMsg::PingReplyMsg( MsgId id ) noexcept
+: NoContentMsg( MsgId::kPingReplyMsg ), mSender( false )
 {
     // Nothing to do
 }
 
 
-void NullMsg::takeAction( EventManager& events, SerialLink& link )
+void PingReplyMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    // Only action is to send it
+    // Action depends on whether we are sender or receiver
     if ( mNeedsAction )
     {
-        sendOut( link );
-        mNeedsAction = false;
+        if ( mSender )
+        {
+            sendOut( link );
+            mNeedsAction = false;
+
+            output2cout( "Send ping reply to RPi0" );
+        }
+        else
+        {
+            // If we are receiver, we simply log it
+            output2cout( "Rcvd ping reply from RPi0" );
+
+            // Could do something fancier like track we sent ping and match this reply to it
+            // But meant for debugging, so just leave it in our std::cout stream
+        }
     }
 }
 

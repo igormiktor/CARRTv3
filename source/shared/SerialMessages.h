@@ -42,17 +42,38 @@
 
 
 
-class NullMsg : public NoContentMsg 
+class PingMsg : public NoContentMsg 
 {
 public:
 
-    NullMsg() noexcept;
-    NullMsg( MsgId id ) noexcept;
-
-    virtual ~NullMsg() = default;
-
+    PingMsg() noexcept;
+    PingMsg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+private:
+
+    bool mSender;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class PingReplyMsg : public NoContentMsg 
+{
+public:
+
+    PingReplyMsg() noexcept; 
+    PingReplyMsg( MsgId id ) noexcept;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+private:
+
+    bool mSender;
 };
 
 
