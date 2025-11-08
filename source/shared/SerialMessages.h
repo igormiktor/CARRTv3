@@ -93,9 +93,6 @@ public:
     PicoReadyMsg( std::uint32_t time ) noexcept;
     PicoReadyMsg( MsgId id );
 
-    virtual ~PicoReadyMsg() = default;
-
-
     virtual void readIn( SerialLink& link ) override;
 
     virtual void sendOut( SerialLink& link ) override;
@@ -131,9 +128,6 @@ public:
     PicoNavStatusUpdateMsg( bool status, std::uint8_t m, std::uint8_t a, std::uint8_t g, std::uint8_t s ) noexcept;
     PicoNavStatusUpdateMsg( MsgId id );
 
-    virtual ~PicoNavStatusUpdateMsg() = default;
-
-
     virtual void readIn( SerialLink& link ) override;
 
     virtual void sendOut( SerialLink& link ) override;
@@ -164,9 +158,6 @@ public:
 
     PicoSaysStopMsg() noexcept;
     PicoSaysStopMsg( MsgId id ) noexcept;
-
-    virtual ~PicoSaysStopMsg() = default;
-
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
@@ -200,9 +191,6 @@ public:
     MsgControlMsg( bool val ) noexcept;
     MsgControlMsg( MsgId id );
 
-    virtual ~MsgControlMsg() = default;
-
-
     virtual void readIn( SerialLink& link ) override;
 
     virtual void sendOut( SerialLink& link ) override;
@@ -234,9 +222,6 @@ public:
     ResetMsg() noexcept;
     ResetMsg( MsgId id ) noexcept;
 
-    virtual ~ResetMsg() = default;
-
-
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
 
@@ -263,9 +248,6 @@ public:
     TimerEventMsg( TheData t ) noexcept; 
     TimerEventMsg( std::uint8_t which, int count, uint32_t time ) noexcept;
     TimerEventMsg( MsgId id );
-
-    virtual ~TimerEventMsg() = default;
-
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -302,9 +284,6 @@ public:
     TimerControlMsg( bool val ) noexcept;
     TimerControlMsg( MsgId id );
 
-    virtual ~TimerControlMsg() = default;
-
-
     virtual void readIn( SerialLink& link ) override;
 
     virtual void sendOut( SerialLink& link ) override;
@@ -336,9 +315,6 @@ public:
     BeginCalibrationMsg() noexcept;
     BeginCalibrationMsg( MsgId id ) noexcept;
 
-    virtual ~BeginCalibrationMsg() = default;
-
-
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
 
@@ -354,9 +330,6 @@ public:
 
     RequestCalibrationStatusMsg() noexcept;
     RequestCalibrationStatusMsg( MsgId id ) noexcept;
-
-    virtual ~RequestCalibrationStatusMsg() = default;
-
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
@@ -377,9 +350,6 @@ public:
     SendCalibrationInfoMsg( TheData t ) noexcept; 
     SendCalibrationInfoMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept;
     SendCalibrationInfoMsg( MsgId id );
-
-    virtual ~SendCalibrationInfoMsg() = default;
-
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -416,9 +386,6 @@ public:
     SetAutoCalibrateMsg( bool val ) noexcept;
     SetAutoCalibrateMsg( MsgId id );
 
-    virtual ~SetAutoCalibrateMsg() = default;
-
-
     virtual void readIn( SerialLink& link ) override;
 
     virtual void sendOut( SerialLink& link ) override;
@@ -450,9 +417,6 @@ public:
     ResetBNO055Msg() noexcept;
     ResetBNO055Msg( MsgId id ) noexcept;
 
-    virtual ~ResetBNO055Msg() = default;
-
-
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
 
@@ -472,9 +436,6 @@ public:
     NavUpdateMsg( TheData t ) noexcept; 
     NavUpdateMsg( float heading, std::uint32_t time ) noexcept;
     NavUpdateMsg( MsgId id );
-
-    virtual ~NavUpdateMsg() = default;
-
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -510,9 +471,6 @@ public:
     NavUpdateControlMsg( TheData t ) noexcept; 
     NavUpdateControlMsg( bool val ) noexcept;
     NavUpdateControlMsg( MsgId id );
-
-    virtual ~NavUpdateControlMsg() = default;
-
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -558,9 +516,6 @@ public:
     DrivingStatusUpdateMsg( Drive driveStatus ) noexcept;
     DrivingStatusUpdateMsg( MsgId id );
 
-    virtual ~DrivingStatusUpdateMsg() = default;
-
-
     virtual void readIn( SerialLink& link ) override;
 
     virtual void sendOut( SerialLink& link ) override;
@@ -596,9 +551,6 @@ public:
     EncoderUpdateMsg( int left, int right, std::uint32_t time ) noexcept;
     EncoderUpdateMsg( MsgId id );
 
-    virtual ~EncoderUpdateMsg() = default;
-
-
     virtual void readIn( SerialLink& link ) override;
 
     virtual void sendOut( SerialLink& link ) override;
@@ -633,9 +585,6 @@ public:
     EncoderUpdateControlMsg( TheData t ) noexcept; 
     EncoderUpdateControlMsg( bool val ) noexcept;
     EncoderUpdateControlMsg( MsgId id );
-
-    virtual ~EncoderUpdateControlMsg() = default;
-
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -686,9 +635,6 @@ public:
     BatteryLevelRequestMsg( Battery whichBattery ) noexcept;
     BatteryLevelRequestMsg( MsgId id );
 
-    virtual ~BatteryLevelRequestMsg() = default;
-
-
     virtual void readIn( SerialLink& link ) override;
 
     virtual void sendOut( SerialLink& link ) override;
@@ -723,9 +669,6 @@ public:
     BatteryLevelUpdateMsg( TheData t ) noexcept; 
     BatteryLevelUpdateMsg( Battery whichBattery, float level ) noexcept;
     BatteryLevelUpdateMsg( MsgId id );
-
-    virtual ~BatteryLevelUpdateMsg() = default;
-
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -762,9 +705,6 @@ public:
     BatteryLowAlertMsg( Battery whichBattery, float level ) noexcept;
     BatteryLowAlertMsg( MsgId id );
 
-    virtual ~BatteryLowAlertMsg() = default;
-
-
     virtual void readIn( SerialLink& link ) override;
 
     virtual void sendOut( SerialLink& link ) override;
@@ -799,9 +739,6 @@ public:
     ErrorReportMsg( TheData t ) noexcept; 
     ErrorReportMsg( bool val, int errorCode ) noexcept;
     ErrorReportMsg( MsgId id );
-
-    virtual ~ErrorReportMsg() = default;
-
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -838,9 +775,6 @@ public:
     TestPicoErrorRptMsg( bool makeItFatal, int errorCodeToTest ) noexcept;
     TestPicoErrorRptMsg( MsgId id );
 
-    virtual ~TestPicoErrorRptMsg() = default;
-
-
     virtual void readIn( SerialLink& link ) override;
 
     virtual void sendOut( SerialLink& link ) override;
@@ -875,9 +809,6 @@ public:
     DebugLinkMsg( TheData t ) noexcept; 
     DebugLinkMsg( int val1, int val2 ) noexcept;
     DebugLinkMsg( MsgId id );
-
-    virtual ~DebugLinkMsg() = default;
-
 
     virtual void readIn( SerialLink& link ) override;
 
