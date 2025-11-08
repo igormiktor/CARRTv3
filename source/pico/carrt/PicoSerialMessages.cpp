@@ -1392,7 +1392,7 @@ void TestPicoErrorRptMsg::takeAction( EventManager& evtMgr, SerialLink& link )
 
         mNeedsAction = false;
 
-        output2cout( "Pico Sent test error msg", 
+        output2cout( "Pico Sent test error msg with:", 
             ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ), "error code", errorCode );
     }
 }
