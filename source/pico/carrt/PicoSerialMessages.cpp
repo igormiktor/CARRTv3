@@ -168,7 +168,7 @@ void PingMsg::takeAction( EventManager& events, SerialLink& link )
         {
             // If we are receiver, we send PingReplyMsg
             PingReplyMsg pingReply{};
-            pingReply.needsAction();
+            pingReply.takeAction( events, link );
         }
     }
 }
