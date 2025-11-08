@@ -75,7 +75,7 @@
 #endif // BUILDING_FOR_PICO
 
 
-#if BULDING_FOR_RPI0
+#if BUILDING_FOR_RPI0
 
     #include "CarrtRpi0Defines.h"
 
