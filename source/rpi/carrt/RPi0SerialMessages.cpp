@@ -90,9 +90,9 @@ void UnknownMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 NoContentMsg::NoContentMsg( std::uint8_t id ) noexcept
-: SerialMessage( static_cast<MsgId>( id ) ), mId{ id }, mNeedsAction{ false } 
+: SerialMessage( static_cast<MsgId>( id ) ), mId{ id }, mNeedsAction{ true } 
 {
-    // Nothing to do
+    // Nothing to do (MsgID is only info we need to be able to send)
 }
 
 NoContentMsg::NoContentMsg( MsgId id ) noexcept
@@ -136,26 +136,81 @@ MsgId NoContentMsg::getId() const noexcept
 
 
 
-NullMsg::NullMsg() noexcept
-: NoContentMsg( MsgId::kNullMsg )
+PingMsg::PingMsg() noexcept
+: NoContentMsg( MsgId::kPingMsg ), mSender( true )
 {
-    mNeedsAction = true;
+    // Nothing else to do
 }
 
-NullMsg::NullMsg( MsgId id ) noexcept
-: NoContentMsg( MsgId::kNullMsg )
+PingMsg::PingMsg( MsgId id ) noexcept
+: NoContentMsg( MsgId::kPingMsg ), mSender( false )
 {
-    // TODO fix so only NullMsg() constructor sets mNeedsAction to true
-    // All other constructors set mNeedsAction to false
+    // Nothing else to do
 }
 
 
-void NullMsg::takeAction( EventManager& events, SerialLink& link )
+void PingMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    // No action for null msgs
+    // Action depends on whether we are sender or receiver
     if ( mNeedsAction )
     {
-        mNeedsAction = false;
+        if ( mSender )
+        {
+            sendOut( link );
+            mNeedsAction = false;
+
+            output2cout( "Sent ping to Pico" );
+        }
+        else
+        {
+            // If we are receiver, we send PingReplyMsg
+            PingReplyMsg pingReply{};
+            pingReply.needsAction();
+        }
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+PingReplyMsg::PingReplyMsg() noexcept
+: NoContentMsg( MsgId::kPingReplyMsg ), mSender( true )
+{
+    // Nothing else to do
+}
+
+PingReplyMsg::PingReplyMsg( MsgId id ) noexcept
+: NoContentMsg( MsgId::kPingReplyMsg ), mSender( false )
+{
+    // Nothing to do
+}
+
+
+void PingReplyMsg::takeAction( EventManager& events, SerialLink& link )
+{
+    // Action depends on whether we are sender or receiver
+    if ( mNeedsAction )
+    {
+        if ( mSender )
+        {
+            sendOut( link );
+            mNeedsAction = false;
+
+            output2cout( "Send ping reply to Pico" );
+        }
+        else
+        {
+            // If we are receiver, we simply log it
+            output2cout( "Rcvd ping reply from Pico" );
+
+            // Could do something fancier like track we sent ping and match this reply to it
+            // But meant for debugging, so just leave it in our std::cout stream
+        }
     }
 }
 
@@ -320,8 +375,8 @@ MsgControlMsg::MsgControlMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kMsgControlMsg ), mContent( MsgId::kMsgControlMsg, t ), mNeedsAction{ true } 
 {} 
 
-MsgControlMsg::MsgControlMsg( bool val ) noexcept 
-: SerialMessage( MsgId::kMsgControlMsg ), mContent( MsgId::kMsgControlMsg, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+MsgControlMsg::MsgControlMsg( std::uint8_t values ) noexcept 
+: SerialMessage( MsgId::kMsgControlMsg ), mContent( MsgId::kMsgControlMsg, std::make_tuple( values ) ), mNeedsAction{ true } 
 {}
 
 MsgControlMsg::MsgControlMsg( MsgId id ) 
@@ -338,35 +393,31 @@ MsgControlMsg::MsgControlMsg( MsgId id )
 void MsgControlMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
-    debug2cout( "Pico got MsgControlMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    // This shouldn't happen
+    output2cout( "Error: RPi0 got MsgControlMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void MsgControlMsg::sendOut( SerialLink& link )
 {
-    // This never sent from Pico
+    mContent.sendOut( link );
 }
 
 void MsgControlMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        std::uint8_t val = std::get<0>( mContent.mMsg );
-
-        PicoState::sendTimerMsgs( val & kTimerMsgMask );
-        PicoState::sendNavMsgs( val & kNavMsgMask );
-        PicoState::sendNavStatusMsgs( val & kNavStatusMask );
-        PicoState::sendEncoderMsgs( val & kEncoderMsgMask );
-        PicoState::sendCalibrationMsgs( val & kCalibrationMsgMask );
+        sendOut( link );
         mNeedsAction = false;
 
-        output2cout( "MsgControlMsg received, new values are" );  
-        output2cout( " sendTimerMsgs", static_cast<bool>( val & kTimerMsgMask ) );
-        output2cout( " sendNavMsgs", static_cast<bool>( val & kNavMsgMask ) );
-        output2cout( " sendNavStatusMsgs", static_cast<bool>( val & kNavStatusMask ) );
-        output2cout( " sendEncoderMsgs", static_cast<bool>( val & kEncoderMsgMask ) );
-        output2cout( " sendCalibrationMsgs", static_cast<bool>( val & kCalibrationMsgMask ) );
+        std::uint8_t values = std::get<0>( mContent.mMsg );
+        output2cout( "MsgControlMsg sent with values" );  
+        output2cout( " sendTimerMsgs", static_cast<bool>( values & kTimerMsgMask ) );
+        output2cout( " sendNavMsgs", static_cast<bool>( values & kNavMsgMask ) );
+        output2cout( " sendNavStatusMsgs", static_cast<bool>( values & kNavStatusMask ) );
+        output2cout( " sendEncoderMsgs", static_cast<bool>( values & kEncoderMsgMask ) );
+        output2cout( " sendCalibrationMsgs", static_cast<bool>( values & kCalibrationMsgMask ) );
     }
 }
 
@@ -388,6 +439,8 @@ ResetMsg::ResetMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
     // Nothing to do
+
+    output2cout( "Error: RPi0 got ResetMsg", getIdNum() );
 }
 
 
@@ -395,10 +448,10 @@ void ResetMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        events.queueEvent( EvtId::kPicoResetEvent, 0, 0, EventManager::kHighPriority );
+        sendOut( link );
         mNeedsAction = false;
 
-        output2cout( "Pico got message from RPi0 to reset" );
+        debug2cout( "Sent reset msg to Pico" );
     }
 }
 
@@ -437,16 +490,13 @@ void TimerEventMsg::readIn( SerialLink& link )
 {
     mContent.readIn( link );
     mNeedsAction = true;
-
-    output2cout( "Error: Pico should never receive TimerEventMsg", 
-        getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
 
 void TimerEventMsg::sendOut( SerialLink& link )
 {
-    mContent.sendOut( link );
+    // RPi0 should never send this msg
 
-    debug2cout( "Sent TimerEventMsg", 
+    output2cout( "Error: RPi0 sending TimerEventMsg" , 
         getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
 
@@ -454,9 +504,12 @@ void TimerEventMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // Only action is to send it
-        sendOut( link );
+        // Process the timer event
+        // TODO process timer event
         mNeedsAction = false;
+
+    debug2cout( "RPi0 processing TimerEventMsg" , 
+        getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
     }
 }
 
@@ -494,25 +547,24 @@ TimerControlMsg::TimerControlMsg( MsgId id )
 void TimerControlMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
-    debug2cout( "Pico got TimerControlMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ) );
+    output2cout( "Error: Rpi0 got TimerControlMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void TimerControlMsg::sendOut( SerialLink& link )
 {
-    // This never sent from Pico
+    mContent.sendOut( link );
 }
 
 void TimerControlMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        bool val = std::get<0>( mContent.mMsg );
-        PicoState::sendTimerMsgs( val );
+        sendOut( link );
         mNeedsAction = false;
 
-        output2cout( "Timer events to RPi0 turned to", val );    
+        output2cout( "Timer events to RPi0 turned to", static_cast<bool>( std::get<0>( mContent.mMsg ) ) );    
     }
 }
 
@@ -535,6 +587,9 @@ BeginCalibrationMsg::BeginCalibrationMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
     // Nothing to do
+    mNeedsAction = false;
+
+    output2cout( "Error: RPi0 got BeginCalibrationMsg", getIdNum() );
 }
 
 
@@ -542,10 +597,10 @@ void BeginCalibrationMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        events.queueEvent( EvtId::kBNO055BeginCalibrationEvent );
+        sendOut( link );
         mNeedsAction = false;
 
-        output2cout( "Got begin calibration msg: Trigger calibration" );
+        output2cout( "Sent begin calibration msg to Pico" );
     }
 }
 
@@ -568,6 +623,9 @@ RequestCalibrationStatusMsg::RequestCalibrationStatusMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
     // Nothing to do
+    mNeedsAction = false;
+
+    output2cout( "Error: RPi0 got BeginCalibrationMsg", getIdNum() );
 }
 
 
@@ -575,17 +633,11 @@ void RequestCalibrationStatusMsg::takeAction( EventManager& events, SerialLink& 
 {
     if ( mNeedsAction )
     {
-        // Even if PicoState::wantNavStatusMsgs() is false, we always respond to direct request
-        auto calibData{ BNO055::getCalibration() };
-        bool status = BNO055::calibrationGood( calibData );
-
-        PicoState::navCalibrated( status );
-        PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
-        navReadyStatus.takeAction( events, link );
-
+        // Just send it
+        sendOut( link );
         mNeedsAction = false;
- 
-        output2cout( "Got a request calib status msg" );
+
+        output2cout( "Sent request calib status msg to Pico" );
     }
 }
 
@@ -636,11 +688,10 @@ void CalibrationInfoUpdateMsg::readIn( SerialLink& link )
 void CalibrationInfoUpdateMsg::sendOut( SerialLink& link )
 {
     // RPi0 should never send this
-
+    
     output2cout( "Error: RPi0 tried to send CalibrationInfoUpdateMsg", getIdNum(), 
         static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
         static_cast<int>( std::get<2>( mContent.mMsg ) ), static_cast<int>( std::get<3>( mContent.mMsg ) ) );
-
 }
 
 
@@ -651,7 +702,7 @@ void CalibrationInfoUpdateMsg::takeAction( EventManager& events, SerialLink& lin
         // TODO process the data in the message
         mNeedsAction = false;
 
-        output2cout ( "RPi0 processed CalibrationInfoMsg", getIdNum(), 
+        output2cout ( "TODO:  RPi0 process CalibrationInfoMsg", getIdNum(), 
         static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
         static_cast<int>( std::get<2>( mContent.mMsg ) ), static_cast<int>( std::get<3>( mContent.mMsg ) ) ); 
     }
@@ -693,23 +744,23 @@ void SetAutoCalibrateMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debug2cout( "Got SetAutoCalibrateMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg) ) );
+    output2cout( "Error: RPi0 got SetAutoCalibrateMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg) ) );
 }
 
 void SetAutoCalibrateMsg::sendOut( SerialLink& link )
 {
-    // This never sent from Pico
+    mContent.sendOut( link );
 }
 
 void SetAutoCalibrateMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        bool val = std::get<0>( mContent.mMsg );
-        PicoState::wantAutoCalibrate( val );
+        // Send it
+        sendOut( link );
         mNeedsAction = false;
 
-        output2cout( "Pico autocalibration set to ", val );    
+        output2cout( "Sent Pico SetAutoCalibrateMsg set to", static_cast<bool>( std::get<0>( mContent.mMsg ) ) );    
     }
 }
 
@@ -731,7 +782,9 @@ ResetBNO055Msg::ResetBNO055Msg() noexcept
 ResetBNO055Msg::ResetBNO055Msg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
-    // Nothing to do
+    // RPi0 should never get this
+
+    output2cout( "Error: RPi0 got ResetBNO055Msg", getIdNum() );
 }
 
 
@@ -739,10 +792,10 @@ void ResetBNO055Msg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        events.queueEvent( EvtId::kBNO055ResetEvent );
+        sendOut( link );
         mNeedsAction = false;
 
-        output2cout( "Got ResetBNO055Msg" );
+        output2cout( "Sent ResetBNO055Msg to Pico" );
     }
 }
 
@@ -784,15 +837,15 @@ void NavUpdateMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    output2cout( "Error: got NavUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
+    debug2cout( "Got NavUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
 }
 
 
 void NavUpdateMsg::sendOut( SerialLink& link )
 {
-    mContent.sendOut( link );
+    // RPi0 never sends this
 
-    debug2cout( "Sent NavUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
+    output2cout( "Error: RPi0 sending NavUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
 }
 
 
@@ -801,8 +854,11 @@ void NavUpdateMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
+        // TODO  do something with the fino
         sendOut( link );
         mNeedsAction = false;
+
+        output2cout( "Got NavUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
     }
 }
 
@@ -840,25 +896,25 @@ NavUpdateControlMsg::NavUpdateControlMsg( MsgId id )
 void NavUpdateControlMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
-    debug2cout( "Got NavUpdateControlMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg) ) );
+    debug2cout( "Error: RPi0 got NavUpdateControlMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg) ) );
 }
 
 void NavUpdateControlMsg::sendOut( SerialLink& link )
 {
-    // This never sent from Pico
+    mContent.sendOut( link );
 }
 
 void NavUpdateControlMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        bool val = std::get<0>( mContent.mMsg );
-        PicoState::sendNavMsgs( val );
+        // Send it
+        sendOut( link );
         mNeedsAction = false;
 
-        output2cout( "Nav update events to RPi0 set to ", val );    
+        output2cout( "NavUpdateControlMsg send to Pico, set to", static_cast<bool>( std::get<0>( mContent.mMsg ) ) );    
     }
 }
 
@@ -896,26 +952,26 @@ DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( MsgId id )
 void DrivingStatusUpdateMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
-    debug2cout( "Got DrivingStatusUpdateMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    output2cout( "Error: RPi0 got DrivingStatusUpdateMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void DrivingStatusUpdateMsg::sendOut( SerialLink& link )
 {
-    // This never sent from Pico
+    mContent.sendOut( link );
+    
+    debug2cout( "RPi0 sent DrivingStatusUpdateMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void DrivingStatusUpdateMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        std::uint8_t driveStatus = std::get<0>( mContent.mMsg );
-
-        // TODO take whatever action is appropirate
-        output2cout( "RPi0 sent driving status ", static_cast<int>( driveStatus ) ); 
-        output2cout( "TODO - implement action" );   
+        sendOut( link );
         mNeedsAction = false;
+
+        output2cout( "RPi0 sent DrivingStatusUpdateMsg", static_cast<int>( std::get<0>( mContent.mMsg ) ) ); 
     }
 }
 
@@ -955,23 +1011,25 @@ void EncoderUpdateMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    output2cout( "Error: got EncoderUpdateMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
+    debug2cout( "RPi0 got EncoderUpdateMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
 
 void EncoderUpdateMsg::sendOut( SerialLink& link )
 {
-    mContent.sendOut( link );
+    // RPi0 never sends this
 
-    debug2cout( "Sent EncoderUpdateMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
+    output2cout( "Error: RPi0 sends EncoderUpdateMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
 
 void EncoderUpdateMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        // Only action is to send it
-        sendOut( link );
+        // TODO take action with thi
+        // TODO
         mNeedsAction = false;
+
+        output2cout( "TODO process EncoderUpdateMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
     }
 }
 
@@ -1009,25 +1067,25 @@ EncoderUpdateControlMsg::EncoderUpdateControlMsg( MsgId id )
 void EncoderUpdateControlMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
-    debug2cout( "Got EncoderUpdateControlMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ) );
+    output2cout( "Error: RPi0 got EncoderUpdateControlMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void EncoderUpdateControlMsg::sendOut( SerialLink& link )
 {
-    // This never sent from Pico
+    mContent.sendOut( link );
 }
 
 void EncoderUpdateControlMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        bool val = std::get<0>( mContent.mMsg );
-        PicoState::sendEncoderMsgs( val );
+        // Simply send
+        sendOut( link );
         mNeedsAction = false;
 
-        output2cout( "Encoder update events to RPi0 turned to ", val );    
+        output2cout( "RPi0 sent EncoderUpdateControlMsg with", static_cast<bool>( std::get<0>( mContent.mMsg ) ) );    
     }
 }
 
@@ -1065,39 +1123,25 @@ BatteryLevelRequestMsg::BatteryLevelRequestMsg( MsgId id )
 void BatteryLevelRequestMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
-    debug2cout( "Got BatteryLevelRequestMsg", static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    output2cout( "Error: RPi0 got BatteryLevelRequestMsg", static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void BatteryLevelRequestMsg::sendOut( SerialLink& link )
 {
-    // This never sent from Pico
+    mContent.sendOut( link );
 }
 
 void BatteryLevelRequestMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        std::uint8_t whichBattery = std::get<0>( mContent.mMsg );
-        if ( whichBattery == std::to_underlying( Battery::kIcBattery ) || whichBattery == std::to_underlying( Battery::kBothBatteries ) )
-        {
-            // TODO
-        }
-        else if ( whichBattery == std::to_underlying( Battery::kMotorBattery ) || whichBattery == std::to_underlying( Battery::kBothBatteries ) )
-        {
-            // TODO
-        }
-        else
-        {
-            output2cout( "Bad battery request code", static_cast<int>( whichBattery ) );
-            ErrorReportMsg err( false, makeRpi0ErrorId( kRPi0SerialMessageError, 2, whichBattery ) );
-        }
-
-        // TODO take whatever action is appropirate
-        output2cout( "RPi0 requested battery level for ", static_cast<int>( whichBattery ) ); 
-        output2cout( "TODO - implement action" );   
+        // Send it
+        sendOut( link );
         mNeedsAction = false;
+
+        output2cout( "RPi0 sent BatteryLevelRequestMsg", static_cast<int>( std::get<0>( mContent.mMsg ) ) );
     }
 }
 
@@ -1138,23 +1182,24 @@ void BatteryLevelUpdateMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    output2cout( "Error: got BatteryLevelUpdateMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
+    debug2cout( "RPi0 got BatteryLevelUpdateMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void BatteryLevelUpdateMsg::sendOut( SerialLink& link )
 {
-    mContent.sendOut( link );
+    // RPi0 never sends this
 
-    debug2cout( "Sent BatteryLevelUpdateMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
+    output2cout( "Error: RPi0 sending BatteryLevelUpdateMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void BatteryLevelUpdateMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        // Only action is to send it
-        sendOut( link );
+        // TODO act on this
         mNeedsAction = false;
+
+        output2cout( "RPi0 TODO act on BatteryLevelUpdateMsg" );
     }
 }
 
@@ -1195,23 +1240,24 @@ void BatteryLowAlertMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    output2cout( "Error: got BatteryLowAlertMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    debug2cout( "RPi0 got BatteryLowAlertMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void BatteryLowAlertMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    output2cout( "Sent BatteryLowAlertMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    output2cout( "Sent BatteryLowAlertMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void BatteryLowAlertMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        // Only action is to send it
-        sendOut( link );
+        // TODO process this
         mNeedsAction = false;
+
+        output2cout( "TODO RPi0 process BatteryLowAlertMsg" );
     }
 }
 
@@ -1252,23 +1298,25 @@ void ErrorReportMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    output2cout( "Error: got ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
+    output2cout( "RPi0 got ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void ErrorReportMsg::sendOut( SerialLink& link )
 {
-    mContent.sendOut( link );
+    // RPi0 never sends this
 
-    debug2cout( "Sent ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
+    output2cout( "Error: RPi0 sending ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void ErrorReportMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        // Only action is to send the message out
-        sendOut( link );
+        // TODO handle the error
         mNeedsAction = false;
+
+        output2cout( "TODO RPi0 handle ErrorReportMsg", 
+            ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ), std::get<1>( mContent.mMsg ) );
     }
 }
 
@@ -1307,29 +1355,29 @@ TestPicoErrorRptMsg::TestPicoErrorRptMsg( MsgId id )
 void TestPicoErrorRptMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
-    debug2cout( "Got TestPicoErrorRptMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
+    output2cout( "Error RPi0 got TestPicoErrorRptMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void TestPicoErrorRptMsg::sendOut( SerialLink& link )
 {
-    // Pico never sends this message out (only receives)
-    // Instead seend the requested error msg
-    auto [ fatal, errorCode ] = mContent.mMsg;
-    ErrorReportMsg errRptAsRqstd( fatal, errorCode );
-    errRptAsRqstd.sendOut( link );
+    sendOut( link );
 
-    output2cout( "Sent test error msg: fatal?", fatal, "error code", errorCode );
+    output2cout( "RPiO sent TestPicoErrorRptMsg requesting", 
+        ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ), std::get<1>( mContent.mMsg ) );
 }
 
 void TestPicoErrorRptMsg::takeAction( EventManager&, SerialLink& link ) 
 {
-    // Create the requested error report and send it
+    // Sent it
     if ( mNeedsAction )
     {
         sendOut( link );
         mNeedsAction = false;
+
+        output2cout( "RPi0 SentTestPicoErrorRptMsg requesting:", 
+            ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ), "error code", std::get<1>( mContent.mMsg ) );
     }
 }
 
@@ -1369,34 +1417,27 @@ void DebugLinkMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    output2cout( "Got DebugLinkMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
+    output2cout( "RPi0 got DebugLinkMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
 }
 
 void DebugLinkMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    output2cout( "Sent DebugLinkMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
+    output2cout( "RPi0 sent DebugLinkMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
 }
 
 void DebugLinkMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        // Lets negate the values, flip the order, and send them back
-        auto [ val1, val2 ] = mContent.mMsg;
+        // This is works as RPi0 sends and Pico responds
+        // This is one message that RPi0 always sends with "sendOut()", **NEVER** with takeAction()
+        // So here always assume we are receiving
+        // Just display the values, which is already done by readIn() 
 
-        switch ( val1 )
-        {
-
-            default: 
-                val1 *= -1;
-                val2 *= -1;
-                DebugLinkMsg reply( val2, val1 );
-                reply.sendOut( link );
-                break;
-        }
         mNeedsAction = false;
+        output2cout( "RPi0 acted on DebugLinkMsg" );
     }
 }
 
