@@ -216,20 +216,29 @@ namespace
     {
         // Only register those messages we actually can receive
         // Messages that are only outgoing don't need to be registered
-        smp.registerMessage<NullMsg>( MsgId::kNullMsg );
+        smp.registerMessage<PingMsg>( MsgId::kPingMsg );
+        smp.registerMessage<PingReplyMsg>( MsgId::kPingReplyMsg );
     //  smp.registerMessage<PicoReadyMsg>( MsgId::kPicoReady );
     //  smp.registerMessage<PicoNavStatusUpdateMsg>( MsgId::kPicoNavStatusUpdate );
     //  smp.registerMessage<PicoSaysStopMsg>( MsgId::kPicoSaysStop );
         smp.registerMessage<MsgControlMsg>( MsgId::kMsgControlMsg );
         smp.registerMessage<ResetMsg>( MsgId::kResetMsg );
+    //  smp.registerMessage<TimerEventMsg>( MsgId::kTimerEventMsg );
+        smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
         smp.registerMessage<BeginCalibrationMsg>( MsgId::kBeginCalibration );
         smp.registerMessage<RequestCalibrationStatusMsg>( MsgId::kRequestCalibStatus );
     //  smp.registerMessage<SendCalibrationInfoMsg>( MsgId::kSendCalibInfo );
+        smp.registerMessage<SetAutoCalibrateMsg>( MsgId::kSetAutoCalibrate );
         smp.registerMessage<ResetBNO055Msg>( MsgId::kResetBNO055 );
-    //  smp.registerMessage<TimerEventMsg>( MsgId::kTimerEventMsg );
-        smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
     //  smp.registerMessage<NavUpdateMsg>( MsgId::kTimerNavUpdate );
         smp.registerMessage<NavUpdateControlMsg>( MsgId::kNavUpdateControl );
+        smp.registerMessage<DrivingStatusUpdateMsg>( MsgId::kDrivingStatusUpdate );
+    //  smp.registerMessage<EncoderUpdateMsg>( MsgId::kEncoderUpdate );
+        smp.registerMessage<EncoderUpdateControlMsg>( MsgId::kEncoderUpdateControl );
+        smp.registerMessage<BatteryLevelRequestMsg>( MsgId::kBatteryLevelRequest );
+    //  smp.registerMessage<BatteryLevelUpdateMsg>( MsgId::kBatteryLevelUpdate );
+    //  smp.registerMessage<BatteryLowAlertMsg>( MsgId::kBatteryLowAlert );
+    //  smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
         smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
         smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
     }
