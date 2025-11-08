@@ -307,7 +307,7 @@ PicoNavStatusUpdateMsg::PicoNavStatusUpdateMsg( MsgId id )
 void PicoNavStatusUpdateMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
     output2cout( "Error: Pico got PicoNavStatusUpdateMsg", 
         getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ), 
@@ -499,7 +499,7 @@ TimerEventMsg::TimerEventMsg( MsgId id )
 void TimerEventMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
     output2cout( "Error: Pico should never receive TimerEventMsg", 
         getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
@@ -688,7 +688,7 @@ SendCalibrationInfoMsg::SendCalibrationInfoMsg( MsgId id )
 void SendCalibrationInfoMsg::readIn( SerialLink& link )
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
     output2cout( "Error: received sendCalibrationInfoMsg", getIdNum(), 
         static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
@@ -841,7 +841,7 @@ NavUpdateMsg::NavUpdateMsg( MsgId id )
 void NavUpdateMsg::readIn( SerialLink& link )
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
     output2cout( "Error: got NavUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
 }
@@ -1012,7 +1012,7 @@ EncoderUpdateMsg::EncoderUpdateMsg( MsgId id )
 void EncoderUpdateMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
     output2cout( "Error: got EncoderUpdateMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
@@ -1195,7 +1195,7 @@ BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( MsgId id )
 void BatteryLevelUpdateMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
     output2cout( "Error: got BatteryLevelUpdateMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
@@ -1252,7 +1252,7 @@ BatteryLowAlertMsg::BatteryLowAlertMsg( MsgId id )
 void BatteryLowAlertMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
     output2cout( "Error: got BatteryLowAlertMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
@@ -1309,7 +1309,7 @@ ErrorReportMsg::ErrorReportMsg( MsgId id )
 void ErrorReportMsg::readIn( SerialLink& link ) 
 {
     mContent.readIn( link );
-    mNeedsAction = true;
+    mNeedsAction = false;
 
     output2cout( "Error: got ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
