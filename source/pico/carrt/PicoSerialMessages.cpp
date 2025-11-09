@@ -160,16 +160,19 @@ void PingMsg::takeAction( EventManager& events, SerialLink& link )
         if ( mSender )
         {
             sendOut( link );
-            mNeedsAction = false;
 
-            output2cout( "Sent ping to RPi0" );
+            output2cout( "Pico sent PingMsg" );
         }
         else
         {
             // If we are receiver, we send PingReplyMsg
             PingReplyMsg pingReply{};
             pingReply.takeAction( events, link );
+
+            output2cout( "Pico got PingMsg, sent PingReplyMsg");
         }
+        
+        mNeedsAction = false;
     }
 }
 
