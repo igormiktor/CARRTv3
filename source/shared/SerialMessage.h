@@ -214,7 +214,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) = 0;
 
-    virtual bool needsAction() const noexcept = 0;
+    [[nodiscard]] virtual bool needsAction() const noexcept = 0;
 
     virtual MsgId getId() const noexcept = 0;
 
@@ -253,7 +253,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    virtual bool needsAction() const noexcept override { return mNeedsAction; }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -287,7 +287,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) = 0;
 
-    virtual bool needsAction() const noexcept override;
+    [[nodiscard]] virtual bool needsAction() const noexcept override;
 
     virtual MsgId getId() const noexcept override;
 
