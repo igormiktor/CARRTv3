@@ -205,7 +205,6 @@ void PingReplyMsg::takeAction( EventManager& events, SerialLink& link )
         if ( mSender )
         {
             sendOut( link );
-            mNeedsAction = false;
 
             output2cout( "Send ping reply to RPi0" );
         }
@@ -215,8 +214,10 @@ void PingReplyMsg::takeAction( EventManager& events, SerialLink& link )
             output2cout( "Rcvd ping reply from RPi0" );
 
             // Could do something fancier like track we sent ping and match this reply to it
-            // But meant for debugging, so just leave it in our std::cout stream
+            // But meant for debugging, so just leave a message in our std::cout stream
         }
+        
+        mNeedsAction = false;
     }
 }
 
