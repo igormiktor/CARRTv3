@@ -142,8 +142,10 @@ int main()
 
 
     output2cout( "Pico frozen and displaying fast LED strobe" );
+
     // Just spin and put HeartBeatLed on fast strobe
-    while ( 1 )
+    constexpr int kWaitTimeInMin{ 3 };
+    for ( int i{ 0 }; i < kWaitTimeInMin*60*10; ++i )
     {
         CarrtPico::sleep( 100ms );
         HeartBeatLed::toggle();
@@ -160,6 +162,10 @@ int main()
 
         // If no reset msg, we keep strobing the LED
     }
+
+    // If we get here, just force reset
+    output2cout( "Fatal reset" );
+    PicoReset::fatalReset();
 
     return 0;
 }
