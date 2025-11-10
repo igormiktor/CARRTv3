@@ -27,9 +27,9 @@ class SerialLink;
 
 namespace PicoReset
 {
-    void reset( SerialLink& link );
+    [[noreturn]] void reset( SerialLink& link );
 
-    void fatalReset();
+    [[noreturn]] void fatalReset();
 };
 
 
