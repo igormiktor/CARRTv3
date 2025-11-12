@@ -799,6 +799,41 @@ private:
 
 
 
+class TestPicoMessagesMsg : public SerialMessage
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t >;
+
+    TestPicoMessagesMsg() noexcept;
+    TestPicoMessagesMsg( TheData t ) noexcept; 
+    TestPicoMessagesMsg( std::uint8_t msgIdToSendBack ) noexcept;
+    TestPicoMessagesMsg( MsgId id );
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct RawMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 class DebugLinkMsg : public SerialMessage
 {
 public:

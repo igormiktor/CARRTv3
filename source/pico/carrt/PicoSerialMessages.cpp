@@ -1409,6 +1409,141 @@ void TestPicoErrorRptMsg::takeAction( EventManager& evtMgr, SerialLink& link )
 
 
 
+TestPicoMessagesMsg::TestPicoMessagesMsg() noexcept 
+: SerialMessage( MsgId::kTestPicoMessages ), mContent( MsgId::kTestPicoMessages ), mNeedsAction{ false } 
+{}
+
+TestPicoMessagesMsg::TestPicoMessagesMsg( TheData t ) noexcept 
+: SerialMessage( MsgId::kTestPicoMessages ), mContent( MsgId::kTestPicoMessages, t ), mNeedsAction{ true } 
+{} 
+
+TestPicoMessagesMsg::TestPicoMessagesMsg( std::uint8_t msgIdToSendBack ) noexcept 
+: SerialMessage( MsgId::kTestPicoMessages ), mContent( MsgId::kTestPicoMessages, std::make_tuple( msgIdToSendBack ) ), 
+    mNeedsAction{ true } 
+{}
+
+TestPicoMessagesMsg::TestPicoMessagesMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kTestPicoMessages ), mNeedsAction{ false }
+{ 
+    if ( id != MsgId::kTestPicoMessages ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kTestPicoMessages ) ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void TestPicoMessagesMsg::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+
+    debug2cout( "Got TestPicoMessagesMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+}
+
+void TestPicoMessagesMsg::sendOut( SerialLink& link )
+{
+    // Pico never sends this message out (only receives)
+    
+    output2cout( "Error: Pico sending TestPicoMessagesMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+}
+
+void TestPicoMessagesMsg::takeAction( EventManager& evtMgr, SerialLink& link ) 
+{
+    // Create the requested error report and send it
+    if ( mNeedsAction )
+    {
+        // Pico action consists of sending the requested message type
+
+        MsgId msgId{ static_cast<MsgId>( std::get<0>( mContent.mMsg ) ) };
+
+        switch ( msgId )
+        {
+        case MsgId::kPingMsg:
+            /* code */
+            break;
+
+        case MsgId::kPingReplyMsg:
+            //
+            break;
+
+        case MsgId::kPicoReady:
+            //
+            break;
+
+        case MsgId::kPicoNavStatusUpdate:
+            // 
+            break;
+
+        case MsgId::kPicoSaysStop:
+            //
+            break;
+
+        case MsgId::kTimerEventMsg:
+            //
+            break;
+
+        case MsgId::kCalibrationInfoUpdate:
+            // 
+            break;
+
+        case MsgId::kTimerNavUpdate:
+            //
+            break;
+        
+        case MsgId::kEncoderUpdate:
+            //
+            break;
+        
+        case MsgId::kBatteryLevelUpdate:
+            //
+            break;
+
+        case MsgId::kBatteryLowAlert:
+            //
+            break;
+
+        case MsgId::kErrorReportFromPico:
+            //
+            break;
+
+        
+        // Msgs never sent by Pico
+        case MsgId::kMsgControlMsg:
+            [[fallthrough]];
+        case MsgId::kResetMsg:
+        case MsgId::kTimerControl:
+        case MsgId::kBeginCalibration:
+        case MsgId::kRequestCalibStatus:
+        case MsgId::kSetAutoCalibrate:
+        case MsgId::kResetBNO055:
+        case MsgId::kNavUpdateControl:
+        case MsgId::kDrivingStatusUpdate:
+        case MsgId::kEncoderUpdateControl:
+        case MsgId::kBatteryLevelRequest:
+        case MsgId::kUnknownMessage:
+        case MsgId::kTestPicoReportError:
+        case MsgId::kTestPicoMessages:
+        case MsgId::kDebugSerialLink:
+            [[fallthrough]];
+        default:
+            break;
+        }
+
+        mNeedsAction = false;
+
+        output2cout( "Pico sent requested msg with ID", getIdNum() );
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
 DebugLinkMsg::DebugLinkMsg() noexcept 
 : SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink ), mNeedsAction{ false } 
 {}

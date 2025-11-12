@@ -49,7 +49,7 @@ enum class MsgId : std::uint8_t
 
     // Messages (to Pico). Errors send by kErrorReportFromPico msg
     kMsgControlMsg,             // Pico to turn on or off various types of messages sent over Serial Link
-    kResetMsg,                  // Pico to reset itself (ack by sending kResetMsg back, then followed by kPicoReady)
+    kResetMsg,      // TODO rename            // Pico to reset itself (ack by sending kResetMsg back, then followed by kPicoReady)
 
     // Timer events
     kTimerEventMsg,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type; 4th byte time hack)
@@ -81,7 +81,9 @@ enum class MsgId : std::uint8_t
     kUnknownMessage,            // Never transmitted; used to designate an unknown message received; contains error code (int)
 
     // Debugging events
-    kTestPicoReportError,       // RPi0 sends to Pico asking to report an error (bytes 2-5 contain error code to send back)
+    kTestPicoReportError,       // RPi0 sends to Pico asking Pico to report an error (bytes 2-5 contain error code to send back)
+
+    kTestPicoMessages,         // RPi0 sends to Pico asking Pico to send a specific Msg (byte 2 contains the MsgId desired)
 
     kDebugSerialLink,           // RPi0 or Pico sends messages to debug/test the serial link; data is two int values
 };
