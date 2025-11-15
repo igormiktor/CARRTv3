@@ -17,9 +17,9 @@ target_sources( shared_library
         SerialLink.h 
 )
 
-target_compile_options( shared_library PUBLIC -Wall )
-
 if( BULDING_FOR_PICO )
+    target_compile_options( shared_library PUBLIC -Wall )
+
     target_compile_definitions( shared_library PUBLIC 
         -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
         -DUSE_CARRTPICO_STDIO=${USE_CARRTPICO_STDIO_VAL}
@@ -29,7 +29,10 @@ if( BULDING_FOR_PICO )
 endif()
 
 if( BULDING_FOR_RPI0 )
+    target_compile_options( shared_library PUBLIC -Wall -pthread )
+
     target_compile_definitions( shared_library PUBLIC 
+        -DUSE_PIGPIOD=${PIGPIOD_VAL} 
         -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
         -DUSE_CARRTRPI0_STDIO=${CARRT_RPI0_ENABLE_STDIO_OUTPUT_VAL}
         "$<$<CONFIG:DEBUG>:-DDEBUGRPI0=1>" 
