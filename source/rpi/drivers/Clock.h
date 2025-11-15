@@ -23,20 +23,24 @@
 #define Clock_h
 
 
+#include <chrono>
+
+// Required to use chrono-related literals
+using namespace std::chrono_literals;
+
+
 namespace Clock
 {
 
     void initSystemClock();
 
+    void delay( const std::chrono::nanoseconds& howLong );
+    inline void sleep( const std::chrono::nanoseconds& howLong ) { delay( howLong ); }
 
-    void delayMicroseconds( long us );
-
-
-    void delayMilliseconds( long ms );
-
+    [[deprecated]] inline void delayMicroseconds( long us ) { delay( std::chrono::microseconds{ us } ); }
+    [[deprecated]] inline void delayMilliseconds( long ms ) { delay( std::chrono::milliseconds{ ms } ); }
 
     long micros();
-
 
     long millis();
 }

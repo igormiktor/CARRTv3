@@ -74,6 +74,22 @@ void Clock::initSystemClock()
 
 
 
+void Clock::delay( const std::chrono::nanoseconds& howLong )
+{
+    std::chrono::seconds delaySeconds{ std::chrono::duration_cast<std::chrono::seconds>( howLong ) };
+    std::chrono::nanoseconds delayNanoseconds{ howLong - std::chrono::nanoseconds( delaySeconds ) };
+    struct timespec req; 
+    struct timespec rem;
+
+    req.tv_sec = delaySeconds.count();
+    req.tv_nsec = delayNanoseconds.count();
+
+    nanosleep( &req, &rem );
+}
+
+
+#if 0  // These are deprecated functions
+
 void Clock::delayMicroseconds( long us )
 {
     struct timespec req;
@@ -113,6 +129,7 @@ void Clock::delayMilliseconds( long ms )
     nanosleep( &req, &rem );
 }
 
+#endif  // Deprecated code
 
 
 long Clock::micros()
