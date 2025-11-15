@@ -18,6 +18,7 @@ target_sources( shared_library
 )
 
 target_compile_options( shared_library PUBLIC -Wall )
+
 if( BULDING_FOR_PICO )
     target_compile_definitions( shared_library PUBLIC 
         -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
