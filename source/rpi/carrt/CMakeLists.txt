@@ -1,15 +1,15 @@
-# Driver header list
-set( CARRT_HDR_LIST
-    CarrtRpi0Defines.h
+# This builds both a library (that test code can link to) and the main application 
+
+
+add_library( carrt_library STATIC )
+
+target_sources( carrt_library  
+    PRIVATE
+        RPi0SerialMessages.cpp 
+    PUBLIC FILE_SET HEADERS FILES
+        CarrtRpi0Defines.h
 )
 
-# Driver sources list
-set ( CARRT_SRC_LIST 
-    RPi0SerialMessages.cpp 
-)
-
-
-add_library( carrt_library STATIC ${CARRT_SRC_LIST} ${CARRT_HDR_LIST} )
 target_compile_options( carrt_library PUBLIC -Wall -pthread )
 target_compile_definitions( carrt_library PUBLIC 
     -DUSE_PIGPIOD=${PIGPIOD_VAL} 

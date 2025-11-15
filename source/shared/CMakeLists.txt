@@ -1,22 +1,22 @@
+# Code shared between RPi0 and Pico
 
-# Shared header list
-set( SHARED_HDR_LIST
-    CarrtError.h 
-    DebugUtils.hpp
-    ErrorCodes.h 
-    OutputUtils.hpp
-    SerialMessage.h 
-    SerialMessageProcessor.h
-    SerialLink.h 
+
+add_library( shared_library STATIC )
+
+target_sources( shared_library 
+    PRIVATE
+        SerialMessageProcessor.cpp
+        SerialLink.cpp
+    PUBLIC FILE_SET HEADERS FILES
+        CarrtError.h 
+        DebugUtils.hpp
+        ErrorCodes.h 
+        OutputUtils.hpp
+        SerialMessage.h 
+        SerialMessageProcessor.h
+        SerialLink.h 
 )
 
-# Shared source list
-set( SHARED_SRC_LIST 
-    SerialMessageProcessor.cpp
-    SerialLink.cpp
-)
-
-add_library( shared_library STATIC ${SHARED_SRC_LIST} ${SHARED_HDR_LIST} )
 target_compile_options( shared_library PUBLIC -Wall )
 if( BULDING_FOR_PICO )
     target_compile_definitions( shared_library PUBLIC 
@@ -26,6 +26,7 @@ if( BULDING_FOR_PICO )
         -DBUILDING_FOR_PICO=1 
     )
 endif()
+
 if( BULDING_FOR_RPI0 )
     target_compile_definitions( shared_library PUBLIC 
         -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
@@ -34,5 +35,6 @@ if( BULDING_FOR_RPI0 )
         -DBUILDING_FOR_RPI0=1
     )
 endif()
+
 target_include_directories( shared_library PUBLIC "${PROJECT_SOURCE_DIR}/carrt")
-target_include_directories( shared_library INTERFACE "${PROJECT_SOURCE_DIR}/shared" )
+target_include_directories( shared_library PUBLIC "${PROJECT_SOURCE_DIR}/shared" )
