@@ -54,28 +54,36 @@
 
 #if 0   // Use this to test that compile definitions inherit properly in cmake build
 
-#if DEBUGUTILS_ON
+#if defined( DEBUGUTILS_ON ) && DEBUGUTILS_ON
     #pragma message "DEBUGUTILS_ON = ON"
-#else
+#elif defined( DEBUGUTILS_ON )
     #pragma message "DEBUGUTILS_N = OFF"
+#else
+    #pragma message "DEBUGUTILS_N = undef"
 #endif
 
-#if USE_CARRTPICO_STDIO
+#if defined( USE_CARRTPICO_STDIO ) && USE_CARRTPICO_STDIO
     #pragma message "USE_CARRTPICO_STDIO = ON"
-#else
+#elif defined( USE_CARRTPICO_STDIO )
     #pragma message "USE_CARRTPICO_STDIO = OFF"
+#else
+    #pragma message "USE_CARRTPICO_STDIO = undef"
 #endif
 
-#if DEBUGPICO
+#if defined( DEBUGPICO ) && DEBUGPICO
     #pragma message "DEBUGPICO = ON"
-#else
+#elif defined( DEBUGPICO )
     #pragma message "DEBUGPICO = OFF"
+#else
+    #pragma message "DEBUGPICO = undef"
 #endif
 
-#if BUILDING_FOR_PICO
+#if defined( BUILDING_FOR_PICO ) && BUILDING_FOR_PICO
     #pragma message "BUILDING_FOR_PICO = ON"
-#else
+#elif defined( BUILDING_FOR_PICO )
     #pragma message "BUILDING_FOR_PICO = OFF"
+#else
+    #pragma message "BUILDING_FOR_PICO = undef"
 #endif
 
 #endif  // Checking compile definitions
