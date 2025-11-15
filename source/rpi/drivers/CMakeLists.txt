@@ -30,12 +30,9 @@ target_sources( rpi_driver_library
         Servo.h 
 )
 
-target_compile_options( rpi_driver_library PUBLIC -Wall -pthread )
-target_compile_definitions( rpi_driver_library PUBLIC 
-    -DUSE_PIGPIOD=${PIGPIOD_VAL} 
-    -DDEBUGUTILS_ON=${DEBUGUTILS_VAL}
-    "$<$<CONFIG:DEBUG>:-DDEBUGRPI0=1>" 
-)
+# Compile definitions and options inhereted from link libs (shared_library is the "root")
+
 target_include_directories( rpi_driver_library PUBLIC "${PROJECT_SOURCE_DIR}/drivers" )
+
 target_link_libraries( rpi_driver_library PUBLIC shared_library )
 
