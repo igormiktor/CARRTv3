@@ -52,15 +52,33 @@
 
 
 
-#include "pico/stdlib.h"
-//#include "pico/multicore.h"
-// #include "pico/util/queue.h"
-// #include "hardware/clocks.h"
-#include "hardware/i2c.h"
-// #include "hardware/timer.h"
-// #include "hardware/uart.h"
+#if 0   // Use this to test that compile definitions inherit properly in cmake build
 
+#if DEBUGUTILS_ON
+    #pragma message "DEBUGUTILS_ON = ON"
+#else
+    #pragma message "DEBUGUTILS_N = OFF"
+#endif
 
+#if USE_CARRTPICO_STDIO
+    #pragma message "USE_CARRTPICO_STDIO = ON"
+#else
+    #pragma message "USE_CARRTPICO_STDIO = OFF"
+#endif
+
+#if DEBUGPICO
+    #pragma message "DEBUGPICO = ON"
+#else
+    #pragma message "DEBUGPICO = OFF"
+#endif
+
+#if BUILDING_FOR_PICO
+    #pragma message "BUILDING_FOR_PICO = ON"
+#else
+    #pragma message "BUILDING_FOR_PICO = OFF"
+#endif
+
+#endif  // Checking compile definitions
 
 
 namespace
@@ -246,6 +264,7 @@ namespace
     //  smp.registerMessage<BatteryLowAlertMsg>( MsgId::kBatteryLowAlert );
     //  smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
         smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
+        smp.registerMessage<TestPicoMessagesMsg>( MsgId::kTestPicoMessages );
         smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
     }
 
