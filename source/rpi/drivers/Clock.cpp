@@ -84,7 +84,14 @@ void Clock::sleep( const std::chrono::nanoseconds& howLong )
     req.tv_sec = delaySeconds.count();
     req.tv_nsec = delayNanoseconds.count();
 
-    nanosleep( &req, &rem );
+    int err{ nanosleep( &req, &rem ) };
+    while ( err == -1 && errno == EINTR )
+    {
+        // Return -1 means nanosleep() interrupted by signal handler
+        // rem contains the remaining time to sleep
+        req = rem;
+        err = nanosleep( &req, &rem );
+    }
 }
 
 
