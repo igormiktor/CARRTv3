@@ -1406,11 +1406,13 @@ DebugLinkMsg::DebugLinkMsg() noexcept
 {}
 
 DebugLinkMsg::DebugLinkMsg( TheData t ) noexcept 
-: SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, t ), mNeedsAction{ false } 
 {} 
 
-DebugLinkMsg::DebugLinkMsg( int val1, int val2 ) noexcept 
-: SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, std::make_tuple( val1, val2 ) ), mNeedsAction{ true } 
+DebugLinkMsg::DebugLinkMsg(  int val1_i, std::uint8_t val2_u8, float val3_f, std::uint32_t val4_u32  ) noexcept 
+: SerialMessage( MsgId::kDebugSerialLink ), 
+                    mContent( MsgId::kDebugSerialLink, std::make_tuple( val1_i, val2_u8, val3_f, val4_u32 ) ), 
+                    mNeedsAction{ false } 
 {}
 
 DebugLinkMsg::DebugLinkMsg( MsgId id ) 
@@ -1429,22 +1431,25 @@ void DebugLinkMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    output2cout( "RPi0 got DebugLinkMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
+    output2cout( "RPi0 got DebugLinkMsg", std::get<0>( mContent.mMsg ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
+                    std::get<2>( mContent.mMsg ), std::get<3>( mContent.mMsg ) );
 }
 
 void DebugLinkMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    output2cout( "RPi0 sent DebugLinkMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
+    output2cout( "RPi0 sent DebugLinkMsg", std::get<0>( mContent.mMsg ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
+                    std::get<2>( mContent.mMsg ), std::get<3>( mContent.mMsg ) );
 }
 
-void DebugLinkMsg::takeAction( EventManager& events, SerialLink& link ) 
+void DebugLinkMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
         // DebugLinkMsgs work by having RPi0 send and Pico respond
         // This is the one message that RPi0 always sends with "sendOut()", **NEVER** with takeAction()
+        // takeAction() is reserved to receiving.
         // So here always assume we are receiving
         // Just display the values, which is already done by readIn() 
 

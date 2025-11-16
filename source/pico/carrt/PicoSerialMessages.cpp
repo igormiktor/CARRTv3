@@ -1549,11 +1549,13 @@ DebugLinkMsg::DebugLinkMsg() noexcept
 {}
 
 DebugLinkMsg::DebugLinkMsg( TheData t ) noexcept 
-: SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, t ), mNeedsAction{ true } 
+: SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, t ), mNeedsAction{ false } 
 {} 
 
-DebugLinkMsg::DebugLinkMsg( int val1, int val2 ) noexcept 
-: SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, std::make_tuple( val1, val2 ) ), mNeedsAction{ true } 
+DebugLinkMsg::DebugLinkMsg(  int val1_i, std::uint8_t val2_u8, float val3_f, std::uint32_t val4_u32  ) noexcept 
+: SerialMessage( MsgId::kDebugSerialLink ), 
+                    mContent( MsgId::kDebugSerialLink, std::make_tuple( val1_i, val2_u8, val3_f, val4_u32 ) ), 
+                    mNeedsAction{ false } 
 {}
 
 DebugLinkMsg::DebugLinkMsg( MsgId id ) 
@@ -1572,33 +1574,33 @@ void DebugLinkMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    output2cout( "Got DebugLinkMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
+    output2cout( "Pico got DebugLinkMsg", std::get<0>( mContent.mMsg ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
+                    std::get<2>( mContent.mMsg ), std::get<3>( mContent.mMsg ) );
 }
 
 void DebugLinkMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    output2cout( "Sent DebugLinkMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
+    output2cout( "Pico sent DebugLinkMsg", std::get<0>( mContent.mMsg ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
+                    std::get<2>( mContent.mMsg ), std::get<3>( mContent.mMsg ) );
 }
 
 void DebugLinkMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
-        // Lets negate the values, flip the order, and send them back
-        auto [ val1, val2 ] = mContent.mMsg;
+        // Transform the values and send them back
+        auto [ val1_i, val2_u8, val3_f, val4_u32 ] = mContent.mMsg;
 
-        switch ( val1 )
-        {
+        val1_i *= -2;
+        val2_u8 += static_cast<std::uint8_t>( 255 );   
+        val3_f *= -0.5f;
+        val4_u32 *= 5;
 
-            default: 
-                val1 *= -1;
-                val2 *= -1;
-                DebugLinkMsg reply( val2, val1 );
-                reply.sendOut( link );
-                break;
-        }
+        DebugLinkMsg response( val1_i, val2_u8, val3_f, val4_u32 );
+        response.sendOut( link );
+
         mNeedsAction = false;
     }
 }
