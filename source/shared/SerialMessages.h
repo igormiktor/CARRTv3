@@ -838,11 +838,11 @@ class DebugLinkMsg : public SerialMessage
 {
 public:
 
-    using TheData = std::tuple< int, int >;
+    using TheData = std::tuple< int, std::uint8_t, float, std::uint32_t >;
 
     DebugLinkMsg() noexcept;
     explicit DebugLinkMsg( TheData t ) noexcept; 
-    DebugLinkMsg( int val1, int val2 ) noexcept;
+    DebugLinkMsg( int val1_i, std::uint8_t val2_u8, float val3_f, std::uint32_t val4_u32 ) noexcept;
     explicit DebugLinkMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
