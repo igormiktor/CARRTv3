@@ -1448,63 +1448,99 @@ void TestPicoMessagesMsg::sendOut( SerialLink& link )
     output2cout( "Error: Pico sending TestPicoMessagesMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
-void TestPicoMessagesMsg::takeAction( EventManager& evtMgr, SerialLink& link ) 
+void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link ) 
 {
     // Create the requested error report and send it
     if ( mNeedsAction )
     {
         // Pico action consists of sending the requested message type
 
-        MsgId msgId{ static_cast<MsgId>( std::get<0>( mContent.mMsg ) ) };
+        MsgId desiredMsgId{ static_cast<MsgId>( std::get<0>( mContent.mMsg ) ) };
 
-        switch ( msgId )
+        switch ( desiredMsgId )
         {
         case MsgId::kPingMsg:
-            /* code */
+            { 
+                PingMsg msg; 
+                msg.takeAction( evt, link ); 
+            };
             break;
 
         case MsgId::kPingReplyMsg:
-            //
+            { 
+                PingReplyMsg msg; 
+                msg.takeAction( evt, link );
+            };
             break;
 
         case MsgId::kPicoReady:
-            //
+            { 
+                PicoReadyMsg msg; 
+                msg.takeAction( evt, link );
+            };
             break;
 
         case MsgId::kPicoNavStatusUpdate:
-            // 
+            { 
+                PicoNavStatusUpdateMsg msg( true, 6, 7, 8, 9 ); 
+                msg.takeAction( evt, link );
+            }; 
             break;
 
         case MsgId::kPicoSaysStop:
-            //
+            { 
+                PicoSaysStopMsg msg; 
+                msg.takeAction( evt, link );
+            };
             break;
 
         case MsgId::kTimerEventMsg:
-            //
+            { 
+                TimerEventMsg msg( TimerEventMsg::k1SecondEvent, 123, 123456 ); 
+                msg.takeAction( evt, link );
+            };
             break;
 
         case MsgId::kCalibrationInfoUpdate:
-            // 
+            { 
+                CalibrationInfoUpdateMsg msg( 2, 4, 6, 8 ); 
+                msg.takeAction( evt, link );
+            }; 
             break;
 
         case MsgId::kTimerNavUpdate:
-            //
+            { 
+                NavUpdateMsg msg( 180.0f, 456123 ); 
+                msg.takeAction( evt, link );
+            };
             break;
         
         case MsgId::kEncoderUpdate:
-            //
+            { 
+                EncoderUpdateMsg msg( 10, -10, 654321 ); 
+                msg.takeAction( evt, link );
+            };
             break;
         
         case MsgId::kBatteryLevelUpdate:
-            //
+            { 
+                BatteryLevelUpdateMsg msg( Battery::kBothBatteries, 5.5f ); 
+                msg.takeAction( evt, link );
+            };
             break;
 
         case MsgId::kBatteryLowAlert:
-            //
+            { 
+                BatteryLowAlertMsg msg( Battery::kIcBattery, 1.5f ); 
+                msg.takeAction( evt, link );
+            };
             break;
 
         case MsgId::kErrorReportFromPico:
-            //
+            { 
+                ErrorReportMsg msg( kPicoNonFatalError, makePicoErrorId( kPicoTestError, kPicoTestError, kPicoTestError ) ); 
+                msg.takeAction( evt, link );
+            };
             break;
 
         
@@ -1527,6 +1563,7 @@ void TestPicoMessagesMsg::takeAction( EventManager& evtMgr, SerialLink& link )
         case MsgId::kDebugSerialLink:
             [[fallthrough]];
         default:
+            output2cout( "Pico asked to send msg Pico never sends", static_cast<int>( desiredMsgId ) );
             break;
         }
 
