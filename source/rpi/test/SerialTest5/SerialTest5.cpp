@@ -118,7 +118,7 @@ int main()
                 keepGoing = false;
             }
             
-            Clock::delayMilliseconds(10);
+            Clock::sleep( 10ms );
         }
 
         std::cout << "Tests end" << std::endl;

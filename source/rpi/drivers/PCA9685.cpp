@@ -151,7 +151,7 @@ void PCA9685::reset( std::uint8_t address )
     I2c::write( address, kMode1, desiredMode );
 
     // Oscillator needs time to settle
-    Clock::delayMicroseconds( 500 );
+    Clock::sleep( 500us );
 
     setAllPwm( address, 0, kFullOff );
 }
@@ -275,9 +275,9 @@ void PCA9685::setPwmFreq( std::uint8_t address, float freq )
     I2c::write( address, kMode1, originalMode );
 
     // Oscillator needs time to settle
-    Clock::delayMilliseconds( 5 );
+    Clock::sleep( 5ms );
 
     // Set the MODE1 registor to clear restart
     I2c::write( address, kMode1, static_cast<std::uint8_t>( originalMode | (1 << kMode1_Restart) ) );
-    Clock::delayMilliseconds( 100 );
+    Clock::sleep( 100ms );
 }

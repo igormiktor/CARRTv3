@@ -64,7 +64,7 @@ int main()
         Lidar::init();
         gLidarMode = Lidar::kDefault;
 
-        Clock::delayMilliseconds( 3000 );
+        Clock::sleep( 3000ms );
 
         doInstructions();
 
@@ -207,7 +207,7 @@ void doConfigScan()
     for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
     {
         Lidar::setConfiguration( static_cast<Lidar::Configuration>( i ) );
-        Clock::delayMilliseconds( 10 );
+        Clock::sleep( 10ms );
         int rng;
         Lidar::getMedianDistanceInCm( &rng );
         std::cout << rng <<  ",   ";

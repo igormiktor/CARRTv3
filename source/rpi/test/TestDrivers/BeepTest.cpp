@@ -67,7 +67,7 @@ int main()
                     // Rollover happens in about 50 days, so don't worry about it
                     sNextTimeButtonClickAccepted = Clock::millis() + kMinTimeBetweenButtonChecks;
 
-                    Clock::delayMilliseconds( 25 );
+                    Clock::sleep( 25ms );
                     Lcd::clearBottomRow();
 
                     switch ( buttonHit )
@@ -75,7 +75,7 @@ int main()
                         case Keypad::kButton_Select:
                             Lcd::displayBottomRow( "End..." );
                             Buzzer::collisionChime();
-                            Clock::delayMilliseconds( 500 );
+                            Clock::sleep( 500ms );
                             loopAgain = false;
                             break;
 
@@ -133,7 +133,7 @@ int main()
                     }
                 }
 
-                Clock::delayMilliseconds( 25 );
+                Clock::sleep( 25ms );
             }
 
             catch( const I2c::I2cError& err )

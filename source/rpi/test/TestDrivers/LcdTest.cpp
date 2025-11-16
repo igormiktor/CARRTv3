@@ -50,66 +50,66 @@ int main()
             Lcd::displayTopRow( "ABCDEFGHIJKLMNOP" );
             Lcd::displayBottomRow( "abcdefghijklmnop" );
 
-            Clock::delayMilliseconds( 2500 );
+            Clock::sleep( 2500ms );
 
             Lcd::clearTopRow();
-            Clock::delayMilliseconds( 1000 );
+            Clock::sleep( 1s );
             Lcd::clearBottomRow();
-            Clock::delayMilliseconds( 1000 );
+            Clock::sleep( 1s );
 
             Lcd::displayTopRow( "01234567890ABCDE" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( "abcdefghijklmnop" );
 
-            Clock::delayMilliseconds( 2500 );
+            Clock::sleep( 2500ms );
 
             Lcd::clearTopRow();
             Lcd::setCursor( 0, 8 );
             Lcd::print( 'Z' );
             Lcd::displayBottomRow( "01234567890ABCDE" );
 
-            Clock::delayMilliseconds( 2500 );
+            Clock::sleep( 2500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "255 base 10" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( 255 );
 
-            Clock::delayMilliseconds( 2500 );
+            Clock::sleep( 2500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "255 base 8" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( 255, Lcd::kOct );
 
-            Clock::delayMilliseconds( 2500 );
+            Clock::sleep( 2500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "255 base 16" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( 255, Lcd::kHex );
-            Clock::delayMilliseconds( 2500 );
+            Clock::sleep( 2500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "-123456789L" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( -123456789L );
 
-            Clock::delayMilliseconds( 2500 );
+            Clock::sleep( 2500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "123456789UL" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( 123456789UL );
 
-            Clock::delayMilliseconds( 2500 );
+            Clock::sleep( 2500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "2.7182818289" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( 2.7182818289 );
 
-            Clock::delayMilliseconds( 2500 );
+            Clock::sleep( 2500ms );
         }
         Lcd::setBacklight( Lcd::kBacklight_Off );
         Lcd::displayOff();

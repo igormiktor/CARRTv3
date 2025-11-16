@@ -78,7 +78,7 @@ int main()
                     // Rollover happens in about 50 days, so don't worry about it
                     sNextTimeButtonClickAccepted = Clock::millis() + kMinTimeBetweenButtonChecks;
 
-                    Clock::delayMilliseconds( 25 );
+                    Clock::sleep( 25ms );
                     Lcd::clearBottomRow();
 
                     switch ( buttonHit )
@@ -149,7 +149,7 @@ int main()
                     }
                 }
 
-                Clock::delayMilliseconds( 25 );
+                Clock::sleep( 25ms );
 
             }
 

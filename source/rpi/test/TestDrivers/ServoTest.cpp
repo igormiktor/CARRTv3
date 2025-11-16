@@ -71,7 +71,7 @@ int main()
                     // Rollover happens in about 50 days, so don't worry about it
                     sNextTimeButtonClickAccepted = Clock::millis() + kMinTimeBetweenButtonChecks;
 
-                    Clock::delayMilliseconds( 25 );
+                    Clock::sleep( 25ms );
                     Lcd::clear();
 
                     switch ( buttonHit )
@@ -81,7 +81,7 @@ int main()
                             direction = 0;
                             Servo::slew( direction );
                             loopAgain = false;
-                            Clock::delayMilliseconds( 1000 );
+                            Clock::sleep( 1000ms );
                             break;
 
                         case Keypad::kButton_Right:
@@ -153,7 +153,7 @@ int main()
                     }
                 }
 
-                Clock::delayMilliseconds( 25 );
+                Clock::sleep( 25ms );
             }
 
             catch( const I2c::I2cError& err )

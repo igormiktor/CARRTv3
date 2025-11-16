@@ -26,22 +26,23 @@
 #include "Clock.h"
 #include "I2c.h"
 
-#include <CarrtError.h>
-#include <DebugUtils.hpp>
+#include "CarrtError.h"
+#include "DebugUtils.hpp"
 
+#include <chrono>
 
 // Useful for early testing and calibration
 // #define CARRT_DISABLE_LIDAR_SERVO   1
 
 // Ensure Servo is active unless explicitly turned off
 #if !defined(CARRT_DISABLE_LIDAR_SERVO)
-#define CARRT_DISABLE_LIDAR_SERVO   0
+    #define CARRT_DISABLE_LIDAR_SERVO   0
 #endif
 
 #if CARRT_DISABLE_LIDAR_SERVO
-#warning CARRT_DISABLE_LIDAR_SERVO defined and non-zero: Servo functionality disabled in Lidar driver
+    #warning CARRT_DISABLE_LIDAR_SERVO defined and non-zero: Servo functionality disabled in Lidar driver
 #else
-#include "Servo.h"
+    #include "Servo.h"
 #endif
 
 
@@ -79,13 +80,13 @@
 
 namespace Lidar
 {
-    constexpr int kLidarDoesntKnowDistance      = 1;
+    constexpr int                           kLidarDoesntKnowDistance{ 1 };
 
-    constexpr uint8_t kLidarI2cAddress          = 0x62;
+    constexpr uint8_t                       kLidarI2cAddress{ 0x62 };
 
-    constexpr int kLidarWaitTimedOutErr         = 666;
+    constexpr int                           kLidarWaitTimedOutErr{ 666 };
 
-    constexpr int kLidarWaitBetweenPings        = 150;          // milliseconds
+    constexpr std::chrono::milliseconds     kLidarWaitBetweenPings{ 150ms };          // milliseconds
 
 
     enum LidarRegisters
@@ -324,7 +325,7 @@ int Lidar::getMedianDistanceInCm( int* distInCm, uint8_t nbrMedianSamples, bool 
         if ( i < iMax )
         {
             // Millisecond delay between pings.
-            Clock::delayMilliseconds( kLidarWaitBetweenPings );
+            Clock::sleep( kLidarWaitBetweenPings );
         }
     }
 
@@ -383,7 +384,7 @@ void Lidar::reset()
     // Lidar takes approximately 22ms to reset
     I2c::write( kLidarI2cAddress, kDeviceCommand, static_cast<uint8_t>( kResetCmd ) );
 
-    Clock::delayMilliseconds( 25 );
+    Clock::sleep( 25ms );
 
     setConfiguration( Lidar::kDefault );
 
@@ -391,7 +392,7 @@ void Lidar::reset()
     for ( uint8_t i = 0; i < 10; ++i )
     {
         int rng;
-        Clock::delayMilliseconds( kLidarWaitBetweenPings );
+        Clock::sleep( kLidarWaitBetweenPings );
         Lidar::getDistanceInCm( &rng );
     }
 }

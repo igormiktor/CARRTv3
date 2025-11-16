@@ -34,11 +34,11 @@ namespace Clock
 
     void initSystemClock();
 
-    void delay( const std::chrono::nanoseconds& howLong );
-    inline void sleep( const std::chrono::nanoseconds& howLong ) { delay( howLong ); }
+    void sleep( const std::chrono::nanoseconds& howLong );
+    inline void delay( const std::chrono::nanoseconds& howLong ) { sleep( howLong ); }
 
-    [[deprecated]] inline void delayMicroseconds( long us ) { delay( std::chrono::microseconds{ us } ); }
-    [[deprecated]] inline void delayMilliseconds( long ms ) { delay( std::chrono::milliseconds{ ms } ); }
+    [[deprecated]] inline void delayMicroseconds( long us ) { sleep( std::chrono::microseconds{ us } ); }
+    [[deprecated]] inline void delayMilliseconds( long ms ) { sleep( std::chrono::milliseconds{ ms } ); }
 
     long micros();
 

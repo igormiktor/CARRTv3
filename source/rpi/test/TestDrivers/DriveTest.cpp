@@ -21,6 +21,7 @@
 
 
 #include <iostream>
+#include <chrono>
 
 #include "CarrtPigpio.h"
 
@@ -34,10 +35,9 @@
 
 int main()
 {
-    const long kThreeMinutesInMillis    = 3 * 60 *1000L;
-
-    const int kRunTimeInMillis          = 5000;
-    const int kPauseTimeInMillis        = 3000;
+    const std::chrono::milliseconds     kThreeMinutesInMillis{ 3min };
+    const std::chrono::milliseconds     kRunTimeInMillis{ 5s };
+    const std::chrono::milliseconds     kPauseTimeInMillis{ 3s };
 
     try
     {
@@ -50,36 +50,36 @@ int main()
         Motors::init();
         std::cerr << "Motors initialized" << std::endl;
 
-        Clock::delayMilliseconds( 2*kPauseTimeInMillis );
+        Clock::sleep( 2*kPauseTimeInMillis );
 
-        long endTime = Clock::millis() + kThreeMinutesInMillis;
+        long endTime = Clock::millis() + kThreeMinutesInMillis.count();
         while ( 1 && Clock::millis() < endTime )
         {
             std::cerr << "Motor loop start" << std::endl;
 
             Motors::goForward();
-            Clock::delayMilliseconds( kRunTimeInMillis );
+            Clock::sleep( kRunTimeInMillis );
 
             Motors::stop();
-            Clock::delayMilliseconds( kPauseTimeInMillis );
+            Clock::sleep( kPauseTimeInMillis );
 
             Motors::goBackward();
-            Clock::delayMilliseconds( kRunTimeInMillis );
+            Clock::sleep( kRunTimeInMillis );
 
             Motors::stop();
-            Clock::delayMilliseconds( kPauseTimeInMillis );
+            Clock::sleep( kPauseTimeInMillis );
 
             Motors::rotateLeft();
-            Clock::delayMilliseconds( kRunTimeInMillis );
+            Clock::sleep( kRunTimeInMillis );
 
             Motors::stop();
-            Clock::delayMilliseconds( kPauseTimeInMillis );
+            Clock::sleep( kPauseTimeInMillis );
 
             Motors::rotateRight();
-            Clock::delayMilliseconds( kRunTimeInMillis );
+            Clock::sleep( kRunTimeInMillis );
 
             Motors::stop();
-            Clock::delayMilliseconds( kPauseTimeInMillis );
+            Clock::sleep( kPauseTimeInMillis );
 
             std::cerr << "Motor loop end" << std::endl;
 

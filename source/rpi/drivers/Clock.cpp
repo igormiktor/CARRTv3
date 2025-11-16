@@ -74,7 +74,7 @@ void Clock::initSystemClock()
 
 
 
-void Clock::delay( const std::chrono::nanoseconds& howLong )
+void Clock::sleep( const std::chrono::nanoseconds& howLong )
 {
     std::chrono::seconds delaySeconds{ std::chrono::duration_cast<std::chrono::seconds>( howLong ) };
     std::chrono::nanoseconds delayNanoseconds{ howLong - std::chrono::nanoseconds( delaySeconds ) };

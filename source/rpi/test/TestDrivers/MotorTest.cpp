@@ -46,55 +46,55 @@ int main()
         Motors::init();
         std::cerr << "GPIO initialized" << std::endl;
 
-        Clock::delayMilliseconds(3);
+        Clock::sleep( 3ms );
 
         std::cerr<< "Starting motor loop" << std::endl;
         long endTime = Clock::millis() + kThreeMinutesInMillis;
         while ( 1 && Clock::millis() < endTime )
         {
-            Clock::delayMilliseconds( 1000 );
+            Clock::sleep( 1s );
             Motors::runRearRightMotor( Motors::kCmdForward );
-            Clock::delayMilliseconds( 5000 );
+            Clock::sleep( 5s );
             Motors::runRearRightMotor( Motors::kCmdRelease );
 
-            Clock::delayMilliseconds( 1000 );
+            Clock::sleep( 1s );
             Motors::runRearLeftMotor( Motors::kCmdForward );
-            Clock::delayMilliseconds( 5000 );
+            Clock::sleep( 5s );
             Motors::runRearLeftMotor( Motors::kCmdRelease );
 
-            Clock::delayMilliseconds( 1000 );
+            Clock::sleep( 1s );
             Motors::runFrontRightMotor( Motors::kCmdForward );
-            Clock::delayMilliseconds( 5000 );
+            Clock::sleep( 5s );
             Motors::runFrontRightMotor( Motors::kCmdRelease );
 
-            Clock::delayMilliseconds( 1000 );
+            Clock::sleep( 1s );
             Motors::runFrontLeftMotor( Motors::kCmdForward );
-            Clock::delayMilliseconds( 5000 );
+            Clock::sleep( 5s );
             Motors::runFrontLeftMotor( Motors::kCmdRelease );
 
-            Clock::delayMilliseconds( 5000 );
+            Clock::sleep( 5s );
 
-            Clock::delayMilliseconds( 1000 );
+            Clock::sleep( 1s );
             Motors::runRearRightMotor( Motors::kCmdBackward );
-            Clock::delayMilliseconds( 5000 );
+            Clock::sleep( 5s );
             Motors::runRearRightMotor( Motors::kCmdRelease );
 
-            Clock::delayMilliseconds( 1000 );
+            Clock::sleep( 1s );
             Motors::runRearLeftMotor( Motors::kCmdBackward );
-            Clock::delayMilliseconds( 5000 );
+            Clock::sleep( 5s );
             Motors::runRearLeftMotor( Motors::kCmdRelease );
 
-            Clock::delayMilliseconds( 1000 );
+            Clock::sleep( 1s );
             Motors::runFrontRightMotor( Motors::kCmdBackward );
-            Clock::delayMilliseconds( 5000 );
+            Clock::sleep( 5s );
             Motors::runFrontRightMotor( Motors::kCmdRelease );
 
-            Clock::delayMilliseconds( 1000 );
+            Clock::sleep( 1s );
             Motors::runFrontLeftMotor( Motors::kCmdBackward );
-            Clock::delayMilliseconds( 5000 );
+            Clock::sleep( 5s );
             Motors::runFrontLeftMotor( Motors::kCmdRelease );
 
-            Clock::delayMilliseconds( 5000 );
+            Clock::sleep( 5s );
         }
 
         std::cout << "Test complete" << std::endl;

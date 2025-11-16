@@ -325,7 +325,7 @@ void Lcd::initHD44780U()
 */
 
     // Datasheet says to wait at least 40ms after power rises above 2.7V before sending commands.
-    delayMilliseconds( 50 );
+    Clock::sleep( 50ms );
 
     // Pull RS, R/W, and Enable low to begin commands:  0b00000001 = 0x01
     uint8_t gpioB = 0x01;
@@ -338,19 +338,19 @@ void Lcd::initHD44780U()
     writeFourBitsToLcd( 0x03, gpioB );
 
     // Datasheet says to wait at least 4.1ms
-    delayMicroseconds( 4500 );
+    Clock::sleep( 4500us );
 
     // Second write
     writeFourBitsToLcd( 0x03, gpioB );
 
     // Datasheet says to wait at least 4.1ms
-    delayMicroseconds( 4500 );
+    Clock::sleep( 4500us );
 
     // Third write
     writeFourBitsToLcd( 0x03, gpioB );
 
     // Datasheet says to wait at least 100ms
-    delayMicroseconds( 150 );
+    Clock::sleep( 150ms );
 
     // Now can enter 4-bit mode
     writeFourBitsToLcd( 0x02, gpioB );
@@ -390,16 +390,16 @@ void Lcd::writeFourBitsToLcd( uint8_t value, uint8_t gpioB )
     I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
 
     //  HD44780U requires us to pulse the enable pin for values to be read
-    delayMicroseconds( 1 );
+    Clock::sleep( 1us );
     // Set enable high
     gpioB |= ( 1 <<  kByteLcdEnable );
     I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
 
-    delayMicroseconds( 1 );
+    Clock::sleep( 1us );
     // Set enable low
     gpioB &= ~( 1 <<  kByteLcdEnable );
     I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
-    delayMicroseconds( 100 );
+    Clock::sleep( 100us );
 }
 
 
@@ -438,7 +438,7 @@ void Lcd::sendCharOrCmdToLcd( uint8_t value, bool isCommand )
 void Lcd::clear()
 {
     sendCommand( LCD_CLEARDISPLAY );    // Clear display, set cursor position to zero
-    delayMilliseconds( 2 );             // Takes a while...
+    Clock::sleep( 2ms );             // Takes a while...
 }
 
 
@@ -446,7 +446,7 @@ void Lcd::clear()
 void Lcd::home()
 {
     sendCommand( LCD_RETURNHOME );      // Set cursor position to zero
-    delayMilliseconds( 2 );             // Takes a while...
+    Clock::sleep( 2ms );             // Takes a while...
 }
 
 

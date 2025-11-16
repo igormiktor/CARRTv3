@@ -49,14 +49,14 @@ void Buzzer::initBuzzer()
 }
 
 
-void Buzzer::beep( unsigned int durationMs, unsigned int tone )
+void Buzzer::beep( const std::chrono::milliseconds& durationMs, unsigned int tone )
 {
     auto err = gpioHardwarePWM( pBuzzerPin, tone, kDutyCycle );
     if ( err )
     {
         throw CarrtError( makeRpi0ErrorId( kBuzzerError, 1, err ), "Hardware PWM error in Buzzer module" );
     }
-    Clock::delayMilliseconds( durationMs );
+    Clock::sleep( durationMs );
     gpioHardwarePWM( pBuzzerPin, 0, 0 );
 }
 
@@ -68,18 +68,18 @@ void Buzzer::chirp()
     {
         throw CarrtError( makeRpi0ErrorId( kBuzzerError, 2, err ), "Hardware PWM error in Buzzer module" );
     }
-    Clock::delayMilliseconds( kBeepDefaultChirpDuration );
+    Clock::sleep( kBeepDefaultChirpDuration );
     gpioHardwarePWM( pBuzzerPin, 0, 0 );
 }
 
 
 void Buzzer::errorChime()
 {
-    beep( 50 );
-    Clock::delayMilliseconds( 50 );
-    beep( 50 );
-    Clock::delayMilliseconds( 50 );
-    beep( 50 );
+    beep( 50ms );
+    Clock::sleep( 50ms );
+    beep( 50ms );
+    Clock::sleep( 50ms );
+    beep( 50ms );
 }
 
 
@@ -90,19 +90,19 @@ void Buzzer::triTone( unsigned int tone1, unsigned int tone2, unsigned int tone3
     {
         throw CarrtError( makeRpi0ErrorId( kBuzzerError, 3, err ), "Hardware PWM error in Buzzer module" );
     }
-    Clock::delayMilliseconds( 50 );
+    Clock::sleep( 50ms );
     gpioHardwarePWM( pBuzzerPin, 0, 0 );
 
-    Clock::delayMilliseconds( 75 );
+    Clock::sleep( 75ms );
 
     gpioHardwarePWM( pBuzzerPin, tone2, kDutyCycle );
-    Clock::delayMilliseconds( 100 );
+    Clock::sleep( 100ms );
     gpioHardwarePWM( pBuzzerPin, 0, 0 );
 
-    Clock::delayMilliseconds( 75 );
+    Clock::sleep( 75ms );
 
     gpioHardwarePWM( pBuzzerPin, tone3, kDutyCycle );
-    Clock::delayMilliseconds( 150 );
+    Clock::sleep( 150ms );
     gpioHardwarePWM( pBuzzerPin, 0, 0 );
 }
 
