@@ -47,7 +47,7 @@ class PingMsg : public NoContentMsg
 public:
 
     PingMsg() noexcept;
-    PingMsg( MsgId id ) noexcept;
+    explicit PingMsg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
@@ -67,7 +67,7 @@ class PingReplyMsg : public NoContentMsg
 public:
 
     PingReplyMsg() noexcept; 
-    PingReplyMsg( MsgId id ) noexcept;
+    explicit PingReplyMsg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
@@ -89,9 +89,9 @@ public:
     using TheData = std::tuple< std::uint32_t >;
 
     PicoReadyMsg() noexcept;
-    PicoReadyMsg( TheData t ) noexcept; 
-    PicoReadyMsg( std::uint32_t time ) noexcept;
-    PicoReadyMsg( MsgId id );
+    explicit PicoReadyMsg( TheData t ) noexcept; 
+    explicit PicoReadyMsg( std::uint32_t time ) noexcept;
+    explicit PicoReadyMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -124,9 +124,9 @@ public:
     using TheData = std::tuple< bool, std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t >;
 
     PicoNavStatusUpdateMsg() noexcept;
-    PicoNavStatusUpdateMsg( TheData t ) noexcept; 
+    explicit PicoNavStatusUpdateMsg( TheData t ) noexcept; 
     PicoNavStatusUpdateMsg( bool status, std::uint8_t m, std::uint8_t a, std::uint8_t g, std::uint8_t s ) noexcept;
-    PicoNavStatusUpdateMsg( MsgId id );
+    explicit PicoNavStatusUpdateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -157,7 +157,7 @@ class PicoSaysStopMsg : public NoContentMsg
 public:
 
     PicoSaysStopMsg() noexcept;
-    PicoSaysStopMsg( MsgId id ) noexcept;
+    explicit PicoSaysStopMsg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
@@ -187,9 +187,9 @@ public:
     };
 
     MsgControlMsg() noexcept;
-    MsgControlMsg( TheData t ) noexcept; 
-    MsgControlMsg( std::uint8_t val ) noexcept;
-    MsgControlMsg( MsgId id );
+    explicit MsgControlMsg( TheData t ) noexcept; 
+    explicit MsgControlMsg( std::uint8_t val ) noexcept;
+    explicit MsgControlMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -220,7 +220,7 @@ class ResetMsg : public NoContentMsg
 public:
 
     ResetMsg() noexcept;
-    ResetMsg( MsgId id ) noexcept;
+    explicit ResetMsg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
@@ -245,9 +245,9 @@ public:
     };
 
     TimerEventMsg() noexcept;
-    TimerEventMsg( TheData t ) noexcept; 
+    explicit TimerEventMsg( TheData t ) noexcept; 
     TimerEventMsg( std::uint8_t which, int count, uint32_t time ) noexcept;
-    TimerEventMsg( MsgId id );
+    explicit TimerEventMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -280,9 +280,9 @@ public:
     using TheData = std::tuple< std::uint8_t >;
 
     TimerControlMsg() noexcept;
-    TimerControlMsg( TheData t ) noexcept; 
-    TimerControlMsg( bool val ) noexcept;
-    TimerControlMsg( MsgId id );
+    explicit TimerControlMsg( TheData t ) noexcept; 
+    explicit TimerControlMsg( bool val ) noexcept;
+    explicit TimerControlMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -313,7 +313,7 @@ class BeginCalibrationMsg : public NoContentMsg
 public:
 
     BeginCalibrationMsg() noexcept;
-    BeginCalibrationMsg( MsgId id ) noexcept;
+    explicit BeginCalibrationMsg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
@@ -329,7 +329,7 @@ class RequestCalibrationStatusMsg : public NoContentMsg
 public:
 
     RequestCalibrationStatusMsg() noexcept;
-    RequestCalibrationStatusMsg( MsgId id ) noexcept;
+    explicit RequestCalibrationStatusMsg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
@@ -347,9 +347,9 @@ public:
     using TheData = std::tuple< std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t >;
 
     CalibrationInfoUpdateMsg() noexcept;
-    CalibrationInfoUpdateMsg( TheData t ) noexcept; 
+    explicit CalibrationInfoUpdateMsg( TheData t ) noexcept; 
     CalibrationInfoUpdateMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro, std::uint8_t sys ) noexcept;
-    CalibrationInfoUpdateMsg( MsgId id );
+    explicit CalibrationInfoUpdateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -382,9 +382,9 @@ public:
     using TheData = std::tuple< std::uint8_t >;
 
     SetAutoCalibrateMsg() noexcept;
-    SetAutoCalibrateMsg( TheData t ) noexcept; 
-    SetAutoCalibrateMsg( bool val ) noexcept;
-    SetAutoCalibrateMsg( MsgId id );
+    explicit SetAutoCalibrateMsg( TheData t ) noexcept; 
+    explicit SetAutoCalibrateMsg( bool val ) noexcept;
+    explicit SetAutoCalibrateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -415,7 +415,7 @@ class ResetBNO055Msg : public NoContentMsg
 public:
 
     ResetBNO055Msg() noexcept;
-    ResetBNO055Msg( MsgId id ) noexcept;
+    explicit ResetBNO055Msg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };
@@ -433,9 +433,9 @@ public:
     using TheData = std::tuple< float, std::uint32_t >;
 
     NavUpdateMsg() noexcept;
-    NavUpdateMsg( TheData t ) noexcept; 
+    explicit NavUpdateMsg( TheData t ) noexcept; 
     NavUpdateMsg( float heading, std::uint32_t time ) noexcept;
-    NavUpdateMsg( MsgId id );
+    explicit NavUpdateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -468,9 +468,9 @@ public:
     using TheData = std::tuple< std::uint8_t >;
 
     NavUpdateControlMsg() noexcept;
-    NavUpdateControlMsg( TheData t ) noexcept; 
-    NavUpdateControlMsg( bool val ) noexcept;
-    NavUpdateControlMsg( MsgId id );
+    explicit NavUpdateControlMsg( TheData t ) noexcept; 
+    explicit NavUpdateControlMsg( bool val ) noexcept;
+    explicit NavUpdateControlMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -512,9 +512,9 @@ public:
     };
 
     DrivingStatusUpdateMsg() noexcept;
-    DrivingStatusUpdateMsg( TheData t ) noexcept; 
-    DrivingStatusUpdateMsg( Drive driveStatus ) noexcept;
-    DrivingStatusUpdateMsg( MsgId id );
+    explicit DrivingStatusUpdateMsg( TheData t ) noexcept; 
+    explicit DrivingStatusUpdateMsg( Drive driveStatus ) noexcept;
+    explicit DrivingStatusUpdateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -547,9 +547,9 @@ public:
     using TheData = std::tuple< int, int, std::uint32_t >;
 
     EncoderUpdateMsg() noexcept;
-    EncoderUpdateMsg( TheData t ) noexcept; 
+    explicit EncoderUpdateMsg( TheData t ) noexcept; 
     EncoderUpdateMsg( int left, int right, std::uint32_t time ) noexcept;
-    EncoderUpdateMsg( MsgId id );
+    explicit EncoderUpdateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -582,9 +582,9 @@ public:
     using TheData = std::tuple< std::uint8_t >;
 
     EncoderUpdateControlMsg() noexcept;
-    EncoderUpdateControlMsg( TheData t ) noexcept; 
-    EncoderUpdateControlMsg( bool val ) noexcept;
-    EncoderUpdateControlMsg( MsgId id );
+    explicit EncoderUpdateControlMsg( TheData t ) noexcept; 
+    explicit EncoderUpdateControlMsg( bool val ) noexcept;
+    explicit EncoderUpdateControlMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -631,9 +631,9 @@ public:
     using TheData = std::tuple< std::uint8_t >;
 
     BatteryLevelRequestMsg() noexcept;
-    BatteryLevelRequestMsg( TheData t ) noexcept; 
-    BatteryLevelRequestMsg( Battery whichBattery ) noexcept;
-    BatteryLevelRequestMsg( MsgId id );
+    explicit BatteryLevelRequestMsg( TheData t ) noexcept; 
+    explicit BatteryLevelRequestMsg( Battery whichBattery ) noexcept;
+    explicit BatteryLevelRequestMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -666,9 +666,9 @@ public:
     using TheData = std::tuple< std::uint8_t, float >;
 
     BatteryLevelUpdateMsg() noexcept;
-    BatteryLevelUpdateMsg( TheData t ) noexcept; 
+    explicit BatteryLevelUpdateMsg( TheData t ) noexcept; 
     BatteryLevelUpdateMsg( Battery whichBattery, float level ) noexcept;
-    BatteryLevelUpdateMsg( MsgId id );
+    explicit BatteryLevelUpdateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -701,9 +701,9 @@ public:
     using TheData = std::tuple< std::uint8_t, float >;
 
     BatteryLowAlertMsg() noexcept;
-    BatteryLowAlertMsg( TheData t ) noexcept; 
+    explicit BatteryLowAlertMsg( TheData t ) noexcept; 
     BatteryLowAlertMsg( Battery whichBattery, float level ) noexcept;
-    BatteryLowAlertMsg( MsgId id );
+    explicit BatteryLowAlertMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -736,9 +736,9 @@ public:
     using TheData = std::tuple< std::uint8_t, int >;
 
     ErrorReportMsg() noexcept;
-    ErrorReportMsg( TheData t ) noexcept; 
+    explicit ErrorReportMsg( TheData t ) noexcept; 
     ErrorReportMsg( bool val, int errorCode ) noexcept;
-    ErrorReportMsg( MsgId id );
+    explicit ErrorReportMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -771,9 +771,9 @@ public:
     using TheData = std::tuple< std::uint8_t, int >;
 
     TestPicoErrorRptMsg() noexcept;
-    TestPicoErrorRptMsg( TheData t ) noexcept; 
+    explicit TestPicoErrorRptMsg( TheData t ) noexcept; 
     TestPicoErrorRptMsg( bool makeItFatal, int errorCodeToTest ) noexcept;
-    TestPicoErrorRptMsg( MsgId id );
+    explicit TestPicoErrorRptMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -806,9 +806,9 @@ public:
     using TheData = std::tuple< std::uint8_t >;
 
     TestPicoMessagesMsg() noexcept;
-    TestPicoMessagesMsg( TheData t ) noexcept; 
-    TestPicoMessagesMsg( std::uint8_t msgIdToSendBack ) noexcept;
-    TestPicoMessagesMsg( MsgId id );
+    explicit TestPicoMessagesMsg( TheData t ) noexcept; 
+    explicit TestPicoMessagesMsg( std::uint8_t msgIdToSendBack ) noexcept;
+    explicit TestPicoMessagesMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
@@ -841,9 +841,9 @@ public:
     using TheData = std::tuple< int, int >;
 
     DebugLinkMsg() noexcept;
-    DebugLinkMsg( TheData t ) noexcept; 
+    explicit DebugLinkMsg( TheData t ) noexcept; 
     DebugLinkMsg( int val1, int val2 ) noexcept;
-    DebugLinkMsg( MsgId id );
+    explicit DebugLinkMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 

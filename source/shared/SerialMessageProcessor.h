@@ -40,7 +40,7 @@ public:
 
     using MsgPtr = typename std::unique_ptr<SerialMessage>;
 
-    MessageFactory( int reserveSize );
+    explicit MessageFactory( int reserveSize );
     ~MessageFactory() = default;
     
     MessageFactory( const MessageFactory& ) = delete;

@@ -116,7 +116,7 @@ struct RawMessage
 {
 public:
 
-    RawMessage( MsgId id ) noexcept
+    explicit RawMessage( MsgId id ) noexcept 
     : mId{ id }, mMsg{} {}
 
     RawMessage( MsgId id, TTuple t ) noexcept
@@ -202,7 +202,7 @@ class SerialMessage
 {
 public:
 
-    SerialMessage( MsgId id ) noexcept {}
+    explicit SerialMessage( MsgId id ) noexcept {}
 
     virtual ~SerialMessage() = default;
 
@@ -242,7 +242,7 @@ public:
     using TheData = std::tuple< std::uint8_t, int >;
 
     UnknownMsg() noexcept;
-    UnknownMsg( TheData t ) noexcept; 
+    explicit UnknownMsg( TheData t ) noexcept; 
     UnknownMsg( std::uint8_t, int errorCode ) noexcept;
     UnknownMsg( MsgId id );
 
@@ -277,8 +277,8 @@ class NoContentMsg : public SerialMessage
 {
 public:
 
-    NoContentMsg( std::uint8_t id ) noexcept;
-    NoContentMsg( MsgId id ) noexcept;
+    explicit NoContentMsg( std::uint8_t id ) noexcept;
+    explicit NoContentMsg( MsgId id ) noexcept;
 
     virtual ~NoContentMsg() = default;
 
