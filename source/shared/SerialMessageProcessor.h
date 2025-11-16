@@ -79,7 +79,7 @@ private:
     template <typename T>
     static MsgPtr creator( MsgId id )
     {
-        // All SerialMessages must have a constructor that takes a uint8_t parameter (the ID)
+        // All SerialMessages must have a constructor that takes a MsgId parameter (the ID)
         return MsgPtr( new T( id ) );
     }
 
@@ -117,17 +117,13 @@ public:
     }
 
 
-
 private:
 
     inline MsgPtr createMessageFromSerialLink( std::uint8_t id ) { return createMessageFromSerialLink( static_cast<MsgId>( id ) ); }
     MsgPtr createMessageFromSerialLink( MsgId id );
 
-
     MessageFactory      mFactory;
     SerialLink&         mLink;
-
-
 };
 
 
