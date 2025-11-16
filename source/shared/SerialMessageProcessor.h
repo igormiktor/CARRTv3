@@ -83,7 +83,7 @@ private:
         return MsgPtr( new T( id ) );
     }
 
-    typedef MsgPtr (*PCreator)( MsgId );
+    using PCreator = MsgPtr (*)( MsgId );
     std::unordered_map< std::uint8_t, PCreator > mCreators;
 };
 
