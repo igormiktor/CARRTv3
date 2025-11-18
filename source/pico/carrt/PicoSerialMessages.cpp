@@ -70,7 +70,7 @@ void UnknownMsg::readIn( SerialLink& link )
 void UnknownMsg::sendOut( SerialLink& link )
 {
     // We don't send this msg out on link; instead send error report
-    ErrorReportMsg errMsg( false, std::get<1>( mContent.mMsg ) );
+    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoSerialMessageError, std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) ) );
     errMsg.sendOut( link );
 }
 
