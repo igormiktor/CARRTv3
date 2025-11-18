@@ -867,11 +867,10 @@ void NavUpdateMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // TODO  do something with the fino
-        sendOut( link );
+        // TODO  do something with the nav update
         mNeedsAction = false;
 
-        output2cout( "Got NavUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
+        output2cout( "TODO RPi0 do something nav update info" );
     }
 }
 
@@ -1375,7 +1374,7 @@ void TestPicoErrorRptMsg::readIn( SerialLink& link )
 
 void TestPicoErrorRptMsg::sendOut( SerialLink& link )
 {
-    sendOut( link );
+    mContent.sendOut( link );
 
     debug2cout( "RPiO sent TestPicoErrorRptMsg requesting",  static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
@@ -1390,6 +1389,64 @@ void TestPicoErrorRptMsg::takeAction( EventManager&, SerialLink& link )
 
         output2cout( "RPi0 SentTestPicoErrorRptMsg requesting", 
             ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ), "error code", std::get<1>( mContent.mMsg ) );
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+TestPicoMessagesMsg::TestPicoMessagesMsg() noexcept 
+: SerialMessage( MsgId::kTestPicoMessages ), mContent( MsgId::kTestPicoMessages ), mNeedsAction{ false } 
+{}
+
+TestPicoMessagesMsg::TestPicoMessagesMsg( TheData t ) noexcept 
+: SerialMessage( MsgId::kTestPicoMessages ), mContent( MsgId::kTestPicoMessages, t ), mNeedsAction{ true } 
+{} 
+
+TestPicoMessagesMsg::TestPicoMessagesMsg( std::uint8_t msgIdToSendBack ) noexcept 
+: SerialMessage( MsgId::kTestPicoMessages ), mContent( MsgId::kTestPicoMessages, std::make_tuple( msgIdToSendBack ) ), 
+    mNeedsAction{ true } 
+{}
+
+TestPicoMessagesMsg::TestPicoMessagesMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kTestPicoMessages ), mNeedsAction{ false }
+{ 
+    if ( id != MsgId::kTestPicoMessages ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kTestPicoMessages ) ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void TestPicoMessagesMsg::readIn( SerialLink& link ) 
+{
+    // RPi0 never receives this
+
+    output2cout( "RPi0 got TestPicoMessagesMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+}
+
+void TestPicoMessagesMsg::sendOut( SerialLink& link )
+{
+    mContent.sendOut( link );
+    
+    debug2cout( "RPi0 sent TestPicoMessagesMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+}
+
+void TestPicoMessagesMsg::takeAction( EventManager& evtMgr, SerialLink& link ) 
+{
+    // Simply send it
+    if ( mNeedsAction )
+    {
+        sendOut( link );
+        mNeedsAction = false;
+
+        output2cout( "RPi0 requested Pico send", static_cast<int>( std::get<0>( mContent.mMsg ) ) );
     }
 }
 
