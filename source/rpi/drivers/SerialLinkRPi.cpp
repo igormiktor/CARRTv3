@@ -176,7 +176,7 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
     }
     
     // If we haven't returned by this point, we're out of options; throw
-    debugM( "gettByte() failed reading" );
+    debugM( "getByte() failed reading" );
     debugV( numRead, errno );
 
     std::stringstream errMsgStrm{};
