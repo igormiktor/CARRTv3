@@ -71,7 +71,7 @@ void UnknownMsg::sendOut( SerialLink& link )
    output2cout( "Error: RPI0 tried to send UnknownMsg" );
 }
 
-void UnknownMsg::takeAction( EventManager& events, SerialLink& link ) 
+void UnknownMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
@@ -194,7 +194,7 @@ PingReplyMsg::PingReplyMsg( MsgId id ) noexcept
 }
 
 
-void PingReplyMsg::takeAction( EventManager& events, SerialLink& link )
+void PingReplyMsg::takeAction( EventManager&, SerialLink& link )
 {
     // Action depends on whether we are sender or receiver
     if ( mNeedsAction )
@@ -316,6 +316,8 @@ void PicoNavStatusUpdateMsg::readIn( SerialLink& link )
 
 void PicoNavStatusUpdateMsg::sendOut( SerialLink& link )
 {
+    // RPi0 never sends
+
     output2cout( "Error: RPi0 sending PicoNavStatusUpdateMsg", 
         getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ), 
         std::get<3>( mContent.mMsg ), std::get<4>( mContent.mMsg ) );
@@ -354,7 +356,7 @@ PicoSaysStopMsg::PicoSaysStopMsg( MsgId id ) noexcept
 }
 
 
-void PicoSaysStopMsg::takeAction( EventManager& events, SerialLink& link )
+void PicoSaysStopMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -413,7 +415,7 @@ void MsgControlMsg::sendOut( SerialLink& link )
     debug2cout( "Rpi0 sent MsgControlMsg", static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
-void MsgControlMsg::takeAction( EventManager& events, SerialLink& link ) 
+void MsgControlMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
@@ -453,7 +455,7 @@ ResetMsg::ResetMsg( MsgId id ) noexcept
 }
 
 
-void ResetMsg::takeAction( EventManager& events, SerialLink& link )
+void ResetMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -570,7 +572,7 @@ void TimerControlMsg::sendOut( SerialLink& link )
     debug2cout( "RPi0 sent TimerControlMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ) );
 }
 
-void TimerControlMsg::takeAction( EventManager& events, SerialLink& link ) 
+void TimerControlMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
@@ -606,7 +608,7 @@ BeginCalibrationMsg::BeginCalibrationMsg( MsgId id ) noexcept
 }
 
 
-void BeginCalibrationMsg::takeAction( EventManager& events, SerialLink& link )
+void BeginCalibrationMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -642,7 +644,7 @@ RequestCalibrationStatusMsg::RequestCalibrationStatusMsg( MsgId id ) noexcept
 }
 
 
-void RequestCalibrationStatusMsg::takeAction( EventManager& events, SerialLink& link )
+void RequestCalibrationStatusMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -708,7 +710,7 @@ void CalibrationInfoUpdateMsg::sendOut( SerialLink& link )
 }
 
 
-void CalibrationInfoUpdateMsg::takeAction( EventManager& events, SerialLink& link )
+void CalibrationInfoUpdateMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -765,7 +767,7 @@ void SetAutoCalibrateMsg::sendOut( SerialLink& link )
     mContent.sendOut( link );
 }
 
-void SetAutoCalibrateMsg::takeAction( EventManager& events, SerialLink& link ) 
+void SetAutoCalibrateMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
@@ -801,7 +803,7 @@ ResetBNO055Msg::ResetBNO055Msg( MsgId id ) noexcept
 }
 
 
-void ResetBNO055Msg::takeAction( EventManager& events, SerialLink& link )
+void ResetBNO055Msg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -863,7 +865,7 @@ void NavUpdateMsg::sendOut( SerialLink& link )
 
 
 
-void NavUpdateMsg::takeAction( EventManager& events, SerialLink& link )
+void NavUpdateMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -918,7 +920,7 @@ void NavUpdateControlMsg::sendOut( SerialLink& link )
     mContent.sendOut( link );
 }
 
-void NavUpdateControlMsg::takeAction( EventManager& events, SerialLink& link ) 
+void NavUpdateControlMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
@@ -976,7 +978,7 @@ void DrivingStatusUpdateMsg::sendOut( SerialLink& link )
     debug2cout( "RPi0 sent DrivingStatusUpdateMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
-void DrivingStatusUpdateMsg::takeAction( EventManager& events, SerialLink& link ) 
+void DrivingStatusUpdateMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
@@ -1089,7 +1091,7 @@ void EncoderUpdateControlMsg::sendOut( SerialLink& link )
     mContent.sendOut( link );
 }
 
-void EncoderUpdateControlMsg::takeAction( EventManager& events, SerialLink& link ) 
+void EncoderUpdateControlMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
@@ -1145,7 +1147,7 @@ void BatteryLevelRequestMsg::sendOut( SerialLink& link )
     mContent.sendOut( link );
 }
 
-void BatteryLevelRequestMsg::takeAction( EventManager& events, SerialLink& link ) 
+void BatteryLevelRequestMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     if ( mNeedsAction )
     {
