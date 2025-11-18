@@ -26,6 +26,10 @@ if( BULDING_FOR_PICO )
         "$<$<CONFIG:DEBUG>:-DDEBUGPICO=1>" 
         -DBUILDING_FOR_PICO=1 
     )
+
+    target_link_libraries( shared_library PUBLIC 
+        pico_stdlib    
+    )
 endif()
 
 if( BULDING_FOR_RPI0 )
