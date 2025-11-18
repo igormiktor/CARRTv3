@@ -1560,7 +1560,7 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
         case MsgId::kUnknownMessage:
         case MsgId::kTestPicoReportError:
         case MsgId::kTestPicoMessages:
-        case MsgId::kDebugSerialLink:
+        case MsgId::kDebugSerialLink:           // Only sent as "direct response to same"
             [[fallthrough]];
         default:
             output2cout( "Pico asked to send msg Pico never sends", static_cast<int>( desiredMsgId ) );
