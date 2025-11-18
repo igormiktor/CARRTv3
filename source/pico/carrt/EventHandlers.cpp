@@ -45,7 +45,7 @@ void NullEventHandler::handleEvent( EventManager& events, SerialLink& link, EvtI
 
 void QuarterSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
-    if ( PicoState::wantTimerMsgs() )
+    if ( PicoState::wantQtrSecTimerMsgs() )
     {
         TimerEventMsg timerEvt( TimerEventMsg::k1QuarterSecondEvent, eventParam, eventTime );
         timerEvt.sendOut( link ); 
@@ -55,7 +55,7 @@ void QuarterSecondTimerHandler::handleEvent( EventManager& events, SerialLink& l
 
 void OneSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
-    if ( PicoState::wantTimerMsgs() )
+    if ( PicoState::wantSecTimerMsgs() )
     {
         TimerEventMsg timerEvt( TimerEventMsg::k1SecondEvent, eventParam, eventTime );
         timerEvt.sendOut( link ); 
@@ -65,7 +65,7 @@ void OneSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link,
 
 void EightSecondTimerHandler::handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const
 {
-    if ( PicoState::wantTimerMsgs() )
+    if ( PicoState::want8SecTimerMsgs() )
     {
         TimerEventMsg timerEvt( TimerEventMsg::k8SecondEvent, eventParam, eventTime );
         timerEvt.sendOut( link ); 

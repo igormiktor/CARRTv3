@@ -421,7 +421,7 @@ void MsgControlMsg::takeAction( EventManager& events, SerialLink& link )
     {
         std::uint8_t values = std::get<0>( mContent.mMsg );
 
-        PicoState::sendTimerMsgs( values & kTimerMsgMask );
+        PicoState::sendAllTimerMsgs( values & kTimerMsgMask );
         PicoState::sendNavMsgs( values & kNavMsgMask );
         PicoState::sendNavStatusMsgs( values & kNavStatusMask );
         PicoState::sendEncoderMsgs( values & kEncoderMsgMask );
@@ -576,7 +576,7 @@ void TimerControlMsg::takeAction( EventManager& events, SerialLink& link )
     if ( mNeedsAction )
     {
         bool val = std::get<0>( mContent.mMsg );
-        PicoState::sendTimerMsgs( val );
+        PicoState::sendAllTimerMsgs( val );
         mNeedsAction = false;
 
         output2cout( "Timer events to RPi0 turned to", val );    

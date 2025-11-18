@@ -35,8 +35,16 @@ namespace PicoState
     bool startUpFinished( bool newval ) noexcept;           // Returns prior value
     bool startUpFinished() noexcept;                        // Returns value
 
-    bool sendTimerMsgs( bool newVal ) noexcept;             // Returns prior value
-    bool wantTimerMsgs() noexcept;                          // Returns value
+    void sendAllTimerMsgs( bool newVal ) noexcept;          // Sets all three at once
+
+    bool sendQtrSecTimerMsgs( bool newVal ) noexcept;       // Returns prior value
+    bool wantQtrSecTimerMsgs() noexcept;                    // Returns value
+
+    bool sendSecTimerMsgs( bool newVal ) noexcept;          // Returns prior value
+    bool wantSecTimerMsgs() noexcept;                       // Returns value
+
+    bool send8SecTimerMsgs( bool newVal ) noexcept;         // Returns prior value
+    bool want8SecTimerMsgs() noexcept;                      // Returns value
 
     bool sendNavMsgs( bool newVal ) noexcept;               // Returns prior value
     bool wantNavMsgs() noexcept;                            // Returns value

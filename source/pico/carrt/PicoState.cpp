@@ -28,7 +28,9 @@ namespace
 {
     // These all happen in Core0 so no atomics needed
     bool  sStartUpFinished{ false };
-    bool  sSendTimerMsgs{ false };
+    bool  sSendQtrSecTimerMsgs{ false };
+    bool  sSendSecTimerMsgs{ false };
+    bool  sSend8SecTimerMsgs{ false };
     bool  sSendNavMsgs{ false };
     bool  sSendNavStatusMsgs{ false };
     bool  sSendEncoderMsgs{ false };
@@ -45,7 +47,9 @@ namespace
 void PicoState::initialize() noexcept
 {
     sStartUpFinished        = false;
-    sSendTimerMsgs          = false;
+    sSendQtrSecTimerMsgs    = false;
+    sSendSecTimerMsgs       = false;
+    sSend8SecTimerMsgs      = false;
     sSendNavMsgs            = false;
     sSendNavStatusMsgs      = false;
     sSendEncoderMsgs        = false;
@@ -70,16 +74,47 @@ bool PicoState::startUpFinished() noexcept
 }
 
 
-bool PicoState::sendTimerMsgs( bool newVal ) noexcept
+void PicoState::sendAllTimerMsgs( bool newVal ) noexcept
 {
-    bool oldVal = sSendTimerMsgs;
-    sSendTimerMsgs = newVal;
+    sSendQtrSecTimerMsgs    = newVal;
+    sSendSecTimerMsgs       = newVal;
+    sSend8SecTimerMsgs      = newVal;
+}
+
+bool PicoState::sendQtrSecTimerMsgs( bool newVal ) noexcept
+{
+    bool oldVal = sSendQtrSecTimerMsgs;
+    sSendQtrSecTimerMsgs = newVal;
     return oldVal;
 }
 
-bool PicoState::wantTimerMsgs() noexcept
+bool PicoState::wantQtrSecTimerMsgs() noexcept
 {
-    return sSendTimerMsgs;
+    return sSendQtrSecTimerMsgs;
+}
+
+bool PicoState::sendSecTimerMsgs( bool newVal ) noexcept
+{
+    bool oldVal = sSendSecTimerMsgs;
+    sSendSecTimerMsgs = newVal;
+    return oldVal;
+}
+
+bool PicoState::wantSecTimerMsgs() noexcept
+{
+    return sSendSecTimerMsgs;
+}
+
+bool PicoState::send8SecTimerMsgs( bool newVal ) noexcept
+{
+    bool oldVal = sSend8SecTimerMsgs;
+    sSend8SecTimerMsgs = newVal;
+    return oldVal;
+}
+
+bool PicoState::want8SecTimerMsgs() noexcept
+{
+    return sSend8SecTimerMsgs;
 }
 
 
@@ -137,7 +172,9 @@ bool PicoState::wantCalibrationMsgs() noexcept
 
 void PicoState::allMsgsSendOn() noexcept
 {
-    sSendTimerMsgs          = true;
+    sSendQtrSecTimerMsgs    = true;
+    sSendSecTimerMsgs       = true;
+    sSend8SecTimerMsgs      = true;
     sSendNavMsgs            = true;
     sSendEncoderMsgs        = true;
     sSendCalibrationMsgs    = true;
@@ -145,7 +182,9 @@ void PicoState::allMsgsSendOn() noexcept
 
 void PicoState::allMsgsSendOff() noexcept
 {
-    sSendTimerMsgs          = false;
+    sSendQtrSecTimerMsgs    = false;
+    sSendSecTimerMsgs       = false;
+    sSend8SecTimerMsgs      = false;
     sSendNavMsgs            = false;
     sSendEncoderMsgs        = false;
     sSendCalibrationMsgs    = false;
