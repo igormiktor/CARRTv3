@@ -66,10 +66,11 @@
 
 constexpr int kRPi0FunctionIdErrIncrement       = -10000;
 constexpr int kRPi0ModuleIdErrIncrement         = -1000000;
+constexpr int kRPi0ErrorSign                    = -1;
 
 constexpr int kPicoFunctionIdErrIncrement       = -100;
 constexpr int kPicoModuleIdErrIncrement         = -10000;
-
+constexpr int kPicoErrorSign                    = -1;
 
 
 

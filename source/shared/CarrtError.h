@@ -56,14 +56,14 @@ private:
 inline int makeRpi0ErrorId( int moduleId, int functionId, int error )
 {
     return ( moduleId * kRPi0ModuleIdErrIncrement ) 
-        + ( functionId * kRPi0FunctionIdErrIncrement ) + error;
+        + ( functionId * kRPi0FunctionIdErrIncrement ) + ( kRPi0ErrorSign * error );
 }
 
 
 inline int makePicoErrorId( int moduleId, int functionId, int error )
 {
-    return ( moduleId * kPicoFunctionIdErrIncrement ) 
-        + ( functionId * kPicoFunctionIdErrIncrement ) + error;
+    return ( moduleId * kPicoModuleIdErrIncrement ) 
+        + ( functionId * kPicoFunctionIdErrIncrement ) + ( kPicoErrorSign * error );
 }
 
 
