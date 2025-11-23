@@ -161,7 +161,7 @@ int main()
                         
                     case EvtId::kQuarterSecondTimerEvent:
                         // std::cout << "1/4 " << eventParam << std::endl;
-                        if ( PicoState::wantTimerMsgs() )
+                        if ( PicoState::wantQtrSecTimerMsgs() )
                         {
                             // std::cout << "1/4 " << eventParam << ", " << PicoState::wantTimerMsgs() << std::endl;
                             TimerEventMsg qtrSec( TimerEventMsg::k1QuarterSecondEvent, eventParam, timeTick );
@@ -170,7 +170,7 @@ int main()
                         break;
                         
                     case EvtId::kOneSecondTimerEvent:
-                        if ( PicoState::wantTimerMsgs() )
+                        if ( PicoState::wantSecTimerMsgs() )
                         {
                             TimerEventMsg oneSec( TimerEventMsg::k1SecondEvent, eventParam, timeTick );
                             oneSec.sendOut( rpi0 );
@@ -183,7 +183,7 @@ int main()
                         break;
                         
                     case EvtId::kEightSecondTimerEvent:
-                        if ( PicoState::wantTimerMsgs() )
+                        if ( PicoState::want8SecTimerMsgs() )
                         {
                             TimerEventMsg eightSec( TimerEventMsg::k8SecondEvent, eventParam, timeTick );
                             eightSec.sendOut( rpi0 );
