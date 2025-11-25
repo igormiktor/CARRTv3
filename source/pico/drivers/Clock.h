@@ -1,5 +1,5 @@
 /*
-    Delays.h - Delays for the CARRT based on Pico. 
+    Clock.h - Delay and clock related functions for the CARRT based on Pico. 
 
     Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
 
@@ -19,8 +19,8 @@
 
 
 
-#ifndef Delays_h
-#define Delays_h
+#ifndef Clock_h
+#define Clock_h
 
 #include <chrono>
 #include "pico/time.h"
@@ -52,5 +52,5 @@ namespace Clock
 
 
 
-#endif // Delays_h
+#endif // Clock_h
 
