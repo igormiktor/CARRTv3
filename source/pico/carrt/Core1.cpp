@@ -137,7 +137,7 @@ namespace
             if ( queue_is_empty( &sCore0toCore1Events ) )
             {
                 // Let Core1 sleep, Core1 is just processing timer/alarm callbacks and gpio encoder interrupts...
-                CarrtPico::sleep( 10ms );
+                Clock::sleep( 10ms );
             }
             else
             {

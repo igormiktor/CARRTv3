@@ -105,7 +105,7 @@ void DumpByteMsg::sendOut( SerialLink& link )
 void DumpByteMsg::takeAction( EventManager& events, SerialLink& link ) 
 {
     // Only action is to output it
-    output2cout( "DumpByte", getIdNum(), CarrtPico::millis() );
+    output2cout( "DumpByte", getIdNum(), Clock::millis() );
 }
 
 

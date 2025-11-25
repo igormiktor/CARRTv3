@@ -41,14 +41,14 @@ void PicoReset::reset( SerialLink& rpi0 )
 
     output2cout( "Pico reseting via watchdog_reboot" );
     
-    CarrtPico::sleep( 100ms );
+    Clock::sleep( 100ms );
 
     watchdog_reboot( 0, SRAM_END, 0 ); 
 
     // Wait for the reset to happen
     while ( 1 )
     {
-        CarrtPico::sleep( 100ms );
+        Clock::sleep( 100ms );
     }
 }
 

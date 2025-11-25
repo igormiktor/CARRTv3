@@ -77,7 +77,7 @@ void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep, Se
         {
             doHouseKeeping( events, rpi0 );
         }
-        // CarrtPico::sleep( 10ms );
+        // Clock::sleep( 10ms );
     }
 }
 

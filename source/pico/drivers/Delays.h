@@ -28,7 +28,7 @@
 // Required to use chrono-related literals
 using namespace std::chrono_literals;
 
-namespace CarrtPico
+namespace Clock
 {
 
     inline void delay( const std::chrono::milliseconds& howLong )

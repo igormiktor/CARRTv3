@@ -174,7 +174,7 @@ int main()
     constexpr int kWaitTimeInMin{ 3 };
     for ( int i{ 0 }; i < kWaitTimeInMin*60*10; ++i )
     {
-        CarrtPico::sleep( 100ms );
+        Clock::sleep( 100ms );
         HeartBeatLed::toggle();
 
         // See if we get a sent a reset message
