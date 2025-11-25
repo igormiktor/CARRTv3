@@ -24,11 +24,11 @@
 #include "SerialMessages.h"
 
 #include "BNO055.h"
+#include "DebugUtils.hpp"
+#include "Delays.h"
 #include "EventManager.h"
 #include "OutputUtils.hpp"
 #include "PicoState.h"
-
-#include "DebugUtils.hpp"
 
 
 
@@ -82,6 +82,30 @@ void UnknownMsg::takeAction( EventManager& events, SerialLink& link )
         sendOut( link );
         mNeedsAction = false;
     }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+void DumpByteMsg::readIn( SerialLink& link ) 
+{
+    // Nothing to do (we already have the ID if we call this function)
+}
+
+void DumpByteMsg::sendOut( SerialLink& link )
+{
+    // Never send these out
+}
+
+void DumpByteMsg::takeAction( EventManager& events, SerialLink& link ) 
+{
+    // Only action is to output it
+    output2cout( "DumpByte", getIdNum(), CarrtPico::millis() );
 }
 
 
