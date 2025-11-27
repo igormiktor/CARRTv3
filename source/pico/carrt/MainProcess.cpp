@@ -119,7 +119,7 @@ void MainProcess::doTestPicoReportError()
 {
     output2cout( "Received test Pico error report msg from RPi0" );
             
-    throw CarrtError( makePicoErrorId( PicoError::kPicoTestError, 1, 0 ), "CARRT Pico test error sent by request" );
+    throw CarrtError( makePicoErrorId( kPicoTestError, 1, 1 ), "CARRT Pico test error sent by request" );
 }
 
 
