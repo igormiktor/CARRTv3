@@ -17,7 +17,7 @@ target_sources( shared_library
         SerialLink.h 
 )
 
-if( BULDING_FOR_PICO )
+if( BUILDING_FOR_PICO )
     target_compile_options( shared_library PUBLIC -Wall )
 
     target_compile_definitions( shared_library PUBLIC 
@@ -28,11 +28,12 @@ if( BULDING_FOR_PICO )
     )
 
     target_link_libraries( shared_library PUBLIC 
-        pico_stdlib    
+        pico_stdlib  
+        pico_driver_library 
     )
 endif()
 
-if( BULDING_FOR_RPI0 )
+if( BUILDING_FOR_RPI0 )
     target_compile_options( shared_library PUBLIC -Wall -pthread )
 
     target_compile_definitions( shared_library PUBLIC 

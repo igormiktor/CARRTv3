@@ -63,7 +63,7 @@ pico_sdk_init()
 #######################################
 
 
-set( BULDING_FOR_PICO 1 )
+set( BUILDING_FOR_PICO 1 )
 
 if ( CARRT_PICO_ENABLE_UART_STDIO )
     set( USE_CARRTPICO_STDIO_VAL 1 )
