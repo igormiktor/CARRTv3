@@ -56,6 +56,7 @@ public:
         std::uint8_t idNum = std::to_underlying( id );
         if ( mCreators.find( idNum ) != mCreators.end() )
         {
+            // Need to throw because incoming serial stream can be corrupt from this point onward
             throw CarrtError( makeSharedErrorId( kSerialMsgDupeError, 1, idNum ), "Id dupe at registation" );
         }
         mCreators[idNum] = &creator<T>;
