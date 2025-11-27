@@ -88,6 +88,30 @@ void UnknownMsg::takeAction( EventManager&, SerialLink& link )
 
 
 
+void DumpByteMsg::readIn( SerialLink& link ) 
+{
+    // Nothing to do (we already have the ID if we call this function)
+}
+
+void DumpByteMsg::sendOut( SerialLink& link )
+{
+    // Never send these out
+}
+
+void DumpByteMsg::takeAction( EventManager& events, SerialLink& link ) 
+{
+    // Only action is to output it
+    output2cout( "DumpByte", getIdNum(), Clock::millis() );
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
 NoContentMsg::NoContentMsg( std::uint8_t id ) noexcept
 : SerialMessage( static_cast<MsgId>( id ) ), mId{ id }, mNeedsAction{ true } 
 {

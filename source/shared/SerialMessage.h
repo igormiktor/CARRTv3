@@ -38,6 +38,8 @@
 
 enum class MsgId : std::uint8_t
 {
+    kNull_NeverUse,              // Never use -- don't want a message with ID=0
+
     kPingMsg,
     kPingReplyMsg,
 
@@ -265,6 +267,43 @@ private:
     struct RawMessage<TheData>  mContent;
 
     bool   mNeedsAction;
+};
+
+
+
+
+
+
+
+
+// Common to both RPi0 and Pico, but each has its own implementation
+// This lets us handle just dump bytes whenever we need 
+// It is the default when there are no handlers in the SerialMessageProcessor
+// It essentially reads a single byte (the "ID") and via takeAction(), dumps it to output
+class DumpByteMsg : public SerialMessage 
+{
+public:
+
+    DumpByteMsg() noexcept : SerialMessage( static_cast<MsgId>( 0 ) ), mByte{ static_cast<MsgId>( 0 ) } {}
+    explicit DumpByteMsg( MsgId id ) noexcept : SerialMessage( id ), mByte{ id } {}
+
+    virtual ~DumpByteMsg() = default;
+
+
+    virtual void readIn( SerialLink& link ) override; 
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return false; }
+
+    virtual MsgId getId() const noexcept override { return mByte; }
+
+
+private:
+
+    MsgId   mByte;
 };
 
 
