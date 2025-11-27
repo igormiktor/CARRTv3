@@ -13,7 +13,7 @@ target_sources( pico_driver_library
     PUBLIC FILE_SET HEADERS FILES
         BNO055/bno055.h   
         BNO055.h
-        Delays.h
+        Clock.h
         Encoders.h
         HeartBeatLed.h 
         I2C.h 
