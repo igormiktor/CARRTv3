@@ -95,7 +95,7 @@
     #define USE_CARRTRPI0_STDIO     0
     #define USE_CARRTRPI0_DEBUG     0
 
-#endif // BULDING_FOR_RPI0
+#endif // BUILDING_FOR_RPI0
 
 
 #define USE_STDIO_OUPUT     ( USE_CARRTPICO_STDIO || USE_CARRTRPI0_STDIO )  
