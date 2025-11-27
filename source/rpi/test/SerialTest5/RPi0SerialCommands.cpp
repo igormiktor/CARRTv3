@@ -28,6 +28,7 @@
 #include "CarrtError.h"
 
 #include "DebugUtils.hpp"
+#include "OutputUtils.hpp"
 
 
 
@@ -233,8 +234,9 @@ DebugLinkMsg::DebugLinkMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, t ), mNeedsAction{ true } 
 {} 
 
-DebugLinkMsg::DebugLinkMsg( int val1, int val2 ) noexcept 
-: SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, std::make_tuple( val1, val2 ) ), mNeedsAction{ true } 
+DebugLinkMsg::DebugLinkMsg( int val1_i, std::uint8_t val2_u8, float val3_f, std::uint32_t val4_u32 ) noexcept 
+: SerialMessage( MsgId::kDebugSerialLink ), 
+    mContent( MsgId::kDebugSerialLink, std::make_tuple( val1_i, val2_u8, val3_f, val4_u32 ) ), mNeedsAction{ true } 
 {}
 
 DebugLinkMsg::DebugLinkMsg( MsgId id ) 
@@ -267,8 +269,8 @@ void DebugLinkMsg::sendOut( SerialLink& link )
 void DebugLinkMsg::takeAction( EventManager&, SerialLink& link ) 
 {
     // Let's display what we got
-    auto [ val1, val2 ] = mContent.mMsg;
-    std::cout << "Debug: got: " << val1 << " and " << val2 << std::endl;
+    auto [ val1_i, val2_u8, val3_f, val4_u32 ] = mContent.mMsg;
+    output2cout( "DebugLinkMsg got:", val1_i, static_cast<int>( val2_u8 ), val3_f, val4_u32 );
     mNeedsAction = false;
 }
 
