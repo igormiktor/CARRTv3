@@ -12,6 +12,7 @@
         },
         {
             "name": "debug",
+            "hidden": false,
             "displayName": "Debug",
             "inherits": "common",
             "cacheVariables": {
@@ -23,6 +24,7 @@
         },
         {
             "name": "debug-pigpiod",
+            "hidden": false,
             "displayName": "Debug PIGIOD",
             "inherits": "common",
             "cacheVariables": {
@@ -34,6 +36,7 @@
         },
         {
             "name": "release",
+            "hidden": false,
             "displayName": "Release",
             "inherits": "common",
             "cacheVariables": {
@@ -45,6 +48,7 @@
         },
         {
             "name": "release-pigpiod",
+            "hidden": false,
             "displayName": "Release PIGIOD",
             "inherits": "common",
             "cacheVariables": {
@@ -56,6 +60,7 @@
         },
         {
             "name": "rel+debug-info",
+            "hidden": false,
             "displayName": "Release with debug info",
             "inherits": "common",
             "cacheVariables": {
@@ -67,6 +72,7 @@
         },
         {
             "name": "release+debug-info-pigpiod",
+            "hidden": false,
             "displayName": "Release with debug info and PIGIOD",
             "inherits": "common",
             "cacheVariables": {
