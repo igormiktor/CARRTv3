@@ -123,7 +123,7 @@ int main()
     
         // Set up message processor
         SerialMessageProcessor smp( kSerialMessageHandlerReserveSize, rpi0 );
-    //    setupMessageProcessor( smp );
+        setupMessageProcessor( smp );
 
         // Set up event processor
         EventProcessor ep( kEventHandlerReserveSize );

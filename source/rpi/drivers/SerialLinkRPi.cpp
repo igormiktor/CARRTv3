@@ -235,9 +235,6 @@ bool SerialLinkRPi::get4Bytes( std::uint8_t* c )
 
 void SerialLinkRPi::putByte( std::uint8_t c )
 {
-    debugM( "putByte() wrote" );
-    int i{c};
-    debugV( i );
     auto numWritten = write( mSerialPort, &c, 1 );
     if ( numWritten != 1 )
     {
@@ -257,9 +254,6 @@ void SerialLinkRPi::putByte( std::uint8_t c )
 
 void SerialLinkRPi::put4Bytes( const std::uint8_t* c )
 {
-    debugM( "put4Bytes() wrote " );
-    int i[4] = { c[0], c[1], c[2], c[3] };
-    debugArr( i, 4 );
     auto numWritten = write( mSerialPort, c, 4 );
     if ( numWritten != 4 )
     {
