@@ -463,29 +463,29 @@ void MsgControlMsg::takeAction( EventManager&, SerialLink& link )
 
 
 
-ResetMsg::ResetMsg() noexcept
-: NoContentMsg( MsgId::kResetMsg )
+ResetPicoMsg::ResetPicoMsg() noexcept
+: NoContentMsg( MsgId::kResetPicoMsg )
 {
     mNeedsAction = true;
 }
 
-ResetMsg::ResetMsg( MsgId id ) noexcept
+ResetPicoMsg::ResetPicoMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
     // Nothing to do
 
-    output2cout( "Error: RPi0 got ResetMsg", getIdNum() );
+    output2cout( "Error: RPi0 got ResetPicoMsg", getIdNum() );
 }
 
 
-void ResetMsg::takeAction( EventManager&, SerialLink& link )
+void ResetPicoMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
         sendOut( link );
         mNeedsAction = false;
 
-        output2cout( "RPi0 sent ResetMsg", getIdNum() );
+        output2cout( "RPi0 sent ResetPicoMsg", getIdNum() );
     }
 }
 

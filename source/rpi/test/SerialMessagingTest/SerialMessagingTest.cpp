@@ -136,7 +136,7 @@ void setupMessageProcessor( SerialMessageProcessor& smp )
     smp.registerMessage<PicoNavStatusUpdateMsg>( MsgId::kPicoNavStatusUpdate );
     smp.registerMessage<PicoSaysStopMsg>( MsgId::kPicoSaysStop );
 //  smp.registerMessage<MsgControlMsg>( MsgId::kMsgControlMsg );
-//  smp.registerMessage<ResetMsg>( MsgId::kResetMsg );
+//  smp.registerMessage<ResetPicoMsg>( MsgId::kResetPicoMsg );
     smp.registerMessage<TimerEventMsg>( MsgId::kTimerEventMsg );
 //  smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
 //  smp.registerMessage<BeginCalibrationMsg>( MsgId::kBeginCalibration );

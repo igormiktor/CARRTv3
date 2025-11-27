@@ -215,12 +215,12 @@ private:
 
 
 
-class ResetMsg : public NoContentMsg 
+class ResetPicoMsg : public NoContentMsg 
 {
 public:
 
-    ResetMsg() noexcept;
-    explicit ResetMsg( MsgId id ) noexcept;
+    ResetPicoMsg() noexcept;
+    explicit ResetPicoMsg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 };

@@ -36,7 +36,7 @@ void PicoReset::reset( SerialLink& rpi0 )
 {
     // This performs a "reboot" reset (so don't care about queues overflowing )
     // Let RPi0 know we are going to reset
-    ResetMsg resetMsg;
+    ResetPicoMsg resetMsg;
     resetMsg.sendOut( rpi0 );
 
     output2cout( "Pico reseting via watchdog_reboot" );

@@ -469,20 +469,20 @@ void MsgControlMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 
-ResetMsg::ResetMsg() noexcept
-: NoContentMsg( MsgId::kResetMsg )
+ResetPicoMsg::ResetPicoMsg() noexcept
+: NoContentMsg( MsgId::kResetPicoMsg )
 {
     mNeedsAction = true;
 }
 
-ResetMsg::ResetMsg( MsgId id ) noexcept
+ResetPicoMsg::ResetPicoMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
     // Nothing to do
 }
 
 
-void ResetMsg::takeAction( EventManager& events, SerialLink& link )
+void ResetPicoMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -1571,7 +1571,7 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
         // Msgs never sent by Pico
         case MsgId::kMsgControlMsg:
             [[fallthrough]];
-        case MsgId::kResetMsg:
+        case MsgId::kResetPicoMsg:
         case MsgId::kTimerControl:
         case MsgId::kBeginCalibration:
         case MsgId::kRequestCalibStatus:

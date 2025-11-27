@@ -59,7 +59,7 @@ enum class MsgId : std::uint8_t
 
     // Messages (to Pico). Errors send by kErrorReportFromPico msg
     kMsgControlMsg,             // Pico to turn on or off various types of messages sent over Serial Link
-    kResetMsg,      // TODO rename            // Pico to reset itself (ack by sending kResetMsg back, then followed by kPicoReady)
+    kResetPicoMsg,              // Pico to reset itself (ack by sending kResetPicoMsg back, then followed by kPicoReady)
 
     // Timer events
     kTimerEventMsg,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type; 4th byte time hack)
