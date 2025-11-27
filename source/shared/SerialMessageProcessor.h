@@ -30,6 +30,7 @@
 
 #include "SerialMessage.h"
 #include "CarrtError.h"
+#include "OutputUtils.hpp"
 
 
 
@@ -75,6 +76,7 @@ public:
             return it->second( id );
         }
         // If we cannot find the id, return a special message, UnknownMsg.
+        output2cout( "Unknown msg received", static_cast<int>( id ) );
         int err = makeSharedErrorId( kSerialMsgUnknownError, 1, std::to_underlying( id ) );
         return std::unique_ptr<SerialMessage>( new UnknownMsg(  std::to_underlying( id ), err ) );
     }

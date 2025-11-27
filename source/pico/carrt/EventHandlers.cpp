@@ -160,8 +160,8 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
         }
     }
 
-    output2cout( "Calib status (M, A, G, S): ", static_cast<int>( calibData.mag ), static_cast<int>( calibData.accel ), 
-        static_cast<int>( calibData.gyro ), static_cast<int>( calibData.system ) );
+//    output2cout( "Calib status (M, A, G, S): ", static_cast<int>( calibData.mag ), static_cast<int>( calibData.accel ), 
+//        static_cast<int>( calibData.gyro ), static_cast<int>( calibData.system ) );
 }
 
 

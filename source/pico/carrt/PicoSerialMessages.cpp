@@ -1613,7 +1613,7 @@ DebugLinkMsg::DebugLinkMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink, t ), mNeedsAction{ false } 
 {} 
 
-DebugLinkMsg::DebugLinkMsg(  int val1_i, std::uint8_t val2_u8, float val3_f, std::uint32_t val4_u32  ) noexcept 
+DebugLinkMsg::DebugLinkMsg( int val1_i, std::uint8_t val2_u8, float val3_f, std::uint32_t val4_u32 ) noexcept 
 : SerialMessage( MsgId::kDebugSerialLink ), 
                     mContent( MsgId::kDebugSerialLink, std::make_tuple( val1_i, val2_u8, val3_f, val4_u32 ) ), 
                     mNeedsAction{ false } 

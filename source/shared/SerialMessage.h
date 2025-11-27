@@ -133,7 +133,7 @@ public:
             {  
                 auto got = lnk.get( dataItem );
 
-                int n{ 4 };
+                int n{ 32 };
                 while ( !got && n-- > 0 )
                 {
                     got = lnk.get( dataItem );

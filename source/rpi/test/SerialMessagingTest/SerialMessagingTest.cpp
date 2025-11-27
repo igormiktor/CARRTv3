@@ -11,37 +11,10 @@
 #include "DebugUtils.hpp"
 
 
-void doDebugLinkTest( int val1, int val2, SerialLink& link )
+void doDebugLinkTest( SerialLink& link )
 {
-    DebugLinkMsg cmd0( val1, val2 );
+    DebugLinkMsg cmd0( 1, 2, 3.0, 4 );
     cmd0.sendOut( link ); 
-    std::cout << "Sent debug link cmd: " << val1 << ", " << val2 << std::endl;
-}
-
-
-void doTest( int i, SerialLink& link )
-{
-    int j = i % 4;
-
-    std::cout << "*********** Doing Test " << j << std::endl;
-    switch ( j )
-    {
-        case 0:
-            doDebugLinkTest( -100, 200, link );
-            break;
-
-        case 1:
-            doDebugLinkTest( -1, 0, link );
-            break;
-
-        case 2:
-            doDebugLinkTest( 18, 61, link );
-            break;
-
-        case 3:
-            doDebugLinkTest( 111, 666, link );
-            break;
-    }
 }
 
 
@@ -66,64 +39,68 @@ int main()
     SerialMessageProcessor smp( 32, pico );
     setupMessageProcessor( smp );
 
+    EventManager events;
+
     std::cout << "Tests begin" << std::endl;
+ 
+#if 1
+    PingMsg ping;
+    ping.takeAction( events, pico );
+#endif 
 
     try
     {
-        bool keepGoing{ true };
-        bool timerEventsOn{ false };
-        int testNbr{ 0 };
-        long start{ Clock::millis() };
-        long lastTest{ start + 5000 };
-        long lastToggle{ start - 15000 };
+        auto start{ Clock::millis() };
 
-        while ( keepGoing )
+        int which{ 0 };
+        while ( true )
         {
-            auto cmd{ smp.receiveMessageIfAvailable() };
-            if ( cmd )
-            {
-                EventManager events;
-                cmd.value()->takeAction( events, pico );
-            }
-
-            long now{ Clock::millis() };
-
-#if 1
-            auto timeForTest{ (now - lastTest) / 10000 };
-            if ( timeForTest )
-            {
-                doTest( testNbr++, pico );
-                lastTest = Clock::millis();
-            }
-#endif
-
-#if 1
-            auto timeForToggle{ (now - lastToggle) / 20000 };
-            if ( timeForToggle )
-            {
-                if ( timerEventsOn )
-                { 
-                    timerEventsOn = false;
-                }
-                else
-                {
-                    timerEventsOn = true;
-                }
-                std::cout << "************ Timer Events turned on? " << timerEventsOn << std::endl;
-                TimerControlMsg toggleTimerEvts( timerEventsOn );
-                toggleTimerEvts.sendOut( pico );
-                lastToggle = Clock::millis();
-            }
-#endif
-            if ( (now - start) / 1000 > 4*60 )
-            {
-                keepGoing = false;
-            }
+            Clock::sleep( 10ms );
             
-            Clock::delayMilliseconds(10);
+            smp.dispatchOneSerialMessage( events, pico );
+            
+            if ( ( Clock::millis() - start ) > 1000 )
+            {
+                switch ( which )
+                {
+                    case 0:
+                        {
+                            PingMsg ping;
+                            ping.takeAction( events, pico );
+                        }
+                        break;
+
+                    case 1:
+                        {
+                            DrivingStatusUpdateMsg drv( DrivingStatusUpdateMsg::Drive::kStopped );
+                            drv.sendOut( pico );
+                        }
+                        break;
+
+                    case 2:
+                        {
+                            BatteryLevelRequestMsg bat( Battery::kBothBatteries );
+                            bat.sendOut( pico );
+                        }
+                        break;
+
+                    case 3:
+                        {
+                            DebugLinkMsg dbg( 2, static_cast<uint8_t>( 3 ), 4.4, 5u );
+                            dbg.sendOut( pico );
+                        }
+
+                    default:
+                        break;
+                }
+
+                start = Clock::millis();
+
+                ++which;
+                which %=4;
+            }
         }
 
-        std::cout << "Tests end" << std::endl;
     }
 
     catch ( const CarrtError& err )
@@ -177,6 +154,7 @@ void setupMessageProcessor( SerialMessageProcessor& smp )
     smp.registerMessage<BatteryLowAlertMsg>( MsgId::kBatteryLowAlert );
     smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
 //  smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
+//  smp.registerMessage<TestPicoMessagesMsg>( MsgId::kTestPicoMessages );
     smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
 }
 

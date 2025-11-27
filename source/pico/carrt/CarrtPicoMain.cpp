@@ -123,7 +123,7 @@ int main()
     
         // Set up message processor
         SerialMessageProcessor smp( kSerialMessageHandlerReserveSize, rpi0 );
-        setupMessageProcessor( smp );
+    //    setupMessageProcessor( smp );
 
         // Set up event processor
         EventProcessor ep( kEventHandlerReserveSize );
@@ -134,7 +134,9 @@ int main()
 
         // Default starting values (at least for now, RPi0 can change these via msg)
         PicoState::allMsgsSendOff();
-        PicoState::sendSecTimerMsgs( true );
+        PicoState::sendSecTimerMsgs( false );
+        PicoState::sendNavStatusMsgs( false );
+        PicoState::sendCalibrationMsgs( false );
         PicoState::wantAutoCalibrate( false );
 
         MainProcess::runMainEventLoop( Events(), ep, smp, rpi0 );
@@ -171,7 +173,7 @@ int main()
     output2cout( "Pico frozen and displaying fast LED strobe" );
 
     // Just spin and put HeartBeatLed on fast strobe
-    constexpr int kWaitTimeInMin{ 3 };
+    constexpr int kWaitTimeInMin{ 1 };
     for ( int i{ 0 }; i < kWaitTimeInMin*60*10; ++i )
     {
         Clock::sleep( 100ms );
@@ -245,6 +247,7 @@ namespace
 
 
 
+    [[maybe_unused]]        // May not call this function during some debugging (leave smp in DumpByte mode)
     void setupMessageProcessor( SerialMessageProcessor& smp )
     {
         // Only register those messages we actually can receive
