@@ -1486,84 +1486,92 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
         case MsgId::kPingMsg:
             { 
                 PingMsg msg; 
-                msg.takeAction( evt, link ); 
+                msg.send( evt, link ); 
             };
             break;
 
         case MsgId::kPingReplyMsg:
             { 
                 PingReplyMsg msg; 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             };
             break;
 
         case MsgId::kPicoReady:
             { 
                 PicoReadyMsg msg; 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             };
             break;
 
         case MsgId::kPicoNavStatusUpdate:
             { 
                 PicoNavStatusUpdateMsg msg( true, 6, 7, 8, 9 ); 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             }; 
             break;
 
         case MsgId::kPicoSaysStop:
             { 
                 PicoSaysStopMsg msg; 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             };
             break;
+
+        case MsgId::kResetPicoMsg:
+            { 
+                ResetPicoMsg msg; 
+                msg.send( evt, link );
+            };
+            break;
+
 
         case MsgId::kTimerEventMsg:
             { 
                 TimerEventMsg msg( TimerEventMsg::k1SecondEvent, 123, 123456 ); 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             };
             break;
 
         case MsgId::kCalibrationInfoUpdate:
             { 
                 CalibrationInfoUpdateMsg msg( 2, 4, 6, 8 ); 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             }; 
             break;
 
         case MsgId::kTimerNavUpdate:
             { 
                 NavUpdateMsg msg( 180.0f, 456123 ); 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             };
             break;
         
         case MsgId::kEncoderUpdate:
             { 
                 EncoderUpdateMsg msg( 10, -10, 654321 ); 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             };
             break;
         
         case MsgId::kBatteryLevelUpdate:
             { 
                 BatteryLevelUpdateMsg msg( Battery::kBothBatteries, 5.5f ); 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             };
             break;
 
         case MsgId::kBatteryLowAlert:
             { 
                 BatteryLowAlertMsg msg( Battery::kIcBattery, 1.5f ); 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             };
             break;
 
         case MsgId::kErrorReportFromPico:
             { 
                 ErrorReportMsg msg( kPicoNonFatalError, makePicoErrorId( kPicoTestError, kPicoTestError, kPicoTestError ) ); 
-                msg.takeAction( evt, link );
+                msg.send( evt, link );
             };
             break;
 
@@ -1571,7 +1579,6 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
         // Msgs never sent by Pico
         case MsgId::kMsgControlMsg:
             [[fallthrough]];
-        case MsgId::kResetPicoMsg:
         case MsgId::kTimerControl:
         case MsgId::kBeginCalibration:
         case MsgId::kRequestCalibStatus:
