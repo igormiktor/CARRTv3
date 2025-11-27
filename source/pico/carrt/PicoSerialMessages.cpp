@@ -64,7 +64,7 @@ void UnknownMsg::readIn( SerialLink& link )
     // Unknown message; don't try to read it in.
     mNeedsAction = true;
 
-    debug2cout( "Received unknown message: ", getIdNum() );
+    debug2cout( "Received unknown message", getIdNum() );
 }
 
 void UnknownMsg::sendOut( SerialLink& link )
@@ -796,7 +796,7 @@ void SetAutoCalibrateMsg::takeAction( EventManager& events, SerialLink& link )
         PicoState::wantAutoCalibrate( val );
         mNeedsAction = false;
 
-        output2cout( "Pico autocalibration set to ", val );    
+        output2cout( "Pico autocalibration set to", val );    
     }
 }
 
@@ -945,7 +945,7 @@ void NavUpdateControlMsg::takeAction( EventManager& events, SerialLink& link )
         PicoState::sendNavMsgs( val );
         mNeedsAction = false;
 
-        output2cout( "Nav update events to RPi0 set to ", val );    
+        output2cout( "Nav update events to RPi0 set to", val );    
     }
 }
 
@@ -1000,7 +1000,7 @@ void DrivingStatusUpdateMsg::takeAction( EventManager& events, SerialLink& link 
         std::uint8_t driveStatus = std::get<0>( mContent.mMsg );
 
         // TODO take whatever action is appropirate
-        output2cout( "RPi0 sent driving status ", static_cast<int>( driveStatus ) ); 
+        output2cout( "RPi0 sent driving status", static_cast<int>( driveStatus ) ); 
         output2cout( "TODO - implement action" );   
         mNeedsAction = false;
     }
@@ -1114,7 +1114,7 @@ void EncoderUpdateControlMsg::takeAction( EventManager& events, SerialLink& link
         PicoState::sendEncoderMsgs( val );
         mNeedsAction = false;
 
-        output2cout( "Encoder update events to RPi0 turned to ", val );    
+        output2cout( "Encoder update events to RPi0 turned to", val );    
     }
 }
 
@@ -1182,7 +1182,7 @@ void BatteryLevelRequestMsg::takeAction( EventManager& events, SerialLink& link 
         }
 
         // TODO take whatever action is appropirate
-        output2cout( "RPi0 requested battery level for ", static_cast<int>( whichBattery ) ); 
+        output2cout( "RPi0 requested battery level for", static_cast<int>( whichBattery ) ); 
         output2cout( "TODO - implement action" );   
         mNeedsAction = false;
     }
@@ -1420,7 +1420,7 @@ void TestPicoErrorRptMsg::takeAction( EventManager& evtMgr, SerialLink& link )
 
         mNeedsAction = false;
 
-        output2cout( "Pico Sent test error msg with:", 
+        output2cout( "Pico Sent test error msg with", 
             ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ), "error code", errorCode );
     }
 }
