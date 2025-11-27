@@ -72,7 +72,7 @@ void startCore1()
     while ( 1 )
     {
         // tight_loop_contents();
-        CarrtPico::sleep( 100ms );
+        Clock::sleep( 100ms );
     }
 }
 
@@ -176,7 +176,7 @@ int main()
             {
                 msg.value()->takeAction( Events(), rpi0 );
             }
-            CarrtPico::sleep( 25ms );
+            Clock::sleep( 25ms );
         }
     }
 

@@ -89,7 +89,7 @@ void resetBNO055( EventManager& events )
 
 int main()
 {
-    using CarrtPico::delay;
+    using Clock::delay;
 
     try
     {
@@ -223,7 +223,7 @@ int main()
             {
                 msg.value()->takeAction( Events(), rpi0 );
             }
-            CarrtPico::sleep( 25ms );
+            Clock::sleep( 25ms );
         }
     }
 
