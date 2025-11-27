@@ -472,9 +472,9 @@ ResetPicoMsg::ResetPicoMsg() noexcept
 ResetPicoMsg::ResetPicoMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
-    // Nothing to do
+    // TODO implement response to info that Pico is resetting...
 
-    output2cout( "Error: RPi0 got ResetPicoMsg", getIdNum() );
+    output2cout( "TODO: RPi0 got ResetPicoMsg", getIdNum() );
 }
 
 
