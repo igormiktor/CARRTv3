@@ -8,13 +8,14 @@
 
 
 #include "DebugUtils.hpp"
+#include "OutputUtils.hpp"
 
 
-void doDebugLinkTest( int val1, int val2, SerialLink& link )
+void doDebugLinkTest( int val1_i, std::uint8_t val2_u8, float val3_f, std::uint32_t val4_u32, SerialLink& link )
 {
-    DebugLinkMsg cmd0( val1, val2 );
+    DebugLinkMsg cmd0( val1_i, val2_u8, val3_f, val4_u32 );
     cmd0.sendOut( link ); 
-    std::cout << "Sent debug link cmd: " << val1 << ", " << val2 << std::endl;
+    output2cout( "Sent debug link cmd", val1_i, val2_u8, val3_f, val4_u32 );
 }
 
 
@@ -26,19 +27,19 @@ void doTest( int i, SerialLink& link )
     switch ( j )
     {
         case 0:
-            doDebugLinkTest( -100, 200, link );
+            doDebugLinkTest( -100, 200, -1.1f, 3000, link );
             break;
 
         case 1:
-            doDebugLinkTest( -1, 0, link );
+            doDebugLinkTest( -1, 0, -2.71828f, 12345, link );
             break;
 
         case 2:
-            doDebugLinkTest( 18, 61, link );
+            doDebugLinkTest( 18, 254, 3.14159f, 54321, link );
             break;
 
         case 3:
-            doDebugLinkTest( 111, 666, link );
+            doDebugLinkTest( -111, 66, -6.66f, 66666, link );
             break;
     }
 }

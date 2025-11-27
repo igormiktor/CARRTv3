@@ -1,6 +1,5 @@
 add_executable( SerialTest5 
     SerialTest5.cpp 
-    RPi0SerialCommands.cpp
 )
 
 target_compile_options( SerialTest5 PRIVATE -Wall -pthread )
@@ -10,4 +9,5 @@ target_compile_definitions( SerialTest5 PRIVATE
     "$<$<CONFIG:DEBUG>:-DDEBUGRPI0=1>" 
     -DBUILDING_FOR_RPI0=1
 )
-target_link_libraries( SerialTest5 PRIVATE rpi_driver_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
+
+target_link_libraries( SerialTest5 PRIVATE carrt_library rpi_driver_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
