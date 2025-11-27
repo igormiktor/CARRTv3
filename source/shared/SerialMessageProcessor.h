@@ -68,7 +68,7 @@ public:
         if ( mCreators.empty() )
         {
             // Behave like a straight dump to output
-            return MsgPtr( new DumpByteMsg() );
+            return MsgPtr( new DumpByteMsg( id ) );
         }
         auto it = mCreators.find( std::to_underlying( id ) );
         if ( it != mCreators.end() )  
