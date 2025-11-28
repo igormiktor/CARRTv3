@@ -176,15 +176,18 @@ public:
 
     enum Masks : std::uint8_t
     {
-        kNavMsgMask             = 0x01,
-        kNavStatusMask          = 0x02,
-        kTimerMsgMask           = 0x04,
-        kEncoderMsgMask         = 0x08,
-        kCalibrationMsgMask     = 0x10,
+        kQtrSecTimerMsgMask     = 0x01,
+        k1SecTimerMsgMask       = 0x02,
+        k8SecTimerMsgMask       = 0x04,
+        kNavMsgMask             = 0x08,
+        kNavStatusMask          = 0x10,
+        kEncoderMsgMask         = 0x20,
+        kCalibrationMsgMask     = 0x40,
 
         kAllMsgsOff             = 0x00,
         kAllMsgsOn              = 0xFF
     };
+
 
     MsgControlMsg() noexcept;
     explicit MsgControlMsg( TheData t ) noexcept; 
@@ -279,9 +282,20 @@ public:
 
     using TheData = std::tuple< std::uint8_t >;
 
+    enum Masks : std::uint8_t
+    {
+        kQtrSecTimerMsgMask     = 0x01,
+        k1SecTimerMsgMask       = 0x02,
+        k8SecTimerMsgMask       = 0x04,
+
+        kAllMsgsOff             = 0x00,
+        kAllMsgsOn              = 0xFF
+    };
+
+
     TimerControlMsg() noexcept;
     explicit TimerControlMsg( TheData t ) noexcept; 
-    explicit TimerControlMsg( bool val ) noexcept;
+    explicit TimerControlMsg( std::uint8_t val ) noexcept;
     explicit TimerControlMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
@@ -465,11 +479,11 @@ class NavUpdateControlMsg : public SerialMessage
 {
 public:
 
-    using TheData = std::tuple< std::uint8_t >;
+    using TheData = std::tuple< std::uint8_t, std::uint8_t >;
 
     NavUpdateControlMsg() noexcept;
     explicit NavUpdateControlMsg( TheData t ) noexcept; 
-    explicit NavUpdateControlMsg( bool val ) noexcept;
+    NavUpdateControlMsg( bool wantNavUpdate, bool wantNavStatusUpdate ) noexcept;
     explicit NavUpdateControlMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;

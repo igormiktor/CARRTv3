@@ -445,7 +445,9 @@ void MsgControlMsg::takeAction( EventManager& events, SerialLink& link )
     {
         std::uint8_t values = std::get<0>( mContent.mMsg );
 
-        PicoState::sendAllTimerMsgs( values & kTimerMsgMask );
+        PicoState::sendQtrSecTimerMsgs( values & kQtrSecTimerMsgMask );
+        PicoState::send1SecTimerMsgs( values & k1SecTimerMsgMask );
+        PicoState::send8SecTimerMsgs( values & k8SecTimerMsgMask );
         PicoState::sendNavMsgs( values & kNavMsgMask );
         PicoState::sendNavStatusMsgs( values & kNavStatusMask );
         PicoState::sendEncoderMsgs( values & kEncoderMsgMask );
@@ -453,7 +455,9 @@ void MsgControlMsg::takeAction( EventManager& events, SerialLink& link )
         mNeedsAction = false;
 
         output2cout( "MsgControlMsg received, new values are" );  
-        output2cout( " sendTimerMsgs", static_cast<bool>( values & kTimerMsgMask ) );
+        output2cout( " sendQtrSecTimerMsgs", static_cast<bool>( values & kQtrSecTimerMsgMask ) );
+        output2cout( " sendQ1SecTimerMsgs", static_cast<bool>( values & k1SecTimerMsgMask ) );
+        output2cout( " sendQ8SecTimerMsgs", static_cast<bool>( values & k8SecTimerMsgMask ) );
         output2cout( " sendNavMsgs", static_cast<bool>( values & kNavMsgMask ) );
         output2cout( " sendNavStatusMsgs", static_cast<bool>( values & kNavStatusMask ) );
         output2cout( " sendEncoderMsgs", static_cast<bool>( values & kEncoderMsgMask ) );
@@ -567,8 +571,8 @@ TimerControlMsg::TimerControlMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kTimerControl ), mContent( MsgId::kTimerControl, t ), mNeedsAction{ true } 
 {} 
 
-TimerControlMsg::TimerControlMsg( bool val ) noexcept 
-: SerialMessage( MsgId::kTimerControl ), mContent( MsgId::kTimerControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+TimerControlMsg::TimerControlMsg( std::uint8_t val ) noexcept 
+: SerialMessage( MsgId::kTimerControl ), mContent( MsgId::kTimerControl, std::make_tuple( val ) ), mNeedsAction{ true } 
 {}
 
 TimerControlMsg::TimerControlMsg( MsgId id ) 
@@ -587,7 +591,7 @@ void TimerControlMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debug2cout( "Pico got TimerControlMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ) );
+    debug2cout( "Pico got TimerControlMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void TimerControlMsg::sendOut( SerialLink& link )
@@ -599,11 +603,16 @@ void TimerControlMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        bool val = std::get<0>( mContent.mMsg );
-        PicoState::sendAllTimerMsgs( val );
+        std::uint8_t values = std::get<0>( mContent.mMsg );
+        PicoState::sendQtrSecTimerMsgs( values & kQtrSecTimerMsgMask );
+        PicoState::send1SecTimerMsgs( values & k1SecTimerMsgMask );
+        PicoState::send8SecTimerMsgs( values & k8SecTimerMsgMask );
         mNeedsAction = false;
 
-        output2cout( "Timer events to RPi0 turned to", val );    
+        output2cout( "Timer events to RPi0 turned to" );    
+        output2cout( " sendQtrSecTimerMsgs", static_cast<bool>( values & kQtrSecTimerMsgMask ) );
+        output2cout( " sendQ1SecTimerMsgs", static_cast<bool>( values & k1SecTimerMsgMask ) );
+        output2cout( " sendQ8SecTimerMsgs", static_cast<bool>( values & k8SecTimerMsgMask ) );
     }
 }
 
@@ -909,8 +918,10 @@ NavUpdateControlMsg::NavUpdateControlMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kNavUpdateControl ), mContent( MsgId::kNavUpdateControl, t ), mNeedsAction{ true } 
 {} 
 
-NavUpdateControlMsg::NavUpdateControlMsg( bool val ) noexcept 
-: SerialMessage( MsgId::kNavUpdateControl ), mContent( MsgId::kNavUpdateControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ), mNeedsAction{ true } 
+NavUpdateControlMsg::NavUpdateControlMsg( bool wantNavUpdates, bool wantNavStatus ) noexcept 
+: SerialMessage( MsgId::kNavUpdateControl ), 
+    mContent( MsgId::kNavUpdateControl, std::make_tuple( static_cast<std::uint8_t>( wantNavUpdates ), static_cast<std::uint8_t>( wantNavStatus ) ) ), 
+    mNeedsAction{ true } 
 {}
 
 NavUpdateControlMsg::NavUpdateControlMsg( MsgId id ) 
@@ -929,7 +940,8 @@ void NavUpdateControlMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debug2cout( "Got NavUpdateControlMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg) ) );
+    debug2cout( "Got NavUpdateControlMsg", getIdNum(), 
+        static_cast<bool>( std::get<0>( mContent.mMsg) ), static_cast<bool>( std::get<1>( mContent.mMsg) ) );
 }
 
 void NavUpdateControlMsg::sendOut( SerialLink& link )
@@ -941,11 +953,13 @@ void NavUpdateControlMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        bool val = std::get<0>( mContent.mMsg );
-        PicoState::sendNavMsgs( val );
+        bool wantNav{ static_cast<bool>( std::get<0>( mContent.mMsg) ) };
+        bool wantNavStatus{ static_cast<bool>( std::get<1>( mContent.mMsg) ) };
+        PicoState::sendNavMsgs( wantNav );
+        PicoState::sendNavStatusMsgs( wantNavStatus );
         mNeedsAction = false;
 
-        output2cout( "Nav update events to RPi0 set to", val );    
+        output2cout( "Sending Nav update events to RPi0 set to", wantNav, "Nav status update", wantNavStatus );    
     }
 }
 
