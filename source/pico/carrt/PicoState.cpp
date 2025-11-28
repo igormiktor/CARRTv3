@@ -27,14 +27,15 @@
 namespace 
 {
     // These all happen in Core0 so no atomics needed
-    bool  sStartUpFinished{ false };
     bool  sSendQtrSecTimerMsgs{ false };
-    bool  sSendSecTimerMsgs{ false };
+    bool  sSend1SecTimerMsgs{ false };
     bool  sSend8SecTimerMsgs{ false };
     bool  sSendNavMsgs{ false };
     bool  sSendNavStatusMsgs{ false };
     bool  sSendEncoderMsgs{ false };
     bool  sSendCalibrationMsgs{ false };
+
+    bool  sStartUpFinished{ false };
     bool  sNavCalibrated{ false };
     bool  sAutoCalibrateMode{ false }; 
 
@@ -46,14 +47,15 @@ namespace
 
 void PicoState::initialize() noexcept
 {
-    sStartUpFinished        = false;
     sSendQtrSecTimerMsgs    = false;
-    sSendSecTimerMsgs       = false;
+    sSend1SecTimerMsgs      = false;
     sSend8SecTimerMsgs      = false;
     sSendNavMsgs            = false;
     sSendNavStatusMsgs      = false;
     sSendEncoderMsgs        = false;
     sSendCalibrationMsgs    = false;
+
+    sStartUpFinished        = false;
     sNavCalibrated          = false;
     sAutoCalibrateMode      = false;
     
@@ -77,7 +79,7 @@ bool PicoState::startUpFinished() noexcept
 void PicoState::sendAllTimerMsgs( bool newVal ) noexcept
 {
     sSendQtrSecTimerMsgs    = newVal;
-    sSendSecTimerMsgs       = newVal;
+    sSend1SecTimerMsgs      = newVal;
     sSend8SecTimerMsgs      = newVal;
 }
 
@@ -93,16 +95,16 @@ bool PicoState::wantQtrSecTimerMsgs() noexcept
     return sSendQtrSecTimerMsgs;
 }
 
-bool PicoState::sendSecTimerMsgs( bool newVal ) noexcept
+bool PicoState::send1SecTimerMsgs( bool newVal ) noexcept
 {
-    bool oldVal = sSendSecTimerMsgs;
-    sSendSecTimerMsgs = newVal;
+    bool oldVal = sSend1SecTimerMsgs;
+    sSend1SecTimerMsgs = newVal;
     return oldVal;
 }
 
-bool PicoState::wantSecTimerMsgs() noexcept
+bool PicoState::want1SecTimerMsgs() noexcept
 {
-    return sSendSecTimerMsgs;
+    return sSend1SecTimerMsgs;
 }
 
 bool PicoState::send8SecTimerMsgs( bool newVal ) noexcept
@@ -173,9 +175,10 @@ bool PicoState::wantCalibrationMsgs() noexcept
 void PicoState::allMsgsSendOn() noexcept
 {
     sSendQtrSecTimerMsgs    = true;
-    sSendSecTimerMsgs       = true;
+    sSend1SecTimerMsgs      = true;
     sSend8SecTimerMsgs      = true;
     sSendNavMsgs            = true;
+    sSendNavStatusMsgs      = true;
     sSendEncoderMsgs        = true;
     sSendCalibrationMsgs    = true;
 }
@@ -183,9 +186,10 @@ void PicoState::allMsgsSendOn() noexcept
 void PicoState::allMsgsSendOff() noexcept
 {
     sSendQtrSecTimerMsgs    = false;
-    sSendSecTimerMsgs       = false;
+    sSend1SecTimerMsgs      = false;
     sSend8SecTimerMsgs      = false;
     sSendNavMsgs            = false;
+    sSendNavStatusMsgs      = false;
     sSendEncoderMsgs        = false;
     sSendCalibrationMsgs    = false;
 }

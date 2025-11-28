@@ -170,7 +170,7 @@ int main()
                         break;
                         
                     case EvtId::kOneSecondTimerEvent:
-                        if ( PicoState::wantSecTimerMsgs() )
+                        if ( PicoState::want1SecTimerMsgs() )
                         {
                             TimerEventMsg oneSec( TimerEventMsg::k1SecondEvent, eventParam, timeTick );
                             oneSec.sendOut( rpi0 );

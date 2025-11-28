@@ -133,11 +133,7 @@ int main()
         sendReady( rpi0 );
 
         // Default starting values (at least for now, RPi0 can change these via msg)
-        PicoState::allMsgsSendOff();
-        PicoState::sendSecTimerMsgs( false );
-        PicoState::sendNavStatusMsgs( false );
-        PicoState::sendCalibrationMsgs( false );
-        PicoState::wantAutoCalibrate( false );
+        PicoState::allMsgsSendOn();
 
         MainProcess::runMainEventLoop( Events(), ep, smp, rpi0 );
     }

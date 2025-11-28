@@ -40,8 +40,8 @@ namespace PicoState
     bool sendQtrSecTimerMsgs( bool newVal ) noexcept;       // Returns prior value
     bool wantQtrSecTimerMsgs() noexcept;                    // Returns value
 
-    bool sendSecTimerMsgs( bool newVal ) noexcept;          // Returns prior value
-    bool wantSecTimerMsgs() noexcept;                       // Returns value
+    bool send1SecTimerMsgs( bool newVal ) noexcept;         // Returns prior value
+    bool want1SecTimerMsgs() noexcept;                      // Returns value
 
     bool send8SecTimerMsgs( bool newVal ) noexcept;         // Returns prior value
     bool want8SecTimerMsgs() noexcept;                      // Returns value
