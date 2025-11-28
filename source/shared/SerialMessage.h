@@ -32,7 +32,7 @@
 #if BUILDING_FOR_PICO
     // Pico needs a small delay between sequential reads of UART for the UART to be ready
     #include "Clock.h"
-    inline void addSmallDelay() { Clock::sleep( 3ms ); }
+    inline void addSmallDelay() { Clock::sleep( 100us ); }
 #elif BUILDING_FOR_RPI0
     inline void addSmallDelay() { /* do nothing */ }
 #else

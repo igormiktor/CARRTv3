@@ -31,17 +31,15 @@ using namespace std::chrono_literals;
 namespace Clock
 {
 
-    inline void delay( const std::chrono::milliseconds& howLong )
+    inline void delay( const std::chrono::microseconds& howLong )
     {
-        sleep_ms( howLong.count() );
+        sleep_us( howLong.count() );
     }
 
-
-    inline void sleep( const std::chrono::milliseconds& howLong )
+    inline void sleep( const std::chrono::microseconds& howLong )
     {
-        sleep_ms( howLong.count() );
+        sleep_us( howLong.count() );
     }
-
 
     inline uint32_t millis()
     {
