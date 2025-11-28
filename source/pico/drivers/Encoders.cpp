@@ -21,6 +21,7 @@
 #include "Encoders.h"
 
 #include "CarrtPicoDefines.h"
+#include "Clock.h"
 #include "EventManager.h"
 
 
@@ -51,7 +52,7 @@ void callbackLeftEncoder( uint, uint32_t events )
     // This function designed/configured to be called and run on Core1
     static uint32_t lastInterrupt = 0;
 
-    uint32_t tick = to_ms_since_boot( get_absolute_time() );
+    uint32_t tick = Clock::millis();
     if ( tick - lastInterrupt < PICO_GPIO_DEBOUNCE_TIME )
     {
         // Debounce
@@ -82,7 +83,7 @@ void callbackRightEncoder( uint, uint32_t events )
     // This function designed/configured to be called and run on Core1
     static uint32_t lastInterrupt = 0;
 
-    uint32_t tick = to_ms_since_boot( get_absolute_time() );
+    uint32_t tick = Clock::millis();
     if ( tick - lastInterrupt < PICO_GPIO_DEBOUNCE_TIME )
     {
         // Debounce

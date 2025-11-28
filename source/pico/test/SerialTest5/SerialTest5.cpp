@@ -116,7 +116,7 @@ int main()
         bool ledState = false;
         while ( true ) 
         {
-            uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
+            uint32_t timeTick{ Clock::millis() };
             EvtId eventCode{};
             int eventParam{};
 

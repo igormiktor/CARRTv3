@@ -188,7 +188,7 @@ namespace
     {
         static int eighthSecCount{ 0 };
 
-        uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
+        uint32_t timeTick{ Clock::millis() };
 
         ++eighthSecCount;
         eighthSecCount %= 64;

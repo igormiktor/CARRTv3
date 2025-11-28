@@ -94,7 +94,7 @@ void gpioInterruptCallback( uint gpio, uint32_t events )
 
     if ( gpio == GPIO_TEST_PIN )
     {
-        uint32_t tick = to_ms_since_boot( get_absolute_time() );
+        uint32_t tick = Clock::millis();
         if ( tick - lastInterrupt < GPIO_DEBOUNCE_TIME )
         {
             // Debounce
@@ -135,13 +135,13 @@ int main()
     // puts("This is CARRT Pico!");
     std::cout << "This is CARRT Pico: GPIO interrupt test" << std::endl;
     std::cout << "Size of int is " << sizeof( int ) << std::endl;
-    std::cout << "Start time is: " << to_ms_since_boot( get_absolute_time() ) << std::endl;
+    std::cout << "Start time is: " << Clock::millis() << std::endl;
 
     gpio_init( CARRTPICO_HEARTBEAT_LED );
     gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
 
     multicore_launch_core1( startCore1 );
-    std::cout << "Timer start time is: " << to_ms_since_boot( get_absolute_time() ) << std::endl;
+    std::cout << "Timer start time is: " << Clock::millis() << std::endl;
 
     // Configure interrupt on GPIO_TEST_PIN
     gpio_init( GPIO_TEST_PIN );
@@ -151,7 +151,7 @@ int main()
         true, gpioInterruptCallback );
 
 //    bool ledState = false;
-    std::cout << "Event processing start time is: " << to_ms_since_boot( get_absolute_time() ) << std::endl;
+    std::cout << "Event processing start time is: " << Clock::millis() << std::endl;
     while ( true ) 
     {
         EvtId eventCode;

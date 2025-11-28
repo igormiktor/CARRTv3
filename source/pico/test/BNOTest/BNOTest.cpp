@@ -120,7 +120,7 @@ int main()
         smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
 
         // Tell RPi0 we are ready to receive messages
-        PicoReadyMsg picoReady( to_ms_since_boot( get_absolute_time() ) );
+        PicoReadyMsg picoReady( Clock::millis() );
         picoReady.sendOut( rpi0 );
 
 
@@ -131,7 +131,7 @@ int main()
 
         while ( true ) 
         {
-            uint32_t timeTick{ to_ms_since_boot( get_absolute_time() ) };
+            uint32_t timeTick{ Clock::millis() };
             EvtId eventCode{};
             int eventParam{};
 

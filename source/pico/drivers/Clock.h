@@ -46,6 +46,16 @@ namespace Clock
         return to_ms_since_boot( get_absolute_time() );
     }
 
+    inline std::chrono::milliseconds elapsedMilliseconds()
+    {
+        return std::chrono::milliseconds{ Clock::millis() };
+    }
+
+    inline std::chrono::microseconds elapsedMicroseconds()
+    {
+        return std::chrono::microseconds{ to_us_since_boot( get_absolute_time() ) };
+    }
+
 };
 
 
