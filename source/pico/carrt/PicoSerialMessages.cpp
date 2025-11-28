@@ -337,18 +337,18 @@ void PicoNavStatusUpdateMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = false;
 
-    output2cout( "Error: Pico got PicoNavStatusUpdateMsg", 
-        getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ), 
-        std::get<3>( mContent.mMsg ), std::get<4>( mContent.mMsg ) );
+    output2cout( "Error: Pico got PicoNavStatusUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), 
+        static_cast<int>( std::get<1>( mContent.mMsg ) ), static_cast<int>( std::get<2>( mContent.mMsg ) ), 
+        static_cast<int>( std::get<3>( mContent.mMsg ) ), static_cast<int>( std::get<4>( mContent.mMsg ) ) );
 }
 
 void PicoNavStatusUpdateMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    debug2cout( "Pico sent PicoNavStatusUpdateMsg", 
-        getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ), 
-        std::get<3>( mContent.mMsg ), std::get<4>( mContent.mMsg ) );
+    debug2cout( "Pico sent PicoNavStatusUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), 
+        static_cast<int>( std::get<1>( mContent.mMsg ) ), static_cast<int>( std::get<2>( mContent.mMsg ) ), 
+        static_cast<int>( std::get<3>( mContent.mMsg ) ), static_cast<int>( std::get<4>( mContent.mMsg ) ) );
 }
 
 void PicoNavStatusUpdateMsg::takeAction( EventManager&, SerialLink& link ) 
@@ -1282,14 +1282,14 @@ void BatteryLowAlertMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = false;
 
-    output2cout( "Error: got BatteryLowAlertMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    output2cout( "Error: got BatteryLowAlertMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void BatteryLowAlertMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    output2cout( "Sent BatteryLowAlertMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    output2cout( "Sent BatteryLowAlertMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void BatteryLowAlertMsg::takeAction( EventManager&, SerialLink& link ) 
@@ -1477,130 +1477,140 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
     // Create the requested error report and send it
     if ( mNeedsAction )
     {
-        // Pico action consists of sending the requested message type
+        mNeedsAction = false;
 
-        MsgId desiredMsgId{ static_cast<MsgId>( std::get<0>( mContent.mMsg ) ) };
+        // Pico action consists of sending the requested message type
+        std::uint8_t rcvdId{ std::get<0>( mContent.mMsg ) };
+
+        if ( rcvdId >= std::to_underlying( MsgId::kCountOfMsgIds ) )
+        {
+            // Not a legitimate MsgId
+            return;
+        }
+
+        MsgId desiredMsgId{ static_cast<MsgId>( rcvdId ) };
+
+        output2cout( "TestPicoMessages asked to send", static_cast<int>( rcvdId ) );
 
         switch ( desiredMsgId )
         {
-        case MsgId::kPingMsg:
-            { 
-                PingMsg msg; 
-                msg.sendOut( link ); 
-            };
-            break;
+            case MsgId::kPingMsg:
+                { 
+                    PingMsg msg; 
+                    msg.sendOut( link ); 
+                };
+                break;
 
-        case MsgId::kPingReplyMsg:
-            { 
-                PingReplyMsg msg; 
-                msg.sendOut( link );
-            };
-            break;
+            case MsgId::kPingReplyMsg:
+                { 
+                    PingReplyMsg msg; 
+                    msg.sendOut( link );
+                };
+                break;
 
-        case MsgId::kPicoReady:
-            { 
-                PicoReadyMsg msg; 
-                msg.sendOut( link );
-            };
-            break;
+            case MsgId::kPicoReady:
+                { 
+                    PicoReadyMsg msg( 123456 ); 
+                    msg.sendOut( link );
+                };
+                break;
 
-        case MsgId::kPicoNavStatusUpdate:
-            { 
-                PicoNavStatusUpdateMsg msg( true, 6, 7, 8, 9 ); 
-                msg.sendOut( link );
-            }; 
-            break;
+            case MsgId::kPicoNavStatusUpdate:
+                { 
+                    PicoNavStatusUpdateMsg msg( true, 6, 7, 8, 9 ); 
+                    msg.sendOut( link );
+                }; 
+                break;
 
-        case MsgId::kPicoSaysStop:
-            { 
-                PicoSaysStopMsg msg; 
-                msg.sendOut( link );
-            };
-            break;
+            case MsgId::kPicoSaysStop:
+                { 
+                    PicoSaysStopMsg msg; 
+                    msg.sendOut( link );
+                };
+                break;
 
-        case MsgId::kResetPicoMsg:
-            { 
-                ResetPicoMsg msg; 
-                msg.sendOut( link );
-            };
-            break;
+            case MsgId::kResetPicoMsg:
+                { 
+                    ResetPicoMsg msg; 
+                    msg.sendOut( link );
+                };
+                break;
 
 
-        case MsgId::kTimerEventMsg:
-            { 
-                TimerEventMsg msg( TimerEventMsg::k1SecondEvent, 123, 123456 ); 
-                msg.sendOut( link );
-            };
-            break;
+            case MsgId::kTimerEventMsg:
+                { 
+                    TimerEventMsg msg( TimerEventMsg::k1SecondEvent, 123, 123456 ); 
+                    msg.sendOut( link );
+                };
+                break;
 
-        case MsgId::kCalibrationInfoUpdate:
-            { 
-                CalibrationInfoUpdateMsg msg( 2, 4, 6, 8 ); 
-                msg.sendOut( link );
-            }; 
-            break;
+            case MsgId::kCalibrationInfoUpdate:
+                { 
+                    CalibrationInfoUpdateMsg msg( 2, 4, 6, 8 ); 
+                    msg.sendOut( link );
+                }; 
+                break;
 
-        case MsgId::kTimerNavUpdate:
-            { 
-                NavUpdateMsg msg( 180.0f, 456123 ); 
-                msg.sendOut( link );
-            };
-            break;
-        
-        case MsgId::kEncoderUpdate:
-            { 
-                EncoderUpdateMsg msg( 10, -10, 654321 ); 
-                msg.sendOut( link );
-            };
-            break;
-        
-        case MsgId::kBatteryLevelUpdate:
-            { 
-                BatteryLevelUpdateMsg msg( Battery::kBothBatteries, 5.5f ); 
-                msg.sendOut( link );
-            };
-            break;
+            case MsgId::kTimerNavUpdate:
+                { 
+                    NavUpdateMsg msg( 180.081f, 456123 ); 
+                    msg.sendOut( link );
+                };
+                break;
+            
+            case MsgId::kEncoderUpdate:
+                { 
+                    EncoderUpdateMsg msg( 10, -10, 654321 ); 
+                    msg.sendOut( link );
+                };
+                break;
+            
+            case MsgId::kBatteryLevelUpdate:
+                { 
+                    BatteryLevelUpdateMsg msg( Battery::kBothBatteries, 5.2f ); 
+                    msg.sendOut( link );
+                };
+                break;
 
-        case MsgId::kBatteryLowAlert:
-            { 
-                BatteryLowAlertMsg msg( Battery::kIcBattery, 1.5f ); 
-                msg.sendOut( link );
-            };
-            break;
+            case MsgId::kBatteryLowAlert:
+                { 
+                    BatteryLowAlertMsg msg( Battery::kIcBattery, 1.5f ); 
+                    msg.sendOut( link );
+                };
+                break;
 
-        case MsgId::kErrorReportFromPico:
-            { 
-                ErrorReportMsg msg( kPicoNonFatalError, makePicoErrorId( kPicoTestError, kPicoTestError, kPicoTestError ) ); 
-                msg.sendOut( link );
-            };
-            break;
+            case MsgId::kErrorReportFromPico:
+                { 
+                    ErrorReportMsg msg( kPicoNonFatalError, makePicoErrorId( kPicoTestError, kPicoTestError, kPicoTestError ) ); 
+                    msg.sendOut( link );
+                };
+                break;
 
-        
-        // Msgs never sent by Pico
-        case MsgId::kMsgControlMsg:
-            [[fallthrough]];
-        case MsgId::kTimerControl:
-        case MsgId::kBeginCalibration:
-        case MsgId::kRequestCalibStatus:
-        case MsgId::kSetAutoCalibrate:
-        case MsgId::kResetBNO055:
-        case MsgId::kNavUpdateControl:
-        case MsgId::kDrivingStatusUpdate:
-        case MsgId::kEncoderUpdateControl:
-        case MsgId::kBatteryLevelRequest:
-        case MsgId::kUnknownMessage:
-        case MsgId::kTestPicoReportError:
-        case MsgId::kTestPicoMessages:
-        case MsgId::kDebugSerialLink:           // Only sent as "direct response to same"
-            [[fallthrough]];
-        default:
-            output2cout( "Pico asked to send msg Pico never sends", static_cast<int>( desiredMsgId ) );
-            break;
+            case MsgId::kDebugSerialLink:
+                { 
+                    DebugLinkMsg msg( 1, 4, 16.25f, 36 ); 
+                    msg.sendOut( link );
+                };
+                break;
+            
+            // Msgs never sent by Pico
+            case MsgId::kMsgControlMsg:
+            case MsgId::kTimerControl:
+            case MsgId::kBeginCalibration:
+            case MsgId::kRequestCalibStatus:
+            case MsgId::kSetAutoCalibrate:
+            case MsgId::kResetBNO055:
+            case MsgId::kNavUpdateControl:
+            case MsgId::kDrivingStatusUpdate:
+            case MsgId::kEncoderUpdateControl:
+            case MsgId::kBatteryLevelRequest:
+            case MsgId::kUnknownMessage:
+            case MsgId::kTestPicoReportError:
+            case MsgId::kTestPicoMessages:
+            default:
+                output2cout( "Pico asked to send msg Pico never sends", static_cast<int>( desiredMsgId ) );
+                break;
         }
-
-        mNeedsAction = false;
-
-        output2cout( "Pico sent requested msg with ID", getIdNum() );
     }
 }
 

@@ -93,9 +93,11 @@ enum class MsgId : std::uint8_t
     // Debugging events
     kTestPicoReportError,       // RPi0 sends to Pico asking Pico to report an error (bytes 2-5 contain error code to send back)
 
-    kTestPicoMessages,         // RPi0 sends to Pico asking Pico to send a specific Msg (byte 2 contains the MsgId desired)
+    kTestPicoMessages,          // RPi0 sends to Pico asking Pico to send a specific Msg (byte 2 contains the MsgId desired)
 
     kDebugSerialLink,           // RPi0 or Pico sends messages to debug/test the serial link; data is two int values
+
+    kCountOfMsgIds              // Count of number of MsgsIds (helpful to generate testing code)
 };
 
 

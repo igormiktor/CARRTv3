@@ -42,17 +42,12 @@ int main()
     EventManager events;
 
     std::cout << "Tests begin" << std::endl;
- 
-#if 1
-    PingMsg ping;
-    ping.takeAction( events, pico );
-#endif 
 
     try
     {
         auto start{ Clock::millis() };
 
-        int which{ 0 };
+        std::uint8_t which{ 0 };
         while ( true )
         {
             Clock::sleep( 10ms );
@@ -63,41 +58,27 @@ int main()
             {
                 switch ( which )
                 {
-                    case 0:
+                    case 0:     // No msg with MsgId 0, ping instead
+                        output2cout( "Top of message test loop, sending Ping" );
                         {
                             PingMsg ping;
-                            ping.takeAction( events, pico );
+                            ping.sendOut( pico );
                         }
                         break;
-
-                    case 1:
-                        {
-                            DrivingStatusUpdateMsg drv( DrivingStatusUpdateMsg::Drive::kStopped );
-                            drv.sendOut( pico );
-                        }
-                        break;
-
-                    case 2:
-                        {
-                            BatteryLevelRequestMsg bat( Battery::kBothBatteries );
-                            bat.sendOut( pico );
-                        }
-                        break;
-
-                    case 3:
-                        {
-                            DebugLinkMsg dbg( 2, static_cast<uint8_t>( 3 ), 4.4, 5u );
-                            dbg.sendOut( pico );
-                        }
 
                     default:
+                        {
+                            // Need to use the std::uint8_t constructor
+                            TestPicoMessagesMsg reqestSendUsBack( which  );
+                            reqestSendUsBack.sendOut( pico );
+                        }
                         break;
                 }
 
                 start = Clock::millis();
 
                 ++which;
-                which %=4;
+                which %= std::to_underlying( MsgId::kCountOfMsgIds );
             }
         }
 

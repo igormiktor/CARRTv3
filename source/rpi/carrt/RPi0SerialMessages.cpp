@@ -332,18 +332,18 @@ void PicoNavStatusUpdateMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debug2cout( "Got PicoNavStatusUpdateMsg", 
-        getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ), 
-        std::get<3>( mContent.mMsg ), std::get<4>( mContent.mMsg ) );
+    debug2cout( "Got PicoNavStatusUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), 
+        static_cast<int>( std::get<1>( mContent.mMsg ) ), static_cast<int>( std::get<2>( mContent.mMsg ) ), 
+        static_cast<int>( std::get<3>( mContent.mMsg ) ), static_cast<int>( std::get<4>( mContent.mMsg ) ) );
 }
 
 void PicoNavStatusUpdateMsg::sendOut( SerialLink& link )
 {
     // RPi0 never sends
 
-    output2cout( "Error: RPi0 sending PicoNavStatusUpdateMsg", 
-        getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ), 
-        std::get<3>( mContent.mMsg ), std::get<4>( mContent.mMsg ) );
+    output2cout( "Error: RPi0 sending PicoNavStatusUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), 
+        static_cast<int>( std::get<1>( mContent.mMsg ) ), static_cast<int>( std::get<2>( mContent.mMsg ) ), 
+        static_cast<int>( std::get<3>( mContent.mMsg ) ), static_cast<int>( std::get<4>( mContent.mMsg ) ) );
 }
 
 void PicoNavStatusUpdateMsg::takeAction( EventManager&, SerialLink& link ) 
@@ -482,10 +482,10 @@ void ResetPicoMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        sendOut( link );
+        // If Pico sending, then call sendOut()
         mNeedsAction = false;
 
-        output2cout( "RPi0 sent ResetPicoMsg", getIdNum() );
+        output2cout( "TODO RPi0 handle ResetPicoMsg", getIdNum() );
     }
 }
 
