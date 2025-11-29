@@ -193,6 +193,23 @@ namespace OutputUtils
         output2cout_( OutputDebugPolicy{}, std::forward<T>( head ), std::forward<V>( tail )... );
     }
 
+    // This is the public function actually called in user code for std::cout output *only* when debugging enabled
+    // and the lead bool argument is true.
+    // If USE_CARRTPICO_STDIO and DEBUGPICO are both "ON", converts the arguments to 
+    //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
+    //
+    // Use debugCond2cout for code that should remain in the Pico executable (if Pico STDIO 
+    // functionality is enabled) only in debugging builds and if the first bool argument is true. 
+
+    template< typename T, typename ...V >
+    inline void debugCond2cout( bool onOff, T&& head, V&&... tail )
+    {
+        if ( onOff )
+        {
+            output2cout_( OutputDebugPolicy{}, std::forward<T>( head ), std::forward<V>( tail )... );
+        }
+    }
+
     // For more sophisticated debugging output (to std::cerr) use DebugUitls.hpp
 }
 
@@ -200,6 +217,7 @@ namespace OutputUtils
 // For convenience (likelihood of name clash is very low)
 using OutputUtils::output2cout;
 using OutputUtils::debug2cout;
+using OutputUtils::debugCond2cout;
 
 
 #endif  // OutputUtils_hpp
