@@ -138,7 +138,7 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
         if ( PicoState::wantNavStatusMsgs() )
         {
             PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
-            navReadyStatus.takeAction( events, link );
+            navReadyStatus.sendOut( link );
         }   
 
         if ( status )
@@ -156,7 +156,7 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events, SerialLink& 
         {
             // If calibration status unchanged, just send normal calibration report
             CalibrationInfoUpdateMsg calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
-            calibStatus.takeAction( events, link );
+            calibStatus.sendOut( link );
         }
     }
 

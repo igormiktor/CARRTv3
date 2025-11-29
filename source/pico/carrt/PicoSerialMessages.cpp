@@ -78,7 +78,7 @@ void UnknownMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // Only action is to send the message out
+        // Only action is to send the alternate message out
         sendOut( link );
         mNeedsAction = false;
     }
@@ -164,13 +164,13 @@ MsgId NoContentMsg::getId() const noexcept
 
 
 PingMsg::PingMsg() noexcept
-: NoContentMsg( MsgId::kPingMsg ), mSender( true )
+: NoContentMsg( MsgId::kPingMsg )
 {
     // Nothing else to do
 }
 
 PingMsg::PingMsg( MsgId id ) noexcept
-: NoContentMsg( MsgId::kPingMsg ), mSender( false )
+: NoContentMsg( MsgId::kPingMsg )
 {
     // Nothing else to do
 }
@@ -178,24 +178,15 @@ PingMsg::PingMsg( MsgId id ) noexcept
 
 void PingMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    // Action depends on whether we are sender or receiver
+    // If we called this, means we received the message and taking the expected action...
     if ( mNeedsAction )
     {
-        if ( mSender )
-        {
-            sendOut( link );
+        // ...the expected action is that we send PingReplyMsg
+        output2cout( "Pico got PingMsg, sent PingReplyMsg");
 
-            output2cout( "Pico sent PingMsg" );
-        }
-        else
-        {
-            // If we are receiver, we send PingReplyMsg
-            PingReplyMsg pingReply{};
-            pingReply.takeAction( events, link );
+        PingReplyMsg pingReply{};
+        pingReply.sendOut( link );
 
-            output2cout( "Pico got PingMsg, sent PingReplyMsg");
-        }
-        
         mNeedsAction = false;
     }
 }
@@ -209,13 +200,13 @@ void PingMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 PingReplyMsg::PingReplyMsg() noexcept
-: NoContentMsg( MsgId::kPingReplyMsg ), mSender( true )
+: NoContentMsg( MsgId::kPingReplyMsg )
 {
     // Nothing else to do
 }
 
 PingReplyMsg::PingReplyMsg( MsgId id ) noexcept
-: NoContentMsg( MsgId::kPingReplyMsg ), mSender( false )
+: NoContentMsg( MsgId::kPingReplyMsg )
 {
     // Nothing to do
 }
@@ -223,23 +214,14 @@ PingReplyMsg::PingReplyMsg( MsgId id ) noexcept
 
 void PingReplyMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    // Action depends on whether we are sender or receiver
+    // If we called this, means we received the message and taking the expected action...
     if ( mNeedsAction )
     {
-        if ( mSender )
-        {
-            sendOut( link );
+        // ...the expect action is we simply log it
+        output2cout( "Rcvd ping reply from RPi0" );
 
-            output2cout( "Send ping reply to RPi0" );
-        }
-        else
-        {
-            // If we are receiver, we simply log it
-            output2cout( "Rcvd ping reply from RPi0" );
-
-            // Could do something fancier like track we sent ping and match this reply to it
-            // But meant for debugging, so just leave a message in our std::cout stream
-        }
+        // Could do something fancier like track we sent ping and match this reply to it
+        // But meant for debugging, so just leave a message in our std::cout stream
         
         mNeedsAction = false;
     }
@@ -295,8 +277,8 @@ void PicoReadyMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // Only action is to send it
-        sendOut( link );
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
     }
 }
@@ -355,8 +337,8 @@ void PicoNavStatusUpdateMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // Only action is to send it
-        sendOut( link );
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
     }
 }
@@ -387,10 +369,9 @@ void PicoSaysStopMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        sendOut( link );
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
-
-        output2cout( "Pico sends stop to RPI0" );
     }
 }
 
@@ -549,8 +530,8 @@ void TimerEventMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // Only action is to send it
-        sendOut( link );
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
     }
 }
@@ -675,17 +656,17 @@ void RequestCalibrationStatusMsg::takeAction( EventManager& events, SerialLink& 
 {
     if ( mNeedsAction )
     {
+        output2cout( "Got a request calib status msg" );        
+        
         // Even if PicoState::wantNavStatusMsgs() is false, we always respond to direct request
         auto calibData{ BNO055::getCalibration() };
         bool status = BNO055::calibrationGood( calibData );
 
         PicoState::navCalibrated( status );
         PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
-        navReadyStatus.takeAction( events, link );
+        navReadyStatus.sendOut( link );
 
         mNeedsAction = false;
- 
-        output2cout( "Got a request calib status msg" );
     }
 }
 
@@ -748,7 +729,8 @@ void CalibrationInfoUpdateMsg::takeAction( EventManager& events, SerialLink& lin
 {
     if ( mNeedsAction )
     {
-        sendOut( link );
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
     }
 }
@@ -897,7 +879,8 @@ void NavUpdateMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        sendOut( link );
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
     }
 }
@@ -1070,8 +1053,8 @@ void EncoderUpdateMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // Only action is to send it
-        sendOut( link );
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
     }
 }
@@ -1181,6 +1164,11 @@ void BatteryLevelRequestMsg::takeAction( EventManager& events, SerialLink& link 
     if ( mNeedsAction )
     {
         std::uint8_t whichBattery = std::get<0>( mContent.mMsg );
+
+        // TODO take whatever action is appropirate
+        output2cout( "RPi0 requested battery level for", static_cast<int>( whichBattery ) ); 
+        output2cout( "TODO - implement action" );   
+
         if ( whichBattery == std::to_underlying( Battery::kIcBattery ) || whichBattery == std::to_underlying( Battery::kBothBatteries ) )
         {
             // TODO
@@ -1195,9 +1183,6 @@ void BatteryLevelRequestMsg::takeAction( EventManager& events, SerialLink& link 
             ErrorReportMsg err( false, makePicoErrorId( kPicoSerialMessageError, 2, whichBattery ) );
         }
 
-        // TODO take whatever action is appropirate
-        output2cout( "RPi0 requested battery level for", static_cast<int>( whichBattery ) ); 
-        output2cout( "TODO - implement action" );   
         mNeedsAction = false;
     }
 }
@@ -1253,8 +1238,8 @@ void BatteryLevelUpdateMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // Only action is to send it
-        sendOut( link );
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
     }
 }
@@ -1310,8 +1295,8 @@ void BatteryLowAlertMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // Only action is to send it
-        sendOut( link );
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
     }
 }
@@ -1367,8 +1352,8 @@ void ErrorReportMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // Only action is to send the message out
-        sendOut( link );
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
     }
 }
@@ -1430,7 +1415,7 @@ void TestPicoErrorRptMsg::takeAction( EventManager& evtMgr, SerialLink& link )
 
         auto [ fatal, errorCode ] = mContent.mMsg;
         ErrorReportMsg errRptAsRqstd( fatal, errorCode );
-        errRptAsRqstd.takeAction( evtMgr, link );
+        errRptAsRqstd.sendOut( link );
 
         mNeedsAction = false;
 

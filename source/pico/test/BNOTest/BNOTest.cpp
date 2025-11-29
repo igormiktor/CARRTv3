@@ -42,7 +42,7 @@ void checkAndReportCalibration( EventManager& events, SerialLink& link )
     {
         // Send message to RPi0 that Nav Status change and set Pico state accordingly
         PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
-        navReadyStatus.takeAction( events, link );
+        navReadyStatus.sendOut( link );
         PicoState::calibrationInProgress( !status ); 
         
         if ( status )
@@ -58,7 +58,7 @@ void checkAndReportCalibration( EventManager& events, SerialLink& link )
     {
         // If calibration status unchanged, just send normal calibration report
         CalibrationInfoUpdateMsg calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
-        calibStatus.takeAction( events, link );
+        calibStatus.sendOut( link );
     }
 
     output2cout( "Calib status (M, A, G, S): ", static_cast<int>( calibData.mag ), static_cast<int>( calibData.accel ), 
@@ -155,7 +155,7 @@ int main()
                             float heading = BNO055::getHeading();
                             output2cout( "Hdg: ", heading, "T" );
                             NavUpdateMsg navUpdate( heading, timeTick );
-                            navUpdate.takeAction( Events(), rpi0 );
+                            navUpdate.sendOut( rpi0 );
                         }
                         break;
                         

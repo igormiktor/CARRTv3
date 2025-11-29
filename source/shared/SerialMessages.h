@@ -50,10 +50,6 @@ public:
     explicit PingMsg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
-
-private:
-
-    bool mSender;
 };
 
 
@@ -70,10 +66,6 @@ public:
     explicit PingReplyMsg( MsgId id ) noexcept;
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
-
-private:
-
-    bool mSender;
 };
 
 

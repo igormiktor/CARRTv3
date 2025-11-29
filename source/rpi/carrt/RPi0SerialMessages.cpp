@@ -160,13 +160,13 @@ MsgId NoContentMsg::getId() const noexcept
 
 
 PingMsg::PingMsg() noexcept
-: NoContentMsg( MsgId::kPingMsg ), mSender( true )
+: NoContentMsg( MsgId::kPingMsg )
 {
     // Nothing else to do
 }
 
 PingMsg::PingMsg( MsgId id ) noexcept
-: NoContentMsg( MsgId::kPingMsg ), mSender( false )
+: NoContentMsg( MsgId::kPingMsg )
 {
     // Nothing else to do
 }
@@ -174,23 +174,14 @@ PingMsg::PingMsg( MsgId id ) noexcept
 
 void PingMsg::takeAction( EventManager& events, SerialLink& link )
 {
-    // Action depends on whether we are sender or receiver
+   // If we called this, means we received the message and taking the expected action...
     if ( mNeedsAction )
     {
-        if ( mSender )
-        {
-            sendOut( link );
+        // ...the expected action is that we send PingReplyMsg
+        output2cout( "RPi0 got PingMsg, sent PingReplyMsg");
 
-            output2cout( "RPi0 sent PingMsg" );
-        }
-        else
-        {
-            // If we are receiver, we send PingReplyMsg
-            PingReplyMsg pingReply{};
-            pingReply.takeAction( events, link );
-
-            output2cout( "Rpi0 got PingMsg, sent PingReplyMsg" );
-        }
+        PingReplyMsg pingReply{};
+        pingReply.sendOut( link );
 
         mNeedsAction = false;
     }
@@ -205,13 +196,13 @@ void PingMsg::takeAction( EventManager& events, SerialLink& link )
 
 
 PingReplyMsg::PingReplyMsg() noexcept
-: NoContentMsg( MsgId::kPingReplyMsg ), mSender( true )
+: NoContentMsg( MsgId::kPingReplyMsg )
 {
     // Nothing else to do
 }
 
 PingReplyMsg::PingReplyMsg( MsgId id ) noexcept
-: NoContentMsg( MsgId::kPingReplyMsg ), mSender( false )
+: NoContentMsg( MsgId::kPingReplyMsg )
 {
     // Nothing to do
 }
@@ -219,24 +210,16 @@ PingReplyMsg::PingReplyMsg( MsgId id ) noexcept
 
 void PingReplyMsg::takeAction( EventManager&, SerialLink& link )
 {
-    // Action depends on whether we are sender or receiver
+    // If we called this, means we received the message and taking the expected action...
     if ( mNeedsAction )
     {
-        if ( mSender )
-        {
-            sendOut( link );
-            mNeedsAction = false;
+        // ...the expect action is we simply log it
+        output2cout( "Rcvd ping reply from Pico" );
 
-            output2cout( "RPi0 sent PingReplyMsg" );
-        }
-        else
-        {
-            // If we are receiver, we simply log it
-            output2cout( "RPi0 got PingReplyMsg" );
-
-            // Could do something fancier like track we sent ping and match this reply to it
-            // But meant for debugging, so just leave it in our std::cout stream
-        }
+        // Could do something fancier like track we sent ping and match this reply to it
+        // But meant for debugging, so just leave a message in our std::cout stream
+        
+        mNeedsAction = false;
     }
 }
 
