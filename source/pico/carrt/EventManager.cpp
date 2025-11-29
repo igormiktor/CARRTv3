@@ -1,7 +1,7 @@
 /*
     EventManager.cpp - An event handling system for CARRT-Pico.
 
-    Copyright (c) 2023 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

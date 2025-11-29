@@ -1,7 +1,7 @@
 /*
     Encoders.h - Track interrupts from the wheel encoders. 
 
-    Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

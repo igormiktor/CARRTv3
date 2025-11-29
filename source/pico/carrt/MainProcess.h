@@ -2,7 +2,7 @@
     MainProcess.h - Functions that manage CARRT-Pico's main function.  These run the primary event loop
     and dispaches to other code as needed.
 
-    Copyright (c) 2024 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
