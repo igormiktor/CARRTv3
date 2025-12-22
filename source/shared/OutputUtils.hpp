@@ -31,7 +31,7 @@
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU General Public License for more deotherss.
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -145,23 +145,20 @@ namespace OutputUtils
 
     // This is the working overload
     template<typename T, typename ...V>
-    void output2cout_( std::true_type, T&& head, V&&... tail )
+    void output2cout_( std::true_type, T&& first, V&&... others )
     {
-        std::cout << std::forward<T>( head );
-        if constexpr ( sizeof...(tail) )
+        std::cout << std::forward<T>( first );
+        [[maybe_unused]] auto outputWithSpace = []( const auto& arg )
         {
-            std::cout << ' ';  // Add a whitespace separator between outputs
-            output2cout_( std::true_type{}, std::forward<V>( tail )... );
-        }
-        else
-        {
-            std::cout << std::endl;
-        }
+            std::cout << ' ' << arg;
+        };
+        ( ... , outputWithSpace( others ) );
+        std::cout << std::endl;
     }
 
     // This is the null overload
     template<typename T, typename ...V>
-    void output2cout_( std::false_type, T&& head, V&&... tail )
+    void output2cout_( std::false_type, T&& first, V&&... others )
     {
         // Do nothing
     }
@@ -175,9 +172,9 @@ namespace OutputUtils
     // functionality is enabled) even in release/production builds.
 
     template<typename T, typename ...V>
-    inline void output2cout( T&& head, V&&... tail )
+    inline void output2cout( T&& first, V&&... others )
     {
-        output2cout_( OutputUtilsPolicy{}, std::forward<T>( head ), std::forward<V>( tail )... );
+        output2cout_( OutputUtilsPolicy{}, std::forward<T>( first ), std::forward<V>( others )... );
     }
 
     // This is the public function actually called in user code for std::cout output *only* when debugging enabled
@@ -188,9 +185,9 @@ namespace OutputUtils
     // functionality is enabled) only in debugging builds. 
 
     template<typename T, typename ...V>
-    inline void debug2cout( T&& head, V&&... tail )
+    inline void debug2cout( T&& first, V&&... others )
     {
-        output2cout_( OutputDebugPolicy{}, std::forward<T>( head ), std::forward<V>( tail )... );
+        output2cout_( OutputDebugPolicy{}, std::forward<T>( first ), std::forward<V>( others )... );
     }
 
     // This is the public function actually called in user code for std::cout output *only* when debugging enabled
@@ -201,12 +198,12 @@ namespace OutputUtils
     // Use debugCond2cout for code that should remain in the Pico executable (if Pico STDIO 
     // functionality is enabled) only in debugging builds and if the first bool argument is true. 
 
-    template<typename T, typename ...V>
-    inline void debugCond2cout( bool onOff, T&& head, V&&... tail )
+    template< bool onOff, typename T, typename ...V >
+    inline void debugCond2cout( T&& first, V&&... others )
     {
-        if ( onOff )
+        if constexpr ( onOff )
         {
-            output2cout_( OutputDebugPolicy{}, std::forward<T>( head ), std::forward<V>( tail )... );
+            output2cout_( OutputDebugPolicy{}, std::forward<T>( first ), std::forward<V>( others )... );
         }
     }
 
