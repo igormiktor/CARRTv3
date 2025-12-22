@@ -198,7 +198,7 @@ namespace OutputUtils
     // Use debugCond2cout for code that should remain in the Pico executable (if Pico STDIO 
     // functionality is enabled) only in debugging builds and if the first bool argument is true. 
 
-    template< bool onOff, typename T, typename ...V >
+    template<bool onOff, typename T, typename ...V>
     inline void debugCond2cout( T&& first, V&&... others )
     {
         if constexpr ( onOff )
