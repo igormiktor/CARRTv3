@@ -78,7 +78,7 @@ public:
         // If we cannot find the id, return a special message, UnknownMsg.
         output2cout( "Unknown msg received", static_cast<int>( id ) );
         int err = makeSharedErrorId( kSerialMsgUnknownError, 1, std::to_underlying( id ) );
-        return std::unique_ptr<SerialMessage>( new UnknownMsg(  std::to_underlying( id ), err ) );
+        return std::unique_ptr<SerialMessage>( new UnknownMsg( std::to_underlying( id ), err ) );
     }
 
 
@@ -92,7 +92,7 @@ private:
     }
 
     using PCreator = MsgPtr (*)( MsgId );
-    std::unordered_map< std::uint8_t, PCreator > mCreators;
+    std::unordered_map<std::uint8_t, PCreator> mCreators;
 };
 
 

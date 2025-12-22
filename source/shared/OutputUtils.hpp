@@ -144,7 +144,7 @@ namespace OutputUtils
 
 
     // This is the working overload
-    template< typename T, typename ...V >
+    template<typename T, typename ...V>
     void output2cout_( std::true_type, T&& head, V&&... tail )
     {
         std::cout << std::forward<T>( head );
@@ -160,7 +160,7 @@ namespace OutputUtils
     }
 
     // This is the null overload
-    template< typename T, typename ...V >
+    template<typename T, typename ...V>
     void output2cout_( std::false_type, T&& head, V&&... tail )
     {
         // Do nothing
@@ -174,7 +174,7 @@ namespace OutputUtils
     // Use output2cout for code that should remain in the Pico executable (if Pico STDIO 
     // functionality is enabled) even in release/production builds.
 
-    template< typename T, typename ...V >
+    template<typename T, typename ...V>
     inline void output2cout( T&& head, V&&... tail )
     {
         output2cout_( OutputUtilsPolicy{}, std::forward<T>( head ), std::forward<V>( tail )... );
@@ -187,7 +187,7 @@ namespace OutputUtils
     // Use debug2cout for code that should remain in the Pico executable (if Pico STDIO 
     // functionality is enabled) only in debugging builds. 
 
-    template< typename T, typename ...V >
+    template<typename T, typename ...V>
     inline void debug2cout( T&& head, V&&... tail )
     {
         output2cout_( OutputDebugPolicy{}, std::forward<T>( head ), std::forward<V>( tail )... );
@@ -201,7 +201,7 @@ namespace OutputUtils
     // Use debugCond2cout for code that should remain in the Pico executable (if Pico STDIO 
     // functionality is enabled) only in debugging builds and if the first bool argument is true. 
 
-    template< typename T, typename ...V >
+    template<typename T, typename ...V>
     inline void debugCond2cout( bool onOff, T&& head, V&&... tail )
     {
         if ( onOff )
