@@ -28,7 +28,10 @@ std::optional<int> SerialLink::getInt()
 { 
     auto got = get4Bytes(); 
     if ( got )
-        return static_cast<int>( *got );
+    {
+        RawData r( *got );
+        return r.i();
+    }
     else 
         return std::nullopt; 
 }
