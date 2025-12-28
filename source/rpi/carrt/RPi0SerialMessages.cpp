@@ -280,7 +280,7 @@ void PicoReadyMsg::takeAction( EventManager&, SerialLink& link )
         // TODO -- RPi0 needs to take action
         mNeedsAction = false;
 
-        output2cout( "TODO: RPi0 action on PicoReadyMsg" );
+        output2cout( "TODO: RPi0 action on PicoReadyMsg", getIdNum(), std::get<0>( mContent.mMsg ) );
     }
 }
 
@@ -341,7 +341,9 @@ void PicoNavStatusUpdateMsg::takeAction( EventManager&, SerialLink& link )
         // TODO -- take action
         mNeedsAction = false;
 
-        output2cout( "TODO: RPi0 action on PicoNavStatusUpdateMsg" );
+        output2cout( "TODO: RPi0 action on PicoNavStatusUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), 
+        static_cast<int>( std::get<1>( mContent.mMsg ) ), static_cast<int>( std::get<2>( mContent.mMsg ) ), 
+        static_cast<int>( std::get<3>( mContent.mMsg ) ), static_cast<int>( std::get<4>( mContent.mMsg ) ) );
     }
 }
 
@@ -374,7 +376,7 @@ void PicoSaysStopMsg::takeAction( EventManager&, SerialLink& link )
         // TODO take action
         mNeedsAction = false;
 
-        output2cout( "TODO: RPi0 action on PicoSayStopMsg" );
+        output2cout( "TODO: RPi0 action on PicoSayStopMsg", getIdNum() );
     }
 }
 
@@ -461,9 +463,10 @@ ResetPicoMsg::ResetPicoMsg() noexcept
 ResetPicoMsg::ResetPicoMsg( MsgId id ) noexcept
 : NoContentMsg( id )
 {
-    // TODO implement response to info that Pico is resetting...
+    // TODO implement response to info that Pico is resetting in takeAction()...
 
-    output2cout( "TODO: RPi0 got ResetPicoMsg", getIdNum() );
+    debugCond2cout<kDebugSerialMsg>( "RPi0 got ResetPicoMsg", getIdNum() );
+    mNeedsAction = true;
 }
 
 
@@ -535,7 +538,8 @@ void TimerEventMsg::takeAction( EventManager&, SerialLink& link )
         // TODO process timer event
         mNeedsAction = false;
 
-        output2cout( "TODO: RPi0 action on TimerEventMsg" );
+        output2cout( "TODO: RPi0 action on TimerEventMsg", getIdNum(), 
+        static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
     }
 }
 
@@ -727,6 +731,10 @@ void CalibrationInfoUpdateMsg::takeAction( EventManager&, SerialLink& link )
     if ( mNeedsAction )
     {
         // TODO process the data in the message
+        output2cout( "TODO: RPi0 action on CalibrationInfoUpdateMsg", getIdNum(), 
+        static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
+        static_cast<int>( std::get<2>( mContent.mMsg ) ), static_cast<int>( std::get<3>( mContent.mMsg ) ) );
+
         mNeedsAction = false;
     }
 }
@@ -879,7 +887,7 @@ void NavUpdateMsg::takeAction( EventManager&, SerialLink& link )
         // TODO  do something with the nav update
         mNeedsAction = false;
 
-        output2cout( "TODO RPi0 do something nav update info" );
+        output2cout( "TODO RPi0 do something NavUpdateMsg info", getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
     }
 }
 
@@ -1049,11 +1057,11 @@ void EncoderUpdateMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        // TODO take action with thi
+        // TODO take action with this
         // TODO
         mNeedsAction = false;
 
-        output2cout( "TODO process EncoderUpdateMsg", std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
+        output2cout( "TODO process EncoderUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
     }
 }
 
@@ -1223,7 +1231,7 @@ void BatteryLevelUpdateMsg::takeAction( EventManager&, SerialLink& link )
         // TODO act on this
         mNeedsAction = false;
 
-        output2cout( "TODO: RPi0 act on BatteryLevelUpdateMsg" );
+        output2cout( "TODO: RPi0 act on BatteryLevelUpdateMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
     }
 }
 
@@ -1281,7 +1289,7 @@ void BatteryLowAlertMsg::takeAction( EventManager&, SerialLink& link )
         // TODO process this
         mNeedsAction = false;
 
-        output2cout( "TODO: RPi0 act on BatteryLowAlertMsg" );
+        output2cout( "TODO: RPi0 act on BatteryLowAlertMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
     }
 }
 
@@ -1322,7 +1330,7 @@ void ErrorReportMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    output2cout( "RPi0 got ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
+    debugCond2cout<kDebugSerialMsg>( "RPi0 got ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void ErrorReportMsg::sendOut( SerialLink& link )
@@ -1339,7 +1347,7 @@ void ErrorReportMsg::takeAction( EventManager&, SerialLink& link )
         // TODO handle the error
         mNeedsAction = false;
 
-        output2cout( "TODO: RPi0 act on ErrorReportMsg", 
+        output2cout( "TODO: RPi0 act on ErrorReportMsg", getIdNum(), 
             ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ), std::get<1>( mContent.mMsg ) );
     }
 }
@@ -1497,7 +1505,7 @@ void DebugLinkMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    output2cout( "RPi0 got DebugLinkMsg", std::get<0>( mContent.mMsg ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
+    debugCond2cout<kDebugSerialMsg>( "RPi0 got DebugLinkMsg", std::get<0>( mContent.mMsg ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
                     std::get<2>( mContent.mMsg ), std::get<3>( mContent.mMsg ) );
 }
 
@@ -1515,7 +1523,8 @@ void DebugLinkMsg::takeAction( EventManager&, SerialLink& link )
     {
         // If we are here, means we recieved it
         // TODO in future perhaps confirm to user that reply matched expectation?
-        output2cout( "TODO: RPi0 act on DebugLinkMsg" );
+        output2cout( "TODO: RPi0 act on DebugLinkMsg", getIdNum(), std::get<0>( mContent.mMsg ), static_cast<int>( std::get<1>( mContent.mMsg ) ), 
+                    std::get<2>( mContent.mMsg ), std::get<3>( mContent.mMsg ) );
 
         mNeedsAction = false;
     }
