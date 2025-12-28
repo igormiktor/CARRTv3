@@ -66,6 +66,10 @@ int main()
                         }
                         break;
 
+                    case static_cast<int>( MsgId::kPicoReceivedTestMsg ):
+                        // Ignore this one
+                        break;
+
                     default:
                         {
                             // Need to use the std::uint8_t constructor
@@ -136,6 +140,7 @@ void setupMessageProcessor( SerialMessageProcessor& smp )
     smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
 //  smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
 //  smp.registerMessage<TestPicoMessagesMsg>( MsgId::kTestPicoMessages );
+    smp.registerMessage<PicoReceivedTestMsg>( MsgId::kPicoReceivedTestMsg );
     smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
 }
 

@@ -1475,6 +1475,63 @@ void TestPicoMessagesMsg::takeAction( EventManager& evtMgr, SerialLink& link )
 
 
 
+PicoReceivedTestMsg::PicoReceivedTestMsg() noexcept 
+: SerialMessage( MsgId::kPicoReceivedTestMsg ), mContent( MsgId::kPicoReceivedTestMsg ), mNeedsAction{ false } 
+{}
+
+PicoReceivedTestMsg::PicoReceivedTestMsg( TheData t ) noexcept 
+: SerialMessage( MsgId::kPicoReceivedTestMsg ), mContent( MsgId::kPicoReceivedTestMsg, t ), mNeedsAction{ true } 
+{} 
+
+PicoReceivedTestMsg::PicoReceivedTestMsg( std::uint8_t msgIdToSendBack ) noexcept 
+: SerialMessage( MsgId::kPicoReceivedTestMsg ), mContent( MsgId::kPicoReceivedTestMsg, std::make_tuple( msgIdToSendBack ) ), 
+    mNeedsAction{ true } 
+{}
+
+PicoReceivedTestMsg::PicoReceivedTestMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kPicoReceivedTestMsg ), mNeedsAction{ false }
+{ 
+    if ( id != MsgId::kPicoReceivedTestMsg ) 
+    { 
+        throw CarrtError( makeRpi0ErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kPicoReceivedTestMsg ) ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void PicoReceivedTestMsg::readIn( SerialLink& link ) 
+{
+    mContent.readIn( link );        
+    debugCond2cout<kDebugSerialMsg>( "RPi0 received PicoReceivedTestMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+
+    mNeedsAction = true;
+}
+
+void PicoReceivedTestMsg::sendOut( SerialLink& link )
+{
+    // RPi0 never sends this out
+    output2cout( "ERROR: RPi0 sending PicoReceivedTestMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+}
+
+void PicoReceivedTestMsg::takeAction( EventManager& evt, SerialLink& link ) 
+{
+    // Just display the confirmation of receipt
+    if ( mNeedsAction )
+    {
+        mNeedsAction = false;
+
+        output2cout( "Pico confirms RPi0 request for MsgId Pico doesn't send", static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
 DebugLinkMsg::DebugLinkMsg() noexcept 
 : SerialMessage( MsgId::kDebugSerialLink ), mContent( MsgId::kDebugSerialLink ), mNeedsAction{ false } 
 {}

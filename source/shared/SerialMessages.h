@@ -840,6 +840,41 @@ private:
 
 
 
+class PicoReceivedTestMsg : public SerialMessage
+{
+public:
+
+    using TheData = std::tuple< std::uint8_t >;
+
+    PicoReceivedTestMsg() noexcept;
+    explicit PicoReceivedTestMsg( TheData t ) noexcept; 
+    explicit PicoReceivedTestMsg( std::uint8_t msgIdReceived ) noexcept;
+    explicit PicoReceivedTestMsg( MsgId id );
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
+
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
+
+
+private:
+
+    struct RawMessage<TheData>  mContent;
+
+    bool    mNeedsAction;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 class DebugLinkMsg : public SerialMessage
 {
 public:

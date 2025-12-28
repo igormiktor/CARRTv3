@@ -1482,7 +1482,7 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
         // Pico action consists of sending the requested message type
         std::uint8_t rcvdId{ std::get<0>( mContent.mMsg ) };
 
-        if ( rcvdId >= std::to_underlying( MsgId::kCountOfMsgIds ) )
+        if ( rcvdId >= std::to_underlying( MsgId::kCountOfMsgIds ) || rcvdId == std::to_underlying( MsgId::kPicoReceivedTestMsg ) )
         {
             // Not a legitimate MsgId
             return;
@@ -1593,7 +1593,7 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
                 };
                 break;
             
-            // Msgs never sent by Pico
+            // Msgs never sent by Pico, so simply acknowledge them with PicoReceivedTestMsg
             case MsgId::kMsgControlMsg:
             case MsgId::kTimerControl:
             case MsgId::kBeginCalibration:
@@ -1608,9 +1608,68 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
             case MsgId::kTestPicoReportError:
             case MsgId::kTestPicoMessages:
             default:
-                output2cout( "Pico asked to send msg Pico never sends", static_cast<int>( desiredMsgId ) );
+                {
+                    PicoReceivedTestMsg msg( rcvdId );
+                    msg.sendOut( link );
+                    output2cout( "Pico asked to send msg Pico never sends", static_cast<int>( desiredMsgId ) );
+                }
                 break;
         }
+    }
+}
+
+
+
+
+/*********************************************************************************************/
+
+
+
+
+PicoReceivedTestMsg::PicoReceivedTestMsg() noexcept 
+: SerialMessage( MsgId::kPicoReceivedTestMsg ), mContent( MsgId::kPicoReceivedTestMsg ), mNeedsAction{ false } 
+{}
+
+PicoReceivedTestMsg::PicoReceivedTestMsg( TheData t ) noexcept 
+: SerialMessage( MsgId::kPicoReceivedTestMsg ), mContent( MsgId::kPicoReceivedTestMsg, t ), mNeedsAction{ true } 
+{} 
+
+PicoReceivedTestMsg::PicoReceivedTestMsg( std::uint8_t msgIdReceived ) noexcept 
+: SerialMessage( MsgId::kPicoReceivedTestMsg ), mContent( MsgId::kPicoReceivedTestMsg, std::make_tuple( msgIdReceived ) ), 
+    mNeedsAction{ true } 
+{}
+
+PicoReceivedTestMsg::PicoReceivedTestMsg( MsgId id ) 
+: SerialMessage( id ), mContent( MsgId::kPicoReceivedTestMsg ), mNeedsAction{ false }
+{ 
+    if ( id != MsgId::kPicoReceivedTestMsg ) 
+    { 
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kPicoReceivedTestMsg ) ), "Id mismatch at creation" ); 
+    } 
+    // Note that it doesn't need action until loaded with data
+}
+
+
+void PicoReceivedTestMsg::readIn( SerialLink& link ) 
+{
+   // Pico never receives this message out (only receives)
+    mContent.readIn( link );            // Read data to make sure we don't corrupt stream
+    output2cout( "Error: Pico received PicoReceivedTestMsg", getIdNum() );
+}
+
+void PicoReceivedTestMsg::sendOut( SerialLink& link )
+{
+    mContent.sendOut( link );
+
+    output2cout( "Pico sent PicoReceivedTestMsg", getIdNum(), static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+}
+
+void PicoReceivedTestMsg::takeAction( EventManager& evt, SerialLink& link ) 
+{
+    // Never receive this, so do nothing
+    if ( mNeedsAction )
+    {
+        mNeedsAction = false;
     }
 }
 
