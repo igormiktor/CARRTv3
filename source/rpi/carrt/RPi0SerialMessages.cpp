@@ -1520,7 +1520,7 @@ void PicoReceivedTestMsg::takeAction( EventManager& evt, SerialLink& link )
     {
         mNeedsAction = false;
 
-        output2cout( "Pico confirms RPi0 request for MsgId Pico doesn't send", static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+        output2cout( "Pico confirms RPi0 request for MsgId", static_cast<int>( std::get<0>( mContent.mMsg ) ), "that Pico doesn't send" );
     }
 }
 
