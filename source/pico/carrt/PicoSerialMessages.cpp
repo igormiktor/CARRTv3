@@ -32,7 +32,14 @@
 
 
 
-constexpr bool kDebugSerialMsgs{ false };
+
+#ifdef DEBUG_PICO_SERIAL_MSG_HANDLING
+    constexpr bool kDebugSerialMsgs{ static_cast<bool>( DEBUG_PICO_SERIAL_MSG_HANDLING ) };
+#else
+    constexpr bool kDebugSerialMsgs{ false };
+#endif
+
+
 
 
 
