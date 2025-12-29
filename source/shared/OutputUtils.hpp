@@ -165,8 +165,8 @@ namespace OutputUtils
 
 
     // This is the public function actually called in user code for std::cout output
-    // Converts the arguments to 
-    //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
+    // Converts the arguments to (with a single space separator between args):
+    //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl; 
     //
     // Use output2cout for code that should remain in the Pico executable (if Pico STDIO 
     // functionality is enabled) even in release/production builds.
@@ -178,7 +178,8 @@ namespace OutputUtils
     }
 
     // This is the public function actually called in user code for std::cout output *only* when debugging enabled
-    // If USE_CARRTPICO_STDIO and DEBUGPICO are both "ON", converts the arguments to 
+    // If USE_CARRTPICO_STDIO and DEBUGPICO are both "ON", converts the arguments to (with a single space separator 
+    // between args): 
     //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
     //
     // Use debug2cout for code that should remain in the Pico executable (if Pico STDIO 
@@ -192,11 +193,14 @@ namespace OutputUtils
 
     // This is the public function actually called in user code for std::cout output *only* when debugging enabled
     // and the lead bool argument is true.
-    // If USE_CARRTPICO_STDIO and DEBUGPICO are both "ON", converts the arguments to 
+    // If USE_CARRTPICO_STDIO and DEBUGPICO are both "ON", converts the arguments to (with a single space separator 
+    // between args): 
     //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
     //
     // Use debugCond2cout for code that should remain in the Pico executable (if Pico STDIO 
-    // functionality is enabled) only in debugging builds and if the first bool argument is true. 
+    // functionality is enabled) only in debugging builds and if the first bool template argument is true. 
+    // Usage:  
+    //  debugCond2cout<kThisStatementOnOrOff>( "Debug output of two values", val1, val2 );
 
     template<bool onOff, typename T, typename ...V>
     inline void debugCond2cout( T&& first, V&&... others )
