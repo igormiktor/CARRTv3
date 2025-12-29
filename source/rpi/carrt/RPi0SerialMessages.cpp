@@ -29,9 +29,11 @@
 
 
 
-
-
-constexpr bool kDebugSerialMsg{ false };
+#ifdef DEBUG_RPI0_SERIAL_MSG_HANDLING
+    constexpr bool kDebugSerialMsg{ static_cast<bool>( DEBUG_RPI0_SERIAL_MSG_HANDLING ) };
+#else
+    constexpr bool kDebugSerialMsg{ false };
+#endif
 
 
 
