@@ -41,7 +41,7 @@ namespace Clock
         sleep_us( howLong.count() );
     }
 
-    inline uint32_t millis()
+    inline std::uint32_t millis()
     {
         return to_ms_since_boot( get_absolute_time() );
     }
