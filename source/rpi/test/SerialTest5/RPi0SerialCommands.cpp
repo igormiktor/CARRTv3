@@ -178,8 +178,8 @@ ErrorReportMsg::ErrorReportMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, t ), mNeedsAction{ true } 
 {} 
 
-ErrorReportMsg::ErrorReportMsg( bool val, int errorCode ) noexcept 
-: SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ) ), 
+ErrorReportMsg::ErrorReportMsg( bool val, int errorCode, std::uint32_t time ) noexcept 
+: SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ), time ), 
     mNeedsAction{ true } 
 {}
 
@@ -212,8 +212,8 @@ void ErrorReportMsg::sendOut( SerialLink& link )
 
 void ErrorReportMsg::takeAction( EventManager&, SerialLink& link ) 
 {
-    auto [ fatal, errCode ] = mContent.mMsg;
-    std::cout << "Error from Pico: " << ( fatal ? "fatal" : "non-fatal" ) << "; error code " << errCode << std::endl;
+    auto [ fatal, errCode, time ] = mContent.mMsg;
+    std::cout << "Error from Pico: " << ( fatal ? "fatal" : "non-fatal" ) << "; error code " << errCode << "; time " << time << std::endl;
 
     mNeedsAction = false;
 }

@@ -63,6 +63,6 @@ void EventProcessor::handleUnknownEvent( EventManager& events, SerialLink& link,
     output2cout( "Warning: Pico received unknown event: ", std::to_underlying( eventCode ) );
     
     int errCode{ makePicoErrorId( kPicoEventProcessorError, 1, std::to_underlying( eventCode ) ) };
-    ErrorReportMsg errRpt( kPicoNonFatalError, errCode );
+    ErrorReportMsg errRpt( kPicoNonFatalError, errCode, Clock::millis() );
     errRpt.sendOut( link ); 
 }

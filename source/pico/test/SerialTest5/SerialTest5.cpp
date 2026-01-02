@@ -165,7 +165,7 @@ int main()
                 if ( Events().hasEventQueueOverflowed() )
                 {
                     std::cout << "Event queue overflowed" << std::endl;
-                    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ) );
+                    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ), Clock::millis() );
                     errMsg.sendOut( rpi0 );
                     Events().resetEventQueueOverflowFlag();
                 }

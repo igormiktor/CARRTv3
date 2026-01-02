@@ -739,11 +739,11 @@ class ErrorReportMsg : public SerialMessage
 {
 public:
 
-    using TheData = std::tuple< std::uint8_t, int >;
+    using TheData = std::tuple< std::uint8_t, int, std::uint32_t >;
 
     ErrorReportMsg() noexcept;
     explicit ErrorReportMsg( TheData t ) noexcept; 
-    ErrorReportMsg( bool val, int errorCode ) noexcept;
+    ErrorReportMsg( bool val, int errorCode, std::uint32_t time ) noexcept;
     explicit ErrorReportMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;

@@ -110,7 +110,7 @@ void MainProcess::doEventQueueOverflowed( SerialLinkPico& link )
     output2cout( "Event queue overflowed" );
 
     int errCode{ makePicoErrorId( kPicoMainProcessError, 1, 0 ) };
-    ErrorReportMsg errRpt( kPicoNonFatalError, errCode );
+    ErrorReportMsg errRpt( kPicoNonFatalError, errCode, Clock::millis() );
     errRpt.sendOut( link );
 }
 

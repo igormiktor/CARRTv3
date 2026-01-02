@@ -203,7 +203,7 @@ void ErrorEventHandler::handleEvent( EventManager& events, SerialLink& link, Evt
     output2cout( "Got an error event in the event queue", eventParam );
 
     int errCode{ makePicoErrorId( kPicoGotErrorEvent, 1, eventParam ) };
-    ErrorReportMsg errRpt( kPicoNonFatalError, errCode );
+    ErrorReportMsg errRpt( kPicoNonFatalError, errCode, Clock::millis() );
     errRpt.sendOut( link );
 }
 

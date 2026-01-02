@@ -1311,8 +1311,8 @@ ErrorReportMsg::ErrorReportMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, t ), mNeedsAction{ true } 
 {} 
 
-ErrorReportMsg::ErrorReportMsg( bool val, int errorCode ) noexcept 
-: SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ) ), 
+ErrorReportMsg::ErrorReportMsg( bool val, int errorCode, std::uint32_t time ) noexcept 
+: SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode, time ) ), 
     mNeedsAction{ true } 
 {}
 
@@ -1332,14 +1332,14 @@ void ErrorReportMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debugCond2cout<kDebugSerialMsgs>( "RPi0 got ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
+    debugCond2cout<kDebugSerialMsgs>( "RPi0 got ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
 
 void ErrorReportMsg::sendOut( SerialLink& link )
 {
     // RPi0 never sends this
 
-    output2cout( "Error: RPi0 sending ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
+    output2cout( "Error: RPi0 sending ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
 
 void ErrorReportMsg::takeAction( EventManager&, SerialLink& link ) 
@@ -1350,7 +1350,7 @@ void ErrorReportMsg::takeAction( EventManager&, SerialLink& link )
         mNeedsAction = false;
 
         output2cout( "TODO: RPi0 act on ErrorReportMsg", getIdNum(), 
-            ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ), std::get<1>( mContent.mMsg ) );
+            ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
     }
 }
 

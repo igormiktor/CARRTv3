@@ -78,7 +78,7 @@ void UnknownMsg::readIn( SerialLink& link )
 void UnknownMsg::sendOut( SerialLink& link )
 {
     // We don't send this msg out on link; instead send error report
-    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoSerialMessageError, std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) ) );
+    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoSerialMessageError, std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) ), Clock::millis() );
     errMsg.sendOut( link );
 }
 
@@ -1188,7 +1188,7 @@ void BatteryLevelRequestMsg::takeAction( EventManager& events, SerialLink& link 
         else
         {
             output2cout( "Bad battery request code", static_cast<int>( whichBattery ) );
-            ErrorReportMsg err( false, makePicoErrorId( kPicoSerialMessageError, 2, whichBattery ) );
+            ErrorReportMsg err( false, makePicoErrorId( kPicoSerialMessageError, 2, whichBattery ), Clock::millis() );
         }
 
         mNeedsAction = false;
@@ -1325,8 +1325,8 @@ ErrorReportMsg::ErrorReportMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, t ), mNeedsAction{ true } 
 {} 
 
-ErrorReportMsg::ErrorReportMsg( bool val, int errorCode ) noexcept 
-: SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode ) ), 
+ErrorReportMsg::ErrorReportMsg( bool val, int errorCode, std::uint32_t time ) noexcept 
+: SerialMessage( MsgId::kErrorReportFromPico ), mContent( MsgId::kErrorReportFromPico, std::make_tuple( static_cast<std::uint8_t>( val ), errorCode, time ) ), 
     mNeedsAction{ true } 
 {}
 
@@ -1346,14 +1346,14 @@ void ErrorReportMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = false;
 
-    output2cout( "Error: got ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
+    output2cout( "Error: got ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
 
 void ErrorReportMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    output2cout( "Sent ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
+    output2cout( "Sent ErrorReportMsg", getIdNum(), static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
 
 void ErrorReportMsg::takeAction( EventManager&, SerialLink& link ) 
@@ -1422,7 +1422,7 @@ void TestPicoErrorRptMsg::takeAction( EventManager& evtMgr, SerialLink& link )
         // Pico action consists of sending the requested error report
 
         auto [ fatal, errorCode ] = mContent.mMsg;
-        ErrorReportMsg errRptAsRqstd( fatal, errorCode );
+        ErrorReportMsg errRptAsRqstd( fatal, errorCode, Clock::millis() );
         errRptAsRqstd.sendOut( link );
 
         mNeedsAction = false;
@@ -1588,7 +1588,7 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
 
             case MsgId::kErrorReportFromPico:
                 { 
-                    ErrorReportMsg msg( kPicoNonFatalError, makePicoErrorId( kPicoTestError, kPicoTestError, kPicoTestError ) ); 
+                    ErrorReportMsg msg( kPicoNonFatalError, makePicoErrorId( kPicoTestError, kPicoTestError, kPicoTestError ), Clock::millis() ); 
                     msg.sendOut( link );
                 };
                 break;

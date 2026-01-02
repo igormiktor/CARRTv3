@@ -141,7 +141,7 @@ int main()
     catch( const CarrtError& e )
     {
         // Report the error...
-        ErrorReportMsg err( kPicoFatalError, e.errorCode() ); 
+        ErrorReportMsg err( kPicoFatalError, e.errorCode(), Clock::millis() ); 
         err.sendOut( rpi0 );
 
         output2cout( "Fatal error ", e.errorCode(), ' ', e.what() );
@@ -150,7 +150,7 @@ int main()
     catch( const std::exception& e )
     {
         int errCode{ makePicoErrorId( kPicoMainError, 1, 0 ) };
-        ErrorReportMsg err( kPicoFatalError, errCode ); 
+        ErrorReportMsg err( kPicoFatalError, errCode, Clock::millis() ); 
         err.sendOut( rpi0 );
 
         output2cout( "Fatal error of unexpected nature", e.what() );
@@ -159,7 +159,7 @@ int main()
     catch( ... )
     {    
         int errCode{ makePicoErrorId( kPicoMainError, 2, 0 ) };
-        ErrorReportMsg err( kPicoFatalError, errCode ); 
+        ErrorReportMsg err( kPicoFatalError, errCode, Clock::millis() ); 
         err.sendOut( rpi0 );
 
         output2cout( "Fatal error of unknown type" );

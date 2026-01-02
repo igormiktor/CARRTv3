@@ -212,7 +212,7 @@ int main()
                 if ( Events().hasEventQueueOverflowed() )
                 {
                     output2cout( "Event queue overflowed" );
-                    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ) );
+                    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ), Clock::millis() );
                     errMsg.sendOut( rpi0 );
                     Events().resetEventQueueOverflowFlag();
                 }
