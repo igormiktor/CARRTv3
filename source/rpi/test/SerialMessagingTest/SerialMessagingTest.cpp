@@ -59,7 +59,8 @@ int main()
                 switch ( which )
                 {
                     case 0:     // No msg with MsgId 0, ping instead
-                        output2cout( "Top of message test loop, sending Ping" );
+                        output2cout( "Top of message test loop" );
+                        output2cout( "Sending Ping" );
                         {
                             PingMsg ping;
                             ping.sendOut( pico );
@@ -72,7 +73,7 @@ int main()
 
                     default:
                         {
-                            // Need to use the std::uint8_t constructor
+                            // Need to use the std::uint8_t constructor (not the MsgId constructor)
                             TestPicoMessagesMsg reqestSendUsBack( which  );
                             reqestSendUsBack.sendOut( pico );
                         }
