@@ -162,6 +162,7 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
         return r.u();
     }
     
+    // Handle partial reads...
     const int kMaxAttempts{ 4 };
     int attempts{ 0 };
     while ( numRead < 4 && errno == 0 && attempts++ < kMaxAttempts )
@@ -204,44 +205,17 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
 
 bool SerialLinkRPi::get4Bytes( std::uint8_t* c )
 {
-    auto numRead = read( mSerialPort, c, 4 );
-    if ( numRead == 0 )
+    auto u = get4Bytes();
+    if ( u )
     {
-        // EOF == buffer empty
-        return false;
-    }
-
-    if ( numRead == 4 )
-    {
-        // Got exactly what we wanted
+        RawData t( *u );
+        memcpy( c, t.c(), 4 );
         return true;
     }
-
-    if ( numRead < 4 && errno == 0 )
+    else
     {
-        // Try reading the remainder
-        std::uint8_t buf[4];
-        auto more = read( mSerialPort, buf, 4 - numRead );
-        if ( numRead + more == 4 )
-        {
-            for ( int j{ 0 }, i{ numRead }; i < 4; i++, j++ )
-            {
-                c[i] = buf[j];
-            }
-            return true;
-        }
+        return false;
     }
-
-    // If we haven't returned by this point, we're out of options; throw
-    debugM( "gettByte(uint8_t*) failed reading" );
-    debugV( numRead, errno );
-
-    std::stringstream errMsgStrm{};
-    errMsgStrm <<  "get4Byte(uint8_t*) failed reading with errno: " << errno
-        << " and numRead: " << numRead;
-    std::string errMsg{};
-    errMsgStrm >> errMsg;
-    throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
 }
 
 
