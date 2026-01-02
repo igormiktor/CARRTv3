@@ -32,6 +32,7 @@
 #include <unistd.h>
 
 #include <CarrtError.h>
+#include <Clock.h>
 #include <DebugUtils.hpp>
 
 
@@ -157,22 +158,34 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
 
     if ( numRead == 4 )
     {
+        // We are done
         return r.u();
     }
     
-    if ( numRead < 4 && errno == 0 )
+    const int kMaxAttempts{ 4 };
+    int attempts{ 0 };
+    while ( numRead < 4 && errno == 0 && attempts++ < kMaxAttempts )
     {
+        // Add little delay
+        Clock::sleep( 100us );
+
         // Try reading the remainder
         std::uint8_t buf[4];
         auto more = read( mSerialPort, buf, 4 - numRead );
-        if ( numRead + more == 4 )
+        if ( more )
         {
             for ( int j{ 0 }, i{ numRead }; i < 4; i++, j++ )
             {
-               r.c()[i] = buf[j];
+                r.c()[i] = buf[j];
             }
-            return r.u();
+            numRead += more;
         }
+    }
+
+    if ( numRead == 4 )
+    {
+        // We are done
+        return r.u();
     }
     
     // If we haven't returned by this point, we're out of options; throw
