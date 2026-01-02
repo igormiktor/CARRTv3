@@ -145,7 +145,7 @@ public:
             {  
                 auto got = lnk.get( dataItem );
 
-                int n{ 4 };
+                int n{ 8 };
                 while ( !got && n-- > 0 )
                 {
                     addSmallDelay();                // On Pico, allow time for sequential reads to be ready
