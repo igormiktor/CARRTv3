@@ -93,36 +93,29 @@ std::optional<std::uint8_t> SerialLinkPico::SerialLinkPico::getByte()
 
 std::optional<std::uint32_t> SerialLinkPico::get4Bytes()
 {
-    // Always blocks, so make semantics the same by first checking if 
-    // there is data to read
-    if ( isReadable() )
-    {   
-        RawData r;
-//        uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, reinterpret_cast<std::uint8_t*>( &t.c ), 4 );
-        uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, r.c(), 4 );
-        return r.u();
-    }
-    else
-    {
-        return std::nullopt;
-    }
+    // This function is only called when we know/expect there are (or will be) 4 bytes to receive
+    // So intentionally write it to just go ahead and block on reading.
+    
+    RawData r;
+    uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, r.c(), 4 );
+    return r.u();
+
+    // This potentially could block forever, but Pico SDK doesn't have read() that 
+    // blocks up to a max of time 
 }
 
 
 
 bool SerialLinkPico::get4Bytes( std::uint8_t c[4] )
 {
-    // Always blocks, so make semantics the same by first checking if 
-    // there is data to read
-    if ( isReadable() )
-    {   
-        uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, c, 4 );
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    // This function is only called when we know/expect there are (or will be) 4 bytes to receive
+    // So intentionally write it to just go ahead and block on reading.
+    
+    uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, c, 4 );
+    return true;
+
+    // This potentially could block forever, but Pico SDK doesn't have read() that 
+    // blocks up to a max of time 
 }
 
 
