@@ -22,6 +22,7 @@
 #include "SerialLinkPico.h"
 
 #include "CarrtPicoDefines.h"
+#include "Clock.h"
 
 #include "pico/binary_info.h"
 #include "hardware/gpio.h"
@@ -30,6 +31,19 @@
 
 
 
+
+
+namespace
+{
+    constexpr int kMaxReadAttempts{ 6 };
+
+    constexpr auto kSmallPause{ 100us };
+}
+
+
+
+
+#if 0
 SerialLinkPico& serialLink()
 {
     // Not constructed until first time this function is called
@@ -37,8 +51,18 @@ SerialLinkPico& serialLink()
 
     return sTheSerialLink;
 }
+#endif
 
 
+
+/*****************************************************************
+
+    Note: 
+
+    Pico SDK's UART read/write functions don't have any error
+    reporting mechanism...
+
+****************************************************************/
 
 
 
@@ -77,7 +101,7 @@ bool SerialLinkPico::isReadable() noexcept
 
 std::optional<std::uint8_t> SerialLinkPico::getMsgType()
 {
-    // Always blocks, so make semantics the same by first checking if 
+    // Reading always blocks, so make semantics the same by first checking if 
     // there is data to read
     if ( isReadable() )
     {
@@ -93,16 +117,31 @@ std::optional<std::uint8_t> SerialLinkPico::getMsgType()
 
 std::optional<std::uint8_t> SerialLinkPico::getByte()
 {
-    // Always blocks, so make semantics the same by first checking if 
-    // there is data to read
-    if ( isReadable() )
+    // Function is called when reading parts of a message, so we expect 
+    // a byte is in the queue.  So data is there or it will soon be there.
+
+    // Reading always blocks, so make semantics the same by first checking if 
+    // there is data to read, and then making multiple attempts to read the 
+    // expected byte before giving up
+    
+    int attempts{ 0 };
+    while ( attempts++ < kMaxReadAttempts )
     {
-        return static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+        // Try reading
+        if ( isReadable() )
+        {
+            // We are done...
+            return static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+        }
+
+        // If we weren't successful, add a little delay and try again
+        Clock::sleep( kSmallPause );
     }
-    else
-    {
-        return std::nullopt;
-    }
+
+    // If we get here, we seem to be waiting too long on the data.
+    // Return no success to the caller (who needs to deal with it)
+
+    return std::nullopt;
 }
 
 
