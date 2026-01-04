@@ -38,6 +38,14 @@
 
 
 
+namespace
+{
+    constexpr int kMaxReadAttempts{ 6 };
+}
+
+
+
+
 SerialLinkRPi::SerialLinkRPi()
 {
     // Open the serial port. 
@@ -118,50 +126,68 @@ SerialLinkRPi::~SerialLinkRPi()
 
 std::optional<std::uint8_t> SerialLinkRPi::getMsgType()
 {
+    // Function called when we have no idea if a message is in the queue
+    // So assume most likely case is "no data"
+
     uint8_t c{};
     auto numRead = read( mSerialPort, &c, 1 );
+
     if ( numRead == 0 )
     {
         // EOF == read buffer empty
         return std::nullopt;
     }
+
     if ( numRead == 1 )
     {
         return c;
     }
-    else
-    {
-        // Throw error
-        debugM( "gettByte() failed reading" );
-        debugV( numRead, errno );
 
-        std::stringstream errMsgStrm{};
-        errMsgStrm <<  "getByte() failed reading with errno: " << errno
-            << " and numRead: " << numRead;
-        std::string errMsg{};
-        errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
-    }
+    // Throw if we get down here we have an actual error (numRead chas to be one of 1, 0 or -1)
+    debugM( "getMsgType() failed reading" );
+    debugV( numRead, errno );
+
+    std::stringstream errMsgStrm{};
+    errMsgStrm <<  "getMsgType() failed reading with errno: " << errno
+        << " and numRead: " << numRead;
+    std::string errMsg{};
+    errMsgStrm >> errMsg;
+    throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 1, errno ), errMsg );
 }
 
 
 std::optional<std::uint8_t> SerialLinkRPi::getByte()
 {
+    // Function called when reading parts of a message, so we expect a byte is in the queue
+    // So data is there or will soon be there
+
+    // Just try it -- usually works and we return right away
     uint8_t c{};
     auto numRead = read( mSerialPort, &c, 1 );
-    if ( numRead == 0 )
-    {
-        // EOF == read buffer empty
-        return std::nullopt;
-    }
     if ( numRead == 1 )
     {
         return c;
     }
-    else
+
+    // Okay, data we expect not here yet -- so pause a tiny bit and try again (a few times)
+    int attempts{ 0 };
+    while ( numRead < 1 && attempts++ < kMaxReadAttempts )
     {
-        // Throw error
-        debugM( "gettByte() failed reading" );
+        Clock::sleep( 100us );
+        numRead  = read( mSerialPort, &c, 1 );
+    }
+
+    if ( numRead == 1 )
+    {
+        // Success, we are done
+        return c;
+    }
+
+    // After all these attempts, no luck...
+    if ( numRead == -1 )
+    {
+        // We have actual error, throw
+        debugM( "getByte() failed reading" );
         debugV( numRead, errno );
 
         std::stringstream errMsgStrm{};
@@ -169,8 +195,11 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
             << " and numRead: " << numRead;
         std::string errMsg{};
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ), errMsg );
     }
+
+    // No error, but also not reading what we expect -- let caller know and they handle
+    return std::nullopt;
 }
 
 
