@@ -35,7 +35,7 @@
 
 namespace
 {
-    constexpr int kMaxReadAttempts{ 6 };
+    constexpr int kMaxReadAttempts{ 8 };
 
     constexpr auto kSmallPause{ 100us };
 }
@@ -148,19 +148,41 @@ std::optional<std::uint8_t> SerialLinkPico::getByte()
 
 std::optional<std::uint32_t> SerialLinkPico::get4Bytes()
 {
-    // Always blocks, so make semantics the same by first checking if 
-    // there is data to read
-    if ( isReadable() )
-    {   
-        RawData r;
-//        uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, reinterpret_cast<std::uint8_t*>( &t.c ), 4 );
-        uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, r.c(), 4 );
+    // Function is called when reading parts of a message, so we expect 
+    // 4 bytes to show up in the queue.  So data is there or it will soon be there.
+
+    // Reading always blocks, so make semantics the same by first checking if 
+    // there is data to read.  Have to do this on a byte-by-byte basis because
+    // isReadable() only guarantees at least 1 byte in queue (not 4 bytes)
+
+    RawData r;
+    int numRead{ 0 };
+    int attempts{ 0 };
+    while ( numRead < 4 && attempts < kMaxReadAttempts )    
+    {
+        // Try reading a byte
+        if ( isReadable() )
+        {
+            r.c()[ numRead++ ] = static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+
+            // Intentionally do NOT increment attempts when we have a successful read
+        }
+        else
+        {
+            Clock::sleep( kSmallPause );
+            ++attempts;
+        }
+    }
+
+    if ( numRead == 4 )
+    {
+        // Success, return
         return r.u();
     }
-    else
-    {
-        return std::nullopt;
-    }
+
+    // Otherwise we seem to be waiting too long on data
+    // Return no success to caller (who deals with it)
+    return std::nullopt;
 }
 
 
