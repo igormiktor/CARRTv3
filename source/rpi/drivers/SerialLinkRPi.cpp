@@ -41,6 +41,8 @@
 namespace
 {
     constexpr int kMaxReadAttempts{ 6 };
+
+    constexpr auto kSmallPause{ 100us };
 }
 
 
@@ -173,7 +175,7 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
     int attempts{ 0 };
     while ( numRead < 1 && attempts++ < kMaxReadAttempts )
     {
-        Clock::sleep( 100us );
+        Clock::sleep( kSmallPause );
         numRead  = read( mSerialPort, &c, 1 );
     }
 
@@ -205,28 +207,25 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
 
 std::optional<uint32_t> SerialLinkRPi::get4Bytes()
 {
+    // Function called when reading parts of a message, so we expect a 4-byte value is in the queue
+    // So data is there or will soon be there
+
+    // Just try it -- usually works and we return right away 
     RawData r( 0 );
 
     auto numRead = read( mSerialPort, r.c(), 4 );
-    if ( numRead == 0 )
-    {
-        // EOF == buffer empty
-        return std::nullopt;
-    }
-
     if ( numRead == 4 )
     {
         // We are done
         return r.u();
     }
     
-    // Handle partial reads...
-    const int kMaxAttempts{ 4 };
+    // Okay, not all the data we expect is here yet -- handle partial reads...
     int attempts{ 0 };
-    while ( numRead < 4 && errno == 0 && attempts++ < kMaxAttempts )
+    while ( numRead < 4 && attempts++ < kMaxReadAttempts )
     {
         // Add little delay
-        Clock::sleep( 100us );
+        Clock::sleep( kSmallPause );
 
         // Try reading the remainder
         std::uint8_t buf[4];
@@ -243,20 +242,26 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
 
     if ( numRead == 4 )
     {
-        // We are done
+        // Success, we are done
         return r.u();
     }
     
-    // If we haven't returned by this point, we're out of options; throw
-    debugM( "getByte() failed reading" );
-    debugV( numRead, errno );
+    // If we haven't returned by this point and we have an error, throw
+    if ( numRead == -1 )
+    {
+        debugM( "get4Bytes() failed reading" );
+        debugV( numRead, errno );
 
-    std::stringstream errMsgStrm{};
-    errMsgStrm <<  "get4Byte() failed reading with errno: " << errno
-        << " and numRead: " << numRead;
-    std::string errMsg{};
-    errMsgStrm >> errMsg;
-    throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
+        std::stringstream errMsgStrm{};
+        errMsgStrm <<  "get4Bytes() failed reading with errno: " << errno
+            << " and numRead: " << numRead;
+        std::string errMsg{};
+        errMsgStrm >> errMsg;
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 3, errno ), errMsg );
+    }
+
+    // No error, but also not reading what we expect -- let caller know and they handle
+    return std::nullopt;
 }
 
 
@@ -291,7 +296,7 @@ void SerialLinkRPi::putByte( std::uint8_t c )
             << " with numWritten: " << numWritten << " and errno: " << errno;
         std::string errMsg;
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 4, errno ), errMsg );
     }
 }
 
@@ -302,17 +307,17 @@ void SerialLinkRPi::put4Bytes( const std::uint8_t* c )
     auto numWritten = write( mSerialPort, c, 4 );
     if ( numWritten != 4 )
     {
-        debugM( "put4Byte() failed writing values: " );
+        debugM( "put4Bytes() failed writing values: " );
         debugV( c[0], c[1], c[2], c[3] );
         debugV( numWritten );
 
         std::stringstream errMsgStrm;
-        errMsgStrm << "putByte() failed writing values: " 
+        errMsgStrm << "put4Bytes() failed writing values: " 
             << c[0] << ", " << c[1] << ", " << c[2] << ", " << c[3]
             << " with numWritten: " << numWritten << " and errno: " << errno;
         std::string errMsg;
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 5, errno ), errMsg );
     }
 }
 
@@ -321,7 +326,7 @@ void SerialLinkRPi::put4Bytes( const std::uint8_t* c )
 
 int SerialLinkRPi::getBytes( int nbr, std::uint8_t* buffer )
 {
-    return  read( mSerialPort, buffer, nbr );
+    return read( mSerialPort, buffer, nbr );
 }
 
 
