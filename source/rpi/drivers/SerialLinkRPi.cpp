@@ -38,6 +38,13 @@
 
 
 
+namespace
+{
+    constexpr int kMaxReadAttempts{ 6 };
+}
+
+
+
 SerialLinkRPi::SerialLinkRPi()
 {
     // Open the serial port. 
@@ -116,23 +123,67 @@ SerialLinkRPi::~SerialLinkRPi()
 
 
 
-std::optional<std::uint8_t> SerialLinkRPi::getByte()
+std::optional<MsgId> SerialLinkRPi::getMsgType()
 {
     uint8_t c{};
     auto numRead = read( mSerialPort, &c, 1 );
+
     if ( numRead == 0 )
     {
         // EOF == read buffer empty
         return std::nullopt;
     }
+
+    if ( numRead == 1 )
+    {
+        return static_cast<MsgId>( c );
+    }
+
+    // Throw error if we get down here...
+    debugM( "gettByte() failed reading" );
+    debugV( numRead, errno );
+
+    std::stringstream errMsgStrm{};
+    errMsgStrm <<  "getByte() failed reading with errno: " << errno
+        << " and numRead: " << numRead;
+    std::string errMsg{};
+    errMsgStrm >> errMsg;
+    throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 1, errno ), errMsg );
+}
+
+
+std::optional<std::uint8_t> SerialLinkRPi::getByte()
+{
+    // Just try, usually works and we return right away
+    uint8_t c{};
+    auto numRead = read( mSerialPort, &c, 1 );
+
     if ( numRead == 1 )
     {
         return c;
     }
-    else
+
+    // Handle nothing read...
+    int attempts{ 0 };
+    while ( numRead < 1 && errno == 0 && attempts++ < kMaxReadAttempts )
     {
-        // Throw error
-        debugM( "gettByte() failed reading" );
+        // Add little delay
+        Clock::sleep( 100us );
+
+        // Try reading again
+        numRead = read( mSerialPort, &c, 1);
+    }
+
+    if ( numRead == 1 )
+    {
+        // We are done
+        return c;
+    }
+    
+    // If we haven't returned by this point and have an error, throw
+    if ( numRead == -1 )
+    {
+        debugM( "getByte() failed reading" );
         debugV( numRead, errno );
 
         std::stringstream errMsgStrm{};
@@ -140,21 +191,20 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
             << " and numRead: " << numRead;
         std::string errMsg{};
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ), errMsg );
     }
+
+    // Otherwise we seem to be waiting too long on data
+    // Return no success to caller (who deals with it)
+    return std::nullopt;
 }
 
 
 std::optional<uint32_t> SerialLinkRPi::get4Bytes()
 {
+    // Just try it; often works so we return right away
     RawData r( 0 );
-
     auto numRead = read( mSerialPort, r.c(), 4 );
-    if ( numRead == 0 )
-    {
-        // EOF == buffer empty
-        return std::nullopt;
-    }
 
     if ( numRead == 4 )
     {
@@ -162,10 +212,9 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
         return r.u();
     }
     
-    // Handle partial reads...
-    const int kMaxAttempts{ 4 };
+    // Handle nothing read or partial reads...
     int attempts{ 0 };
-    while ( numRead < 4 && errno == 0 && attempts++ < kMaxAttempts )
+    while ( numRead < 4 && errno == 0 && attempts++ < kMaxReadAttempts )
     {
         // Add little delay
         Clock::sleep( 100us );
@@ -189,16 +238,23 @@ std::optional<uint32_t> SerialLinkRPi::get4Bytes()
         return r.u();
     }
     
-    // If we haven't returned by this point, we're out of options; throw
-    debugM( "getByte() failed reading" );
-    debugV( numRead, errno );
+    // If we haven't returned by this point and we have an error, throw
+    if ( numRead == -1 )
+    {
+        debugM( "getByte() failed reading" );
+        debugV( numRead, errno );
 
-    std::stringstream errMsgStrm{};
-    errMsgStrm <<  "get4Byte() failed reading with errno: " << errno
-        << " and numRead: " << numRead;
-    std::string errMsg{};
-    errMsgStrm >> errMsg;
-    throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
+        std::stringstream errMsgStrm{};
+        errMsgStrm <<  "get4Byte() failed reading with errno: " << errno
+            << " and numRead: " << numRead;
+        std::string errMsg{};
+        errMsgStrm >> errMsg;
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
+    }
+
+    // Otherwise we seem to be waiting too long on data
+    // Return no success to caller (who deals with it)
+    return std::nullopt;
 }
 
 

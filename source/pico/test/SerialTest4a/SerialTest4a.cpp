@@ -157,7 +157,7 @@ int main()
             auto gotCmd = rpi0.getMsgType();
             if ( gotCmd )
             {
-                cmd = *gotCmd;
+                cmd = std::to_underlying( *gotCmd );
             }
 
             switch( cmd )

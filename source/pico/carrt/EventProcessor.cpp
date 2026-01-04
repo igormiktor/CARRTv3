@@ -22,6 +22,7 @@
 #include "EventProcessor.h"
 
 #include "CarrtError.h"
+#include "Clock.h"
 #include "EventManager.h"
 #include "OutputUtils.hpp"
 #include "SerialMessages.h"

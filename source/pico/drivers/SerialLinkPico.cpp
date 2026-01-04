@@ -23,9 +23,29 @@
 
 #include "CarrtPicoDefines.h"
 
+#include "Clock.h"
+
 #include "pico/binary_info.h"
 #include "hardware/gpio.h"
 #include "hardware/uart.h"
+
+
+
+namespace
+{
+    constexpr int kMaxReadAttempts{ 8 };
+}
+
+
+
+/*************************************************************
+ * 
+ * Observation:
+ * 
+ * Pico SDK UART read/write functions don't have any error reporting mechanisms...
+ * 
+ ************************************************************/
+
 
 
 
@@ -75,13 +95,13 @@ bool SerialLinkPico::isReadable() noexcept
 
 
 
-std::optional<std::uint8_t> SerialLinkPico::SerialLinkPico::getByte()
+std::optional<MsgId> SerialLinkPico::SerialLinkPico::getMsgType()
 {
     // Always blocks, so make semantics the same by first checking if 
     // there is data to read
     if ( isReadable() )
     {
-        return static_cast<uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+        return static_cast<MsgId>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
     }
     else
     {
@@ -91,31 +111,80 @@ std::optional<std::uint8_t> SerialLinkPico::SerialLinkPico::getByte()
 
 
 
+std::optional<std::uint8_t> SerialLinkPico::SerialLinkPico::getByte()
+{
+    // Always blocks, so make semantics the same by first checking if 
+    // there is data to read and then making multiple attempts to read it 
+    // before giving up.
+
+    int attempts{ 0 };
+    while ( attempts++ < kMaxReadAttempts )
+    {
+        // Try reading again
+        if ( isReadable() )
+        {
+            return static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+        }
+
+        // If we get here, add a little delay and try again
+        Clock::sleep( 100us );
+    }
+
+    // Otherwise we seem to be waiting too long on data
+    // Return no success to caller (who deals with it)
+    return std::nullopt;
+}
+
+
+
 std::optional<std::uint32_t> SerialLinkPico::get4Bytes()
 {
     // This function is only called when we know/expect there are (or will be) 4 bytes to receive
-    // So intentionally write it to just go ahead and block on reading.
+    // So make multiple attempts to read 4 bytes...
     
-    RawData r;
-    uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, r.c(), 4 );
-    return r.u();
+    RawData r( 0 );
+    int numRead{ 0 };
+    int attempts{ 0 };
+    while ( numRead < 4 && attempts < ( 4 * kMaxReadAttempts ) )      // Generous attempts since reading 4 numbers
+    {
+        // Try reading again
+        if ( isReadable() )
+        {
+           r.c()[ numRead++ ] = static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+        }
+        else
+        {
+            Clock::sleep( 100us );
+            attempts++;
+        }
+    }
 
-    // This potentially could block forever, but Pico SDK doesn't have read() that 
-    // blocks up to a max of time 
+    if ( numRead == 4 )
+    {
+        // Success
+        return r.u();
+    }
+
+    // Otherwise we seem to be waiting too long on data
+    // Return no success to caller (who deals with it)
+    return std::nullopt;
 }
 
 
 
 bool SerialLinkPico::get4Bytes( std::uint8_t c[4] )
 {
-    // This function is only called when we know/expect there are (or will be) 4 bytes to receive
-    // So intentionally write it to just go ahead and block on reading.
-    
-    uart_read_blocking( CARRTPICO_SERIAL_LINK_UART, c, 4 );
-    return true;
-
-    // This potentially could block forever, but Pico SDK doesn't have read() that 
-    // blocks up to a max of time 
+    auto u = get4Bytes();
+    if ( u )
+    {
+        RawData t( *u );
+        memcpy( c, t.c(), 4 );
+        return true;
+    }
+    else
+    {
+        return false;
+    } 
 }
 
 
