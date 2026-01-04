@@ -144,14 +144,14 @@ public:
             []( SerialLink& lnk, auto& dataItem )
             {  
                 auto got = lnk.get( dataItem );
-
+#if 0
                 int n{ 8 };
                 while ( !got && n-- > 0 )
                 {
                     addSmallDelay();                // On Pico, allow time for sequential reads to be ready
                     got = lnk.get( dataItem );
                 }
-
+#endif // 0
                 if ( got )
                 {
                     dataItem = *got;
