@@ -47,6 +47,7 @@ public:
     SerialLink& operator=( SerialLink&& ) = delete;
 
     // Foundational functions, reading
+    virtual std::optional<std::uint8_t> getMsgType() = 0;
     virtual std::optional<std::uint8_t> getByte() = 0;
     virtual std::optional<std::uint32_t> get4Bytes() = 0;
     virtual bool get4Bytes( std::uint8_t c[4] ) = 0;
@@ -57,7 +58,6 @@ public:
 
 
     // Reading functions
-    std::optional<std::uint8_t> getMsgType()            { return getByte(); }
     std::optional<int> getInt();
     std::optional<std::uint32_t> getUInt32()            { return get4Bytes(); }
     std::optional<float> getFloat();

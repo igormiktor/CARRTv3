@@ -116,6 +116,35 @@ SerialLinkRPi::~SerialLinkRPi()
 
 
 
+std::optional<std::uint8_t> SerialLinkRPi::getMsgType()
+{
+    uint8_t c{};
+    auto numRead = read( mSerialPort, &c, 1 );
+    if ( numRead == 0 )
+    {
+        // EOF == read buffer empty
+        return std::nullopt;
+    }
+    if ( numRead == 1 )
+    {
+        return c;
+    }
+    else
+    {
+        // Throw error
+        debugM( "gettByte() failed reading" );
+        debugV( numRead, errno );
+
+        std::stringstream errMsgStrm{};
+        errMsgStrm <<  "getByte() failed reading with errno: " << errno
+            << " and numRead: " << numRead;
+        std::string errMsg{};
+        errMsgStrm >> errMsg;
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 666, errno ), errMsg );
+    }
+}
+
+
 std::optional<std::uint8_t> SerialLinkRPi::getByte()
 {
     uint8_t c{};
