@@ -179,7 +179,7 @@ int main()
         if ( rpi0.isReadable() )
         {
             auto msgType = rpi0.getMsgType();
-            if ( msgType && *msgType == std::to_underlying( MsgId::kResetPicoMsg ) )
+            if ( msgType && *msgType == MsgId::kResetPicoMsg )
             {
                 PicoReset::reset( rpi0 );
             }

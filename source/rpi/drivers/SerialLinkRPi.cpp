@@ -126,7 +126,7 @@ SerialLinkRPi::~SerialLinkRPi()
 
 
 
-std::optional<std::uint8_t> SerialLinkRPi::getMsgType()
+std::optional<MsgId> SerialLinkRPi::getMsgType()
 {
     // Function called when we have no idea if a message is in the queue
     // So assume most likely case is "no data"
@@ -142,7 +142,7 @@ std::optional<std::uint8_t> SerialLinkRPi::getMsgType()
 
     if ( numRead == 1 )
     {
-        return c;
+        return static_cast<MsgId>( c );
     }
 
     // Throw if we get down here we have an actual error (numRead chas to be one of 1, 0 or -1)

@@ -48,7 +48,7 @@ public:
 
 
     // Fundamental read functions
-    std::optional<std::uint8_t> getMsgType() override;
+    std::optional<MsgId> getMsgType() override;
     std::optional<std::uint8_t> getByte() override;
     bool get4Bytes( std::uint8_t c[4] ) override;
     std::optional<std::uint32_t> get4Bytes() override;

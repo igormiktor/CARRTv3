@@ -32,6 +32,10 @@
 #include <optional>
 
 
+
+enum class MsgId : std::uint8_t;
+
+
 class SerialLink
 {
 
@@ -47,7 +51,7 @@ public:
     SerialLink& operator=( SerialLink&& ) = delete;
 
     // Foundational functions, reading
-    virtual std::optional<std::uint8_t> getMsgType() = 0;
+    virtual std::optional<MsgId> getMsgType() = 0;
     virtual std::optional<std::uint8_t> getByte() = 0;
     virtual std::optional<std::uint32_t> get4Bytes() = 0;
     virtual bool get4Bytes( std::uint8_t c[4] ) = 0;

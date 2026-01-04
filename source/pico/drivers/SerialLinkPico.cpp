@@ -99,13 +99,13 @@ bool SerialLinkPico::isReadable() noexcept
 
 
 
-std::optional<std::uint8_t> SerialLinkPico::getMsgType()
+std::optional<MsgId> SerialLinkPico::getMsgType()
 {
     // Reading always blocks, so make semantics the same by first checking if 
     // there is data to read
     if ( isReadable() )
     {
-        return static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+        return static_cast<MsgId>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
     }
     else
     {

@@ -66,7 +66,7 @@ std::optional<SerialMessageProcessor::MsgPtr> SerialMessageProcessor::receiveMes
     auto msgId = mLink.getMsgType();
     if ( msgId )
     {
-        return createMessageFromSerialLink( static_cast<MsgId> ( *msgId ) );
+        return createMessageFromSerialLink( *msgId );
     }
     else
     {
