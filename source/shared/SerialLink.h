@@ -63,7 +63,7 @@ public:
     std::optional<float> getFloat();
 
     // Reading overloaded functions
-    std::optional<std::uint8_t> get( uint8_t )          { return getByte(); }
+    std::optional<std::uint8_t> get( std::uint8_t )     { return getByte(); }
     std::optional<int> get( int )                       { return getInt(); }
     std::optional<std::uint32_t> get( std::uint32_t )   { return getUInt32(); }
     std::optional<float> get( float )                   { return getFloat(); }
@@ -76,7 +76,7 @@ public:
 
     // Writing functions
     inline void putMsgType( char msg )
-        { putByte( static_cast<uint8_t>( msg ) );}
+        { putByte( static_cast<std::uint8_t>( msg ) );}
     inline void putMsgType( std::uint8_t msg )  
         { putByte( msg ); }
     inline void put( char c )                   
@@ -109,14 +109,14 @@ protected:
     class RawData
     {
     public:
-        using RawDataT = std::array<uint8_t, 4>;
+        using RawDataT = std::array<std::uint8_t, 4>;
 
         RawData() = default;
         RawData( std::uint8_t* cc )
             { c( cc ); }
         RawData( int ii )
             { i( ii ); }
-        RawData( uint32_t uu )
+        RawData( std::uint32_t uu )
             { u( uu ); }
         RawData( float ff )
             { f( ff ); }
@@ -133,7 +133,7 @@ protected:
             { mRaw = std::bit_cast<RawDataT>( ii ); }
 
         std::uint32_t u()
-            { return std::bit_cast<uint32_t>( mRaw ); }
+            { return std::bit_cast<std::uint32_t>( mRaw ); }
         void u( std::uint32_t uu )
             { mRaw = std::bit_cast<RawDataT>( uu ); }
 

@@ -81,7 +81,7 @@ std::optional<std::uint8_t> SerialLinkPico::getMsgType()
     // there is data to read
     if ( isReadable() )
     {
-        return static_cast<uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+        return static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
     }
     else
     {
@@ -97,7 +97,7 @@ std::optional<std::uint8_t> SerialLinkPico::getByte()
     // there is data to read
     if ( isReadable() )
     {
-        return static_cast<uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+        return static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
     }
     else
     {
