@@ -51,7 +51,7 @@ int main()
         {
             got = pico.getMsgType();
         }
-        if ( *got == 'I' )      // Pico always responds uppercase
+        if ( std::to_underlying( *got ) == 'I' )      // Pico always responds uppercase
             std::cout << "Success";
         else
             std::cout << "Failure";
@@ -78,7 +78,7 @@ int main()
         {
             got = pico.getMsgType();
         }
-        if ( *got == 'J' )      // Pico always responds uppercase
+        if ( std::to_underlying( *got ) == 'J' )      // Pico always responds uppercase
             std::cout << "Success";
         else
             std::cout << "Failure";
@@ -105,7 +105,7 @@ int main()
         {
             got = pico.getMsgType();
         }
-        if ( *got == 'K' )      // Pico always responds uppercase
+        if ( std::to_underlying( *got ) == 'K' )      // Pico always responds uppercase
             std::cout << "Success";
         else
             std::cout << "Failure";
@@ -133,7 +133,7 @@ int main()
         {
             got = pico.getMsgType();
         }
-        if ( *got == 'F' )      // Pico always responds uppercase
+        if ( std::to_underlying( *got ) == 'F' )      // Pico always responds uppercase
             std::cout << "Success";
         else
             std::cout << "Failure";
