@@ -42,7 +42,7 @@ namespace
 {
     constexpr int kMaxReadAttempts{ 6 };
 
-    constexpr auto kSmallPause{ 100us };
+    constexpr auto kSmallPause{ 20us };
 }
 
 
