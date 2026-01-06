@@ -53,7 +53,7 @@ struct bno055_t
     BNO055_RD_FUNC_PTR; /**<bus read function pointer */
     void (*delay_msec)(BNO055_MDELAY_DATA_TYPE); /**< delay function pointer */
 };
-#endif
+#endif // #if 0 (struct bno055_t for reference)
 
 
 
