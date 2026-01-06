@@ -155,15 +155,6 @@ protected:
     // Only derived classes can create a SerialLink
     SerialLink() = default;     
 
-#if 0  // Turn off, remove soonish
-    union Transfer
-    {
-        std::uint8_t    c[4];
-        int             i;
-        std::uint32_t   u;
-        float           f;
-    };
-#endif
 
     class RawData
     {

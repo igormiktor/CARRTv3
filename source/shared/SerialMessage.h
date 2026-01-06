@@ -29,15 +29,6 @@
 #include <functional> 
 #include <type_traits>
 
-#if BUILDING_FOR_PICO
-    // Pico needs a small delay between sequential reads of UART for the UART to be ready
-    #include "Clock.h"
-    inline void addSmallDelay() { Clock::sleep( 100us ); }
-#elif BUILDING_FOR_RPI0
-    inline void addSmallDelay() { /* do nothing */ }
-#else
-    #error "Neither Pico nor RPi0"
-#endif
 #include "SerialLink.h"
 #include "CarrtError.h"
 
@@ -144,14 +135,6 @@ public:
             []( SerialLink& lnk, auto& dataItem )
             {  
                 auto got = lnk.get( dataItem );
-#if 0
-                int n{ 8 };
-                while ( !got && n-- > 0 )
-                {
-                    addSmallDelay();                // On Pico, allow time for sequential reads to be ready
-                    got = lnk.get( dataItem );
-                }
-#endif // 0
                 if ( got )
                 {
                     dataItem = *got;

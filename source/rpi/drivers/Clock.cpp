@@ -95,48 +95,7 @@ void Clock::sleep( const std::chrono::nanoseconds& howLong )
 }
 
 
-#if 0  // These are deprecated functions
 
-void Clock::delayMicroseconds( long us )
-{
-    struct timespec req;
-    struct timespec rem;
-
-    if ( us >= kMicroSecsPerSec )
-    {
-        req.tv_sec = static_cast<int>( us / kMicroSecsPerSec );
-        req.tv_nsec = (us - (req.tv_sec * kMicroSecsPerSec)) * kNanoSecsPerMicroSec;
-    }
-    else
-    {
-        req.tv_sec = 0;
-        req.tv_nsec = us * kNanoSecsPerMicroSec;
-    }
-
-    nanosleep( &req, &rem );
-}
-
-
-
-void Clock::delayMilliseconds( long ms )
-{
-    struct timespec req, rem;
-
-    if ( ms >= kMilliSecsPerSec )
-    {
-        req.tv_sec = static_cast<int>( ms / kMilliSecsPerSec );
-        req.tv_nsec = (ms - (req.tv_sec * kMilliSecsPerSec)) * kNanoSecsPerMilliSec;
-    }
-    else
-    {
-        req.tv_sec = 0;
-        req.tv_nsec = ms * kNanoSecsPerMilliSec;
-    }
-
-    nanosleep( &req, &rem );
-}
-
-#endif  // Deprecated code
 
 
 long Clock::micros()

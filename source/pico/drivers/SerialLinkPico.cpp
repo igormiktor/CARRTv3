@@ -43,16 +43,6 @@ namespace
 
 
 
-#if 0
-SerialLinkPico& serialLink()
-{
-    // Not constructed until first time this function is called
-    static SerialLinkPico  sTheSerialLink;
-
-    return sTheSerialLink;
-}
-#endif
-
 
 
 /*****************************************************************
@@ -159,37 +149,6 @@ std::optional<std::uint32_t> SerialLinkPico::get4Bytes()
     {
         return std::nullopt;
     }
-
-#if 0
-    RawData r;
-    int numRead{ 0 };
-    int attempts{ 0 };
-    while ( numRead < 4 && attempts < kMaxReadAttempts )    
-    {
-        // Try reading a byte
-        if ( isReadable() )
-        {
-            r.c()[ numRead++ ] = static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
-
-            // Intentionally do NOT increment attempts when we have a successful read
-        }
-        else
-        {
-            Clock::sleep( kSmallPause );
-            ++attempts;
-        }
-    }
-
-    if ( numRead == 4 )
-    {
-        // Success, return
-        return r.u();
-    }
-
-    // Otherwise we seem to be waiting too long on data
-    // Return no success to caller (who deals with it)
-    return std::nullopt;
-#endif // 0
 }
 
 

@@ -77,9 +77,5 @@ private:
 
 
 
-// SerialLinkPico& serialLink();
-
-
-
 
 #endif // SerialLink_h
