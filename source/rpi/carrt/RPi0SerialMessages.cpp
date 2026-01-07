@@ -29,7 +29,7 @@
 
 
 
-#ifdef DEBUG_RPI0_SERIAL_MSG_HANDLING
+#if DEBUG_RPI0_SERIAL_MSG_HANDLING 
     constexpr bool kDebugSerialMsgs{ static_cast<bool>( DEBUG_RPI0_SERIAL_MSG_HANDLING ) };
 #else
     constexpr bool kDebugSerialMsgs{ false };
