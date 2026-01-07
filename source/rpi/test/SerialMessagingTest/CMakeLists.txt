@@ -9,7 +9,7 @@ target_compile_options( SerialMessagingTest PRIVATE -Wall -pthread )
 target_compile_definitions( SerialMessagingTest PRIVATE 
     -DUSE_PIGPIOD=${PIGPIOD_VAL} 
     -DDEBUGUTILS_ON=${DEBUGUTILS_VAL}
-    "$<$<CONFIG:DEBUG>:-DDEBUGRPI0=1>" 
+    "$<$<CONFIG:DEBUG>:DEBUGRPI0=1>" 
     -DBUILDING_FOR_RPI0=1
 )
 

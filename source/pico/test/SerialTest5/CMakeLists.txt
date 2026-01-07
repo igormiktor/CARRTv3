@@ -27,7 +27,7 @@ target_compile_options( CarrtPico PRIVATE -Wall )
 target_compile_definitions( SerialTest5 PRIVATE
         -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
         -DUSE_CARRTPICO_STDIO=${USE_CARRTPICO_STDIO_VAL}
-        "$<$<CONFIG:DEBUG>:-DDEBUGPICO=1>" 
+        "$<$<CONFIG:DEBUG>:DEBUGPICO=1>" 
 )
 
 # Add any user requested libraries
