@@ -23,11 +23,11 @@
 
 
 #include <map>
-#include <string>
 #include <memory>
+#include <string>
 
-#include "SerialMessage.h"
 #include "SerialLink.h"
+#include "SerialMessage.h"
 
 
 

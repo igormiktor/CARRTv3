@@ -24,13 +24,13 @@
 #define SerialMessage_h
 
 #include <cstdint>
-#include <tuple>
-#include <utility>
 #include <functional> 
+#include <tuple>
 #include <type_traits>
+#include <utility>
 
-#include "SerialLink.h"
 #include "CarrtError.h"
+#include "SerialLink.h"
 
 
 

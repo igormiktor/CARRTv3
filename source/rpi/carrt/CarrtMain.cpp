@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "CarrtPigpio.h"
-
 #include "DebugUtils.hpp"
 #include "OutputUtils.hpp"
 

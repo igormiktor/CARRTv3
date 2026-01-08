@@ -60,15 +60,16 @@
 #ifndef DebugUtils_hpp
 #define DebugUtils_hpp
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <filesystem>
-#include <type_traits>
-#include <string>
-#include <iomanip>
-#include <ctime>
 #include <bits/stdc++.h>
+#include <ctime>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <type_traits>
+
 
 
 

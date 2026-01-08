@@ -22,18 +22,19 @@
 
 #include "Lcd.h"
 
-#include <iostream>
-#include <cstring>
-#include <string>
-#include <cinttypes>
-
-#include <unistd.h>			//Needed for I2C port
-#include <fcntl.h>			//Needed for I2C port
-#include <sys/ioctl.h>			//Needed for I2C port
+#include <fcntl.h>			    //Needed for I2C port
 #include <linux/i2c-dev.h>		//Needed for I2C port
+#include <sys/ioctl.h>			//Needed for I2C port
+#include <unistd.h>			    //Needed for I2C port
+
+#include <cinttypes>
+#include <cstring>
+#include <iostream>
+#include <string>
 
 #include "Clock.h"
 #include "I2c.h"
+
 
 using namespace Clock;
 

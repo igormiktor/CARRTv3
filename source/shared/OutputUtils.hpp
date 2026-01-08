@@ -45,10 +45,10 @@
 #ifndef OutputUtils_hpp
 #define OutputUtils_hpp
 
-#include <iostream>
-#include <type_traits>
-#include <string>
 #include <iomanip>
+#include <iostream>
+#include <string>
+#include <type_traits>
 
 
 

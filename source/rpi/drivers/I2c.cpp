@@ -20,16 +20,19 @@
 
 #include "I2c.h"
 
-#include "CarrtPigpio.h"
+
+#include <fcntl.h>                      //Needed for I2C port
+#include <linux/i2c-dev.h>              //Needed for I2C port
+#include <sys/ioctl.h>                  //Needed for I2C port
+#include <unistd.h>                     //Needed for I2C port
 
 #include <cstdint>
 #include <cstring>
 #include <iostream>
 
-#include <unistd.h>                     //Needed for I2C port
-#include <fcntl.h>                      //Needed for I2C port
-#include <sys/ioctl.h>                  //Needed for I2C port
-#include <linux/i2c-dev.h>              //Needed for I2C port
+#include "CarrtPigpio.h"
+
+
 
 using namespace std;
 
@@ -236,7 +239,7 @@ int I2c::read( uint8_t address, uint8_t registerAddress, uint8_t numberBytes, ui
 
 
 
-int I2c::readWithOutRestart( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, uint8_t* destination )
+int I2c::readWithOutRestart( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, std::uint8_t* destination )
 {
     // Needed for devices that don't implement I2C "restart" properly
 

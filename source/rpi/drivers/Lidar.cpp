@@ -23,13 +23,13 @@
 
 #include "Lidar.h"
 
-#include "Clock.h"
-#include "I2c.h"
+#include <chrono>
 
 #include "CarrtError.h"
+#include "Clock.h"
 #include "DebugUtils.hpp"
+#include "I2c.h"
 
-#include <chrono>
 
 // Useful for early testing and calibration
 // #define CARRT_DISABLE_LIDAR_SERVO   1
