@@ -23,12 +23,14 @@
 
 #include "pico/stdlib.h"
 
+#include <cstdint>
+
 #include "CarrtPicoDefines.h"
 
 
 namespace HeartBeatLed
 {
-    uint8_t ledState = 0;
+    std::uint8_t ledState = 0;
 }
 
 

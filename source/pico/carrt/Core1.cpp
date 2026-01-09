@@ -76,7 +76,7 @@ void Core1::launchCore1()
     multicore_launch_core1( core1Main );
 
     // Wait for it to start up
-    uint32_t flag{ multicore_fifo_pop_blocking() };
+    std::uint32_t flag{ multicore_fifo_pop_blocking() };
 
     if ( flag != CORE1_SUCCESS )
     {
@@ -190,7 +190,7 @@ namespace
     {
         static int eighthSecCount{ 0 };
 
-        uint32_t timeTick{ Clock::millis() };
+        std::uint32_t timeTick{ Clock::millis() };
 
         ++eighthSecCount;
         eighthSecCount %= 64;

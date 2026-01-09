@@ -500,7 +500,7 @@ TimerEventMsg::TimerEventMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kTimerEventMsg ), mContent( MsgId::kTimerEventMsg, t ), mNeedsAction{ true }
 {} 
 
-TimerEventMsg::TimerEventMsg( std::uint8_t which, int count, uint32_t time ) noexcept 
+TimerEventMsg::TimerEventMsg( std::uint8_t which, int count, std::uint32_t time ) noexcept 
 : SerialMessage( MsgId::kTimerEventMsg ), mContent( MsgId::kTimerEventMsg, std::make_tuple( which, count, time ) ), mNeedsAction{ true } 
 {}
 
@@ -1025,7 +1025,7 @@ EncoderUpdateMsg::EncoderUpdateMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kEncoderUpdate ), mContent( MsgId::kEncoderUpdate, t ), mNeedsAction{ true }
 {} 
 
-EncoderUpdateMsg::EncoderUpdateMsg( int left, int right, uint32_t time ) noexcept 
+EncoderUpdateMsg::EncoderUpdateMsg( int left, int right, std::uint32_t time ) noexcept 
 : SerialMessage( MsgId::kEncoderUpdate ), mContent( MsgId::kEncoderUpdate, std::make_tuple( left, right, time ) ), mNeedsAction{ true } 
 {}
 

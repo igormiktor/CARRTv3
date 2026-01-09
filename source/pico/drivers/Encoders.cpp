@@ -22,6 +22,8 @@
 
 #include "hardware/gpio.h"
 
+#include <cstdint>
+
 #include "CarrtPicoDefines.h"
 #include "Clock.h"
 #include "EventManager.h"
@@ -47,12 +49,12 @@ namespace Encoders
 
 
 
-void callbackLeftEncoder( uint, uint32_t events )
+void callbackLeftEncoder( uint, std::uint32_t events )
 {
     // This function designed/configured to be called and run on Core1
-    static uint32_t lastInterrupt = 0;
+    static std::uint32_t lastInterrupt = 0;
 
-    uint32_t tick = Clock::millis();
+    std::uint32_t tick = Clock::millis();
     if ( tick - lastInterrupt < PICO_GPIO_DEBOUNCE_TIME )
     {
         // Debounce
@@ -78,12 +80,12 @@ void callbackLeftEncoder( uint, uint32_t events )
 
 
 
-void callbackRightEncoder( uint, uint32_t events )
+void callbackRightEncoder( uint, std::uint32_t events )
 {
     // This function designed/configured to be called and run on Core1
-    static uint32_t lastInterrupt = 0;
+    static std::uint32_t lastInterrupt = 0;
 
-    uint32_t tick = Clock::millis();
+    std::uint32_t tick = Clock::millis();
     if ( tick - lastInterrupt < PICO_GPIO_DEBOUNCE_TIME )
     {
         // Debounce

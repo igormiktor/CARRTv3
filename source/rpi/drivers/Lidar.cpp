@@ -82,7 +82,7 @@ namespace Lidar
 {
     constexpr int                           kLidarDoesntKnowDistance{ 1 };
 
-    constexpr uint8_t                       kLidarI2cAddress{ 0x62 };
+    constexpr std::uint8_t                  kLidarI2cAddress{ 0x62 };
 
     constexpr int                           kLidarWaitTimedOutErr{ 666 };
 
@@ -137,7 +137,7 @@ namespace Lidar
 
 
 
-    void passConfigurationParameters( uint8_t maxAcqCnt, uint8_t acqMode, uint8_t detectThresholdBypass, uint8_t refAcqCnt );
+    void passConfigurationParameters( std::uint8_t maxAcqCnt, std::uint8_t acqMode, std::uint8_t detectThresholdBypass, std::uint8_t refAcqCnt );
 
     int waitUntilLidarReadyToRead();
 
@@ -190,14 +190,14 @@ int Lidar::slew( int angleDegrees )
 
 int Lidar::waitUntilLidarReadyToRead()
 {
-    const uint8_t kMaxWaitLoopCount = 100;
+    const std::uint8_t kMaxWaitLoopCount = 100;
 
     bool lidarBusy = true;
 
     I2c::write( kLidarI2cAddress, static_cast<std::uint8_t>(kStatus ) );
-    for ( uint8_t i = 0; lidarBusy && i < kMaxWaitLoopCount; ++i )
+    for ( std::uint8_t i = 0; lidarBusy && i < kMaxWaitLoopCount; ++i )
     {
-        uint8_t lidarStatus;
+        std::uint8_t lidarStatus;
         int numRead = I2c::readWithOutRestart( kLidarI2cAddress, kStatus, 1, &lidarStatus );
         if ( numRead == 1 )
         {
@@ -218,7 +218,7 @@ int Lidar::waitUntilLidarReadyToRead()
 
 int Lidar::readDistanceData()
 {
-    uint8_t rawDistance[2];
+    std::uint8_t rawDistance[2];
     int numRead = I2c::readWithOutRestart( kLidarI2cAddress, kDistanceMeasuredWord, 2, rawDistance );
 
     if ( numRead != 2 )
@@ -227,7 +227,7 @@ int Lidar::readDistanceData()
         throw CarrtError( makeRpi0ErrorId( kLidarError, 2, numRead ), "No I2C error, but Lidar numRead != 2 (expected)" );
     }
    
-    return static_cast<int>( ( static_cast<uint16_t>(rawDistance[0]) << 8 ) | rawDistance[1] );
+    return static_cast<int>( ( static_cast<std::uint16_t>(rawDistance[0]) << 8 ) | rawDistance[1] );
 }
 
 
@@ -235,7 +235,7 @@ int Lidar::readDistanceData()
 
 int Lidar::getUncorrectedDistanceInCm( int* uncorrectedDistInCm, bool useBiasCorrection )
 {
-    uint8_t biasChoice{ useBiasCorrection ? kMeasureWithBiasCorrectionCmd : kMeasureWithoutBiasCorrectionCmd }; 
+    std::uint8_t biasChoice{ useBiasCorrection ? kMeasureWithBiasCorrectionCmd : kMeasureWithoutBiasCorrectionCmd }; 
     I2c::write( kLidarI2cAddress, kDeviceCommand, biasChoice );
 
     int err = waitUntilLidarReadyToRead();
@@ -276,7 +276,7 @@ int Lidar::getDistanceInCm( int* distInCm, bool useBiasCorrection )
 
 
 
-int Lidar::getMedianDistanceInCm( int* distInCm, uint8_t nbrMedianSamples, bool useBiasCorrection )
+int Lidar::getMedianDistanceInCm( int* distInCm, std::uint8_t nbrMedianSamples, bool useBiasCorrection )
 {
     int samples[ nbrMedianSamples ];
     samples[ 0 ] = kNoValidDistance;
@@ -284,8 +284,8 @@ int Lidar::getMedianDistanceInCm( int* distInCm, uint8_t nbrMedianSamples, bool 
     bool gotValidRange = false;
     int err = 0;
 
-    uint8_t  iMax = nbrMedianSamples;
-    uint8_t i = 0;
+    std::uint8_t  iMax = nbrMedianSamples;
+    std::uint8_t i = 0;
     while ( i < iMax )
     {
         int last;
@@ -298,7 +298,7 @@ int Lidar::getMedianDistanceInCm( int* distInCm, uint8_t nbrMedianSamples, bool 
         }
         else
         {
-            uint8_t j;
+            std::uint8_t j;
 
             // Distance valid, include as part of median.
 
@@ -382,14 +382,14 @@ int Lidar::rangeCalibrationCorrection( int unCorrectedDistInCm )
 void Lidar::reset()
 {
     // Lidar takes approximately 22ms to reset
-    I2c::write( kLidarI2cAddress, kDeviceCommand, static_cast<uint8_t>( kResetCmd ) );
+    I2c::write( kLidarI2cAddress, kDeviceCommand, static_cast<std::uint8_t>( kResetCmd ) );
 
     Clock::sleep( 25ms );
 
     setConfiguration( Lidar::kDefault );
 
     // Experience has shown Lidar needs a "warm up"
-    for ( uint8_t i = 0; i < 10; ++i )
+    for ( std::uint8_t i = 0; i < 10; ++i )
     {
         int rng;
         Clock::sleep( kLidarWaitBetweenPings );
@@ -440,7 +440,7 @@ void Lidar::setConfiguration( Configuration config )
 
 
 
-void Lidar::passConfigurationParameters( uint8_t maxAcqCnt, uint8_t acqMode, uint8_t detectThresholdBypass, uint8_t refAcqCnt )
+void Lidar::passConfigurationParameters( std::uint8_t maxAcqCnt, std::uint8_t acqMode, std::uint8_t detectThresholdBypass, std::uint8_t refAcqCnt )
 {
     I2c::write( kLidarI2cAddress, kMaxAcquisitionCount, maxAcqCnt );
     I2c::write( kLidarI2cAddress, kAcquisitionMode, acqMode );

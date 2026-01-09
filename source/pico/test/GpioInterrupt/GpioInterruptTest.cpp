@@ -6,6 +6,8 @@
 #include "shared/SerialMessage.h"
 
 #include <iostream>
+#include <cstdint>
+
 #include "pico/binary_info.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -87,15 +89,15 @@ void startCore1()
 }
 
 
-void gpioInterruptCallback( uint gpio, uint32_t events )
+void gpioInterruptCallback( uint gpio, std::uint32_t events )
 {
-    static uint32_t lastInterrupt = 0;
+    static std::uint32_t lastInterrupt = 0;
 
-    uint64_t startTime = to_us_since_boot( get_absolute_time() );
+    std::uint64_t startTime = to_us_since_boot( get_absolute_time() );
 
     if ( gpio == GPIO_TEST_PIN )
     {
-        uint32_t tick = Clock::millis();
+        std::uint32_t tick = Clock::millis();
         if ( tick - lastInterrupt < GPIO_DEBOUNCE_TIME )
         {
             // Debounce
@@ -157,7 +159,7 @@ int main()
     {
         EvtId eventCode;
         int eventParam;
-        uint32_t eventTime;
+        std::uint32_t eventTime;
 
         if ( Events().getNextEvent( &eventCode, &eventParam, &eventTime ) )
         {

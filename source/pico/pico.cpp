@@ -59,7 +59,7 @@ int main()
 
     puts("Hello, world!");
 
-    const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+    const std::uint LED_PIN = PICO_DEFAULT_LED_PIN;
     gpio_init( LED_PIN );
     gpio_set_dir( LED_PIN, GPIO_OUT );
 

@@ -138,8 +138,8 @@ namespace PCA9685
 
     // Other
 
-    const uint16_t kFullOn          = 0x1000;
-    const uint16_t kFullOff         = 0x1000;
+    const std::uint16_t kFullOn             = 0x1000;
+    const std::uint16_t kFullOff            = 0x1000;
 
 };
 
@@ -230,8 +230,8 @@ void PCA9685::setPin( std::uint8_t address, std::uint8_t pinNbr, bool value )
 
 void PCA9685::setPwmDutyOnCycle( std::uint8_t address, std::uint8_t pinNbr, float onRatio )
 {
-    uint16_t on = 0;
-    uint16_t off = 0;
+    std::uint16_t on = 0;
+    std::uint16_t off = 0;
 
     if ( onRatio >= 100 )
     {
@@ -243,7 +243,7 @@ void PCA9685::setPwmDutyOnCycle( std::uint8_t address, std::uint8_t pinNbr, floa
     }
     else
     {
-        off = static_cast<uint16_t>( 4095 * onRatio + 0.5 );
+        off = static_cast<std::uint16_t>( 4095 * onRatio + 0.5 );
     }
 
     setPwm( address, pinNbr, on, off );

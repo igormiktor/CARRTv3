@@ -58,7 +58,7 @@ int main()
         {
             try
             {
-                uint8_t buttonHit = Keypad::readButtons();
+                std::uint8_t buttonHit = Keypad::readButtons();
 
                 if ( buttonHit && Clock::millis() > sNextTimeButtonClickAccepted )
                 {

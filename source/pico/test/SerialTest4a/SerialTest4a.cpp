@@ -153,7 +153,7 @@ int main()
 
         if ( uart_is_readable( CARRTPICO_SERIAL_LINK_UART ) )
         {
-            uint32_t cmd{ 0 };
+            std::uint32_t cmd{ 0 };
             auto gotCmd = rpi0.getMsgType();
             if ( gotCmd )
             {

@@ -130,7 +130,7 @@ std::optional<MsgId> SerialLinkRPi::getMsgType()
     // Function called when we have no idea if a message is in the queue
     // So assume most likely case is "no data"
 
-    uint8_t c{};
+    std::uint8_t c{};
     auto numRead = read( mSerialPort, &c, 1 );
 
     if ( numRead == 0 )
@@ -163,7 +163,7 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
     // So data is there or will soon be there
 
     // Just try it -- usually works and we return right away
-    uint8_t c{};
+    std::uint8_t c{};
     auto numRead = read( mSerialPort, &c, 1 );
     if ( numRead == 1 )
     {
@@ -204,7 +204,7 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
 }
 
 
-std::optional<uint32_t> SerialLinkRPi::get4Bytes()
+std::optional<std::uint32_t> SerialLinkRPi::get4Bytes()
 {
     // Function called when reading parts of a message, so we expect a 4-byte value is in the queue
     // So data is there or will soon be there

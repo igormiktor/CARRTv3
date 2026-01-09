@@ -252,7 +252,7 @@ namespace Lcd
 
     /*!
      * \brief Write a given number of bytes from a buffer to the LCD at the current cursor location.
-     * This implements the pure virtual function Writer::write( const uint8_t* buffer, size_t size ).
+     * This implements the pure virtual function Writer::write( const std::uint8_t* buffer, size_t size ).
      *
      * \arg \c buffer the buffer of bytes to write.
      * \arg \c size the number of bytes to write

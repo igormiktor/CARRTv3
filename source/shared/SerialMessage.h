@@ -76,7 +76,7 @@ enum class MsgId : std::uint8_t
     kBatteryLowAlert,           // Pico to RPi0 alert that battery is low; 2nd byte = which battery; following 4 bytes V (float)
 
     // Error reports
-    kErrorReportFromPico,       // Pico sends a bool fatal flag (bool in a uint8_t) and error code (int) in following bytes (3-6)
+    kErrorReportFromPico,       // Pico sends a bool fatal flag (bool in a std::uint8_t) and error code (int) in following bytes (3-6)
 
     // Unknown message
     kUnknownMessage,            // Never transmitted; used to designate an unknown message received; contains error code (int)

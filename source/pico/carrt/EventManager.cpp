@@ -85,7 +85,7 @@ EventManager::EventManager()
 
 
 
-bool EventManager::getNextEvent( EvtId* eventCode, int* param, uint32_t* time )
+bool EventManager::getNextEvent( EvtId* eventCode, int* param, std::uint32_t* time )
 {
     Event e;
 
@@ -141,7 +141,7 @@ int EventManager::getNumEventsInQueue( EventPriority pri )
 
 
 
-bool EventManager::queueEvent( EvtId eventCode, int eventParam, uint32_t eventTime, EventPriority pri )
+bool EventManager::queueEvent( EvtId eventCode, int eventParam, std::uint32_t eventTime, EventPriority pri )
 {
     Event e{ std::to_underlying( eventCode ), eventParam, eventTime };
 

@@ -66,13 +66,13 @@ namespace Motors
 
     private:
 
-        uint8_t mPwmPin;
-        uint8_t mPinA;
-        uint8_t mPinB;
+        std::uint8_t mPwmPin;
+        std::uint8_t mPinA;
+        std::uint8_t mPinB;
     };
 
 
-    void motorCommand( uint8_t motorA, uint8_t motorB, uint8_t cmd );
+    void motorCommand( std::uint8_t motorA, std::uint8_t motorB, std::uint8_t cmd );
 
     Motor*  mMotors[ kNbrMotors ];
 
@@ -86,7 +86,7 @@ namespace Motors
 
 
 Motors::Motor::Motor( int pwmPin, int pinA, int pinB )
-: mPwmPin( static_cast<uint8_t>( pwmPin ) ), mPinA( static_cast<uint8_t>( pinA ) ), mPinB( static_cast<uint8_t>( pinB ) )
+: mPwmPin( static_cast<std::uint8_t>( pwmPin ) ), mPinA( static_cast<std::uint8_t>( pinA ) ), mPinB( static_cast<std::uint8_t>( pinB ) )
 {
     // Nothing else to do
 }
@@ -130,7 +130,7 @@ void Motors::Motor::motorCommand( Motors::MotorCmd cmd )
 
 void Motors::Motor::setSpeed( int speed )
 {
-    PCA9685::setPwm( kMotorHatAddress, mPwmPin, 0, static_cast<uint16_t>( speed * 16 ) );
+    PCA9685::setPwm( kMotorHatAddress, mPwmPin, 0, static_cast<std::uint16_t>( speed * 16 ) );
 }
 
 

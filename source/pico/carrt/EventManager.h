@@ -28,7 +28,7 @@
 #include "pico/stdlib.h"
 #include "pico/util/queue.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "Event.h"      // This is where events themselves are defined
 
@@ -68,10 +68,10 @@ public:
     // Tries to insert an event into the queue;
     // returns true if successful, false if the
     // queue if full and the event cannot be inserted
-    bool queueEvent( EvtId eventCode, int eventParam = 0, uint32_t eventTime = 0, EventPriority pri = kLowPriority );
+    bool queueEvent( EvtId eventCode, int eventParam = 0, std::uint32_t eventTime = 0, EventPriority pri = kLowPriority );
 
     // This function returns the next event
-    bool getNextEvent( EvtId* eventCode, int* eventParam, uint32_t* eventTime = NULL );
+    bool getNextEvent( EvtId* eventCode, int* eventParam, std::uint32_t* eventTime = NULL );
 
     // Has the event queue overflowed?
     bool hasEventQueueOverflowed();
@@ -85,9 +85,9 @@ private:
     // What events look like
     struct Event
     {
-        int         mCode;
-        int         mParam;
-        uint32_t    mTime;
+        int             mCode;
+        int             mParam;
+        std::uint32_t   mTime;
     };
 
     queue_t  mHighPriorityQueue;

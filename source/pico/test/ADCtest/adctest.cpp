@@ -58,7 +58,7 @@ int main()
                     gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     sleep_ms( 500 );
                     const float conversionFactor = 3.3f / (1 << 12);
-                    uint16_t result = adc_read();
+                    std::uint16_t result = adc_read();
                     float vout = result * conversionFactor;
                     const float voltDividerFactor = (38.64 + 67.4) / 67.4;
                     float vin = vout * voltDividerFactor;

@@ -94,8 +94,8 @@ enum PicoError : int
     kPicoLastError              = 99
 };
 
-constexpr uint32_t kPicoFatalError              = 1;
-constexpr uint32_t kPicoNonFatalError           = 0;
+constexpr std::uint32_t kPicoFatalError              = 1;
+constexpr std::uint32_t kPicoNonFatalError           = 0;
 
 
 

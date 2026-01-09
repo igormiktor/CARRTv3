@@ -40,15 +40,15 @@ namespace PCA9685
 
     void setAllPwm( std::uint8_t address, std::uint16_t on, std::uint16_t off );
 
-    void setPwm( std::uint8_t address, uint8_t pinNbr, std::uint16_t on, std::uint16_t off );
+    void setPwm( std::uint8_t address, std::uint8_t pinNbr, std::uint16_t on, std::uint16_t off );
 
-    void setPwmDutyOnCycle( std::uint8_t address, uint8_t pinNbr, float onRatio );
+    void setPwmDutyOnCycle( std::uint8_t address, std::uint8_t pinNbr, float onRatio );
 
-    void setOff( std::uint8_t address, uint8_t pinNbr );
+    void setOff( std::uint8_t address, std::uint8_t pinNbr );
 
-    void setOn( std::uint8_t address, uint8_t pinNbr );
+    void setOn( std::uint8_t address, std::uint8_t pinNbr );
 
-    void setPin( std::uint8_t address, uint8_t pinNbr, bool val );
+    void setPin( std::uint8_t address, std::uint8_t pinNbr, bool val );
 
 };
 

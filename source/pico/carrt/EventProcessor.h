@@ -79,7 +79,7 @@ public:
 
 private:
 
-    void handleUnknownEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, uint32_t eventTime ) const;
+    void handleUnknownEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const;
 
     std::unordered_map<int, EventHandlerPtr> mHandlers;
 };

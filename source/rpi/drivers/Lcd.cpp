@@ -203,7 +203,7 @@ namespace Lcd
         kWordButtonSelect   = 8
     };
 
-    const uint8_t kNumLines     = 2;
+    const std::uint8_t kNumLines     = 2;
 
     const char* kBlankLine      = "                ";
 
@@ -216,23 +216,23 @@ namespace Lcd
 
     void initMCP23017();
     void initHD44780U();
-    size_t write( uint8_t value );
-    void writeFourBitsToLcd( uint8_t value, uint8_t gpioB );
-    void sendCharOrCmdToLcd( uint8_t value, bool isCommand );
+    size_t write( std::uint8_t value );
+    void writeFourBitsToLcd( std::uint8_t value, std::uint8_t gpioB );
+    void sendCharOrCmdToLcd( std::uint8_t value, bool isCommand );
 
-    void sendCommand( uint8_t cmd )
+    void sendCommand( std::uint8_t cmd )
     {
         sendCharOrCmdToLcd( cmd, kWriteFourBitsSendCommand );
     }
 
-    void sendCharToDisplay( uint8_t value )
+    void sendCharToDisplay( std::uint8_t value )
     {
         sendCharOrCmdToLcd( value, kWriteFourBitsSendChar );
     }
 
-    uint8_t             mDisplayControl;
-    uint8_t             mDisplayMode;
-    uint8_t             mCurrLine;
+    std::uint8_t             mDisplayControl;
+    std::uint8_t             mDisplayMode;
+    std::uint8_t             mCurrLine;
 };
 
 
@@ -265,8 +265,8 @@ void Lcd::initMCP23017()
     // Set input/output modes
     union
     {
-        uint8_t modes[2];
-        uint16_t word;
+        std::uint8_t modes[2];
+        std::uint16_t word;
     } data;
     // Pins 8-15, GPIOA, 0b00111111 = 0x3F
     data.modes[0] = 0x3F;
@@ -280,8 +280,8 @@ void Lcd::initMCP23017()
     // Set pullups
     union
     {
-        uint8_t pullups[2];
-        uint16_t word;
+        std::uint8_t pullups[2];
+        std::uint16_t word;
     } data2;
     // Pins 8-15, GPIOA, 0b00011111 = 0x1F
     data2.pullups[0] = 0x1F;
@@ -329,7 +329,7 @@ void Lcd::initHD44780U()
     Clock::sleep( 50ms );
 
     // Pull RS, R/W, and Enable low to begin commands:  0b00000001 = 0x01
-    uint8_t gpioB = 0x01;
+    std::uint8_t gpioB = 0x01;
     I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
 
     // Put the LCD into 4 bit mode; see Hitachi HD44780U datasheet p. 46, fig. 24
@@ -376,7 +376,7 @@ void Lcd::initHD44780U()
 
 
 
-void Lcd::writeFourBitsToLcd( uint8_t value, uint8_t gpioB )
+void Lcd::writeFourBitsToLcd( std::uint8_t value, std::uint8_t gpioB )
 {
     // Use the lower 4 bits of value
     gpioB &= ~( ( 1 << kByteLcdD4 ) | ( 1 << kByteLcdD5 ) | ( 1 << kByteLcdD6 ) | ( 1 << kByteLcdD7 ) );
@@ -406,10 +406,10 @@ void Lcd::writeFourBitsToLcd( uint8_t value, uint8_t gpioB )
 
 
 
-void Lcd::sendCharOrCmdToLcd( uint8_t value, bool isCommand )
+void Lcd::sendCharOrCmdToLcd( std::uint8_t value, bool isCommand )
 {
     // Sending characters or command to the LCD involves only GPIOB pins
-    uint8_t gpioB;
+    std::uint8_t gpioB;
     I2c::read( MCP23017_ADDRESS, MCP23017_OLATB, &gpioB );
 
     // Clear the RW bit to write to the HD44780U
@@ -452,7 +452,7 @@ void Lcd::home()
 
 
 
-void Lcd::setCursor(  uint8_t row, uint8_t col )
+void Lcd::setCursor(  std::uint8_t row, std::uint8_t col )
 {
     int row_offsets[] = { 0x00, 0x40 };
     if ( row >= kNumLines )
@@ -580,7 +580,7 @@ void Lcd::clearBottomRow()
 
 
 
-size_t Lcd::write( uint8_t value )
+size_t Lcd::write( std::uint8_t value )
 {
     sendCharToDisplay( value );
     return 1;
@@ -591,7 +591,7 @@ size_t Lcd::write( uint8_t value )
 
 size_t Lcd::write( char value )
 {
-    sendCharToDisplay( static_cast<uint8_t>( value ) );
+    sendCharToDisplay( static_cast<std::uint8_t>( value ) );
     return 1;
 }
 
@@ -605,7 +605,7 @@ size_t Lcd::write( const char* str )
     {
         while ( *str )
         {
-            sendCharToDisplay( static_cast<uint8_t>( *str++ ) );
+            sendCharToDisplay( static_cast<std::uint8_t>( *str++ ) );
             ++n;
         }
     }
@@ -617,11 +617,11 @@ size_t Lcd::write( const char* str )
 
 size_t Lcd::write( const char* buffer, size_t size )
 {
-    return write( reinterpret_cast<const uint8_t*>( buffer), size );
+    return write( reinterpret_cast<const std::uint8_t*>( buffer), size );
 }
 
 
-size_t Lcd::write( const uint8_t* buffer, size_t size )
+size_t Lcd::write( const std::uint8_t* buffer, size_t size )
 {
     size_t n = 0;
     if ( buffer )
@@ -638,15 +638,15 @@ size_t Lcd::write( const uint8_t* buffer, size_t size )
 
 
 
-void Lcd::setBacklight( uint8_t status )
+void Lcd::setBacklight( std::uint8_t status )
 {
     // Use pins 0, 14, 15; means we have to touch both GPIO A & B
 
     // First read GPIO A & B (actually read the latches = what we set them)
     union
     {
-        uint8_t gpio[2];
-        uint16_t byte;
+        std::uint8_t gpio[2];
+        std::uint16_t byte;
     } data;
     I2c::read( MCP23017_ADDRESS, MCP23017_OLATA, &data.byte );
 
@@ -667,10 +667,10 @@ void Lcd::setBacklight( uint8_t status )
 int Lcd::readButtons()
 {
     // Buttons on all on GPIOA; they are bits 0 thru 4
-    uint8_t gpioA;
+    std::uint8_t gpioA;
     I2c::read( MCP23017_ADDRESS, MCP23017_GPIOA, &gpioA );
 
     // Buttons have pullups, so gpio bits record the inverse of button state
     // 0b00011111 = 0x1F; 0b10000000 = 0x80; 0b11100000 = 0xE0
-    return static_cast<uint8_t>(~gpioA) & 0x1F;
+    return static_cast<std::uint8_t>(~gpioA) & 0x1F;
 }

@@ -97,7 +97,7 @@ void Servo::setPwmFreq( float freq )
 
 
 
-void Servo::setPwm( uint16_t on, uint16_t off )
+void Servo::setPwm( std::uint16_t on, std::uint16_t off )
 {
     PCA9685::setPwm( kLidarServoI2cAddress, kLidarServoPin, on, off );
 }

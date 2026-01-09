@@ -131,7 +131,7 @@ int main()
 
         while ( true ) 
         {
-            uint32_t timeTick{ Clock::millis() };
+            std::uint32_t timeTick{ Clock::millis() };
             EvtId eventCode{};
             int eventParam{};
 

@@ -34,7 +34,6 @@
 
 
 
-using namespace std;
 
 
 namespace I2c
@@ -43,7 +42,7 @@ namespace I2c
     class I2cConnection
     {
     public:
-        I2cConnection(  uint8_t address );
+        I2cConnection( std::uint8_t address );
         ~I2cConnection();
 
         int getFd() const
@@ -85,7 +84,7 @@ namespace I2c
 
 
 
-I2c::I2cConnection::I2cConnection( uint8_t address )
+I2c::I2cConnection::I2cConnection( std::uint8_t address )
 {
     int fd = i2cOpen( 1, address, 0 );
 
@@ -111,7 +110,7 @@ I2c::I2cConnection::~I2cConnection()
 
 
 
-void I2c::write( uint8_t address, uint8_t registerAddress )
+void I2c::write( std::uint8_t address, std::uint8_t registerAddress )
 {
     I2cConnection i2c( address );
 
@@ -125,7 +124,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress )
 
 
 
-void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t data )
+void I2c::write( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t data )
 {
     I2cConnection i2c( address );
 
@@ -139,7 +138,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t data )
 
 
 
-void I2c::write( uint8_t address, uint8_t registerAddress, uint16_t data )
+void I2c::write( std::uint8_t address, std::uint8_t registerAddress, std::uint16_t data )
 {
     I2cConnection i2c( address );
 
@@ -153,7 +152,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint16_t data )
 
 
 
-void I2c::write( uint8_t address, uint8_t registerAddress, const char* data )
+void I2c::write( std::uint8_t address, std::uint8_t registerAddress, const char* data )
 {
     int len = strlen( data );
     if ( len > 32 )
@@ -173,7 +172,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, const char* data )
 }
 
 
-void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t* data, uint8_t numberBytes )
+void I2c::write( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t* data, std::uint8_t numberBytes )
 {
     if ( numberBytes > 32 )
     {
@@ -192,7 +191,7 @@ void I2c::write( uint8_t address, uint8_t registerAddress, uint8_t* data, uint8_
 }
 
 
-void I2c::read( uint8_t address, uint8_t registerAddress, uint8_t* value )
+void I2c::read( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t* value )
 {
     I2cConnection i2c( address );
 
@@ -203,12 +202,12 @@ void I2c::read( uint8_t address, uint8_t registerAddress, uint8_t* value )
         throw I2cError( makeRpi0ErrorId( kI2cError, 7, i2c.getFd() ), "Error reading from i2c bus" );
     }
 
-    *value = static_cast<uint8_t>( ret );
+    *value = static_cast<std::uint8_t>( ret );
 }
 
 
 
-void I2c::read( uint8_t address, uint8_t registerAddress, uint16_t* value )
+void I2c::read( std::uint8_t address, std::uint8_t registerAddress, std::uint16_t* value )
 {
     I2cConnection i2c( address );
 
@@ -219,11 +218,11 @@ void I2c::read( uint8_t address, uint8_t registerAddress, uint16_t* value )
         throw I2cError( makeRpi0ErrorId( kI2cError, 8, i2c.getFd() ), "Error reading from i2c bus" );
     }
 
-    *value = static_cast<uint16_t>( ret );
+    *value = static_cast<std::uint16_t>( ret );
 }
 
 
-int I2c::read( uint8_t address, uint8_t registerAddress, uint8_t numberBytes, uint8_t* destination )
+int I2c::read( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, std::uint8_t* destination )
 {
     I2cConnection i2c( address );
 

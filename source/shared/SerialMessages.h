@@ -230,7 +230,7 @@ class TimerEventMsg : public SerialMessage
 {
 public:
 
-    using TheData = std::tuple< std::uint8_t, int, uint32_t >;
+    using TheData = std::tuple< std::uint8_t, int, std::uint32_t >;
 
     enum : std::uint8_t
     {
@@ -241,7 +241,7 @@ public:
 
     TimerEventMsg() noexcept;
     explicit TimerEventMsg( TheData t ) noexcept; 
-    TimerEventMsg( std::uint8_t which, int count, uint32_t time ) noexcept;
+    TimerEventMsg( std::uint8_t which, int count, std::uint32_t time ) noexcept;
     explicit TimerEventMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;

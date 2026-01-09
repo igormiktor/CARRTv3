@@ -49,7 +49,7 @@ int main()
 
         const int kMinTimeBetweenButtonChecks = 250;        // milliseconds
         long sNextTimeButtonClickAccepted = 0;
-        uint8_t sPreviousButtonHit{ 0 }; 
+        std::uint8_t sPreviousButtonHit{ 0 }; 
 
         Lcd::displayTopRow( "Button hit:" );
 
@@ -58,7 +58,7 @@ int main()
         {
             try
             {
-                uint8_t buttonHit = Keypad::readButtons();
+                std::uint8_t buttonHit = Keypad::readButtons();
 
                 auto currentMillis{ Clock::millis() };
                 bool mightBeChord{ buttonHit && buttonHit != sPreviousButtonHit && currentMillis <= sNextTimeButtonClickAccepted };

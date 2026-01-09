@@ -298,7 +298,7 @@ namespace
 
 
     void sendReady( SerialLinkPico& link )
-    {   uint32_t timeTick{ Clock::millis() };
+    {   std::uint32_t timeTick{ Clock::millis() };
         PicoReadyMsg ready( timeTick );
         ready.sendOut( link );
     }
