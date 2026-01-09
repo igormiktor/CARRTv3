@@ -20,14 +20,14 @@
 
 #include "I2C.h"
 
-#include "CarrtPicoDefines.h"
-
-#include "CarrtError.h"
-
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
-#include "string.h"
+#include <cstring>
+
+#include "CarrtError.h"
+#include "CarrtPicoDefines.h"
+
 
 
 

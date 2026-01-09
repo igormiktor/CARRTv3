@@ -23,30 +23,29 @@
 
 #include "MainProcess.h"
 
-#include "BNO055.h"
-#include "CarrtPicoDefines.h"
-#include "CarrtPicoReset.h"
-#include "Core1.h"
-#include "Clock.h"
-#include "EventManager.h"
-#include "EventProcessor.h"
-#include "HeartBeatLed.h"
-
-#include "SerialMessages.h"
-#include "SerialMessageProcessor.h"
-#include "SerialLinkPico.h"
-#include "CarrtError.h"
-
-#include "OutputUtils.hpp"
-#include "PicoState.h"
-
-#include "pico/stdlib.h"
-#include "pico/multicore.h"
-#include "pico/util/queue.h"
 #include "hardware/clocks.h"
 #include "hardware/i2c.h"
 #include "hardware/timer.h"
 #include "hardware/uart.h"
+#include "pico/multicore.h"
+#include "pico/util/queue.h"
+#include "pico/stdlib.h"
+
+#include "BNO055.h"
+#include "CarrtError.h"
+#include "CarrtPicoDefines.h"
+#include "CarrtPicoReset.h"
+#include "Clock.h"
+#include "Core1.h"
+#include "EventManager.h"
+#include "EventProcessor.h"
+#include "HeartBeatLed.h"
+#include "OutputUtils.hpp"
+#include "PicoState.h"
+#include "SerialLinkPico.h"
+#include "SerialMessageProcessor.h"
+#include "SerialMessages.h"
+
 
 
 

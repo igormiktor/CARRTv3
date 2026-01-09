@@ -21,12 +21,12 @@
 
 #include "SerialLinkPico.h"
 
-#include "CarrtPicoDefines.h"
-#include "Clock.h"
-
-#include "pico/binary_info.h"
 #include "hardware/gpio.h"
 #include "hardware/uart.h"
+#include "pico/binary_info.h"
+
+#include "CarrtPicoDefines.h"
+#include "Clock.h"
 
 
 

@@ -25,12 +25,12 @@
 #ifndef EventManager_h
 #define EventManager_h
 
+#include "pico/stdlib.h"
+#include "pico/util/queue.h"
+
 #include <stdint.h>
 
 #include "Event.h"      // This is where events themselves are defined
-
-#include "pico/stdlib.h"
-#include "pico/util/queue.h"
 
 
 

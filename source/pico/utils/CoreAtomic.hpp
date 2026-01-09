@@ -23,11 +23,11 @@
 #ifndef CoreAtomic_hpp
 #define CoreAtomic_hpp
 
-#include <cstdint>
-#include <concepts>
-#include <utility>
-
 #include "pico/sync.h"
+
+#include <concepts>
+#include <cstdint>
+#include <utility>
 
 #include "CriticalSection.h"
 

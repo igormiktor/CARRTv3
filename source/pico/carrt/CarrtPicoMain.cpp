@@ -23,32 +23,28 @@
 
 
 
+#include "BNO055.h"
+#include "CarrtError.h"
 #include "CarrtPicoDefines.h"
+#include "CarrtPicoReset.h"
+#include "Clock.h"
 #include "Core1.h"
+#include "CoreAtomic.hpp"
+#include "DebugUtils.hpp"
 #include "Encoders.h"
 #include "EventHandlers.h"
 #include "EventManager.h"
 #include "EventProcessor.h"
-
 #include "HeartBeatLed.h"
+#include "I2C.h"
 #include "MainProcess.h"
 #include "OutputUtils.hpp"
-#include "CarrtPicoReset.h"
-
-#include "Clock.h"
-
-#include "BNO055.h"
-#include "I2C.h"
-#include "SerialLinkPico.h"
-
-#include "CarrtError.h"
-#include "SerialMessages.h"
-#include "SerialMessageProcessor.h"
-#include "DebugUtils.hpp"
-
 #include "PicoState.h"
+#include "SerialLinkPico.h"
+#include "SerialMessageProcessor.h"
+#include "SerialMessages.h"
 
-#include "CoreAtomic.hpp"
+
 
 
 

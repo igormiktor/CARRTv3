@@ -28,7 +28,7 @@
 #include <cstdint>
 #include <optional>
 
-#include <SerialLink.h>
+#include "SerialLink.h"
 
 
 class SerialLinkPico : public SerialLink

@@ -22,8 +22,8 @@
 #define BNO055_h
 
 #include <cstdint>
-#include <tuple>
 #include <optional>
+#include <tuple>
 
 
 /* 

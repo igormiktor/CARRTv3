@@ -20,10 +20,10 @@
 
 #include "BNO055.h"
 
-#include "I2C.h"
-#include "CarrtError.h"
-
 #include "pico/stdlib.h"
+
+#include "CarrtError.h"
+#include "I2C.h"
 
 
 

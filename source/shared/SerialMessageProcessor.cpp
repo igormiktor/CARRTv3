@@ -22,10 +22,6 @@
 #include "SerialMessageProcessor.h"
 
 
-#include <map>
-#include <memory>
-#include <string>
-
 #include "SerialLink.h"
 #include "SerialMessage.h"
 

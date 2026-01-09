@@ -22,14 +22,15 @@
 
 #include "CarrtPicoReset.h"
 
+#include "hardware/sync.h"
+#include "hardware/watchdog.h"
+#include "pico/stdlib.h"
+
+#include "Clock.h"
 #include "OutputUtils.hpp"
 #include "SerialMessages.h"
 #include "SerialLinkPico.h"
-#include "Clock.h"
 
-#include "pico/stdlib.h"
-#include "hardware/sync.h"
-#include "hardware/watchdog.h"
 
 
 void PicoReset::reset( SerialLink& rpi0 )

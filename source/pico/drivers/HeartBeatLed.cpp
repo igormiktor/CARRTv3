@@ -21,9 +21,9 @@
 
 #include "HeartBeatLed.h"
 
-#include "CarrtPicoDefines.h"
-
 #include "pico/stdlib.h"
+
+#include "CarrtPicoDefines.h"
 
 
 namespace HeartBeatLed

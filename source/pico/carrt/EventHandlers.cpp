@@ -22,16 +22,16 @@
 #include "EventHandlers.h"
 
 #include "BNO055.h"
-#include "CarrtPicoReset.h"
-#include "Core1.h"
 #include "CarrtError.h"
+#include "CarrtPicoReset.h"
 #include "Clock.h"
+#include "Core1.h"
 #include "EventManager.h"
 #include "HeartBeatLed.h"
 #include "OutputUtils.hpp"
 #include "PicoState.h"
-#include "SerialMessages.h"
 #include "SerialLink.h"
+#include "SerialMessages.h"
 
 
 

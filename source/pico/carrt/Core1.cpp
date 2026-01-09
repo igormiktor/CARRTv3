@@ -22,24 +22,26 @@
 
 #include "Core1.h"
 
-#include "CarrtPicoDefines.h"
-#include "Encoders.h"
-#include "EventManager.h"
-#include "Clock.h"
-
-#include "CarrtError.h"
-#include "OutputUtils.hpp"
-#include "PicoState.h"
-
-#include "pico/stdlib.h"
-#include "pico/multicore.h"
-#include "pico/util/queue.h"
 #include "hardware/clocks.h"
 #include "hardware/i2c.h"
 #include "hardware/timer.h"
 #include "hardware/uart.h"
+#include "pico/multicore.h"
+#include "pico/util/queue.h"
+#include "pico/stdlib.h"
 
 #include <utility>
+
+#include "CarrtError.h"
+#include "CarrtPicoDefines.h"
+#include "Clock.h"
+#include "Encoders.h"
+#include "EventManager.h"
+#include "OutputUtils.hpp"
+#include "PicoState.h"
+
+
+
 
 
 

@@ -22,14 +22,14 @@
 #ifndef EventProcessor_h
 #define EventProcessor_h
 
-#include <unordered_map>
 #include <memory>
 #include <type_traits>
+#include <unordered_map>
 #include <utility>
 
+#include "CarrtError.h"
 #include "Event.h"
 #include "EventHandler.h"
-#include "CarrtError.h"
 
 
 

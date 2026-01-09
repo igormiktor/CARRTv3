@@ -22,8 +22,10 @@
 #ifndef Clock_h
 #define Clock_h
 
-#include <chrono>
 #include "pico/time.h"
+
+#include <chrono>
+
 
 // Required to use chrono-related literals
 using namespace std::chrono_literals;

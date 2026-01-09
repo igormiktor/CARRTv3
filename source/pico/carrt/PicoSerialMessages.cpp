@@ -24,8 +24,8 @@
 #include "SerialMessages.h"
 
 #include "BNO055.h"
-#include "DebugUtils.hpp"
 #include "Clock.h"
+#include "DebugUtils.hpp"
 #include "EventManager.h"
 #include "OutputUtils.hpp"
 #include "PicoState.h"

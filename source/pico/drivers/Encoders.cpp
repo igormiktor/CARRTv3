@@ -20,12 +20,12 @@
 
 #include "Encoders.h"
 
+#include "hardware/gpio.h"
+
 #include "CarrtPicoDefines.h"
 #include "Clock.h"
 #include "EventManager.h"
 
-
-#include "hardware/gpio.h"
 
 
 
