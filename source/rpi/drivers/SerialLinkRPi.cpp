@@ -271,7 +271,7 @@ bool SerialLinkRPi::get4Bytes( std::uint8_t* c )
     if ( u )
     {
         RawData t( *u );
-        memcpy( c, t.c(), 4 );
+        std::memcpy( c, t.c(), 4 );
         return true;
     }
     else

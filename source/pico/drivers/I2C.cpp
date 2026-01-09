@@ -58,7 +58,7 @@ extern "C" signed char I2C::send( unsigned char address, unsigned char reg, unsi
 
     unsigned char array[ CARRT_BNO055_MAX_SENT_MSG_LEN + 1 ];
     array[0] = reg;
-    memcpy( (array + 1), data, len );
+    std::memcpy( (array + 1), data, len );
 
     // Count the reg entry in array[0]
     ++len;
