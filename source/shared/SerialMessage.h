@@ -37,60 +37,94 @@
 
 enum class MsgId : std::uint8_t
 {
-    kNull_NeverUse,              // Never use -- don't want a message with ID=0
+    //***** Never use -- don't want a message with ID=0
+    kNull_NeverUse,              
 
     kPingMsg,
     kPingReplyMsg,
 
-    // Msgs from Pico
-    kPicoReady,                 // Pico sends once ready to start receiving messages (Pico initiates serial comms with this message)
-                                // If Pico fails to be ready, error report instead (via kErrorReportFromPico)
-    kPicoNavStatusUpdate,       // Sent by Pico first time Nav calibrated and whenever calibration status changes (byte 2 -> status boolean)
-    kPicoSaysStop,              // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)       
+    //***** Msgs from Pico
 
-    // Messages (to Pico). Errors send by kErrorReportFromPico msg
-    kMsgControlMsg,             // Pico to turn on or off various types of messages sent over Serial Link
-    kResetPicoMsg,              // Pico to reset itself (ack by sending kResetPicoMsg back, then followed by kPicoReady)
+    // Pico sends once ready to start receiving messages (Pico initiates serial comms with this message)
+    // If Pico fails to be ready, error report instead (via kErrorReportFromPico)
+    kPicoReady, 
+    // Sent by Pico first time Nav calibrated and whenever calibration status changes (byte 2 -> status boolean)                
+    kPicoNavStatusUpdate, 
+    // Pico tells RPi0 to stop CARRT (stop driving, stop slewing)      
+    kPicoSaysStop,                     
 
-    // Timer events
-    kTimerEventMsg,             // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type; 4th byte time hack)
-    kTimerControl,              // To pico to start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)
+    //***** Messages (to Pico). Errors sent by kErrorReportFromPico msg
 
-    // BNO005 msgs       
-    kBeginCalibration,          // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
-    kRequestCalibStatus,        // Request status of BNO055 calibration (return with kPicoNavStatusUpdate)
-    kCalibrationInfoUpdate,     // Send status of BNO055 calibration (contains 4 x one-byte status values M-A-G-S )
-    kSetAutoCalibrate,          // Set Pico auto-calibration mode (2nd byte is bool on/off (0/1) value)
-    kResetBNO055,               // RPi to Pico message to reset BNO055
+    // Pico to turn on or off various types of messages sent over Serial Link
+    kMsgControlMsg,             
+    // Pico to reset itself (ack by sending kResetPicoMsg back, then followed by kPicoReady)
+    kResetPicoMsg,              
 
-    // Navigation events
-    kTimerNavUpdate,            // Navigation timer (1/8 sec) from Pico to RPi0 (info in following bytes)
-    kNavUpdateControl,          // From RPi0 to Pico to start/stop sending of NavUpdates (2nd byte -> 0/1 = stop/start)
-    kDrivingStatusUpdate,       // From RPi0 to Pico (2nd byte provides driving status)
-    kEncoderUpdate,             // From Pico to RPi0, 2nd byte = L count; 3rd byte = R count; followed by time hack
-    kEncoderUpdateControl,      // From RPi0 to Pico to start/stop sending of encoder udpates (2nd byte -> 0/1 = stop/start)
+    //***** Timer events
+
+    // Timer event (2nd byte -> 1 = 1/4s, 4 = 1s, 32 = 8s; 3rd byte -> count by type; 4th byte time hack)
+    kTimerEventMsg,    
+    // To pico to start/stop sending of timer msgs (2nd byte -> 0/1 = stop/start)         
+    kTimerControl,              
+
+    //***** BNO005 msgs  
+    
+    // Pico to begin calibration of the BNO055 (end of calibration -> kPicoReadyNav msg)
+    kBeginCalibration, 
+    // Request status of BNO055 calibration (return with kPicoNavStatusUpdate)
+    kRequestCalibStatus,    
+    // Send status of BNO055 calibration (contains 4 x one-byte status values M-A-G-S)
+    kCalibrationInfoUpdate,   
+    // Set Pico auto-calibration mode (2nd byte is bool on/off (0/1) value)
+    kSetAutoCalibrate,     
+    // RPi to Pico message to reset BNO055
+    kResetBNO055,               
+
+    //***** Navigation events
+
+    // Navigation timer (1/8 sec) from Pico to RPi0 (info in following bytes)
+    kTimerNavUpdate,    
+    // From RPi0 to Pico to start/stop sending of NavUpdates (2nd byte -> 0/1 = stop/start)        
+    kNavUpdateControl,   
+    // From RPi0 to Pico (2nd byte provides driving status)       
+    kDrivingStatusUpdate,
+    // From Pico to RPi0, 2nd byte = L count; 3rd byte = R count; followed by time hack       
+    kEncoderUpdate,   
+    // From RPi0 to Pico to start/stop sending of encoder udpates (2nd byte -> 0/1 = stop/start)          
+    kEncoderUpdateControl,      
  
-    // Battery info
-    kBatteryLevelRequest,       // From RPi0 to Pico requesting battery level (2nd byte = which battery: 0 = IC, 1 = Motor)
-    kBatteryLevelUpdate,        // Pico to RPi0 battery V; 2nd byte = which battery; following 4 bytes V (float)
-    kBatteryLowAlert,           // Pico to RPi0 alert that battery is low; 2nd byte = which battery; following 4 bytes V (float)
+    //*****  Battery info
 
-    // Error reports
-    kErrorReportFromPico,       // Pico sends a bool fatal flag (bool in a std::uint8_t) and error code (int) in following bytes (3-6)
+    // From RPi0 to Pico requesting battery level (2nd byte = which battery: 0 = IC, 1 = Motor)
+    kBatteryLevelRequest,    
+    // Pico to RPi0 battery V; 2nd byte = which battery; following 4 bytes V (float)   
+    kBatteryLevelUpdate,
+    // Pico to RPi0 alert that battery is low; 2nd byte = which battery; following 4 bytes V (float)        
+    kBatteryLowAlert,           
 
-    // Unknown message
-    kUnknownMessage,            // Never transmitted; used to designate an unknown message received; contains error code (int)
+    //***** Error reports
 
-    // Debugging events
-    kTestPicoReportError,       // RPi0 sends to Pico asking Pico to report an error (bytes 2-5 contain error code to send back)
+    // Pico sends a bool fatal flag (bool in a std::uint8_t) and error code (int) in following bytes (3-6)
+    kErrorReportFromPico,       
 
-    kTestPicoMessages,          // RPi0 sends to Pico asking Pico to send a specific Msg (byte 2 contains the MsgId desired)
+    //***** Unknown message
 
-    kPicoReceivedTestMsg,       // Pico returns (during testing) when Pico asked to send a test message it doesn't normally send
+    // Never transmitted; used to designate an unknown message received; contains error code (int)
+    kUnknownMessage,  
 
-    kDebugSerialLink,           // RPi0 or Pico sends messages to debug/test the serial link; data is two int values
+    //***** Debugging events
 
-    kCountOfMsgIds              // Count of number of MsgsIds (helpful to generate testing code)
+    // RPi0 sends to Pico asking Pico to report an error (bytes 2-5 contain error code to send back)
+    kTestPicoReportError,       
+    // RPi0 sends to Pico asking Pico to send a specific Msg (byte 2 contains the MsgId desired)
+    kTestPicoMessages,          
+    // Pico returns (during testing) when Pico asked to send a test message it doesn't normally send
+    kPicoReceivedTestMsg,       
+    // RPi0 or Pico sends messages to debug/test the serial link; data is two int values
+    kDebugSerialLink,           
+
+    // Count of number of MsgsIds (helpful to generate testing code)
+    kCountOfMsgIds              
 };
 
 
