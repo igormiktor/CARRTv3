@@ -66,12 +66,12 @@
     #pragma message "USE_CARRTPICO_STDIO = undef"
 #endif
 
-#if defined( DEBUGPICO ) && DEBUGPICO
-    #pragma message "DEBUGPICO = ON"
-#elif defined( DEBUGPICO )
-    #pragma message "DEBUGPICO = OFF"
+#if defined( DEBUGCARRTPICO ) && DEBUGCARRTPICO
+    #pragma message "DEBUGCARRTPICO = ON"
+#elif defined( DEBUGCARRTPICO )
+    #pragma message "DEBUGCARRTPICO = OFF"
 #else
-    #pragma message "DEBUGPICO = undef"
+    #pragma message "DEBUGCARRTPICO = undef"
 #endif
 
 #if defined( BUILDING_FOR_PICO ) && BUILDING_FOR_PICO

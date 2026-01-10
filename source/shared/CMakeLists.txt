@@ -23,7 +23,7 @@ if( BUILDING_FOR_PICO )
     target_compile_definitions( shared_library PUBLIC 
         -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
         -DUSE_CARRTPICO_STDIO=${USE_CARRTPICO_STDIO_VAL}
-        "$<$<CONFIG:DEBUG>:DEBUGPICO=1>" 
+        "$<$<CONFIG:DEBUG>:DEBUGCARRTPICO=1>" 
         -DBUILDING_FOR_PICO=1 
     )
 

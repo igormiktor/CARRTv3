@@ -36,7 +36,7 @@
 #define USE_CARRTPICO_STDIO         1       // Default to use if unless explictly turned off
 #endif  // USE_CARRTPICO_STDIO
 
-#if DEBUGPICO
+#if DEBUGCARRTPICO
 #undef  USE_CARRTPICO_STDIO
 #define USE_CARRTPICO_STDIO         1       // Force on if compiling DEBUG version
 #endif  // USE_CARRTPICO_STDIO (redefine)

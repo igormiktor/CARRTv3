@@ -45,7 +45,7 @@
 
 
 
-#if  DEBUGPICO
+#if  DEBUGCARRTPICO
 
 #define DEBUG_PICO_MSG1( x )            do { std::cout << x << std::endl; } while (0);
 #define DEBUG_PICO_MSG2( x, y )         do { std::cout << x << y << std::endl; } while (0);

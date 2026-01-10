@@ -52,8 +52,8 @@ option(
 )
 
 
-# Add a special define "DEBUGPICO" when building debugging builds
-# add_compile_options( "$<$<CONFIG:DEBUG>:DEBUGPICO=1>" )
+# Add a special define "DEBUGCARRTPICO" when building debugging builds
+# add_compile_options( "$<$<CONFIG:DEBUG>:DEBUGCARRTPICO=1>" )
 
 set( CARRT_PICO_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" )
 # message( CARRT_PICO_DIRECTORY="${CARRT_PICO_DIRECTORY}" )

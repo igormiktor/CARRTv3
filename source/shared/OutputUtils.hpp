@@ -61,11 +61,11 @@
         #define USE_CARRTPICO_STDIO     0
     #endif
 
-    #ifndef DEBUGPICO
-        #define DEBUGPICO   0
+    #ifndef DEBUGCARRTPICO
+        #define DEBUGCARRTPICO   0
     #endif
 
-    #define USE_CARRTPICO_DEBUG     ( DEBUGPICO && USE_CARRTPICO_STDIO )
+    #define USE_CARRTPICO_DEBUG     ( DEBUGCARRTPICO && USE_CARRTPICO_STDIO )
 
 #else
 
@@ -178,7 +178,7 @@ namespace OutputUtils
     }
 
     // This is the public function actually called in user code for std::cout output *only* when debugging enabled
-    // If USE_CARRTPICO_STDIO and DEBUGPICO are both "ON", converts the arguments to (with a single space separator 
+    // If USE_CARRTPICO_STDIO and DEBUGCARRTPICO are both "ON", converts the arguments to (with a single space separator 
     // between args): 
     //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
     //
@@ -193,7 +193,7 @@ namespace OutputUtils
 
     // This is the public function actually called in user code for std::cout output *only* when debugging enabled
     // and the lead bool argument is true.
-    // If USE_CARRTPICO_STDIO and DEBUGPICO are both "ON", converts the arguments to (with a single space separator 
+    // If USE_CARRTPICO_STDIO and DEBUGCARRTPICO are both "ON", converts the arguments to (with a single space separator 
     // between args): 
     //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
     //

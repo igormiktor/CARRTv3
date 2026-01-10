@@ -25,7 +25,7 @@ target_compile_options( BNORaw PRIVATE -Wall )
 target_compile_definitions( BNORaw PRIVATE
         -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
         -DUSE_CARRTPICO_STDIO=${USE_CARRTPICO_STDIO_VAL}
-        "$<$<CONFIG:DEBUG>:DEBUGPICO=1>" 
+        "$<$<CONFIG:DEBUG>:DEBUGCARRTPICO=1>" 
         -DBNO055_API=1
         -DMY_I2C_PORT=i2c0
 )
