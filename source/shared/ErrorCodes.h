@@ -1,7 +1,7 @@
 /*
     ErrorCodes.h - Error codes for CARRT3
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,62 +17,62 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #ifndef ErrorCodes_h
 #define ErrorCodes_h
 
-
 #include <cstdint>
-
 
 // Error code scheme....
 
 /*
-    All error codes are "int" which is 32-bit on both RPi Zero and RP2040.  
+    All error codes are "int" which is 32-bit on both RPi Zero and RP2040.
     So error codes can range from -2,147,483,648 to 2,147,483,647
 
     On RPi Zero...
 
         Pigpio library error codes are all negative, in the range -1 to -3,999
 
-        Within an RPi Zero module identify the function where error occurs by increments of -10,0000
-        and never expect to have more than 99 functions in a module, so max -990,000 (plus pigpio error)
+        Within an RPi Zero module identify the function where error occurs by
+        increments of -10,0000 and never expect to have more than 99 functions
+        in a module, so max -990,000 (plus pigpio error)
 
-        So identify modules by increments of -1,000,000, starting with -1,000,000
+        So identify modules by increments of -1,000,000, starting
+        with -1,000,000
 
 
     On Pico (RP2040)...
 
-        Pico error codes from the SDK (e.g., PICO_ERROR_*) are also all negative, in the range -1 to -9
+        Pico error codes from the SDK (e.g., PICO_ERROR_*) are also all
+        negative, in the range -1 to -9
 
-        Within a Pico module identify the function where error occurs by increments of -100 
-        and allow up to 99 functions per module, so max -9,900 (plus PICO_ERROR_...)
+        Within a Pico module identify the function where error occurs by
+        increments of -100 and allow up to 99 functions per module, so
+        max -9,900 (plus PICO_ERROR_...)
 
-        So identfy modules where errors occur by increments of -10,000, starting with -10,000
+        So identfy modules where errors occur by increments of -10,000,
+        starting with -10,000
 
-        And we treat all Pico errors as a single "module" of RPi Zero errors (code < -1,000,000)
+        And we treat all Pico errors as a single "module" of RPi Zero
+        errors (code < -1,000,000)
 
     So...
-    
+
         Error codes < -999999 mean a Pico error
-        Error codes   -xxyyzz mean an error in Pico module xx, function yy, error code -zz
+        Error codes   -xxyyzz mean an error in Pico module xx, function yy,
+                        error code -zz
 
         Error codes <  -1000000 mean a Rpi Zero error
-        Error codes   -xxyyzzzz (where xx > 1) mean an error in RPi Zero, module xx, function yy, error code -zzzz
-
+        Error codes   -xxyyzzzz (where xx > 1) mean an error in RPi Zero,
+                        module xx, function yy, error code -zzzz
 */
 
+constexpr int kRPi0FunctionIdErrIncrement   = -10'000;
+constexpr int kRPi0ModuleIdErrIncrement     = -1'000'000;
+constexpr int kRPi0ErrorSign                = -1;
 
-constexpr int kRPi0FunctionIdErrIncrement       = -10000;
-constexpr int kRPi0ModuleIdErrIncrement         = -1000000;
-constexpr int kRPi0ErrorSign                    = -1;
-
-constexpr int kPicoFunctionIdErrIncrement       = -100;
-constexpr int kPicoModuleIdErrIncrement         = -10000;
-constexpr int kPicoErrorSign                    = -1;
-
-
+constexpr int kPicoFunctionIdErrIncrement   = -100;
+constexpr int kPicoModuleIdErrIncrement     = -10'000;
+constexpr int kPicoErrorSign                = -1;
 
 enum PicoError : int
 {
@@ -81,7 +81,7 @@ enum PicoError : int
 
     kPicoMainError              = 1,
     kPicoMulticoreError         = 2,
-    kPicoI2cBNO055Error         = 3, 
+    kPicoI2cBNO055Error         = 3,
     kPicoMainProcessError       = 4,
     kPicoSerialMessageError     = 5,
     kPicoEventProcessorError    = 6,
@@ -94,29 +94,23 @@ enum PicoError : int
     kPicoLastError              = 99
 };
 
-constexpr std::uint32_t kPicoFatalError              = 1;
-constexpr std::uint32_t kPicoNonFatalError           = 0;
-
-
-
+constexpr std::uint32_t kPicoFatalError     = 1;
+constexpr std::uint32_t kPicoNonFatalError  = 0;
 
 enum RPi0Error : int
 {
 
     // RPi Zero Module errors (all are * kRPi0ModuleIdErrIncrement)
 
-    kI2cError                   = 1,   
+    kI2cError                   = 1,
     kBuzzerError                = 2,
     kLidarError                 = 3,
     kRpi0SerialError            = 4,
-    kRPi0SerialMessageError     = 5, 
+    kRPi0SerialMessageError     = 5,
 
     kTestError                  = 98,
     kLastError                  = 99
 };
-
-
-
 
 enum CommonError : int
 {
@@ -126,6 +120,4 @@ enum CommonError : int
     kEventHandlerDupeError      = 83
 };
 
-
-#endif // ErrorCodes.h
-
+#endif    // ErrorCodes.h

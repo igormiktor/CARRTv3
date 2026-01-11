@@ -1,27 +1,34 @@
 /*
-    OutputUtils.hpp - Output code using policy types that drive template specialization and 
-    function overloading that generate output code when requested and no code when not requested.  
+    OutputUtils.hpp - Output code using policy types that drive template 
+    specialization and function overloading that generate output code when 
+    requested and no code when not requested.  
     
     C++20 is required.
     
-    Output code generation is selected by #define USE_CARRTPICO_STDIO to be non-zero at compile time.  
+    Output code generation is selected by #define USE_CARRTPICO_STDIO to 
+    be non-zero at compile time.  
 
-    There is no preprocessor selected code generation.  The selection of what code is generated 
-    (or not generated) is entirely governed by template specialization (helped along by type inference 
-    by the compiler) and function overloading.  Certain template specializations and function overloads 
-    generate debugging code; other template specializations and function overloads generate no code.
+    There is no preprocessor selected code generation.  The selection of 
+    what code is generated (or not generated) is entirely governed by template 
+    specialization (helped along by type inference by the compiler) and 
+    function overloading.  Certain template specializations and function 
+    overloads generate debugging code; other template specializations and 
+    function overloads generate no code.
 
-    When compiled on GCC v13 with -O2 and DEBUGUTILS_ON=0, code size is exactly the same as when all 
-    OutputUtils debugging calls are manual editted out from the source code.
+    When compiled on GCC v13 with -O2 and DEBUGUTILS_ON=0, code size is 
+    exactly the same as when all OutputUtils debugging calls are manual 
+    editted out from the source code.
 
-    Varidic template functions allow as many variables to be output as desired.  Template recursion
-    enables the debug printing of complex nested data types and data structures (e.g., vectors of pairs, 
-    lists of vectors, maps of strings, queues of tuples).
+    Varidic template functions allow as many variables to be output as desired.  
+    Template recursion enables the debug printing of complex nested data types 
+    and data structures (e.g., vectors of pairs, lists of vectors, maps of 
+    strings, queues of tuples).
 
-    This code was an experiment to see how far modern C++20 tools can replace the preprocessor to conditionally 
-    generate code.  Turns out I was able to entirely replace it.
+    This code was an experiment to see how far modern C++20 tools can replace 
+    the preprocessor to conditionally generate code.  Turns out I was able to 
+    entirely replace it.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -123,19 +130,23 @@ namespace OutputUtils
     };
 
 
-    // OutputUtilsPolicy is a type used to manage template instantiation and specialization,
-    // as well as overload resolution the generate output only when Pico STDIO is enabled.
+    // OutputUtilsPolicy is a type used to manage template instantiation 
+    // and specialization, as well as overload resolution the generate output 
+    // only when Pico STDIO is enabled.
 
-    // When OutputUtilsPolicy == std::true_type, code for output to stdio (std::cout) is compiled.
+    // When OutputUtilsPolicy == std::true_type, code for output to stdio 
+    // (std::cout) is compiled.
     // When OutputUtilsPolicy == std::false_type, it is not.
 
     using OutputUtilsPolicy = typename TypeSelect<USE_STDIO_OUPUT>::type;
 
 
-    // OutputDebugPolicy is a type used to manage template instantiation and specialization,
-    // as well as overload resolution for output only when Pico STDIO *and* DEBUG_UTILS are both enabled.
+    // OutputDebugPolicy is a type used to manage template instantiation and 
+    // specialization, as well as overload resolution for output only when 
+    // Pico STDIO *and* DEBUG_UTILS are both enabled.
 
-    // When OutputDebugPolicy == std::true_type, code for debug output to stdio (std::cout) is compiled.
+    // When OutputDebugPolicy == std::true_type, code for debug output to 
+    // stdio (std::cout) is compiled.
     // When OutputDebugPolicy == std::false_type, it is not.
 
     using OutputDebugPolicy = typename TypeSelect<USE_STDIO_DEBUG>::type;
@@ -164,12 +175,16 @@ namespace OutputUtils
     }
 
 
-    // This is the public function actually called in user code for std::cout output
-    // Converts the arguments to (with a single space separator between args):
-    //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl; 
+    // This is the public function actually called in user code to 
+    // generate std::cout output
+    // 
+    // Converts the arguments to (with a single space separator between 
+    // args):
+    //    std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl; 
     //
-    // Use output2cout for code that should remain in the Pico executable (if Pico STDIO 
-    // functionality is enabled) even in release/production builds.
+    // Use output2cout for code that should remain in the Pico executable 
+    // (if Pico STDIO functionality is enabled) even in release/production 
+    // builds.
 
     template<typename T, typename ...V>
     inline void output2cout( T&& first, V&&... others )
@@ -177,13 +192,15 @@ namespace OutputUtils
         output2cout_( OutputUtilsPolicy{}, std::forward<T>( first ), std::forward<V>( others )... );
     }
 
-    // This is the public function actually called in user code for std::cout output *only* when debugging enabled
-    // If USE_CARRTPICO_STDIO and DEBUGCARRTPICO are both "ON", converts the arguments to (with a single space separator 
-    // between args): 
+    // This is the public function actually called in user code for 
+    // std::cout output *only* when debugging enabled.
+    //
+    // If USE_CARRTPICO_STDIO and DEBUGCARRTPICO are both "ON", converts 
+    // the arguments to (with a single space separator between args): 
     //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
     //
-    // Use debug2cout for code that should remain in the Pico executable (if Pico STDIO 
-    // functionality is enabled) only in debugging builds. 
+    // Use debug2cout for code that should remain in the Pico executable 
+    // (if Pico STDIO functionality is enabled) only in debugging builds. 
 
     template<typename T, typename ...V>
     inline void debug2cout( T&& first, V&&... others )
@@ -191,16 +208,19 @@ namespace OutputUtils
         output2cout_( OutputDebugPolicy{}, std::forward<T>( first ), std::forward<V>( others )... );
     }
 
-    // This is the public function actually called in user code for std::cout output *only* when debugging enabled
-    // and the lead bool argument is true.
-    // If USE_CARRTPICO_STDIO and DEBUGCARRTPICO are both "ON", converts the arguments to (with a single space separator 
-    // between args): 
+    // This is the public function actually called in user code for 
+    // std::cout output *only* when debugging enabled and the lead bool 
+    // argument is true.
+    // 
+    // If USE_CARRTPICO_STDIO and DEBUGCARRTPICO are both "ON", converts 
+    // the arguments to (with a single space separator between args): 
     //  std::cout << arg1 << arg2 << arg3 << ... << argN << std::endl;
     //
-    // Use debugCond2cout for code that should remain in the Pico executable (if Pico STDIO 
-    // functionality is enabled) only in debugging builds and if the first bool template argument is true. 
+    // Use debugCond2cout for code that should remain in the Pico executable 
+    // (if Pico STDIO functionality is enabled) only in debugging builds and 
+    // if the first bool template argument is true. 
     // Usage:  
-    //  debugCond2cout<kThisStatementOnOrOff>( "Debug output of two values", val1, val2 );
+    //  debugCond2cout<kOnOrOff>( "Debug output of two values", val1, val2 );
 
     template<bool onOff, typename T, typename ...V>
     inline void debugCond2cout( T&& first, V&&... others )
@@ -211,7 +231,8 @@ namespace OutputUtils
         }
     }
 
-    // For more sophisticated debugging output (to std::cerr) use DebugUitls.hpp
+    // For more sophisticated debugging output (to std::cerr) 
+    // use DebugUitls.hpp
 }
 
 

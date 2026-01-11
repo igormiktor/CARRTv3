@@ -1,8 +1,8 @@
 /*
-    SerialMessageProcessor.cpp - Master processor for Serial Messages for both 
+    SerialMessageProcessor.cpp - Master processor for Serial Messages for both
     the RPI and Pico.  This file is shared by both the RPI and Pico code bases.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,46 +18,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "SerialMessageProcessor.h"
-
 
 #include "SerialLink.h"
 #include "SerialMessage.h"
-
-
-
 
 MessageFactory::MessageFactory( int reserveSize )
 {
     mCreators.reserve( reserveSize );
 }
 
-
-
-
-
-
-SerialMessageProcessor::SerialMessageProcessor( int reserveSize, SerialLink& link )
-: mFactory{ reserveSize }, mLink{ link }
+SerialMessageProcessor::SerialMessageProcessor( int reserveSize,
+                                                SerialLink& link )
+    : mFactory{ reserveSize }, mLink{ link }
 {
     // Nothing else to do
 }
 
-
-
-SerialMessageProcessor::MsgPtr SerialMessageProcessor::createMessageFromSerialLink( MsgId id )
+SerialMessageProcessor::MsgPtr
+SerialMessageProcessor::createMessageFromSerialLink( MsgId id )
 {
-//    SerialMessage* MsgPtr = mFactory.createMessage( id );
-//    auto msg = std::make_unique<SerialMessage>( MsgPtr );
     auto msg = mFactory.createMessage( id );
     msg->readIn( mLink );
-    return  msg;
+    return msg;
 }
 
-
-
-std::optional<SerialMessageProcessor::MsgPtr> SerialMessageProcessor::receiveMessageIfAvailable()
+std::optional<SerialMessageProcessor::MsgPtr> 
+SerialMessageProcessor::receiveMessageIfAvailable()
 {
     auto msgId = mLink.getMsgType();
     if ( msgId )
@@ -66,13 +53,12 @@ std::optional<SerialMessageProcessor::MsgPtr> SerialMessageProcessor::receiveMes
     }
     else
     {
-        return std::nullopt; 
+        return std::nullopt;
     }
 }
 
-
-
-void SerialMessageProcessor::dispatchOneSerialMessage( EventManager& events, SerialLink& link )
+void SerialMessageProcessor::dispatchOneSerialMessage( EventManager& events,
+                                                       SerialLink& link )
 {
     auto msg{ receiveMessageIfAvailable() };
     if ( msg )
@@ -80,4 +66,3 @@ void SerialMessageProcessor::dispatchOneSerialMessage( EventManager& events, Ser
         msg.value()->takeAction( events, link );
     }
 }
-

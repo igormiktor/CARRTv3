@@ -3,7 +3,7 @@
     between the RPI and Pico.  This file is shared by both the
     RPi and Pico code bases.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,33 +19,28 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "SerialLink.h"
 
-
-
-std::optional<int> SerialLink::getInt()                  
-{ 
-    auto got = get4Bytes(); 
+std::optional<int> SerialLink::getInt()
+{
+    auto got = get4Bytes();
     if ( got )
     {
         RawData r( *got );
         return r.i();
     }
-    else 
-        return std::nullopt; 
+    else
+        return std::nullopt;
 }
 
-    
-
-std::optional<float> SerialLink::getFloat()              
-{ 
-    auto got = get4Bytes(); 
+std::optional<float> SerialLink::getFloat()
+{
+    auto got = get4Bytes();
     if ( got )
     {
         RawData r( *got );
         return r.f();
     }
-    else 
-        return std::nullopt; 
+    else
+        return std::nullopt;
 }

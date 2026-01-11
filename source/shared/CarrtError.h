@@ -1,7 +1,7 @@
 /*
     CarrtError.h - Base Error class for CARRT3
 
-    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,77 +17,64 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
-
-
 #ifndef CarrtError_h
 #define CarrtError_h
-
 
 #include <stdexcept>
 
 #include "ErrorCodes.h"
 
-
 class CarrtError : public std::runtime_error
 {
 public:
-
     explicit CarrtError( int errCode, const std::string& what )
-        : std::runtime_error( what ), mErrorCode( errCode ) {}
+        : std::runtime_error( what ), mErrorCode( errCode )
+    {}
 
     explicit CarrtError( int errCode, const char* what )
-        : std::runtime_error( what ), mErrorCode( errCode ) {}
+        : std::runtime_error( what ), mErrorCode( errCode )
+    {}
 
-    int errorCode() const
-        { return mErrorCode; }
+    int errorCode() const { return mErrorCode; }
 
 private:
-
     int mErrorCode;
 };
 
-
-
-
+////////////////////////////////////////////////////////////////////////////////
 
 inline int makeRpi0ErrorId( int moduleId, int functionId, int error )
 {
-    return ( moduleId * kRPi0ModuleIdErrIncrement ) 
-        + ( functionId * kRPi0FunctionIdErrIncrement ) + ( kRPi0ErrorSign * error );
+    return ( moduleId * kRPi0ModuleIdErrIncrement )
+           + ( functionId * kRPi0FunctionIdErrIncrement )
+           + ( kRPi0ErrorSign * error );
 }
-
 
 inline int makePicoErrorId( int moduleId, int functionId, int error )
 {
-    return ( moduleId * kPicoModuleIdErrIncrement ) 
-        + ( functionId * kPicoFunctionIdErrIncrement ) + ( kPicoErrorSign * error );
+    return ( moduleId * kPicoModuleIdErrIncrement )
+           + ( functionId * kPicoFunctionIdErrIncrement )
+           + ( kPicoErrorSign * error );
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
 
 #if BUILDING_FOR_PICO
 
 inline int makeSharedErrorId( int moduleId, int functionId, int error )
 {
-    return makePicoErrorId( moduleId, functionId,  error );
+    return makePicoErrorId( moduleId, functionId, error );
 }
 
-#endif  // BUILDING_FOR_PICO
-
+#endif    // BUILDING_FOR_PICO
 
 #if BUILDING_FOR_RPI0
 
 inline int makeSharedErrorId( int moduleId, int functionId, int error )
 {
-    return makeRpi0ErrorId( moduleId, functionId,  error );
+    return makeRpi0ErrorId( moduleId, functionId, error );
 }
 
-#endif  // BUILDING_FOR_RPI0
+#endif    // BUILDING_FOR_RPI0
 
-
-
-
-#endif  // CarrtError_h
+#endif    // CarrtError_h
