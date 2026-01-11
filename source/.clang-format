@@ -19,7 +19,7 @@ AlignConsecutiveBitFields:
   AlignFunctionPointers: false
   PadOperators:    false
 AlignConsecutiveDeclarations:
-  Enabled:         true
+  Enabled:         false
   AcrossEmptyLines: false
   AcrossComments:  false
   AlignCompound:   false
@@ -78,22 +78,22 @@ BraceWrapping:
   BeforeLambdaBody: true
   BeforeWhile:     true
   IndentBraces:    false
-  SplitEmptyFunction: true
-  SplitEmptyRecord: true
-  SplitEmptyNamespace: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
 BreakAdjacentStringLiterals: true
 BreakAfterAttributes: Leave
 BreakAfterJavaFieldAnnotations: false
 BreakArrays:     true
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeConceptDeclarations: Always
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Custom
 BreakBeforeInlineASMColon: OnlyMultiline
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
 BreakInheritanceList: BeforeColon
 BreakStringLiterals: true
-ColumnLimit:     140
+ColumnLimit:     80
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 4
@@ -109,9 +109,9 @@ ForEachMacros:
   - BOOST_FOREACH
 IfMacros:
   - KJ_IF_MAYBE
-IncludeBlocks:   Preserve
+IncludeBlocks:   Regroup
 IncludeCategories:
-  - Regex:           '^<ext/.*\.h>'
+  - Regex:           '^<.*/.*\.h>'
     Priority:        2
     SortPriority:    0
     CaseSensitive:   false
@@ -120,11 +120,11 @@ IncludeCategories:
     SortPriority:    0
     CaseSensitive:   false
   - Regex:           '^<.*'
-    Priority:        2
+    Priority:        3
     SortPriority:    0
     CaseSensitive:   false
   - Regex:           '.*'
-    Priority:        3
+    Priority:        4
     SortPriority:    0
     CaseSensitive:   false
 IncludeIsMainRegex: '([-_](test|unittest))?$'
