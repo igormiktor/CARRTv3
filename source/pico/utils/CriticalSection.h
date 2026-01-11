@@ -10,7 +10,7 @@
     }
     // non-critical code...
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,45 +26,32 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef CriticalSection_h
 #define CriticalSection_h
 
-#include "pico/critical_section.h"
+#include <pico/critical_section.h>
 
 #include "CarrtError.h"
 
-
-
 class CriticalSection
 {
-    public:
-
-        explicit CriticalSection( critical_section_t& initializedCritSection )
+public:
+    explicit CriticalSection( critical_section_t& initializedCritSection )
         : mCriticalSection( initializedCritSection )
-        {
-            critical_section_enter_blocking( &mCriticalSection );
-        }
+    {
+        critical_section_enter_blocking( &mCriticalSection );
+    }
 
-        // Local objects that exist and self-destruct; nothing else
-        CriticalSection( const CriticalSection& )               = delete;  
-        CriticalSection( CriticalSection&& )                    = delete;    
-        CriticalSection& operator=( const CriticalSection& )    = delete;
-        CriticalSection& operator=( CriticalSection&& )         = delete;
+    // Local objects that exist and self-destruct; nothing else
+    CriticalSection( const CriticalSection& ) = delete;
+    CriticalSection( CriticalSection&& ) = delete;
+    CriticalSection& operator=( const CriticalSection& ) = delete;
+    CriticalSection& operator=( CriticalSection&& ) = delete;
 
+    ~CriticalSection() { critical_section_exit( &mCriticalSection ); }
 
-        ~CriticalSection()
-        {
-            critical_section_exit( &mCriticalSection );
-        }
-
-
-    private:
-
-        critical_section_t&   mCriticalSection;
-
+private:
+    critical_section_t& mCriticalSection;
 };
 
-
-
-#endif // CriticalSection_h
+#endif    // CriticalSection_h
