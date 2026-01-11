@@ -1,7 +1,7 @@
 /*
     HeartBeatLed.cpp - Manage a heart-beat LED for CARRT-Pico
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,22 +17,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #include "HeartBeatLed.h"
 
-#include "pico/stdlib.h"
+#include <pico/stdlib.h>
 
 #include <cstdint>
 
 #include "CarrtPicoDefines.h"
 
-
 namespace HeartBeatLed
 {
     std::uint8_t ledState = 0;
 }
-
 
 void HeartBeatLed::initialize() noexcept
 {
@@ -43,10 +39,8 @@ void HeartBeatLed::initialize() noexcept
     toggle();
 }
 
-
 void HeartBeatLed::toggle() noexcept
 {
     gpio_put( CARRTPICO_HEARTBEAT_LED, HeartBeatLed::ledState );
     HeartBeatLed::ledState = !HeartBeatLed::ledState;
 }
-

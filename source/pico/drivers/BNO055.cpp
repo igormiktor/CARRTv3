@@ -17,25 +17,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "BNO055.h"
 
-#include "pico/stdlib.h"
+#include <pico/stdlib.h>
 
 #include "CarrtError.h"
 #include "I2C.h"
 
-
-
+// clang-format off
 extern "C"
 {
     // This file does not have guards for C++
     #include "BNO055/bno055.h"
 }
-
-
-
-
+// clang-format on
 
 #if 0
 // copied here for easy reference
@@ -50,77 +45,65 @@ struct bno055_t
     u8 bl_rev_id; /**< boot loader revision id of bno055 */
     u8 dev_addr; /**< i2c device address of bno055 */
     BNO055_WR_FUNC_PTR; /**< bus write function pointer */
-    BNO055_RD_FUNC_PTR; /**<bus read function pointer */
+    BNO055_RD_FUNC_PTR; /**< bus read function pointer */
     void (*delay_msec)(BNO055_MDELAY_DATA_TYPE); /**< delay function pointer */
 };
-#endif // #if 0 (struct bno055_t for reference)
-
-
+#endif    // #if 0 (struct bno055_t for reference)
 
 namespace BNO055
 {
-    struct bno055_t     sBno055;
+    struct bno055_t sBno055;
 
     void delayMsec( unsigned int msec );
-};
+};    // namespace BNO055
 
-
-
-
-
-
-
-void BNO055::delayMsec( unsigned int msec )
-{
-    sleep_ms( msec );
-}
-
-
-
+void BNO055::delayMsec( unsigned int msec ) { sleep_ms( msec ); }
 
 void BNO055::init()
 {
-    sBno055.dev_addr = BNO055_I2C_ADDR1;    
+    sBno055.dev_addr = BNO055_I2C_ADDR1;
     sBno055.bus_write = I2C::send;
     sBno055.bus_read = I2C::receive;
     sBno055.delay_msec = BNO055::delayMsec;
 
-    int err = bno055_init( &sBno055 );                          // No delay calls
+    int err = bno055_init( &sBno055 );    // No delay calls
 
-    // Set the power mode as NORMAL 
-    err += bno055_set_power_mode( BNO055_POWER_MODE_NORMAL );   // No delay calls
+    // Set the power mode as NORMAL
+    err +=
+        bno055_set_power_mode( BNO055_POWER_MODE_NORMAL );    // No delay calls
 
     // Re-map the axes to what we need for our configuration
-    err += bno055_set_axis_remap_value( BNO055_REMAP_X_Y );     // No delay calls
-    err += bno055_set_remap_z_sign( 1 );                        // No delay calls
+    err += bno055_set_axis_remap_value( BNO055_REMAP_X_Y );    // No delay calls
+    err += bno055_set_remap_z_sign( 1 );                       // No delay calls
 
     // Set mode of the BNO055 to NDOF (9 Degs of Freedom, Fused)
-    err += bno055_set_operation_mode( BNO055_OPERATION_MODE_NDOF );     // Big delay calls (600ms)
+    // Big delay calls in next function (totalling 600ms)
+    err += bno055_set_operation_mode( BNO055_OPERATION_MODE_NDOF );
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 1, err ), "CARRT Pico BNO055 init failed" );
+        throw CarrtError(
+            makePicoErrorId( PicoError::kPicoI2cBNO055Error, 1, err ),
+            "CARRT Pico BNO055 init failed" );
     }
 
     // Need to calibrate the BNO055, but that will be a separate function
 }
-    
-
 
 float BNO055::getHeading()
 {
-    float heading{-666 };
-    std::int8_t err { bno055_convert_float_euler_h_deg( &heading ) };
+    float heading{ -666 };
+    std::int8_t err{ bno055_convert_float_euler_h_deg( &heading ) };
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 2, err ), "CARRT Pico BNO055 failed to get cheading" );
+        throw CarrtError(
+            makePicoErrorId( PicoError::kPicoI2cBNO055Error, 2, err ),
+            "CARRT Pico BNO055 failed to get cheading" );
     }
 
     return heading;
 }
-
-
 
 std::uint8_t BNO055::getMagCalibration()
 {
@@ -129,12 +112,13 @@ std::uint8_t BNO055::getMagCalibration()
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 3, err ), "CARRT Pico BNO055 failed to get cheading" );
+        throw CarrtError(
+            makePicoErrorId( PicoError::kPicoI2cBNO055Error, 3, err ),
+            "CARRT Pico BNO055 failed to get cheading" );
     }
 
     return static_cast<std::uint8_t>( calib );
 }
-
 
 std::uint8_t BNO055::getAccelCalibration()
 {
@@ -143,13 +127,13 @@ std::uint8_t BNO055::getAccelCalibration()
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 4, err ), "CARRT Pico BNO055 failed to get cheading" );
+        throw CarrtError(
+            makePicoErrorId( PicoError::kPicoI2cBNO055Error, 4, err ),
+            "CARRT Pico BNO055 failed to get cheading" );
     }
 
     return static_cast<std::uint8_t>( calib );
-
 }
-
 
 std::uint8_t BNO055::getGyroCalibration()
 {
@@ -158,12 +142,13 @@ std::uint8_t BNO055::getGyroCalibration()
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 5, err ), "CARRT Pico BNO055 failed to get cheading" );
+        throw CarrtError(
+            makePicoErrorId( PicoError::kPicoI2cBNO055Error, 5, err ),
+            "CARRT Pico BNO055 failed to get cheading" );
     }
 
     return static_cast<std::uint8_t>( calib );
 }
-
 
 std::uint8_t BNO055::getSysCalibration()
 {
@@ -172,14 +157,16 @@ std::uint8_t BNO055::getSysCalibration()
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 6, err ), "CARRT Pico BNO055 failed to get cheading" );
+        throw CarrtError(
+            makePicoErrorId( PicoError::kPicoI2cBNO055Error, 6, err ),
+            "CARRT Pico BNO055 failed to get cheading" );
     }
 
     return static_cast<std::uint8_t>( calib );
 }
 
-
-int BNO055::getCalibration( unsigned char* gyro, unsigned char* accel, unsigned char* mag )
+int BNO055::getCalibration( unsigned char* gyro, unsigned char* accel,
+                            unsigned char* mag )
 {
     unsigned char system{ 0 };
 
@@ -187,13 +174,13 @@ int BNO055::getCalibration( unsigned char* gyro, unsigned char* accel, unsigned 
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 7, err ), "CARRT Pico BNO055 failed to get calibration" );
+        throw CarrtError(
+            makePicoErrorId( PicoError::kPicoI2cBNO055Error, 7, err ),
+            "CARRT Pico BNO055 failed to get calibration" );
     }
 
     return system;
 }
-
-
 
 BNO055::Calibration BNO055::getCalibration()
 {
@@ -206,13 +193,14 @@ BNO055::Calibration BNO055::getCalibration()
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 8, err ), "CARRT Pico BNO055 failed to get calibration" );
+        throw CarrtError(
+            makePicoErrorId( PicoError::kPicoI2cBNO055Error, 8, err ),
+            "CARRT Pico BNO055 failed to get calibration" );
     }
 
-    return Calibration{ .mag = mag, .accel = accel, .gyro = gyro, .system = system };
+    return Calibration{
+        .mag = mag, .accel = accel, .gyro = gyro, .system = system };
 }
-
-
 
 void BNO055::reset()
 {
@@ -220,6 +208,8 @@ void BNO055::reset()
 
     if ( err )
     {
-        throw CarrtError( makePicoErrorId( PicoError::kPicoI2cBNO055Error, 9, err ), "CARRT Pico BNO055 init failed" );
+        throw CarrtError(
+            makePicoErrorId( PicoError::kPicoI2cBNO055Error, 9, err ),
+            "CARRT Pico BNO055 init failed" );
     }
 }

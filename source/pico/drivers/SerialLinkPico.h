@@ -1,8 +1,9 @@
 /*
-    SerialLinkPico.h - Tools for CARRT3 communications over serial (UART) link
-    between the RPI and Pico.  This is the Pico implementation of the SerialLink.  
+    SerialLinkPico.h - Tools for CARRT3 communications over serial (UART)
+    link between the RPI and Pico.
+    This is the Pico implementation of the SerialLink.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,46 +19,35 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef SerialLinkPico_h
 #define SerialLinkPico_h
-
-
-
 
 #include <cstdint>
 #include <optional>
 
 #include "SerialLink.h"
 
-
 class SerialLinkPico : public SerialLink
 {
-
 public:
-
     SerialLinkPico() noexcept;
     virtual ~SerialLinkPico() noexcept;
 
-    
-    // Disable undesired defaults (create, delete, but no move, copy, or assignment)
+    // Disable undesired defaults (no move, copy, or assignment)
     SerialLinkPico( const SerialLinkPico& ) = delete;
     SerialLinkPico( SerialLinkPico&& ) = delete;
     SerialLinkPico& operator=( const SerialLinkPico& ) = delete;
     SerialLinkPico& operator=( SerialLinkPico&& ) = delete;
 
-
     // Fundamental read functions
     std::optional<MsgId> getMsgType() override;
     std::optional<std::uint8_t> getByte() override;
-    bool get4Bytes( std::uint8_t c[4] ) override;
     std::optional<std::uint32_t> get4Bytes() override;
-
+    bool get4Bytes( std::uint8_t c[ 4 ] ) override;
 
     // Fundamental write functions
     void putByte( std::uint8_t c ) override;
-    void put4Bytes( const std::uint8_t c[4] ) override;
-
+    void put4Bytes( const std::uint8_t c[ 4 ] ) override;
 
     // Bulk functions
     int getBytes( int nbr, std::uint8_t* buffer ) override;
@@ -65,17 +55,9 @@ public:
 
     // Additional functions (not part of base class)
     bool isReadable() noexcept;
-    
 
 private:
-
     int mSerialPort;
-
 };
 
-
-
-
-
-
-#endif // SerialLink_h
+#endif    // SerialLink_h

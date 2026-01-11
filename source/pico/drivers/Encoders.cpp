@@ -17,10 +17,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "Encoders.h"
 
-#include "hardware/gpio.h"
+#include <hardware/gpio.h>
 
 #include <cstdint>
 
@@ -28,26 +27,17 @@
 #include "Clock.h"
 #include "EventManager.h"
 
-
-
-
-
 /***************************************************/
 
 // All this code intended to run on Core 1
 
 /***************************************************/
 
-
-
-
 namespace Encoders
 {
-    void configureEncoderGpio( uint gpio, gpio_irq_callback_t callback ) noexcept;
+    void configureEncoderGpio( uint gpio,
+                               gpio_irq_callback_t callback ) noexcept;
 };
-
-
-
 
 void callbackLeftEncoder( uint, std::uint32_t events )
 {
@@ -70,15 +60,14 @@ void callbackLeftEncoder( uint, std::uint32_t events )
     }
     if ( events & GPIO_IRQ_EDGE_RISE )
     {
-        direction = 1;;
+        direction = 1;
+        ;
     }
 
     Events().queueEvent( EvtId::kEncoderLeftEvent, direction, tick );
 
     return;
 }
-
-
 
 void callbackRightEncoder( uint, std::uint32_t events )
 {
@@ -105,27 +94,24 @@ void callbackRightEncoder( uint, std::uint32_t events )
     }
 
     Events().queueEvent( EvtId::kEncoderRightEvent, direction, tick );
-    
+
     return;
 }
-
-
 
 void Encoders::initEncoders() noexcept
 {
     // Call this from the core that will receive the interrupts
-    configureEncoderGpio( CARRTPICO_ENCODER_LEFT_GPIO, callbackLeftEncoder ); 
-    configureEncoderGpio( CARRTPICO_ENCODER_RIGHT_GPIO, callbackRightEncoder ); 
+    configureEncoderGpio( CARRTPICO_ENCODER_LEFT_GPIO, callbackLeftEncoder );
+    configureEncoderGpio( CARRTPICO_ENCODER_RIGHT_GPIO, callbackRightEncoder );
 }
 
-
-
-void Encoders::configureEncoderGpio( uint pin, gpio_irq_callback_t callBack ) noexcept
+void Encoders::configureEncoderGpio( uint pin,
+                                     gpio_irq_callback_t callBack ) noexcept
 {
     // Configure interrupt on "pin" with "callback"
     gpio_init( pin );
     gpio_set_dir( pin, GPIO_IN );
     gpio_pull_down( pin );
-    gpio_set_irq_enabled_with_callback( pin, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, 
-        true, callBack );
+    gpio_set_irq_enabled_with_callback(
+        pin, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, callBack );
 }

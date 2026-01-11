@@ -1,8 +1,9 @@
 /*
-    SerialLink.cpp - A serial link for CARRT-Pico. This is the Pico implementation.
+    SerialLink.cpp - A serial link for CARRT-Pico.
+    This is the Pico implementation.
     (Implementation for RPiO in the RPi0 source directory)
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,59 +19,42 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "SerialLinkPico.h"
 
-#include "hardware/gpio.h"
-#include "hardware/uart.h"
-#include "pico/binary_info.h"
+#include <hardware/gpio.h>
+#include <hardware/uart.h>
+#include <pico/binary_info.h>
 
 #include "CarrtPicoDefines.h"
 #include "Clock.h"
-
-
-
-
-
 
 namespace
 {
     constexpr int kMaxReadAttempts{ 16 };
 
     constexpr auto kSmallPause{ 50us };
-}
-
-
-
-
-
+}    // namespace
 
 /*****************************************************************
 
-    Note: 
+    Note:
 
     Pico SDK's UART read/write functions don't have any error
     reporting mechanism...
 
 ****************************************************************/
 
-
-
-
-
-
 SerialLinkPico::SerialLinkPico() noexcept
 {
     // Initialise UART for the Serial-Link
-    uart_init( CARRTPICO_SERIAL_LINK_UART, CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
+    uart_init( CARRTPICO_SERIAL_LINK_UART,
+               CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
     uart_set_translate_crlf( CARRTPICO_SERIAL_LINK_UART, false );
 
     // Set the GPIO pin mux to the UART
     gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
     gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
 }
-
-
 
 SerialLinkPico::~SerialLinkPico() noexcept
 {
@@ -80,19 +64,15 @@ SerialLinkPico::~SerialLinkPico() noexcept
     uart_deinit( CARRTPICO_SERIAL_LINK_UART );
 }
 
-
-
 bool SerialLinkPico::isReadable() noexcept
 {
     return uart_is_readable( CARRTPICO_SERIAL_LINK_UART );
 }
 
-
-
 std::optional<MsgId> SerialLinkPico::getMsgType()
 {
-    // Reading always blocks, so make semantics the same by first checking if 
-    // there is data to read
+    // Reading always blocks, so make semantics the same by first
+    // checking if there is data to read
     if ( isReadable() )
     {
         return static_cast<MsgId>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
@@ -103,17 +83,15 @@ std::optional<MsgId> SerialLinkPico::getMsgType()
     }
 }
 
-
-
 std::optional<std::uint8_t> SerialLinkPico::getByte()
 {
-    // Function is called when reading parts of a message, so we expect 
+    // Function is called when reading parts of a message, so we expect
     // a byte is in the queue.  So data is there or it will soon be there.
 
-    // Reading always blocks, so make semantics the same by first checking if 
-    // there is data to read, and then making multiple attempts to read the 
+    // Reading always blocks, so make semantics the same by first checking if
+    // there is data to read, and then making multiple attempts to read the
     // expected byte before giving up
-    
+
     int attempts{ 0 };
     while ( attempts++ < kMaxReadAttempts )
     {
@@ -121,7 +99,8 @@ std::optional<std::uint8_t> SerialLinkPico::getByte()
         if ( isReadable() )
         {
             // We are done...
-            return static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+            return static_cast<std::uint8_t>(
+                uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
         }
 
         // If we weren't successful, add a little delay and try again
@@ -133,8 +112,6 @@ std::optional<std::uint8_t> SerialLinkPico::getByte()
 
     return std::nullopt;
 }
-
-
 
 std::optional<std::uint32_t> SerialLinkPico::get4Bytes()
 {
@@ -151,27 +128,28 @@ std::optional<std::uint32_t> SerialLinkPico::get4Bytes()
     }
 }
 
-
-
-bool SerialLinkPico::get4Bytes( std::uint8_t c[4] )
+bool SerialLinkPico::get4Bytes( std::uint8_t c[ 4 ] )
 {
-    // Function is called when reading parts of a message, so we expect 
-    // 4 bytes to show up in the queue.  So data is there or it will soon be there.
+    // Function is called when reading parts of a message, so we
+    // expect 4 bytes to show up in the queue.  So data is there or it
+    // will soon be there.
 
-    // Reading always blocks, so make semantics the same by first checking if 
-    // there is data to read.  Have to do this on a byte-by-byte basis because
-    // isReadable() only guarantees at least 1 byte in queue (not 4 bytes)
+    // Reading always blocks on Pico, so make semantics the same by first
+    // checking if there is data to read.  Have to do this on a byte-by-byte
+    // basis because isReadable() only guarantees at least 1 byte in queue,
+    // not the full 4 bytes we are expecting
 
     int numRead{ 0 };
     int attempts{ 0 };
-    while ( numRead < 4 && attempts < kMaxReadAttempts )    
+    while ( numRead < 4 && attempts < kMaxReadAttempts )
     {
         // Try reading a byte
         if ( isReadable() )
         {
-            c[ numRead++ ] = static_cast<std::uint8_t>( uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
+            c[ numRead++ ] = static_cast<std::uint8_t>(
+                uart_getc( CARRTPICO_SERIAL_LINK_UART ) );
 
-            // Intentionally do NOT increment attempts when we have a successful read
+            // Intentionally do NOT increment when we have a successful read
         }
         else
         {
@@ -191,21 +169,15 @@ bool SerialLinkPico::get4Bytes( std::uint8_t c[4] )
     return false;
 }
 
-
-
 void SerialLinkPico::putByte( std::uint8_t c )
 {
     uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( c ) );
 }
 
-
-
-void SerialLinkPico::put4Bytes( const std::uint8_t c[4] )
+void SerialLinkPico::put4Bytes( const std::uint8_t c[ 4 ] )
 {
     uart_write_blocking( CARRTPICO_SERIAL_LINK_UART, c, 4 );
 }
-
-
 
 int SerialLinkPico::getBytes( int nbr, std::uint8_t* buffer )
 {
@@ -213,11 +185,8 @@ int SerialLinkPico::getBytes( int nbr, std::uint8_t* buffer )
     return nbr;
 }
 
-
-
 int SerialLinkPico::putBytes( int nbr, const std::uint8_t* buffer )
 {
     uart_write_blocking( CARRTPICO_SERIAL_LINK_UART, buffer, nbr );
     return nbr;
 }
-

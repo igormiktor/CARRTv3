@@ -1,7 +1,7 @@
 /*
     I2C.h - I2C functions for CARRT Pico.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,11 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef I2C_h
 #define I2C_h
-
-
 
 namespace I2C
 {
@@ -30,15 +27,13 @@ namespace I2C
 
     extern "C"
     {
-        signed char send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept;
+        signed char send( unsigned char address, unsigned char reg,
+                          unsigned char* data, unsigned char len ) noexcept;
 
-        signed char receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept;
+        signed char receive( unsigned char address, unsigned char reg,
+                             unsigned char* data, unsigned char len ) noexcept;
     }
 
-};
+};    // namespace I2C
 
-
-
-
-#endif  // I2C_h
-
+#endif    // I2C_h

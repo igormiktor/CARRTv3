@@ -1,7 +1,7 @@
 /*
     I2C.cpp - I2C functions for CARRT Pico.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,53 +17,49 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "I2C.h"
-
-#include "pico/stdlib.h"
-#include "hardware/i2c.h"
 
 #include <cstring>
 
 #include "CarrtError.h"
 #include "CarrtPicoDefines.h"
-
-
-
-
-
-
+#include "hardware/i2c.h"
+#include "pico/stdlib.h"
 
 void I2C::initI2C() noexcept
 {
     // I2C Initialisation
     i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
-    
-    gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C ) ;
+
+    gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C );
     gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
     gpio_pull_up( CARRTPICO_I2C_SDA );
     gpio_pull_up( CARRTPICO_I2C_SCL );
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
-
-extern "C" signed char I2C::send( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept
+extern "C" signed char I2C::send( unsigned char address, unsigned char reg,
+                                  unsigned char* data,
+                                  unsigned char len ) noexcept
 {
-    constexpr int CARRT_BNO055_MAX_SENT_MSG_LEN = 18;   // Actual longest message sent to BNO055 is 18 bytes; need +1 for address
+    // Actual longest message sent to BNO055 is 18 bytes; need +1 for address
+    constexpr int kCarrtBNO055MaxSentMsgLen = 18;
 
-    if ( len > 18 )
+    if ( len > kCarrtBNO055MaxSentMsgLen )
     {
         return PICO_ERROR_GENERIC;
     }
 
-    unsigned char array[ CARRT_BNO055_MAX_SENT_MSG_LEN + 1 ];
-    array[0] = reg;
-    std::memcpy( (array + 1), data, len );
+    unsigned char array[ kCarrtBNO055MaxSentMsgLen + 1 ];
+    array[ 0 ] = reg;
+    std::memcpy( ( array + 1 ), data, len );
 
     // Count the reg entry in array[0]
     ++len;
 
-    int ret = i2c_write_blocking( CARRTPICO_I2C_PORT, address, array, len, false );
+    int ret =
+        i2c_write_blocking( CARRTPICO_I2C_PORT, address, array, len, false );
 
     if ( ret == len )
     {
@@ -75,16 +71,19 @@ extern "C" signed char I2C::send( unsigned char address, unsigned char reg, unsi
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
-
-extern "C" signed char I2C::receive( unsigned char address, unsigned char reg, unsigned char* data, unsigned char len ) noexcept
+extern "C" signed char I2C::receive( unsigned char address, unsigned char reg,
+                                     unsigned char* data,
+                                     unsigned char len ) noexcept
 {
     // Write the register address without a STOP...
     int ret = i2c_write_blocking( CARRTPICO_I2C_PORT, address, &reg, 1, true );
     if ( ret == 1 )
     {
         // Then read the data...
-        ret = i2c_read_blocking( CARRTPICO_I2C_PORT, address, data, len, false );
+        ret =
+            i2c_read_blocking( CARRTPICO_I2C_PORT, address, data, len, false );
         if ( ret == len )
         {
             ret = 0;
@@ -100,5 +99,3 @@ extern "C" signed char I2C::receive( unsigned char address, unsigned char reg, u
         return 0;
     }
 }
-
-
