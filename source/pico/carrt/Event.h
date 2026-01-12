@@ -1,8 +1,8 @@
 /*
-    Event.h - CARRTv3 events for Pico.  
+    Event.h - CARRTv3 events for Pico.
     This file is shared by both the RPI and Pico code bases.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,11 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef Event_h
 #define Event_h
-
-
 
 enum class EvtId : int
 {
@@ -68,9 +65,4 @@ enum class EvtId : int
     kLastEvent
 };
 
-
-
-
-
-
-#endif // Event_h
+#endif    // Event_h

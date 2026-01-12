@@ -1,6 +1,6 @@
 /*
-    MainProcess.h - Functions that manage CARRT-Pico's main function.  These run the primary event loop
-    and dispaches to other code as needed.
+    MainProcess.h - Functions that manage CARRT-Pico's main function.
+    These run the primary event loop and dispaches to other code as needed.
 
     Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
 
@@ -18,15 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 class EventManager;
-class SerialLinkPico;
 class EventProcessor;
+class SerialLinkPico;
 class SerialMessageProcessor;
-
 
 namespace MainProcess
 {
-    void runMainEventLoop( EventManager& events, EventProcessor& ep, SerialMessageProcessor& smp, SerialLinkPico& rpi0 );
+    void runMainEventLoop( EventManager& events, EventProcessor& ep,
+                           SerialMessageProcessor& smp, SerialLinkPico& rpi0 );
 }
-

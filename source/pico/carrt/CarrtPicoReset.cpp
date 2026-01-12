@@ -1,7 +1,7 @@
 /*
-    CarrtPicoReset.cpp - CARRT-Pico's reset function.  Reinitializes the Pico.
+    CarrtPicoReset.cpp - CARRT-Pico's reset function. Reinitializes the Pico.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,34 +17,29 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
 #include "CarrtPicoReset.h"
 
-#include "hardware/sync.h"
-#include "hardware/watchdog.h"
-#include "pico/stdlib.h"
+#include <hardware/sync.h>
+#include <hardware/watchdog.h>
+#include <pico/stdlib.h>
 
 #include "Clock.h"
 #include "OutputUtils.hpp"
-#include "SerialMessages.h"
 #include "SerialLinkPico.h"
-
-
+#include "SerialMessages.h"
 
 void PicoReset::reset( SerialLink& rpi0 )
 {
-    // This performs a "reboot" reset (so don't care about queues overflowing )
+    // This performs a "reboot" reset (so don't care about queues overflowing)
     // Let RPi0 know we are going to reset
     ResetPicoMsg resetMsg;
     resetMsg.sendOut( rpi0 );
 
     output2cout( "Pico reseting via watchdog_reboot" );
-    
+
     Clock::sleep( 100ms );
 
-    watchdog_reboot( 0, SRAM_END, 0 ); 
+    watchdog_reboot( 0, SRAM_END, 0 );
 
     // Wait for the reset to happen
     while ( 1 )
@@ -53,18 +48,16 @@ void PicoReset::reset( SerialLink& rpi0 )
     }
 }
 
-
 void PicoReset::fatalReset()
 {
     // This performs a "reboot" reset after falling off the end of main
-    // Only things we can rely on are low-level pico SDK functionality 
-     
-    watchdog_reboot( 0, SRAM_END, 0 ); 
+    // Only things we can rely on are low-level pico SDK functionality
+
+    watchdog_reboot( 0, SRAM_END, 0 );
 
     // Wait for the reset to happen
     while ( 1 )
     {
-         tight_loop_contents(); 
+        tight_loop_contents();
     }
 }
-

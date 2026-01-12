@@ -1,7 +1,7 @@
 /*
     PicoState.cpp - System-wide state information for CARRT-Pico
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,34 +17,30 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "PicoState.h"
 
 #include "CoreAtomic.hpp"
 
-
-
-namespace 
+namespace
 {
     // These all happen in Core0 so no atomics needed
-    bool  sSendQtrSecTimerMsgs{ false };
-    bool  sSend1SecTimerMsgs{ false };
-    bool  sSend8SecTimerMsgs{ false };
-    bool  sSendNavMsgs{ false };
-    bool  sSendNavStatusMsgs{ false };
-    bool  sSendEncoderMsgs{ false };
-    bool  sSendCalibrationMsgs{ false };
+    bool sSendQtrSecTimerMsgs{ false };
+    bool sSend1SecTimerMsgs{ false };
+    bool sSend8SecTimerMsgs{ false };
+    bool sSendNavMsgs{ false };
+    bool sSendNavStatusMsgs{ false };
+    bool sSendEncoderMsgs{ false };
+    bool sSendCalibrationMsgs{ false };
 
-    bool  sStartUpFinished{ false };
-    bool  sNavCalibrated{ false };
-    bool  sAutoCalibrateMode{ false }; 
+    bool sStartUpFinished{ false };
+    bool sNavCalibrated{ false };
+    bool sAutoCalibrateMode{ false };
 
     // These are shared Core0 and Core1 and require atomics
     CoreAtomic::CAtomic<bool> sInCalibrationMode{ false };
-}
+}    // namespace
 
-
-
+// clang-format off
 void PicoState::initialize() noexcept
 {
     sSendQtrSecTimerMsgs    = false;
@@ -61,7 +57,9 @@ void PicoState::initialize() noexcept
     
     sInCalibrationMode      = false;
 }
+// clang-format on
 
+////////////////////////////////////////////////////////////////////////////////
 
 bool PicoState::startUpFinished( bool newVal ) noexcept
 {
@@ -70,17 +68,13 @@ bool PicoState::startUpFinished( bool newVal ) noexcept
     return oldVal;
 }
 
-bool PicoState::startUpFinished() noexcept
-{
-    return sStartUpFinished;
-}
-
+bool PicoState::startUpFinished() noexcept { return sStartUpFinished; }
 
 void PicoState::sendAllTimerMsgs( bool newVal ) noexcept
 {
-    sSendQtrSecTimerMsgs    = newVal;
-    sSend1SecTimerMsgs      = newVal;
-    sSend8SecTimerMsgs      = newVal;
+    sSendQtrSecTimerMsgs = newVal;
+    sSend1SecTimerMsgs = newVal;
+    sSend8SecTimerMsgs = newVal;
 }
 
 bool PicoState::sendQtrSecTimerMsgs( bool newVal ) noexcept
@@ -90,10 +84,7 @@ bool PicoState::sendQtrSecTimerMsgs( bool newVal ) noexcept
     return oldVal;
 }
 
-bool PicoState::wantQtrSecTimerMsgs() noexcept
-{
-    return sSendQtrSecTimerMsgs;
-}
+bool PicoState::wantQtrSecTimerMsgs() noexcept { return sSendQtrSecTimerMsgs; }
 
 bool PicoState::send1SecTimerMsgs( bool newVal ) noexcept
 {
@@ -102,10 +93,7 @@ bool PicoState::send1SecTimerMsgs( bool newVal ) noexcept
     return oldVal;
 }
 
-bool PicoState::want1SecTimerMsgs() noexcept
-{
-    return sSend1SecTimerMsgs;
-}
+bool PicoState::want1SecTimerMsgs() noexcept { return sSend1SecTimerMsgs; }
 
 bool PicoState::send8SecTimerMsgs( bool newVal ) noexcept
 {
@@ -114,11 +102,7 @@ bool PicoState::send8SecTimerMsgs( bool newVal ) noexcept
     return oldVal;
 }
 
-bool PicoState::want8SecTimerMsgs() noexcept
-{
-    return sSend8SecTimerMsgs;
-}
-
+bool PicoState::want8SecTimerMsgs() noexcept { return sSend8SecTimerMsgs; }
 
 bool PicoState::sendNavMsgs( bool newVal ) noexcept
 {
@@ -127,11 +111,7 @@ bool PicoState::sendNavMsgs( bool newVal ) noexcept
     return oldVal;
 }
 
-bool PicoState::wantNavMsgs() noexcept
-{
-    return sSendNavMsgs;
-}
-
+bool PicoState::wantNavMsgs() noexcept { return sSendNavMsgs; }
 
 bool PicoState::sendNavStatusMsgs( bool newVal ) noexcept
 {
@@ -140,11 +120,7 @@ bool PicoState::sendNavStatusMsgs( bool newVal ) noexcept
     return oldVal;
 }
 
-bool PicoState::wantNavStatusMsgs() noexcept
-{
-    return sSendNavStatusMsgs;
-}
-
+bool PicoState::wantNavStatusMsgs() noexcept { return sSendNavStatusMsgs; }
 
 bool PicoState::sendEncoderMsgs( bool newVal ) noexcept
 {
@@ -153,11 +129,7 @@ bool PicoState::sendEncoderMsgs( bool newVal ) noexcept
     return oldVal;
 }
 
-bool PicoState::wantEncoderMsgs() noexcept
-{
-    return sSendEncoderMsgs;
-}
-
+bool PicoState::wantEncoderMsgs() noexcept { return sSendEncoderMsgs; }
 
 bool PicoState::sendCalibrationMsgs( bool newVal ) noexcept
 {
@@ -166,12 +138,9 @@ bool PicoState::sendCalibrationMsgs( bool newVal ) noexcept
     return oldVal;
 }
 
-bool PicoState::wantCalibrationMsgs() noexcept
-{
-    return sSendEncoderMsgs;
-}
+bool PicoState::wantCalibrationMsgs() noexcept { return sSendEncoderMsgs; }
 
-
+// clang-format off
 void PicoState::allMsgsSendOn() noexcept
 {
     sSendQtrSecTimerMsgs    = true;
@@ -182,7 +151,9 @@ void PicoState::allMsgsSendOn() noexcept
     sSendEncoderMsgs        = true;
     sSendCalibrationMsgs    = true;
 }
+// clang-format on
 
+// clang-format off
 void PicoState::allMsgsSendOff() noexcept
 {
     sSendQtrSecTimerMsgs    = false;
@@ -193,12 +164,9 @@ void PicoState::allMsgsSendOff() noexcept
     sSendEncoderMsgs        = false;
     sSendCalibrationMsgs    = false;
 }
+// clang-format on
 
-
-bool PicoState::calibrationInProgress() noexcept
-{
-    return sInCalibrationMode;
-}
+bool PicoState::calibrationInProgress() noexcept { return sInCalibrationMode; }
 
 bool PicoState::calibrationInProgress( bool newVal ) noexcept
 {
@@ -207,11 +175,7 @@ bool PicoState::calibrationInProgress( bool newVal ) noexcept
     return oldVal;
 }
 
-
-bool PicoState::navCalibrated() noexcept    
-{
-    return sNavCalibrated;
-}  
+bool PicoState::navCalibrated() noexcept { return sNavCalibrated; }
 
 bool PicoState::navCalibrated( bool newVal ) noexcept
 {
@@ -220,11 +184,7 @@ bool PicoState::navCalibrated( bool newVal ) noexcept
     return oldVal;
 }
 
-
-bool PicoState::wantAutoCalibrate() noexcept
-{
-    return sAutoCalibrateMode;
-}
+bool PicoState::wantAutoCalibrate() noexcept { return sAutoCalibrateMode; }
 
 bool PicoState::wantAutoCalibrate( bool newVal ) noexcept
 {
@@ -232,4 +192,3 @@ bool PicoState::wantAutoCalibrate( bool newVal ) noexcept
     sAutoCalibrateMode = newVal;
     return oldVal;
 }
-

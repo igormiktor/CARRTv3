@@ -1,7 +1,7 @@
 /*
     EventHandler.h - A base class to handle events.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,10 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef EventHandler_h
 #define EventHandler_h
-
 
 #include <cstdint>
 
@@ -29,18 +27,15 @@ class SerialLink;
 
 enum class EvtId;
 
-class EventHandler 
+class EventHandler
 {
 public:
-
     EventHandler() = default;
     virtual ~EventHandler() = default;
 
-    virtual void handleEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const = 0;
+    virtual void handleEvent( EventManager& events, SerialLink& link,
+                              EvtId eventCode, int eventParam,
+                              std::uint32_t eventTime ) const = 0;
 };
 
-
-
-
-#endif  // EventHandler_h
-
+#endif    // EventHandler_h

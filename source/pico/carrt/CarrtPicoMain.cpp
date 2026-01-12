@@ -1,8 +1,8 @@
 /*
-    CarrtPicoMain.cpp - CARRT-Pico's main function.  Initializes and hands off to
-    the Main Process.
+    CarrtPicoMain.cpp - CARRT-Pico's main function.
+    Initializes and hands off to the Main Process.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,11 +17,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
-
-
-
 
 #include "BNO055.h"
 #include "CarrtError.h"
@@ -44,46 +39,41 @@
 #include "SerialMessageProcessor.h"
 #include "SerialMessages.h"
 
+#if 0    // Used to test compile definitions inherit properly in cmake build
 
+    #if defined( DEBUGUTILS_ON ) && DEBUGUTILS_ON
+        #pragma message "DEBUGUTILS_ON = ON"
+    #elif defined( DEBUGUTILS_ON )
+        #pragma message "DEBUGUTILS_N = OFF"
+    #else
+        #pragma message "DEBUGUTILS_N = undef"
+    #endif
 
+    #if defined( USE_CARRTPICO_STDIO ) && USE_CARRTPICO_STDIO
+        #pragma message "USE_CARRTPICO_STDIO = ON"
+    #elif defined( USE_CARRTPICO_STDIO )
+        #pragma message "USE_CARRTPICO_STDIO = OFF"
+    #else
+        #pragma message "USE_CARRTPICO_STDIO = undef"
+    #endif
 
+    #if defined( DEBUGCARRTPICO ) && DEBUGCARRTPICO
+        #pragma message "DEBUGCARRTPICO = ON"
+    #elif defined( DEBUGCARRTPICO )
+        #pragma message "DEBUGCARRTPICO = OFF"
+    #else
+        #pragma message "DEBUGCARRTPICO = undef"
+    #endif
 
-#if 0   // Use this to test that compile definitions inherit properly in cmake build
+    #if defined( BUILDING_FOR_PICO ) && BUILDING_FOR_PICO
+        #pragma message "BUILDING_FOR_PICO = ON"
+    #elif defined( BUILDING_FOR_PICO )
+        #pragma message "BUILDING_FOR_PICO = OFF"
+    #else
+        #pragma message "BUILDING_FOR_PICO = undef"
+    #endif
 
-#if defined( DEBUGUTILS_ON ) && DEBUGUTILS_ON
-    #pragma message "DEBUGUTILS_ON = ON"
-#elif defined( DEBUGUTILS_ON )
-    #pragma message "DEBUGUTILS_N = OFF"
-#else
-    #pragma message "DEBUGUTILS_N = undef"
-#endif
-
-#if defined( USE_CARRTPICO_STDIO ) && USE_CARRTPICO_STDIO
-    #pragma message "USE_CARRTPICO_STDIO = ON"
-#elif defined( USE_CARRTPICO_STDIO )
-    #pragma message "USE_CARRTPICO_STDIO = OFF"
-#else
-    #pragma message "USE_CARRTPICO_STDIO = undef"
-#endif
-
-#if defined( DEBUGCARRTPICO ) && DEBUGCARRTPICO
-    #pragma message "DEBUGCARRTPICO = ON"
-#elif defined( DEBUGCARRTPICO )
-    #pragma message "DEBUGCARRTPICO = OFF"
-#else
-    #pragma message "DEBUGCARRTPICO = undef"
-#endif
-
-#if defined( BUILDING_FOR_PICO ) && BUILDING_FOR_PICO
-    #pragma message "BUILDING_FOR_PICO = ON"
-#elif defined( BUILDING_FOR_PICO )
-    #pragma message "BUILDING_FOR_PICO = OFF"
-#else
-    #pragma message "BUILDING_FOR_PICO = undef"
-#endif
-
-#endif  // Checking compile definitions
-
+#endif    // Checking compile definitions
 
 namespace
 {
@@ -92,14 +82,12 @@ namespace
     void setupMessageProcessor( SerialMessageProcessor& smp );
     void setupEventProcessor( EventProcessor& ep );
     void sendReady( SerialLinkPico& link );
-}
+}    // namespace
 
+constexpr int kSerialMessageHandlerReserveSize = 20;
+constexpr int kEventHandlerReserveSize = 24;
 
-
-constexpr int kSerialMessageHandlerReserveSize  = 20;
-constexpr int kEventHandlerReserveSize          = 24;
-
-
+////////////////////////////////////////////////////////////////////////////////
 
 int main()
 {
@@ -115,8 +103,9 @@ int main()
     {
         initializeFailableHardware();
 
-        output2cout( "CARRT Pico started, hardware initialized, both cores running." );
-    
+        output2cout(
+            "CARRT Pico started, hardware initialized, both cores running." );
+
         // Set up message processor
         SerialMessageProcessor smp( kSerialMessageHandlerReserveSize, rpi0 );
         setupMessageProcessor( smp );
@@ -124,49 +113,55 @@ int main()
         // Set up event processor
         EventProcessor ep( kEventHandlerReserveSize );
         setupEventProcessor( ep );
-    
+
         // Report we are started and ready to receive messages
         sendReady( rpi0 );
 
-        // Default starting values (at least for now, RPi0 can change these via msg)
+        // Default starting values
+        // (at least for now while testing, RPi0 can change these via msg)
+        // TODO: Perhaps eventual make this allMsgsSendOff()
         PicoState::allMsgsSendOn();
 
         MainProcess::runMainEventLoop( Events(), ep, smp, rpi0 );
     }
 
-    catch( const CarrtError& e )
+    catch ( const CarrtError& e )
     {
-        // Report the error...
-        ErrorReportMsg err( kPicoFatalError, e.errorCode(), Clock::millis() ); 
+        // Expected errors, report the error...
+        ErrorReportMsg err( kPicoFatalError, e.errorCode(), Clock::millis() );
         err.sendOut( rpi0 );
 
-        output2cout( "Fatal error ", e.errorCode(), ' ', e.what() );
+        output2cout( "Fatal error", e.errorCode(), e.what() );
     }
 
-    catch( const std::exception& e )
+    catch ( const std::exception& e )
     {
+        // Known but unexpected error, report these...
         int errCode{ makePicoErrorId( kPicoMainError, 1, 0 ) };
-        ErrorReportMsg err( kPicoFatalError, errCode, Clock::millis() ); 
+        ErrorReportMsg err( kPicoFatalError, errCode, Clock::millis() );
         err.sendOut( rpi0 );
 
         output2cout( "Fatal error of unexpected nature", e.what() );
     }
 
-    catch( ... )
-    {    
+    catch ( ... )
+    {
+        // Unknown errors, report these
         int errCode{ makePicoErrorId( kPicoMainError, 2, 0 ) };
-        ErrorReportMsg err( kPicoFatalError, errCode, Clock::millis() ); 
+        ErrorReportMsg err( kPicoFatalError, errCode, Clock::millis() );
         err.sendOut( rpi0 );
 
         output2cout( "Fatal error of unknown type" );
     }
 
+    // From this point, recovering from serious error we can't handle
+    // No matter what, this proceess ends in resetting Pico
 
     output2cout( "Pico frozen and displaying fast LED strobe" );
 
     // Just spin and put HeartBeatLed on fast strobe
     constexpr int kWaitTimeInMin{ 1 };
-    for ( int i{ 0 }; i < kWaitTimeInMin*60*10; ++i )
+    for ( int i{ 0 }; i < kWaitTimeInMin * 60 * 10; ++i )
     {
         Clock::sleep( 100ms );
         HeartBeatLed::toggle();
@@ -191,8 +186,7 @@ int main()
     return 0;
 }
 
-
-
+////////////////////////////////////////////////////////////////////////////////
 
 namespace
 {
@@ -201,10 +195,10 @@ namespace
     {
         // Nothing in this function throws or even fails
 
-    #if USE_CARRTPICO_STDIO
+#if USE_CARRTPICO_STDIO
         // Initialize C/C++ stdio (used for status output and debugging)
         stdio_init_all();
-    #endif 
+#endif
 
         // Set up Pico's I2C (to talk with BNO055)
         I2C::initI2C();
@@ -218,9 +212,6 @@ namespace
         PicoState::initialize();
     }
 
-
-
-
     void initializeFailableHardware()
     {
         // These function calls may throw
@@ -228,65 +219,80 @@ namespace
         // Launch Core1
         Core1::launchCore1();
 
-        // If we get here, guaranteed Core1 is running and in its main event loop
-        // So perfect time to queue this future event ti triggle initialization of BNO055.
-        // BNO055 needs nearly 1 sec to be ready to accept I2C )
-        Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
+        // If we get here, guaranteed Core1 is running and in its
+        // main event loop.  So perfect time to queue this future
+        // event to trigger initialization of BNO055.
+        // Note future b/cBNO055 needs nearly 1 sec to be ready to accept I2C.
+        Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent,
+                                   BNO055::kWaitAfterPowerOnReset );
 
-        // Tell Core1 to initialize the encoders (so the interrupts go to Core1 )
+        // Tell Core1 to initialize the encoders
+        // Core1 does it so the interrupts go to Core1
         Core1::queueEventForCore1( EvtId::kInitEncoders );
     }
 
-
-
-    [[maybe_unused]]        // May not call this function during some debugging (leave smp in DumpByte mode)
+    // clang-format off
+    [[maybe_unused]]    // Debug/test might not call (use smp in DumpByte mode)
     void setupMessageProcessor( SerialMessageProcessor& smp )
     {
-        // Only register those messages we actually can receive
-        // Messages that are only outgoing don't need to be registered
+    // Only register those messages we actually can receive
+    // Messages that are only outgoing don't need to be registered
         smp.registerMessage<PingMsg>( MsgId::kPingMsg );
         smp.registerMessage<PingReplyMsg>( MsgId::kPingReplyMsg );
     //  smp.registerMessage<PicoReadyMsg>( MsgId::kPicoReady );
-    //  smp.registerMessage<PicoNavStatusUpdateMsg>( MsgId::kPicoNavStatusUpdate );
-    //  smp.registerMessage<PicoSaysStopMsg>( MsgId::kPicoSaysStop );
+    //  smp.registerMessage<PicoNavStatusUpdateMsg>(
+    //      MsgId::kPicoNavStatusUpdate ); 
+    //  smp.registerMessage<PicoSaysStopMsg>(
+    //      MsgId::kPicoSaysStop );
         smp.registerMessage<MsgControlMsg>( MsgId::kMsgControlMsg );
         smp.registerMessage<ResetPicoMsg>( MsgId::kResetPicoMsg );
     //  smp.registerMessage<TimerEventMsg>( MsgId::kTimerEventMsg );
         smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
         smp.registerMessage<BeginCalibrationMsg>( MsgId::kBeginCalibration );
-        smp.registerMessage<RequestCalibrationStatusMsg>( MsgId::kRequestCalibStatus );
-    //  smp.registerMessage<CalibrationInfoUpdateMsg>( MsgId::kCalibrationInfoUpdate );
+        smp.registerMessage<RequestCalibrationStatusMsg>(
+            MsgId::kRequestCalibStatus );
+    //  smp.registerMessage<CalibrationInfoUpdateMsg>(
+    //      MsgId::kCalibrationInfoUpdate );
         smp.registerMessage<SetAutoCalibrateMsg>( MsgId::kSetAutoCalibrate );
         smp.registerMessage<ResetBNO055Msg>( MsgId::kResetBNO055 );
     //  smp.registerMessage<NavUpdateMsg>( MsgId::kTimerNavUpdate );
         smp.registerMessage<NavUpdateControlMsg>( MsgId::kNavUpdateControl );
-        smp.registerMessage<DrivingStatusUpdateMsg>( MsgId::kDrivingStatusUpdate );
+        smp.registerMessage<DrivingStatusUpdateMsg>(
+            MsgId::kDrivingStatusUpdate );
     //  smp.registerMessage<EncoderUpdateMsg>( MsgId::kEncoderUpdate );
-        smp.registerMessage<EncoderUpdateControlMsg>( MsgId::kEncoderUpdateControl );
-        smp.registerMessage<BatteryLevelRequestMsg>( MsgId::kBatteryLevelRequest );
-    //  smp.registerMessage<BatteryLevelUpdateMsg>( MsgId::kBatteryLevelUpdate );
+        smp.registerMessage<EncoderUpdateControlMsg>(
+            MsgId::kEncoderUpdateControl );
+        smp.registerMessage<BatteryLevelRequestMsg>(
+            MsgId::kBatteryLevelRequest );
+    //  smp.registerMessage<BatteryLevelUpdateMsg>(
+    //      MsgId::kBatteryLevelUpdate );
     //  smp.registerMessage<BatteryLowAlertMsg>( MsgId::kBatteryLowAlert );
     //  smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
         smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
         smp.registerMessage<TestPicoMessagesMsg>( MsgId::kTestPicoMessages );
         smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
     }
-
-
+    // clang-format on
 
     void setupEventProcessor( EventProcessor& ep )
     {
         ep.registerHandler<NullEventHandler>( EvtId::kNullEvent );
 
-        ep.registerHandler<QuarterSecondTimerHandler>( EvtId::kQuarterSecondTimerEvent );
-        ep.registerHandler<OneSecondTimerHandler>( EvtId::kOneSecondTimerEvent );
-        ep.registerHandler<EightSecondTimerHandler>( EvtId::kEightSecondTimerEvent );
+        ep.registerHandler<QuarterSecondTimerHandler>(
+            EvtId::kQuarterSecondTimerEvent );
+        ep.registerHandler<OneSecondTimerHandler>(
+            EvtId::kOneSecondTimerEvent );
+        ep.registerHandler<EightSecondTimerHandler>(
+            EvtId::kEightSecondTimerEvent );
 
         ep.registerHandler<NavUpdateHandler>( EvtId::kNavUpdateEvent );
-        ep.registerHandler<InitializeBNO055Handler>( EvtId::kBNO055InitializeEvent );
+        ep.registerHandler<InitializeBNO055Handler>(
+            EvtId::kBNO055InitializeEvent );
         ep.registerHandler<BNO055ResetHandler>( EvtId::kBNO055ResetEvent );
-        ep.registerHandler<BeginCalibrationHandler>( EvtId::kBNO055BeginCalibrationEvent );
-        ep.registerHandler<SendCalibrationInfoHandler>( EvtId::kSendCalibrationInfoEvent );
+        ep.registerHandler<BeginCalibrationHandler>(
+            EvtId::kBNO055BeginCalibrationEvent );
+        ep.registerHandler<SendCalibrationInfoHandler>(
+            EvtId::kSendCalibrationInfoEvent );
 
         ep.registerHandler<PulsePicoLedHandler>( EvtId::kPulsePicoLedEvent );
 
@@ -295,12 +301,11 @@ namespace
         ep.registerHandler<ErrorEventHandler>( EvtId::kErrorEvent );
     }
 
-
-
     void sendReady( SerialLinkPico& link )
-    {   std::uint32_t timeTick{ Clock::millis() };
+    {
+        std::uint32_t timeTick{ Clock::millis() };
         PicoReadyMsg ready( timeTick );
         ready.sendOut( link );
     }
 
-}   // namespace
+}    // namespace
