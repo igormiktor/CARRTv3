@@ -1,7 +1,7 @@
 /*
     CarrtPicoReset.h - CARRT-Pico's reset function.  Reinitializes the Pico.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,9 +17,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
 #ifndef CarrtPicoReset_h
 #define CarrtPicoReset_h
 
@@ -30,10 +27,6 @@ namespace PicoReset
     [[noreturn]] void reset( SerialLink& link );
 
     [[noreturn]] void fatalReset();
-};
+};    // namespace PicoReset
 
-
-#endif  // CarrtPicoReset_h
-
-
-
+#endif    // CarrtPicoReset_h

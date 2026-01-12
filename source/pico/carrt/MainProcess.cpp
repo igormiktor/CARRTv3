@@ -18,18 +18,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
 #include "MainProcess.h"
 
-#include "hardware/clocks.h"
-#include "hardware/i2c.h"
-#include "hardware/timer.h"
-#include "hardware/uart.h"
-#include "pico/multicore.h"
-#include "pico/util/queue.h"
-#include "pico/stdlib.h"
+#include <hardware/clocks.h>
+#include <hardware/i2c.h>
+#include <hardware/timer.h>
+#include <hardware/uart.h>
+#include <pico/multicore.h>
+#include <pico/stdlib.h>
+#include <pico/util/queue.h>
 
 #include "BNO055.h"
 #include "CarrtError.h"
@@ -46,13 +43,11 @@
 #include "SerialMessageProcessor.h"
 #include "SerialMessages.h"
 
-
-
-
-
 namespace MainProcess
 {
-    void runMainEventLoop( EventManager& events, EventProcessor& ep, SerialMessageProcessor& smp, SerialLinkPico& rpi0 );
+
+    void runMainEventLoop( EventManager& events, EventProcessor& ep,
+                           SerialMessageProcessor& smp, SerialLinkPico& rpi0 );
     void checkForErrors( EventManager& events, SerialLinkPico& rpi0 );
     void doHouseKeeping( EventManager& events, SerialLinkPico& rpi0 );
 
@@ -60,12 +55,12 @@ namespace MainProcess
     void doUnknownEvent( SerialLinkPico& rpi0, int eventCode );
 
     void doTestPicoReportError();
-};
 
+};    // namespace MainProcess
 
-
-
-void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep, SerialMessageProcessor& smp, SerialLinkPico& rpi0 )
+void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep,
+                                    SerialMessageProcessor& smp,
+                                    SerialLinkPico& rpi0 )
 {
     while ( 1 )
     {
@@ -80,13 +75,10 @@ void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep, Se
     }
 }
 
-
 void MainProcess::checkForErrors( EventManager& events, SerialLinkPico& rpi0 )
 {
-    // Notionally a place to check for memory exhaustion, etc..
-
+    // Notionally a place to check for memory exhaustion, etc.
 }
-
 
 void MainProcess::doHouseKeeping( EventManager& events, SerialLinkPico& rpi0 )
 {
@@ -96,13 +88,13 @@ void MainProcess::doHouseKeeping( EventManager& events, SerialLinkPico& rpi0 )
         // End calibration process
         PicoState::calibrationInProgress( false );
     }
-    else if ( PicoState::wantAutoCalibrate() && !PicoState::calibrationInProgress() )
+    else if ( PicoState::wantAutoCalibrate()
+              && !PicoState::calibrationInProgress() )
     {
         // Trigger new calibration
         events.queueEvent( EvtId::kBNO055BeginCalibrationEvent );
     }
 }
-
 
 void MainProcess::doEventQueueOverflowed( SerialLinkPico& link )
 {
@@ -113,13 +105,10 @@ void MainProcess::doEventQueueOverflowed( SerialLinkPico& link )
     errRpt.sendOut( link );
 }
 
-
 void MainProcess::doTestPicoReportError()
 {
     output2cout( "Received test Pico error report msg from RPi0" );
-            
-    throw CarrtError( makePicoErrorId( kPicoTestError, 1, 1 ), "CARRT Pico test error sent by request" );
+
+    throw CarrtError( makePicoErrorId( kPicoTestError, 1, 1 ),
+                      "CARRT Pico test error sent by request" );
 }
-
-
-

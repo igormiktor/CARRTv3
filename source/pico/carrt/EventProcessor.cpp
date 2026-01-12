@@ -1,8 +1,8 @@
 /*
-    EventProcessor.h - Implementation of class to register event handlers 
+    EventProcessor.h - Implementation of class to register event handlers
     and process/dispatch  events accordingly.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "EventProcessor.h"
 
 #include <utility>
@@ -29,15 +28,13 @@
 #include "OutputUtils.hpp"
 #include "SerialMessages.h"
 
-
-
 EventProcessor::EventProcessor( int reserveSize )
 {
     mHandlers.reserve( reserveSize );
 }
 
-
-void EventProcessor::dispatchOneEvent( EventManager& events, SerialLink& link ) const
+void EventProcessor::dispatchOneEvent( EventManager& events,
+                                       SerialLink& link ) const
 {
     EvtId eventCode;
     int eventParam;
@@ -48,22 +45,26 @@ void EventProcessor::dispatchOneEvent( EventManager& events, SerialLink& link ) 
         auto handler{ mHandlers.find( std::to_underlying( eventCode ) ) };
         if ( handler == mHandlers.end() )
         {
-            handleUnknownEvent( events, link, eventCode, eventParam, eventTime );
+            handleUnknownEvent( events, link, eventCode, eventParam,
+                                eventTime );
         }
         else
         {
-            handler->second->handleEvent( events, link, eventCode, eventParam, eventTime );
+            handler->second->handleEvent( events, link, eventCode, eventParam,
+                                          eventTime );
         }
     }
-
 }
 
-
-void EventProcessor::handleUnknownEvent( EventManager& events, SerialLink& link, EvtId eventCode, int eventParam, std::uint32_t eventTime ) const
+void EventProcessor::handleUnknownEvent( EventManager& events, SerialLink& link,
+                                         EvtId eventCode, int eventParam,
+                                         std::uint32_t eventTime ) const
 {
-    output2cout( "Warning: Pico received unknown event: ", std::to_underlying( eventCode ) );
-    
-    int errCode{ makePicoErrorId( kPicoEventProcessorError, 1, std::to_underlying( eventCode ) ) };
+    output2cout( "Warning: Pico received unknown event: ",
+                 std::to_underlying( eventCode ) );
+
+    int errCode{ makePicoErrorId( kPicoEventProcessorError, 1,
+                                  std::to_underlying( eventCode ) ) };
     ErrorReportMsg errRpt( kPicoNonFatalError, errCode, Clock::millis() );
-    errRpt.sendOut( link ); 
+    errRpt.sendOut( link );
 }

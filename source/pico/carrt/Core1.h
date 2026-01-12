@@ -1,7 +1,8 @@
 /*
-    Core1.h - Code that runs on CARRT-Pico Core 1 and the code to launch Core 1
+    Core1.h - Code that runs on CARRT-Pico Core 1 and code that runs
+    on Core0 to launch Core 1 and/or to send messages to Core 1.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,27 +18,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
 #ifndef Core1_h
 #define Core1_h
 
 #include <cstdint>
 
-
 enum class EvtId;
-
 
 namespace Core1
 {
-
 
     void launchCore1();
 
     void queueEventForCore1( EvtId event, int waitMs = 0 );
 
     bool isRunningCore1();
-}
 
-#endif  // Core1.h
+}    // namespace Core1
+
+#endif    // Core1.h
