@@ -1,0 +1,51 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "common",
+            "hidden": true,
+            "generator": "Unix Makefiles",
+            "binaryDir": "build/${presetName}",
+            "cacheVariables": {
+                "CARRT_PICO_PRESET_NAME": "${presetName}",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        },
+        {
+            "name": "debug",
+            "hidden": false,
+            "displayName": "Debug",
+            "inherits": "common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CARRT_PICO_ENABLE_UART_STDIO": "ON",
+                "CARRT_PICO_BUILD_TESTS": "ON",
+                "CARRT_PICO_ENABLE_DEBUGUTILS": "ON"
+            }
+        },
+        {
+            "name": "release",
+            "hidden": false,
+            "displayName": "Release",
+            "inherits": "common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CARRT_PICO_ENABLE_UART_STDIO": "ON",
+                "CARRT_PICO_BUILD_TESTS": "OFF",
+                "CARRT_PICO_ENABLE_DEBUGUTILS": "OFF"
+            }
+        },
+        {
+            "name": "rel+debug-info",
+            "hidden": false,
+            "displayName": "Release with debug info",
+            "inherits": "common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CARRT_PICO_ENABLE_UART_STDIO": "ON",
+                "CARRT_PICO_BUILD_TESTS": "ON",
+                "CARRT_PICO_ENABLE_DEBUGUTILS": "ON"
+            }
+        }
+    ]
+}
