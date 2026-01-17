@@ -40,6 +40,7 @@ using namespace Clock;
 
 
 
+// clang-format off
 
 // We talk to the LCD's HD44780U controller via an MCP23017
 
@@ -82,10 +83,6 @@ using namespace Clock;
 #define MCP23017_GPIOB              0x13
 #define MCP23017_OLATB              0x15
 
-
-
-
-
 // Commands
 #define LCD_CLEARDISPLAY            0x01
 #define LCD_RETURNHOME              0x02
@@ -124,7 +121,7 @@ using namespace Clock;
 #define LCD_5x10DOTS                0x04
 #define LCD_5x8DOTS                 0x00
 
-
+// clang-format on
 
 /*
     This numbering of MCP23017 pins (with GPIO B pins numbered lower
@@ -157,11 +154,13 @@ namespace Lcd
 {
 
     // *** ATTENTION ***
-    // To achieve speed, the logic of the code depends heavily on the specific pin layout.
-    // Specifically, the logic "knows" whaich functions to access via GPIO A or GPIO B.
+    // To achieve speed, the logic of the code depends heavily on 
+    // the specific pin layout. Specifically, the logic "knows" which 
+    // functions to access via GPIO A or GPIO B.
     // The code will BREAK if you move pin assignments around using these constants
     // without corresponding changes in the code.
 
+    // clang-format off
     enum PinsNumbers
     {
         // GPIO B
@@ -202,6 +201,7 @@ namespace Lcd
         kWordButtonRight    = 9,
         kWordButtonSelect   = 8
     };
+    // clang-format on
 
     const std::uint8_t kNumLines     = 2;
 
@@ -268,13 +268,14 @@ void Lcd::initMCP23017()
         std::uint8_t modes[2];
         std::uint16_t word;
     } data;
-    // Pins 8-15, GPIOA, 0b00111111 = 0x3F
+    // Pins 8-15, GPIOA, 0b0011'1111 = 0x3F
     data.modes[0] = 0x3F;
-    // Pins 0-7, GPIOB, 0b00000000 = 0x00;
+    // Pins 0-7, GPIOB, 0b0000'0000 = 0x00;
     data.modes[1] = 0x00;
 
-    // Experimentally observed a set-up timing issue: need to make sure this
-    // next transmission to MCP23017 completes before proceeding to the next one.
+    // Experimentally observed a set-up timing issue: need to make 
+    // sure this next transmission to MCP23017 completes before 
+    // proceeding to the next following one.
     I2c::write( MCP23017_ADDRESS, MCP23017_IODIRA, data.word );
 
     // Set pullups
@@ -314,25 +315,28 @@ void Lcd::initHD44780U()
         I/D = 1; Increment by 1
         S = 0; No shift
 
-    But we don't its state at program start because Arduino reset doesn't reset
-    the HD44780U.
+    But we don't know its state at program start because RPi reset 
+    doesn't reset the HD44780U.
 
-    The following initialization incantation is magic as far as I'm concerned.  The
-    datasheet is ambiguous at best, so I simply follow the same steps Limor Fried
-    did in her Adafruit library...
+    The following initialization incantation is magic as far as I'm concerned.  
+    The datasheet is ambiguous at best, so I simply follow the same steps 
+    Limor Fried does in her Adafruit library...
 
-    The trick is we have to put the HD44780U in 4-bit mode.  The appropriate start-up
-    sequence to do this is described on page 45/46 of the HD44780U datasheet.
+    The trick is we have to put the HD44780U in 4-bit mode.  The appropriate 
+    start-up sequence to do this is described on page 45/46 of the HD44780U 
+    datasheet.
 */
 
-    // Datasheet says to wait at least 40ms after power rises above 2.7V before sending commands.
+    // Datasheet says to wait at least 40ms after power rises above 2.7V 
+    // before sending commands.
     Clock::sleep( 50ms );
 
-    // Pull RS, R/W, and Enable low to begin commands:  0b00000001 = 0x01
+    // Pull RS, R/W, and Enable low to begin commands: 0b0000'0001 = 0x01
     std::uint8_t gpioB = 0x01;
     I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
 
-    // Put the LCD into 4 bit mode; see Hitachi HD44780U datasheet p. 46, fig. 24
+    // Put the LCD into 4 bit mode; see Hitachi HD44780U 
+    // datasheet p. 46, fig. 24
     // HD44780U starts in 8-bit mode
 
     // First write
@@ -438,8 +442,10 @@ void Lcd::sendCharOrCmdToLcd( std::uint8_t value, bool isCommand )
 
 void Lcd::clear()
 {
-    sendCommand( LCD_CLEARDISPLAY );    // Clear display, set cursor position to zero
-    Clock::sleep( 2ms );             // Takes a while...
+    // Clear display, set cursor position to zero
+    sendCommand( LCD_CLEARDISPLAY ); 
+    // Takes a while...   
+    Clock::sleep( 2ms );            
 }
 
 

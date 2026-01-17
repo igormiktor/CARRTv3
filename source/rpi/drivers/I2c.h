@@ -2,7 +2,7 @@
     I2c.h - An I2C master library
     For Raspberry Pi (secifically, Pi Zero W).
 
-    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,31 +18,25 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 /*!
  * \file
  *
- * \brief This file provides functions that interface to the TWI (two-wire serial interface) hardware
- * of the Raspberry Pi, providing a high-level interface to I2C protocol communications.  
- * Include this file if you want your application to operate in Master mode as defined in the I2C protocol.
+ * \brief This file provides functions that interface to the TWI
+ * (two-wire serial interface) hardware of the Raspberry Pi, providing
+ * a high-level interface to I2C protocol communications.
+ *
+ * Include this file if you want your application to operate in Master mode
+ * as defined in the I2C protocol.
  *
  */
 
-
-
-
-
 #ifndef I2c_h
 #define I2c_h
-
 
 #include <cstdint>
 #include <string>
 
 #include "CarrtError.h"
-
-
-
 
 namespace I2c
 {
@@ -51,32 +45,41 @@ namespace I2c
     {
     public:
         explicit I2cError( int errCode, const std::string& what )
-            : CarrtError( errCode, what ) {}
+            : CarrtError( errCode, what )
+        {}
 
         explicit I2cError( int errCode, const char* what )
-            : CarrtError( errCode, what ) {}
+            : CarrtError( errCode, what )
+        {}
     };
-
 
     void write( std::uint8_t address, std::uint8_t registerAddress );
 
-    void write( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t data );
+    void write( std::uint8_t address, std::uint8_t registerAddress,
+                std::uint8_t data );
 
-    void write( std::uint8_t address, std::uint8_t registerAddress, std::uint16_t data );
+    void write( std::uint8_t address, std::uint8_t registerAddress,
+                std::uint16_t data );
 
-    void write( std::uint8_t address, std::uint8_t registerAddress, const char* data );
+    void write( std::uint8_t address, std::uint8_t registerAddress,
+                const char* data );
 
-    void write( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t* data, std::uint8_t numberBytes );
+    void write( std::uint8_t address, std::uint8_t registerAddress,
+                std::uint8_t* data, std::uint8_t numberBytes );
 
-    void read( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t* destination );
+    void read( std::uint8_t address, std::uint8_t registerAddress,
+               std::uint8_t* destination );
 
-    void read( std::uint8_t address, std::uint8_t registerAddress, std::uint16_t* destination );
+    void read( std::uint8_t address, std::uint8_t registerAddress,
+               std::uint16_t* destination );
 
-    int read( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, std::uint8_t* destination );
+    int read( std::uint8_t address, std::uint8_t registerAddress,
+              std::uint8_t numberBytes, std::uint8_t* destination );
 
-    int readWithOutRestart( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, std::uint8_t* destination );
+    int readWithOutRestart( std::uint8_t address, std::uint8_t registerAddress,
+                            std::uint8_t numberBytes,
+                            std::uint8_t* destination );
 
-};
-
+};    // namespace I2c
 
 #endif

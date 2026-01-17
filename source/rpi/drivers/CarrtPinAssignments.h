@@ -1,7 +1,7 @@
 /*
     CarrtPinAssignments.h - Pin assignments for CARRT's RPi GPIOs
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,11 +17,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef CarrtPinAssignments_h
 #define CarrtPinAssignments_h
 
-
+// clang-format off
 namespace GpioPins
 {
     constexpr auto kI2cSdaPin           = 2;
@@ -33,6 +32,6 @@ namespace GpioPins
     constexpr auto kPicoOnOffPin        = 17;
     constexpr auto kLowLiPoBattPin      = 23;
 }
-
+//clang-format on
 
 #endif

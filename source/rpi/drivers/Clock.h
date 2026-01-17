@@ -1,7 +1,8 @@
 /*
     Clock.h - Functions to initialize and use a clock
     for CARRTv3 on Raspberry Pi Zero W.
-    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
+
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -17,17 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #ifndef Clock_h
 #define Clock_h
-
 
 #include <chrono>
 
 // Required to use chrono-related literals
 using namespace std::chrono_literals;
-
 
 namespace Clock
 {
@@ -35,15 +32,25 @@ namespace Clock
     void initSystemClock();
 
     void sleep( const std::chrono::nanoseconds& howLong );
-    inline void delay( const std::chrono::nanoseconds& howLong ) { sleep( howLong ); }
 
-    [[deprecated]] inline void delayMicroseconds( long us ) { sleep( std::chrono::microseconds{ us } ); }
-    [[deprecated]] inline void delayMilliseconds( long ms ) { sleep( std::chrono::milliseconds{ ms } ); }
+    inline void delay( const std::chrono::nanoseconds& howLong )
+    {
+        sleep( howLong );
+    }
+
+    [[deprecated]] inline void delayMicroseconds( long us )
+    {
+        sleep( std::chrono::microseconds{ us } );
+    }
+
+    [[deprecated]] inline void delayMilliseconds( long ms )
+    {
+        sleep( std::chrono::milliseconds{ ms } );
+    }
 
     long micros();
 
     long millis();
-}
-
+}    // namespace Clock
 
 #endif

@@ -1,7 +1,8 @@
 /*
     Clock.cpp - Functions to initialize and use a clock
     for CARRTv3 on Raspberry Pi Zero W.
-    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
+
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -17,68 +18,54 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #include "Clock.h"
 
-
 #include <time.h>
-
-
 
 namespace Clock
 {
 
-    const long kMilliSecsPerSec = 1000L;
-    const long kNanoSecsPerMilliSec = 1000000L;
+    const long kMilliSecsPerSec{ 1'000L };
+    const long kNanoSecsPerMilliSec{ 1'000'000L };
 
-    const long kMicroSecsPerSec = 1000000L;
-    const long kNanoSecsPerMicroSec = 1000L;
-
+    const long kMicroSecsPerSec{ 1'000'000L };
+    const long kNanoSecsPerMicroSec{ 1'000L };
 
     struct timespec sProgramStartTime;
-
 
     long elaspedMicroSeconds( struct timespec t1, struct timespec t0 );
     long elapsedMilliSeconds( struct timespec t1, struct timespec t0 );
 
-}
-
-
-
+}    // namespace Clock
 
 long Clock::elaspedMicroSeconds( struct timespec t1, struct timespec t0 )
 {
     long secDiff = t1.tv_sec - t0.tv_sec;
     long nanoSecDiff = t1.tv_nsec - t0.tv_sec;
 
-    return secDiff * kMicroSecsPerSec  +  nanoSecDiff / kNanoSecsPerMicroSec;
+    return secDiff * kMicroSecsPerSec + nanoSecDiff / kNanoSecsPerMicroSec;
 }
-
-
 
 long Clock::elapsedMilliSeconds( struct timespec t1, struct timespec t0 )
 {
     long secDiff = t1.tv_sec - t0.tv_sec;
     long nanoSecDiff = t1.tv_nsec - t0.tv_sec;
 
-    return secDiff * kMilliSecsPerSec  +  nanoSecDiff / kNanoSecsPerMilliSec;
+    return secDiff * kMilliSecsPerSec + nanoSecDiff / kNanoSecsPerMilliSec;
 }
-
-
 
 void Clock::initSystemClock()
 {
     clock_gettime( CLOCK_MONOTONIC, &sProgramStartTime );
 }
 
-
-
 void Clock::sleep( const std::chrono::nanoseconds& howLong )
 {
-    std::chrono::seconds delaySeconds{ std::chrono::duration_cast<std::chrono::seconds>( howLong ) };
-    std::chrono::nanoseconds delayNanoseconds{ howLong - std::chrono::nanoseconds( delaySeconds ) };
-    struct timespec req; 
+    std::chrono::seconds delaySeconds{
+        std::chrono::duration_cast<std::chrono::seconds>( howLong ) };
+    std::chrono::nanoseconds delayNanoseconds{
+        howLong - std::chrono::nanoseconds( delaySeconds ) };
+    struct timespec req;
     struct timespec rem;
 
     req.tv_sec = delaySeconds.count();
@@ -94,10 +81,6 @@ void Clock::sleep( const std::chrono::nanoseconds& howLong )
     }
 }
 
-
-
-
-
 long Clock::micros()
 {
     struct timespec now;
@@ -105,8 +88,6 @@ long Clock::micros()
     clock_gettime( CLOCK_MONOTONIC, &now );
     return elaspedMicroSeconds( now, sProgramStartTime );
 }
-
-
 
 long Clock::millis()
 {
