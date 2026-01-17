@@ -2,7 +2,7 @@
     Servo.h - Functions for controlling the servo that the
     Lidar sensor is mounted on.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,20 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
 #ifndef Servo_h
 #define Servo_h
 
 #include <cstdint>
 
-
-
-
 namespace Servo
 {
-
 
     void init( bool pulseMode = false );
 
@@ -46,6 +39,7 @@ namespace Servo
     void setPwm( std::uint16_t on, std::uint16_t off );
 
     std::uint16_t setPulseLen( std::uint16_t pulseLen );
+    
     std::uint16_t getPulseLen();
 
     // Slew angles measured relative to 000 = straight ahead;
@@ -54,7 +48,6 @@ namespace Servo
 
     int getCurrentAngle();
 
-};
-
+};    // namespace Servo
 
 #endif

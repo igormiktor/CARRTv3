@@ -1,7 +1,7 @@
 /*
     Motors.cpp - Functions for controlling CARRTv3's drive motors
 
-    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #include "Motors.h"
 
 #include <cstdint>
@@ -26,25 +24,21 @@
 #include "I2c.h"
 #include "PCA9685.h"
 
-
-
 // Extend namespace with additional functions and such
 namespace Motors
 {
 
     enum
     {
-        kRightRearMotorNbr      = 0,
-        kRightFrontMotorNbr     = 1,
-        kLeftFrontMotorNbr      = 2,
-        kLeftRearMotorNbr       = 3
+        kRightRearMotorNbr = 0,
+        kRightFrontMotorNbr = 1,
+        kLeftFrontMotorNbr = 2,
+        kLeftRearMotorNbr = 3
     };
 
     const int kNbrMotors = 4;
 
     const std::uint8_t kMotorHatAddress = 0x60;
-
-
 
     class Motor
     {
@@ -52,53 +46,39 @@ namespace Motors
         Motor( int pwmPin, int pinA, int pinB );
         ~Motor();
 
-        void goForward()
-        { motorCommand( Motors::kCmdForward ); }
+        void goForward() { motorCommand( Motors::kCmdForward ); }
 
-        void goBackward()
-        { motorCommand( Motors::kCmdBackward ); }
+        void goBackward() { motorCommand( Motors::kCmdBackward ); }
 
-        void stop()
-        { motorCommand( Motors::kCmdRelease ); }
+        void stop() { motorCommand( Motors::kCmdRelease ); }
 
         void motorCommand( Motors::MotorCmd cmd );
         void setSpeed( int speed );
 
     private:
-
         std::uint8_t mPwmPin;
         std::uint8_t mPinA;
         std::uint8_t mPinB;
     };
 
+    void motorCommand( std::uint8_t motorA, std::uint8_t motorB,
+                       std::uint8_t cmd );
 
-    void motorCommand( std::uint8_t motorA, std::uint8_t motorB, std::uint8_t cmd );
+    Motor* mMotors[ kNbrMotors ];
 
-    Motor*  mMotors[ kNbrMotors ];
-
-};
-
-
-
-
-
-
-
+};    // namespace Motors
 
 Motors::Motor::Motor( int pwmPin, int pinA, int pinB )
-: mPwmPin( static_cast<std::uint8_t>( pwmPin ) ), mPinA( static_cast<std::uint8_t>( pinA ) ), mPinB( static_cast<std::uint8_t>( pinB ) )
+    : mPwmPin( static_cast<std::uint8_t>( pwmPin ) ),
+      mPinA( static_cast<std::uint8_t>( pinA ) ),
+      mPinB( static_cast<std::uint8_t>( pinB ) )
 {
     // Nothing else to do
 }
 
+Motors::Motor::~Motor() { stop(); }
 
-Motors::Motor::~Motor()
-{
-    stop();
-}
-
-
-// cppcheck-suppress unusedFunction
+[[maybe_unused]]
 void Motors::Motor::motorCommand( Motors::MotorCmd cmd )
 {
     switch ( cmd )
@@ -127,148 +107,122 @@ void Motors::Motor::motorCommand( Motors::MotorCmd cmd )
     }
 }
 
-
 void Motors::Motor::setSpeed( int speed )
 {
-    PCA9685::setPwm( kMotorHatAddress, mPwmPin, 0, static_cast<std::uint16_t>( speed * 16 ) );
+    PCA9685::setPwm( kMotorHatAddress, mPwmPin, 0,
+                     static_cast<std::uint16_t>( speed * 16 ) );
 }
-
-
-
-
-
-
 
 void Motors::init()
 {
     PCA9685::init( kMotorHatAddress );
 
-    mMotors[0] = new Motor( 8, 9, 10 );
-    mMotors[1] = new Motor( 13, 12, 11 );
-    mMotors[2] = new Motor( 2, 3, 4 );
-    mMotors[3] = new Motor( 7, 6, 5 );
+    mMotors[ 0 ] = new Motor( 8, 9, 10 );
+    mMotors[ 1 ] = new Motor( 13, 12, 11 );
+    mMotors[ 2 ] = new Motor( 2, 3, 4 );
+    mMotors[ 3 ] = new Motor( 7, 6, 5 );
 
     setSpeedAllMotors( Motors::kFullSpeed );
 }
-
-
 
 void Motors::setSpeedAllMotors( int speed )
 {
     for ( int i = 0; i < kNbrMotors; ++i )
     {
-        mMotors[i]->setSpeed( speed );
+        mMotors[ i ]->setSpeed( speed );
     }
 }
-
-
 
 void Motors::goForward()
 {
     for ( int i = 0; i < kNbrMotors; ++i )
     {
-        mMotors[i]->goForward();
+        mMotors[ i ]->goForward();
     }
 }
-
-
 
 void Motors::goBackward()
 {
     for ( int i = 0; i < kNbrMotors; ++i )
     {
-        mMotors[i]->goBackward();
+        mMotors[ i ]->goBackward();
     }
 }
-
-
 
 void Motors::stop()
 {
     for ( int i = 0; i < kNbrMotors; ++i )
     {
-        mMotors[i]->stop();
+        mMotors[ i ]->stop();
     }
 }
-
-
 
 void Motors::rotateLeft()
 {
     // Right side goes forward
-    mMotors[Motors::kRightFrontMotorNbr]->goForward();
-    mMotors[Motors::kRightRearMotorNbr]->goForward();
+    mMotors[ Motors::kRightFrontMotorNbr ]->goForward();
+    mMotors[ Motors::kRightRearMotorNbr ]->goForward();
 
     // Left side goes backward
-    mMotors[Motors::kLeftFrontMotorNbr]->goBackward();
-    mMotors[Motors::kLeftRearMotorNbr]->goBackward();
+    mMotors[ Motors::kLeftFrontMotorNbr ]->goBackward();
+    mMotors[ Motors::kLeftRearMotorNbr ]->goBackward();
 }
-
-
 
 void Motors::rotateRight()
 {
     // Right side goes backward
-    mMotors[Motors::kRightFrontMotorNbr]->goBackward();
-    mMotors[Motors::kRightRearMotorNbr]->goBackward();
+    mMotors[ Motors::kRightFrontMotorNbr ]->goBackward();
+    mMotors[ Motors::kRightRearMotorNbr ]->goBackward();
 
     // Left side goes forward
-    mMotors[Motors::kLeftFrontMotorNbr]->goForward();
-    mMotors[Motors::kLeftRearMotorNbr]->goForward();
+    mMotors[ Motors::kLeftFrontMotorNbr ]->goForward();
+    mMotors[ Motors::kLeftRearMotorNbr ]->goForward();
 }
 
-
-
-
-
-// cppcheck-suppress unusedFunction
+[[maybe_unused]]
 void Motors::setRearRightMotorSpeed( int s )
 {
-    mMotors[Motors::kRightRearMotorNbr]->setSpeed( s );
+    mMotors[ Motors::kRightRearMotorNbr ]->setSpeed( s );
 }
 
-
-// cppcheck-suppress unusedFunction
+[[maybe_unused]]
 void Motors::setFrontRightMotorSpeed( int s )
 {
-    mMotors[Motors::kRightFrontMotorNbr]->setSpeed( s );
+    mMotors[ Motors::kRightFrontMotorNbr ]->setSpeed( s );
 }
 
-
-// cppcheck-suppress unusedFunction
+[[maybe_unused]]
 void Motors::setFrontLeftMotorSpeed( int s )
 {
-    mMotors[Motors::kLeftFrontMotorNbr]->setSpeed( s );
+    mMotors[ Motors::kLeftFrontMotorNbr ]->setSpeed( s );
 }
 
-
-// cppcheck-suppress unusedFunction
+[[maybe_unused]]
 void Motors::setRearLeftMotorSpeed( int s )
 {
-    mMotors[Motors::kLeftRearMotorNbr]->setSpeed( s );
+    mMotors[ Motors::kLeftRearMotorNbr ]->setSpeed( s );
 }
 
-
-// cppcheck-suppress unusedFunction
+[[maybe_unused]]
 void Motors::runRearRightMotor( Motors::MotorCmd cmd )
 {
-    mMotors[Motors::kRightRearMotorNbr]->motorCommand( cmd );
+    mMotors[ Motors::kRightRearMotorNbr ]->motorCommand( cmd );
 }
 
-// cppcheck-suppress unusedFunction
+[[maybe_unused]]
 void Motors::runFrontRightMotor( Motors::MotorCmd cmd )
 {
-    mMotors[Motors::kRightFrontMotorNbr]->motorCommand( cmd );
+    mMotors[ Motors::kRightFrontMotorNbr ]->motorCommand( cmd );
 }
 
-// cppcheck-suppress unusedFunction
+[[maybe_unused]]
 void Motors::runFrontLeftMotor( Motors::MotorCmd cmd )
 {
-    mMotors[Motors::kLeftFrontMotorNbr]->motorCommand( cmd );
+    mMotors[ Motors::kLeftFrontMotorNbr ]->motorCommand( cmd );
 }
 
-// cppcheck-suppress unusedFunction
+[[maybe_unused]]
 void Motors::runRearLeftMotor( Motors::MotorCmd cmd )
 {
-    mMotors[Motors::kLeftRearMotorNbr]->motorCommand( cmd );
+    mMotors[ Motors::kLeftRearMotorNbr ]->motorCommand( cmd );
 }

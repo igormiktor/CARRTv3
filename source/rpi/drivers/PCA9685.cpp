@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "PCA9685.h"
 
 #include <cmath>
@@ -25,11 +24,11 @@
 #include "Clock.h"
 #include "I2c.h"
 
-
-
 namespace PCA9685
 {
     // Registers
+
+    // clang-format off
 
     const std::uint8_t kMode1               = 0x00;
     const std::uint8_t kMode2               = 0x01;
@@ -124,7 +123,6 @@ namespace PCA9685
     const std::uint8_t kAllLedOffLo         = 0xFC;
     const std::uint8_t kAllLedOffHi         = 0xFD;
 
-
     // Mode 1 bits
 
     const std::uint8_t kMode1_Restart        = 7;
@@ -141,13 +139,14 @@ namespace PCA9685
     const std::uint16_t kFullOn             = 0x1000;
     const std::uint16_t kFullOff            = 0x1000;
 
-};
-
-
+    // clang-format on
+    
+};    // namespace PCA9685
 
 void PCA9685::reset( std::uint8_t address )
 {
-    std::uint8_t desiredMode = (1 << kMode1_AutoIncr) | (1 << kMode1_AllCallBit);
+    std::uint8_t desiredMode =
+        ( 1 << kMode1_AutoIncr ) | ( 1 << kMode1_AllCallBit );
     I2c::write( address, kMode1, desiredMode );
 
     // Oscillator needs time to settle
@@ -156,62 +155,43 @@ void PCA9685::reset( std::uint8_t address )
     setAllPwm( address, 0, kFullOff );
 }
 
+void PCA9685::init( std::uint8_t address ) { reset( address ); }
 
-
-void PCA9685::init( std::uint8_t address )
+void PCA9685::setAllPwm( std::uint8_t address, std::uint16_t on,
+                         std::uint16_t off )
 {
-    reset( address );
-}
+    std::uint8_t data[ 4 ];
 
-
-
-
-void PCA9685::setAllPwm( std::uint8_t address, std::uint16_t on, std::uint16_t off )
-{
-    std::uint8_t data[4];
-
-    data[0] = on & 0xFF;
-    data[1] = on >> 8;
-    data[2] = off & 0xFF;
-    data[3] = off >> 8;
+    data[ 0 ] = on & 0xFF;
+    data[ 1 ] = on >> 8;
+    data[ 2 ] = off & 0xFF;
+    data[ 3 ] = off >> 8;
 
     I2c::write( address, kAllLedOnLo, data, 4 );
 }
 
-
-
-
-void PCA9685::setPwm( std::uint8_t address, std::uint8_t pinNbr, std::uint16_t on, std::uint16_t off )
+void PCA9685::setPwm( std::uint8_t address, std::uint8_t pinNbr,
+                      std::uint16_t on, std::uint16_t off )
 {
-    std::uint8_t data[4];
+    std::uint8_t data[ 4 ];
 
-    data[0] = on & 0xFF;
-    data[1] = on >> 8;
-    data[2] = off & 0xFF;
-    data[3] = off >> 8;
+    data[ 0 ] = on & 0xFF;
+    data[ 1 ] = on >> 8;
+    data[ 2 ] = off & 0xFF;
+    data[ 3 ] = off >> 8;
 
-    I2c::write( address, (kPwmPin00OnLo + 4*pinNbr), data, 4 );
+    I2c::write( address, ( kPwmPin00OnLo + 4 * pinNbr ), data, 4 );
 }
-
-
-
-
 
 void PCA9685::setOff( std::uint8_t address, std::uint8_t pinNbr )
 {
     setPwm( address, pinNbr, 0, kFullOff );
 }
 
-
-
-
 void PCA9685::setOn( std::uint8_t address, std::uint8_t pinNbr )
 {
     setPwm( address, pinNbr, kFullOn, 0 );
 }
-
-
-
 
 void PCA9685::setPin( std::uint8_t address, std::uint8_t pinNbr, bool value )
 {
@@ -225,17 +205,15 @@ void PCA9685::setPin( std::uint8_t address, std::uint8_t pinNbr, bool value )
     }
 }
 
-
-
-
-void PCA9685::setPwmDutyOnCycle( std::uint8_t address, std::uint8_t pinNbr, float onRatio )
+void PCA9685::setPwmDutyOnCycle( std::uint8_t address, std::uint8_t pinNbr,
+                                 float onRatio )
 {
     std::uint16_t on = 0;
     std::uint16_t off = 0;
 
     if ( onRatio >= 100 )
     {
-       on = kFullOn;
+        on = kFullOn;
     }
     else if ( onRatio <= 0 )
     {
@@ -243,21 +221,17 @@ void PCA9685::setPwmDutyOnCycle( std::uint8_t address, std::uint8_t pinNbr, floa
     }
     else
     {
-        off = static_cast<std::uint16_t>( 4095 * onRatio + 0.5 );
+        off = static_cast<std::uint16_t>( 4'095 * onRatio + 0.5 );
     }
 
     setPwm( address, pinNbr, on, off );
 }
 
-
-
-
-
 void PCA9685::setPwmFreq( std::uint8_t address, float freq )
 {
     // Calculate the appropriate prescaler
-    float prescaleValue = 25000000;
-    prescaleValue /= 4096;
+    float prescaleValue = 25'000'000;
+    prescaleValue /= 4'096;
     prescaleValue /= freq;
     prescaleValue -= 1;
     std::uint8_t prescaler = std::floor( prescaleValue + 0.5 );
@@ -278,6 +252,9 @@ void PCA9685::setPwmFreq( std::uint8_t address, float freq )
     Clock::sleep( 5ms );
 
     // Set the MODE1 registor to clear restart
-    I2c::write( address, kMode1, static_cast<std::uint8_t>( originalMode | (1 << kMode1_Restart) ) );
+    I2c::write(
+        address, kMode1,
+        static_cast<std::uint8_t>( originalMode | ( 1 << kMode1_Restart ) ) );
+
     Clock::sleep( 100ms );
 }

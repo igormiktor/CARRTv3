@@ -18,15 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
 /*
-    Inspired by, and had its origins in, the Adafruit library for the LSM303DLHC,
-    but it has been heavily modified.
+    Inspired by, and had its origins in, the Adafruit library for
+    the LSM303DLHC, but it has been heavily modified.
 */
-
-
 
 #include "Servo.h"
 
@@ -34,91 +29,71 @@
 #include "DebugUtils.hpp"
 #include "PCA9685.h"
 
-
-
-
-
 // Extend the Servo namespace with private functions
 
 namespace Servo
 {
 
     // Servo I2C address (actual the PCA9685 address)
-    constexpr std::uint8_t kLidarServoI2cAddress    =  PCA9685::kPCA9685_I2cAddress;
-    // Servo pin assignments
-    constexpr std::uint8_t kLidarServoPin           = 0;
+    constexpr std::uint8_t kLidarServoI2cAddress{
+        PCA9685::kPCA9685_I2cAddress };
 
-    int mCurrentAngle;          // +deg -> clockwise; -deg -> counterclockwise; 0 deg -> straight ahead
+    // Servo pin assignments
+    constexpr std::uint8_t kLidarServoPin{ 0 };
+
+    // +deg -> clockwise; -deg -> counterclockwise; 0 deg -> straight ahead
+    int mCurrentAngle;
+
     std::uint16_t mPulseLen;
 
     std::uint16_t convertToPulseLenFromDegreesRelative( int degrees );
 
-};
+};    // namespace Servo
 
-
-
-
-void Servo::init( bool pulseMode )
-{
-    reset( pulseMode );
-}
-
-
+void Servo::init( bool pulseMode ) { reset( pulseMode ); }
 
 void Servo::reset( bool pulseMode )
 {
     PCA9685::reset( kLidarServoI2cAddress );
     mCurrentAngle = 0;
-    PCA9685::setPwmFreq( kLidarServoI2cAddress, 50 );                   // Servo wants a pulse every 20ms, = 50 Hz updates
+    // Servo wants a pulse every 20ms, = 50 Hz updates
+    PCA9685::setPwmFreq( kLidarServoI2cAddress, 50 );
     debugM( "Servo initialized to:" );
     if ( pulseMode )
     {
-        setPulseLen( 340 );             // Generic safe value for servos I play with
+        // Generic safe value for servos I play with
+        setPulseLen( 340 );
     }
     else
-    {    
+    {
         slew( 0 );
-    }    
+    }
 }
 
-
-
-void Servo::disconnect()
-{
-    setPwmFreq( 0 );
-}
-
-
+void Servo::disconnect() { setPwmFreq( 0 ); }
 
 void Servo::setPwmFreq( float freq )
 {
     PCA9685::setPwmFreq( kLidarServoI2cAddress, freq );
 }
 
-
-
 void Servo::setPwm( std::uint16_t on, std::uint16_t off )
 {
     PCA9685::setPwm( kLidarServoI2cAddress, kLidarServoPin, on, off );
 }
 
-
-
 void Servo::setPwmDutyOnCycle( float onRatio )
 {
-    PCA9685::setPwmDutyOnCycle( kLidarServoI2cAddress, kLidarServoPin, onRatio );
+    PCA9685::setPwmDutyOnCycle( kLidarServoI2cAddress, kLidarServoPin,
+                                onRatio );
 }
-
-
 
 int Servo::getCurrentAngle()
 {
-    // Negate the angles to reverse direction,  
+    // Negate the angles to reverse direction,
     // positive angles are to the right to match compass angles
     return mCurrentAngle;
 }
-
-
 
 int Servo::slew( int angleDegrees )
 {
@@ -141,63 +116,47 @@ int Servo::slew( int angleDegrees )
     return mCurrentAngle;
 }
 
-
-
 std::uint16_t Servo::setPulseLen( std::uint16_t pulseLen )
 {
     mPulseLen = pulseLen;
     setPwm( 0, mPulseLen );
-    // Only call this function for testing & calibration, so leave useful debug output here
+    // Only call this function for testing & calibration,
+    // so leave useful debug output here
     debugV( mPulseLen );
     return mPulseLen;
 }
 
-
-
-std::uint16_t Servo::getPulseLen()
-{
-    return mPulseLen;
-}
-
-
+std::uint16_t Servo::getPulseLen() { return mPulseLen; }
 
 std::uint16_t Servo::convertToPulseLenFromDegreesRelative( int degrees )
 {
-#define SERVO_MG_996R       1
-#define SERVO_HPS_2018      0
+#define SERVO_MG_996R 1
+#define SERVO_HPS_2018 0
 
 #if SERVO_MG_996R
     /*
-    *     90 = 105
-    *      0 = 328
-    *    -90 = 551
-    * 
-    *      pulseLen = (105-551)/180 * degrees
-    */
-    constexpr auto slope{ (105.0 - 551.0)/180.0 };
+     *     90 = 105
+     *      0 = 328
+     *    -90 = 551
+     *
+     *      pulseLen = (105-551)/180 * degrees
+     */
+    constexpr auto slope{ ( 105.0 - 551.0 ) / 180.0 };
     constexpr auto intercept{ 328.0 };
     std::int16_t pulse = slope * degrees + intercept + 0.5;
     return static_cast<std::uint16_t>( pulse );
-#endif  // SERVO_HPS_2018
-
+#endif    // SERVO_HPS_2018
 
 #if SERVO_HPS_2018
     /*
-    *     90 = 90
-    *      0 = 315
-    *    -90 = 544
-    * 
-    *      pulseLen = (-227/90) * degrees + 317
-    * 
-    *
-    */
+     *     90 = 90
+     *      0 = 315
+     *    -90 = 544
+     *
+     *      pulseLen = (-227/90) * degrees + 317
+     */
 
-    std::int16_t pulse = (-227.0/90.0) * degrees  + 315;
+    std::int16_t pulse = ( -227.0 / 90.0 ) * degrees + 315;
     return static_cast<std::uint16_t>( pulse );
-#endif  // SERVO_HPS_2018
+#endif    // SERVO_HPS_2018
 }
-
-
-
-
-

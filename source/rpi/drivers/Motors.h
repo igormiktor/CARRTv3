@@ -1,7 +1,7 @@
 /*
     Motors.h - Functions for controlling CARRT3's drive motors
 
-    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,29 +17,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
-
 #ifndef Motors_h
 #define Motors_h
 
-
-
 #include "CarrtError.h"
-
-
 
 class MotorError : public CarrtError
 {
 public:
     explicit MotorError( int errCode, const std::string& what )
-        : CarrtError( errCode, what ) {}
+        : CarrtError( errCode, what )
+    {}
 
     explicit MotorError( int errCode, const char* what )
-        : CarrtError( errCode, what ) {}
+        : CarrtError( errCode, what )
+    {}
 };
-
 
 namespace Motors
 {
@@ -56,7 +49,6 @@ namespace Motors
 
     void rotateLeft();
     void rotateRight();
-
 
     enum MotorCmd
     {
@@ -76,7 +68,6 @@ namespace Motors
     void runFrontRightMotor( MotorCmd cmd );
     void runFrontLeftMotor( MotorCmd cmd );
 
-};
+};    // namespace Motors
 
-
-#endif
+#endif    // Motors_h
