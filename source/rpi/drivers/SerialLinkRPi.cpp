@@ -69,46 +69,48 @@ SerialLinkRPi::SerialLinkRPi()
         char* errMsg = std::strerror( errno );
         debugM( "tcgetattr() failed" );
         debugV( errno, errMsg );
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ),
-                          std::string( errMsg ) );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ), std::string( errMsg ) );
     }
 
-    tty.c_cflag &= ~PARENB;     // Clear parity bit,
-                                    // disabling parity (most common)
-    tty.c_cflag &= ~CSTOPB;     // Clear stop field, only one stop bit
-                                    // used in communication (most common)
-    tty.c_cflag &= ~CSIZE;      // Clear all bits that set the data size
-    tty.c_cflag |= CS8;         // 8 bits per byte (most common)
-    tty.c_cflag &= ~CRTSCTS;    // Disable RTS/CTS hardware flow
-                                    // control (most common)
-    tty.c_cflag |=
-        CREAD | CLOCAL;    // Turn on READ & ignore ctrl lines (CLOCAL = 1)
+    // Clear parity bit, disabling parity (most common)
+    tty.c_cflag &= ~PARENB;
+    // Clear stop field, only one stop bit used in communication (most common)
+    tty.c_cflag &= ~CSTOPB;
+    // Clear all bits that set the data size
+    tty.c_cflag &= ~CSIZE;
+    // 8 bits per byte (most common)
+    tty.c_cflag |= CS8;
+    // Disable RTS/CTS hardware flow control (most common)
+    tty.c_cflag &= ~CRTSCTS;
+    // Turn on READ & ignore ctrl lines (CLOCAL = 1)
+    tty.c_cflag |= CREAD | CLOCAL;
 
-    tty.c_lflag &= ~ICANON;    // Operate in NON-CANONICAL mode
-                                    // (immediate access to each byte)
-    tty.c_lflag &= ~ECHO;      // Disable echo
-    tty.c_lflag &= ~ECHOE;     // Disable erasure
-    tty.c_lflag &= ~ECHONL;    // Disable new-line echo
-    tty.c_lflag &= ~ISIG;      // Disable interpretation of INTR,
-                                    // QUIT and SUSP
-
-    tty.c_iflag &= ~( IXON | IXOFF | IXANY );    // Turn off s/w flow ctrl
-
+    tty.c_lflag &= ~ICANON;
+    // Disable echo
+    tty.c_lflag &= ~ECHO;
+    // Disable erasure
+    tty.c_lflag &= ~ECHOE;
+    // Disable new-line echo
+    tty.c_lflag &= ~ECHONL;
+    // Disable interpretation of INTR, QUIT and SUSP
+    tty.c_lflag &= ~ISIG;
+    // Turn off s/w flow ctrl
+    tty.c_iflag &= ~( IXON | IXOFF | IXANY );
     // Disable any special handling of received bytes
-    tty.c_iflag &=
-        ~( IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL );
+    tty.c_iflag &= ~( IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL );
 
-    tty.c_oflag &= ~OPOST;      // Prevent special interpretation of output
-                                    // bytes (e.g. newline chars)
-    tty.c_oflag &= ~ONLCR;      // Prevent conversion of newline to carriage
-                                    // return/line feed
-    // tty.c_oflag &= ~OXTABS;  // Prevent conversion of tabs to spaces
-                                    // (NOT PRESENT ON LINUX)
-    // tty.c_oflag &= ~ONOEOT;  // Prevent removal of C-d chars (0x004) in
-                                    // output (NOT PRESENT ON LINUX)
+    // Prevent special interpretation of output bytes (e.g. newline chars)
+    tty.c_oflag &= ~OPOST;
+    // Prevent conversion of newline to carriage return/line feed
+    tty.c_oflag &= ~ONLCR;
+    // Prevent conversion of tabs to spaces (NOT PRESENT ON LINUX)
+    // tty.c_oflag &= ~OXTABS;
+    // Prevent removal of C-d chars (0x004) in output (NOT PRESENT ON LINUX)
+    // tty.c_oflag &= ~ONOEOT;
 
-    tty.c_cc[ VTIME ] = 10;     // Wait for up to 0.1s (1 deciseconds),
-                                    // returning after 0.1s if no data present
+    // Wait for up to 0.1s (1 deciseconds),
+    // returning after 0.1s if no data is present.
+    tty.c_cc[ VTIME ] = 10;
     tty.c_cc[ VMIN ] = 0;
 
     // Set in/out baud rate to be 115200
@@ -121,8 +123,7 @@ SerialLinkRPi::SerialLinkRPi()
         char* errMsg = std::strerror( errno );
         debugM( "tcsetattr() failed" );
         debugV( errno, errMsg );
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ),
-                          std::string( errMsg ) );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ), std::string( errMsg ) );
     }
 }
 
@@ -201,8 +202,7 @@ std::optional<std::uint8_t> SerialLinkRPi::getByte()
                    << " and numRead: " << numRead;
         std::string errMsg{};
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ),
-                          errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 2, errno ), errMsg );
     }
 
     // No error, but also not reading what we expect,
@@ -264,8 +264,7 @@ std::optional<std::uint32_t> SerialLinkRPi::get4Bytes()
                    << " and numRead: " << numRead;
         std::string errMsg{};
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 3, errno ),
-                          errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 3, errno ), errMsg );
     }
 
     // No error, but also not reading what we expect,
@@ -297,13 +296,11 @@ void SerialLinkRPi::putByte( std::uint8_t c )
         debugV( c, numWritten );
 
         std::stringstream errMsgStrm;
-        errMsgStrm << "putByte() failed writing value: " << c
-                   << " with numWritten: " << numWritten
-                   << " and errno: " << errno;
+        errMsgStrm << "putByte() failed writing value: " << c << " with numWritten: " 
+                   << numWritten << " and errno: " << errno;
         std::string errMsg;
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 4, errno ),
-                          errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 4, errno ), errMsg );
     }
 }
 
@@ -317,14 +314,12 @@ void SerialLinkRPi::put4Bytes( const std::uint8_t* c )
         debugV( numWritten );
 
         std::stringstream errMsgStrm;
-        errMsgStrm << "put4Bytes() failed writing values: " << c[ 0 ] << ", "
-                   << c[ 1 ] << ", " << c[ 2 ] << ", " << c[ 3 ]
-                   << " with numWritten: " << numWritten
+        errMsgStrm << "put4Bytes() failed writing values: " << c[ 0 ] << ", " << c[ 1 ] << ", "
+                   << c[ 2 ] << ", " << c[ 3 ] << " with numWritten: " << numWritten
                    << " and errno: " << errno;
         std::string errMsg;
         errMsgStrm >> errMsg;
-        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 5, errno ),
-                          errMsg );
+        throw CarrtError( makeRpi0ErrorId( kRpi0SerialError, 5, errno ), errMsg );
     }
 }
 
