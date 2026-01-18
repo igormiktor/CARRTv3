@@ -1,29 +1,27 @@
+#include <iostream>
+
 #include "CarrtPicoDefines.h"
-#include "EventManager.h"
 #include "Clock.h"
-#include "SerialMessages.h"
+#include "EventManager.h"
 #include "SerialLinkPico.h"
 #include "SerialMessageProcessor.h"
-
-#include <iostream>
-#include "pico/binary_info.h"
-#include "pico/stdlib.h"
-#include "pico/multicore.h"
-#include "pico/util/queue.h"
+#include "SerialMessages.h"
 #include "hardware/clocks.h"
 #include "hardware/i2c.h"
 #include "hardware/timer.h"
 #include "hardware/uart.h"
-
+#include "pico/binary_info.h"
+#include "pico/multicore.h"
+#include "pico/stdlib.h"
+#include "pico/util/queue.h"
 #include "utils/CoreAtomic.hpp"
 
 bi_decl( bi_1pin_with_name( CARRTPICO_HEARTBEAT_LED, "On-board LED for blinking" ) );
-bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
+bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX",
+                              CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
 
-
-
-bool timerCallback( repeating_timer_t* ) 
+bool timerCallback( repeating_timer_t* )
 {
     static int eighthSecCount = 0;
 
@@ -37,14 +35,14 @@ bool timerCallback( repeating_timer_t* )
     if ( ( eighthSecCount % 2 ) == 0 )
     {
         // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        Events().queueEvent( EvtId::kQuarterSecondTimerEvent, ( (eighthSecCount / 2) % 4 ) );
+        Events().queueEvent( EvtId::kQuarterSecondTimerEvent, ( ( eighthSecCount / 2 ) % 4 ) );
     }
 
     if ( ( eighthSecCount % 8 ) == 0 )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
         Events().queueEvent( EvtId::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
-       }
+    }
 
     if ( eighthSecCount == 0 )
     {
@@ -54,9 +52,7 @@ bool timerCallback( repeating_timer_t* )
     return true;
 }
 
-
-
-void startCore1() 
+void startCore1()
 {
     std::cout << "This is core " << get_core_num() << std::endl;
 
@@ -64,7 +60,7 @@ void startCore1()
 
     repeating_timer_t timer;
     // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
-    if ( !alarm_pool_add_repeating_timer_ms( core1AlarmPool, -125, timerCallback, NULL, &timer ) ) 
+    if ( !alarm_pool_add_repeating_timer_ms( core1AlarmPool, -125, timerCallback, NULL, &timer ) )
     {
         std::cout << "Failed to add timer\n" << std::endl;
     }
@@ -76,9 +72,7 @@ void startCore1()
     }
 }
 
-
 bool gSendTimerEvents{ false };
-
 
 int main()
 {
@@ -90,15 +84,13 @@ int main()
 
         // I2C Initialisation. Using it at 400Khz.
         i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
-        gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C ) ;
+        gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C );
         gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
         gpio_pull_up( CARRTPICO_I2C_SDA );
         gpio_pull_up( CARRTPICO_I2C_SCL );
 
-
         // Initialise UART for data
         SerialLinkPico rpi0;
-
 
         std::cout << "This is CARRT Pico" << std::endl;
         std::cout << "This is core " << get_core_num() << std::endl;
@@ -112,9 +104,8 @@ int main()
         smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
         smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
 
-
         bool ledState = false;
-        while ( true ) 
+        while ( true )
         {
             std::uint32_t timeTick{ Clock::millis() };
             EvtId eventCode{};
@@ -127,33 +118,37 @@ int main()
                     case EvtId::kNavUpdateEvent:
                         // std::cout << "Nav " << eventParam << std::endl;
                         break;
-                        
+
                     case EvtId::kQuarterSecondTimerEvent:
                         // std::cout << "1/4 " << eventParam << std::endl;
                         if ( gSendTimerEvents )
                         {
-                            // std::cout << "1/4 " << eventParam << ", " << gSendTimerEvents << std::endl;
-                            TimerEventMsg qtrSec( TimerEventMsg::k1QuarterSecondEvent, eventParam, timeTick );
+                            // std::cout << "1/4 " << eventParam << ", " << gSendTimerEvents <<
+                            // std::endl;
+                            TimerEventMsg qtrSec( TimerEventMsg::k1QuarterSecondEvent, eventParam,
+                                                  timeTick );
                             qtrSec.sendOut( rpi0 );
                         }
                         break;
-                        
+
                     case EvtId::kOneSecondTimerEvent:
                         // std::cout << "1 s " << eventParam << std::endl;
                         if ( gSendTimerEvents )
                         {
-                            TimerEventMsg oneSec( TimerEventMsg::k1SecondEvent, eventParam, timeTick );
+                            TimerEventMsg oneSec( TimerEventMsg::k1SecondEvent, eventParam,
+                                                  timeTick );
                             oneSec.sendOut( rpi0 );
                         }
                         gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                         ledState = !ledState;
                         break;
-                        
+
                     case EvtId::kEightSecondTimerEvent:
                         // std::cout << "8 s " << eventParam << std::endl;
                         if ( gSendTimerEvents )
                         {
-                            TimerEventMsg eightSec( TimerEventMsg::k8SecondEvent, eventParam, timeTick );
+                            TimerEventMsg eightSec( TimerEventMsg::k8SecondEvent, eventParam,
+                                                    timeTick );
                             eightSec.sendOut( rpi0 );
                         }
                         break;
@@ -165,7 +160,8 @@ int main()
                 if ( Events().hasEventQueueOverflowed() )
                 {
                     std::cout << "Event queue overflowed" << std::endl;
-                    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ), Clock::millis() );
+                    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ),
+                                           Clock::millis() );
                     errMsg.sendOut( rpi0 );
                     Events().resetEventQueueOverflowFlag();
                 }
@@ -180,7 +176,6 @@ int main()
         }
     }
 
-
     catch ( const CarrtError& err )
     {
         std::cerr << "Error: " << err.errorCode() << ", " << err.what() << std::endl;
@@ -191,7 +186,7 @@ int main()
         std::cerr << "Error: " << err.what() << std::endl;
     }
 
-    catch (...)
+    catch ( ... )
     {
         std::cerr << "Error of unknown type." << std::endl;
     }

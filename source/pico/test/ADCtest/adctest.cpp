@@ -1,28 +1,20 @@
 #include <iostream>
 #include <stdexcept>
-#include "pico/binary_info.h"
-#include "pico/stdlib.h"
-#include "hardware/i2c.h"
-#include "hardware/timer.h"
-#include "hardware/clocks.h"
-#include "hardware/sync.h"
-#include "hardware/watchdog.h"
-#include "hardware/adc.h"
-
 
 #include "../carrt/CarrtPicoDefines.h"
+#include "hardware/adc.h"
+#include "hardware/clocks.h"
+#include "hardware/i2c.h"
+#include "hardware/sync.h"
+#include "hardware/timer.h"
+#include "hardware/watchdog.h"
+#include "pico/binary_info.h"
+#include "pico/stdlib.h"
 #include "shared/CarrtError.h"
-
-
 
 bi_decl( bi_1pin_with_name( CARRTPICO_HEARTBEAT_LED, "On-board LED for blinking" ) );
 bi_decl( bi_2pins_with_names( 0, "uart0 TX", 1, "uart0 RX" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
-
-
-
-
-
 
 int main()
 {
@@ -37,19 +29,18 @@ int main()
     std::cout << "Size of float: " << sizeof( float ) << std::endl;
     std::cout << "Size of double: " << sizeof( double ) << std::endl;
 
-
     try
     {
         adc_init();
         adc_gpio_init( 26 );
-        adc_select_input( 0 ); 
+        adc_select_input( 0 );
 
         gpio_init( CARRTPICO_HEARTBEAT_LED );
         gpio_set_dir( CARRTPICO_HEARTBEAT_LED, GPIO_OUT );
 
-        while ( true ) 
+        while ( true )
         {
-            try 
+            try
             {
                 while ( true )
                 {
@@ -57,13 +48,13 @@ int main()
                     sleep_ms( 500 );
                     gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     sleep_ms( 500 );
-                    const float conversionFactor = 3.3f / (1 << 12);
+                    const float conversionFactor = 3.3f / ( 1 << 12 );
                     std::uint16_t result = adc_read();
                     float vout = result * conversionFactor;
-                    const float voltDividerFactor = (38.64 + 67.4) / 67.4;
+                    const float voltDividerFactor = ( 38.64 + 67.4 ) / 67.4;
                     float vin = vout * voltDividerFactor;
-                    std::cout << "Raw value: " << result << "  V read: " << vout 
-                        << " V original " << vin << std::endl;
+                    std::cout << "Raw value: " << result << "  V read: " << vout << " V original "
+                              << vin << std::endl;
                 }
             }
 
@@ -73,14 +64,14 @@ int main()
                 std::cerr << "Now rebooting Pico" << std::endl;
                 sleep_ms( 500 );
 
-                watchdog_reboot(0, SRAM_END, 0); 
+                watchdog_reboot( 0, SRAM_END, 0 );
             }
         }
-    
+
         return 0;
     }
 
-    catch( const std::exception& e )
+    catch ( const std::exception& e )
     {
         std::cerr << "Error (non-CARRT) " << e.what() << std::endl;
     }
