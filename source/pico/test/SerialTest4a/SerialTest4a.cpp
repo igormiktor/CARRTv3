@@ -1,27 +1,24 @@
+#include <iostream>
+
 #include "CarrtPicoDefines.h"
 #include "EventManager.h"
-
 #include "SerialLinkPico.h"
-
-#include <iostream>
-#include "pico/binary_info.h"
-#include "pico/stdlib.h"
-#include "pico/multicore.h"
-#include "pico/util/queue.h"
 #include "hardware/clocks.h"
 #include "hardware/i2c.h"
 #include "hardware/timer.h"
 #include "hardware/uart.h"
-
+#include "pico/binary_info.h"
+#include "pico/multicore.h"
+#include "pico/stdlib.h"
+#include "pico/util/queue.h"
 #include "utils/CoreAtomic.hpp"
 
 bi_decl( bi_1pin_with_name( CARRTPICO_HEARTBEAT_LED, "On-board LED for blinking" ) );
-bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
+bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX",
+                              CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
 
-
-
-bool timerCallback( repeating_timer_t* ) 
+bool timerCallback( repeating_timer_t* )
 {
     static int eighthSecCount = 0;
 
@@ -52,9 +49,7 @@ bool timerCallback( repeating_timer_t* )
     return true;
 }
 
-
-
-void startCore1() 
+void startCore1()
 {
     std::cout << "Started Core " << get_core_num() << std::endl;
 
@@ -62,7 +57,7 @@ void startCore1()
 
     repeating_timer_t timer;
     // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
-    if ( !alarm_pool_add_repeating_timer_ms( core1AlarmPool, -125, timerCallback, NULL, &timer ) ) 
+    if ( !alarm_pool_add_repeating_timer_ms( core1AlarmPool, -125, timerCallback, NULL, &timer ) )
     {
         std::cout << "Failed to add timer\n" << std::endl;
     }
@@ -74,8 +69,6 @@ void startCore1()
     }
 }
 
-
-
 int main()
 {
     CoreAtomic::CAtomicInitializer theInitializationIsDone;
@@ -84,15 +77,13 @@ int main()
 
     // I2C Initialisation. Using it at 400Khz.
     i2c_init( CARRTPICO_I2C_PORT, CARRTPICO_I2C_SPEED );
-    gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C ) ;
+    gpio_set_function( CARRTPICO_I2C_SDA, GPIO_FUNC_I2C );
     gpio_set_function( CARRTPICO_I2C_SCL, GPIO_FUNC_I2C );
     gpio_pull_up( CARRTPICO_I2C_SDA );
     gpio_pull_up( CARRTPICO_I2C_SCL );
 
-
     // Initialise UART for data
     SerialLinkPico rpi0;
-
 
     // puts("This is CARRT Pico!");
     std::cout << "This is CARRT Pico: event queue test" << std::endl;
@@ -103,9 +94,8 @@ int main()
 
     multicore_launch_core1( startCore1 );
 
-
     bool ledState = false;
-    while ( true ) 
+    while ( true )
     {
         EvtId eventCode;
         int eventParam;
@@ -119,13 +109,13 @@ int main()
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimerNavUpdate );
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
-                    
+
                 case EvtId::kQuarterSecondTimerEvent:
                     std::cout << "1/4 " << eventParam << std::endl;
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer1_4s );
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, static_cast<char>( eventParam ) );
                     break;
-                    
+
                 case EvtId::kOneSecondTimerEvent:
                     std::cout << "1 s " << eventParam << std::endl;
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer1s );
@@ -133,7 +123,7 @@ int main()
                     gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     ledState = !ledState;
                     break;
-                    
+
                 case EvtId::kEightSecondTimerEvent:
                     std::cout << "8 s " << eventParam << std::endl;
                     // uart_putc_raw( CARRTPICO_SERIAL_LINK_UART, SerialMessage::kTimer8s );
@@ -160,7 +150,7 @@ int main()
                 cmd = std::to_underlying( *gotCmd );
             }
 
-            switch( cmd )
+            switch ( cmd )
             {
                 case 'T':
                 case 't':
@@ -178,14 +168,14 @@ int main()
                         // Send back 'F' and float + 1
                         f += 1;
                         rpi0.putMsgType( 'F' );
-                        rpi0.put( f );                        
+                        rpi0.put( f );
                     }
                     else
                     {
                         float f{ 666.666 };
                         // Send back 'X' and this float
                         rpi0.putMsgType( 'X' );
-                        rpi0.put( f );                        
+                        rpi0.put( f );
                     }
                     break;
                 }
@@ -201,14 +191,14 @@ int main()
                         // Send back 'K' and u + 1
                         u += 1;
                         rpi0.putMsgType( 'K' );
-                        rpi0.put( u );                        
+                        rpi0.put( u );
                     }
                     else
                     {
                         std::uint32_t u{ 666 };
                         // Send back 'X' and this u
                         rpi0.putMsgType( 'X' );
-                        rpi0.put( u );                        
+                        rpi0.put( u );
                     }
                     break;
                 }
@@ -225,13 +215,13 @@ int main()
                         int i{ *gotI };
                         // Send back i + 1
                         i += 1;
-                        rpi0.put( i );                        
+                        rpi0.put( i );
                     }
                     else
                     {
                         int i{ -666 };
                         // Send back this float
-                        rpi0.put( i );                        
+                        rpi0.put( i );
                     }
                     break;
                 }
@@ -247,14 +237,14 @@ int main()
                         // Send back 'J' and i + 1
                         i2 += 1;
                         rpi0.putMsgType( 'J' );
-                        rpi0.put( i2 );                        
+                        rpi0.put( i2 );
                     }
                     else
                     {
-                        int i2{ 666666 };
+                        int i2{ 666'666 };
                         // Send back 'X' and this float
                         rpi0.putMsgType( 'X' );
-                        rpi0.put( i2 );                        
+                        rpi0.put( i2 );
                     }
                     break;
                 }

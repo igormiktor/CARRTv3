@@ -1,7 +1,7 @@
 /*
     Keypad.cpp - Driver for CARRT's Key Pad
 
-    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,14 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "Keypad.h"
 
 #include "Lcd.h"
 
-
-
-int Keypad::readButtons()
-{
-    return Lcd::readButtons();
-}
+int Keypad::readButtons() { return Lcd::readButtons(); }

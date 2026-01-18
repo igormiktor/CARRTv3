@@ -1,6 +1,7 @@
 /*
     I2c.cpp - An I2C master library for CARRTv3.
-    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
+
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,25 +17,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #include "I2c.h"
 
+#include <fcntl.h>     //Needed for I2C port
+#include <unistd.h>    //Needed for I2C port
 
-#include <fcntl.h>                      //Needed for I2C port
-#include <linux/i2c-dev.h>              //Needed for I2C port
-#include <sys/ioctl.h>                  //Needed for I2C port
-#include <unistd.h>                     //Needed for I2C port
+#include <linux/i2c-dev.h>    //Needed for I2C port
+#include <sys/ioctl.h>        //Needed for I2C port
 
 #include <cstdint>
 #include <cstring>
 #include <iostream>
 
 #include "CarrtPigpio.h"
-
-
-
-
 
 namespace I2c
 {
@@ -45,44 +40,28 @@ namespace I2c
         I2cConnection( std::uint8_t address );
         ~I2cConnection();
 
-        int getFd() const
-            { return mFd; }
+        int getFd() const { return mFd; }
 
     private:
-
         int mFd;
     };
-
 
     class TurnOffI2cRestart
     {
         /*
         void i2cSwitchCombined(int setting)
-        This sets the I2C (i2c-bcm2708) module "use combined transactions" parameter on or off.
+        This sets the I2C (i2c-bcm2708) module "use combined transactions"
+        parameter on or off.
         setting: 0 to set the parameter off, non-zero to set it on
         */
 
     public:
-        TurnOffI2cRestart()
-        {
-            i2cSwitchCombined( 0 );
-        }
+        TurnOffI2cRestart() { i2cSwitchCombined( 0 ); }
 
-        ~TurnOffI2cRestart()
-        {
-            i2cSwitchCombined( 1 );
-        }
+        ~TurnOffI2cRestart() { i2cSwitchCombined( 1 ); }
     };
 
-};
-
-
-
-
-
-
-
-
+};    // namespace I2c
 
 I2c::I2cConnection::I2cConnection( std::uint8_t address )
 {
@@ -90,13 +69,12 @@ I2c::I2cConnection::I2cConnection( std::uint8_t address )
 
     if ( fd < 0 )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 1, fd ), "Failed to open the i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 1, fd ),
+                        "Failed to open the i2c bus" );
     }
 
     mFd = fd;
 }
-
-
 
 I2c::I2cConnection::~I2cConnection()
 {
@@ -106,10 +84,6 @@ I2c::I2cConnection::~I2cConnection()
     }
 }
 
-
-
-
-
 void I2c::write( std::uint8_t address, std::uint8_t registerAddress )
 {
     I2cConnection i2c( address );
@@ -118,13 +92,13 @@ void I2c::write( std::uint8_t address, std::uint8_t registerAddress )
 
     if ( ret < 0 )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 2, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 2, i2c.getFd() ),
+                        "Error writing to i2c bus" );
     }
 }
 
-
-
-void I2c::write( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t data )
+void I2c::write( std::uint8_t address, std::uint8_t registerAddress,
+                 std::uint8_t data )
 {
     I2cConnection i2c( address );
 
@@ -132,13 +106,13 @@ void I2c::write( std::uint8_t address, std::uint8_t registerAddress, std::uint8_
 
     if ( ret < 0 )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 3, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 3, i2c.getFd() ),
+                        "Error writing to i2c bus" );
     }
 }
 
-
-
-void I2c::write( std::uint8_t address, std::uint8_t registerAddress, std::uint16_t data )
+void I2c::write( std::uint8_t address, std::uint8_t registerAddress,
+                 std::uint16_t data )
 {
     I2cConnection i2c( address );
 
@@ -146,13 +120,13 @@ void I2c::write( std::uint8_t address, std::uint8_t registerAddress, std::uint16
 
     if ( ret < 0 )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 4, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 4, i2c.getFd() ),
+                        "Error writing to i2c bus" );
     }
 }
 
-
-
-void I2c::write( std::uint8_t address, std::uint8_t registerAddress, const char* data )
+void I2c::write( std::uint8_t address, std::uint8_t registerAddress,
+                 const char* data )
 {
     int len = strlen( data );
     if ( len > 32 )
@@ -163,16 +137,18 @@ void I2c::write( std::uint8_t address, std::uint8_t registerAddress, const char*
 
     I2cConnection i2c( address );
 
-    int ret = i2cWriteBlockData( i2c.getFd(), registerAddress, const_cast<char*>( data ), len );
+    int ret = i2cWriteBlockData( i2c.getFd(), registerAddress,
+                                 const_cast<char*>( data ), len );
 
     if ( ret < 0 )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 5, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 5, i2c.getFd() ),
+                        "Error writing to i2c bus" );
     }
 }
 
-
-void I2c::write( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t* data, std::uint8_t numberBytes )
+void I2c::write( std::uint8_t address, std::uint8_t registerAddress,
+                 std::uint8_t* data, std::uint8_t numberBytes )
 {
     if ( numberBytes > 32 )
     {
@@ -182,16 +158,19 @@ void I2c::write( std::uint8_t address, std::uint8_t registerAddress, std::uint8_
 
     I2cConnection i2c( address );
 
-    int ret = i2cWriteI2CBlockData( i2c.getFd(), registerAddress, reinterpret_cast<char*>( data ), numberBytes );
+    int ret =
+        i2cWriteI2CBlockData( i2c.getFd(), registerAddress,
+                              reinterpret_cast<char*>( data ), numberBytes );
 
     if ( ret < 0 )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 6, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 6, i2c.getFd() ),
+                        "Error writing to i2c bus" );
     }
 }
 
-
-void I2c::read( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t* value )
+void I2c::read( std::uint8_t address, std::uint8_t registerAddress,
+                std::uint8_t* value )
 {
     I2cConnection i2c( address );
 
@@ -199,15 +178,15 @@ void I2c::read( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t
 
     if ( ret < 0 )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 7, i2c.getFd() ), "Error reading from i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 7, i2c.getFd() ),
+                        "Error reading from i2c bus" );
     }
 
     *value = static_cast<std::uint8_t>( ret );
 }
 
-
-
-void I2c::read( std::uint8_t address, std::uint8_t registerAddress, std::uint16_t* value )
+void I2c::read( std::uint8_t address, std::uint8_t registerAddress,
+                std::uint16_t* value )
 {
     I2cConnection i2c( address );
 
@@ -215,30 +194,34 @@ void I2c::read( std::uint8_t address, std::uint8_t registerAddress, std::uint16_
 
     if ( ret < 0 )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 8, i2c.getFd() ), "Error reading from i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 8, i2c.getFd() ),
+                        "Error reading from i2c bus" );
     }
 
     *value = static_cast<std::uint16_t>( ret );
 }
 
-
-int I2c::read( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, std::uint8_t* destination )
+int I2c::read( std::uint8_t address, std::uint8_t registerAddress,
+               std::uint8_t numberBytes, std::uint8_t* destination )
 {
     I2cConnection i2c( address );
 
-    int ret = i2cReadI2CBlockData( i2c.getFd(), registerAddress, reinterpret_cast<char*>( destination ), numberBytes );
+    int ret = i2cReadI2CBlockData( i2c.getFd(), registerAddress,
+                                   reinterpret_cast<char*>( destination ),
+                                   numberBytes );
 
     if ( ret < 0 || ret > numberBytes )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 9, i2c.getFd() ), "Error reading from i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 9, i2c.getFd() ),
+                        "Error reading from i2c bus" );
     }
 
     return ret;
 }
 
-
-
-int I2c::readWithOutRestart( std::uint8_t address, std::uint8_t registerAddress, std::uint8_t numberBytes, std::uint8_t* destination )
+int I2c::readWithOutRestart( std::uint8_t address, std::uint8_t registerAddress,
+                             std::uint8_t numberBytes,
+                             std::uint8_t* destination )
 {
     // Needed for devices that don't implement I2C "restart" properly
 
@@ -250,13 +233,16 @@ int I2c::readWithOutRestart( std::uint8_t address, std::uint8_t registerAddress,
     int ret = i2cWriteByte( i2c.getFd(), registerAddress );
     if ( ret < 0 )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 10, i2c.getFd() ), "Error writing to i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 10, i2c.getFd() ),
+                        "Error writing to i2c bus" );
     }
 
-    ret = i2cReadDevice( i2c.getFd(), reinterpret_cast<char*>( destination ), numberBytes );
+    ret = i2cReadDevice( i2c.getFd(), reinterpret_cast<char*>( destination ),
+                         numberBytes );
     if ( ret < 0 )
     {
-        throw I2cError( makeRpi0ErrorId( kI2cError, 11, i2c.getFd() ), "Error reading from i2c bus" );
+        throw I2cError( makeRpi0ErrorId( kI2cError, 11, i2c.getFd() ),
+                        "Error reading from i2c bus" );
     }
 
     return ret;

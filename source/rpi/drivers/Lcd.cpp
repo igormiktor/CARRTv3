@@ -19,13 +19,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "Lcd.h"
 
-#include <fcntl.h>			    //Needed for I2C port
-#include <linux/i2c-dev.h>		//Needed for I2C port
-#include <sys/ioctl.h>			//Needed for I2C port
-#include <unistd.h>			    //Needed for I2C port
+#include <fcntl.h>     //Needed for I2C port
+#include <unistd.h>    //Needed for I2C port
+
+#include <linux/i2c-dev.h>    //Needed for I2C port
+#include <sys/ioctl.h>        //Needed for I2C port
 
 #include <cinttypes>
 #include <cstring>
@@ -35,11 +35,9 @@
 #include "Clock.h"
 #include "I2c.h"
 
-
 using namespace Clock;
 
-
-
+// clang-format off
 
 // We talk to the LCD's HD44780U controller via an MCP23017
 
@@ -82,10 +80,6 @@ using namespace Clock;
 #define MCP23017_GPIOB              0x13
 #define MCP23017_OLATB              0x15
 
-
-
-
-
 // Commands
 #define LCD_CLEARDISPLAY            0x01
 #define LCD_RETURNHOME              0x02
@@ -124,7 +118,7 @@ using namespace Clock;
 #define LCD_5x10DOTS                0x04
 #define LCD_5x8DOTS                 0x00
 
-
+// clang-format on
 
 /*
     This numbering of MCP23017 pins (with GPIO B pins numbered lower
@@ -151,17 +145,17 @@ using namespace Clock;
     15          GPIOA 7     green       green backlight
 */
 
-
-
 namespace Lcd
 {
 
     // *** ATTENTION ***
-    // To achieve speed, the logic of the code depends heavily on the specific pin layout.
-    // Specifically, the logic "knows" whaich functions to access via GPIO A or GPIO B.
-    // The code will BREAK if you move pin assignments around using these constants
-    // without corresponding changes in the code.
+    // To achieve speed, the logic of the code depends heavily on
+    // the specific pin layout. Specifically, the logic "knows" which
+    // functions to access via GPIO A or GPIO B.
+    // The code will BREAK if you move pin assignments around using these
+    // constants without corresponding changes in the code.
 
+    // clang-format off
     enum PinsNumbers
     {
         // GPIO B
@@ -203,10 +197,11 @@ namespace Lcd
         kWordButtonSelect   = 8
     };
 
-    const std::uint8_t kNumLines     = 2;
+    // clang-format on
 
-    const char* kBlankLine      = "                ";
+    const std::uint8_t kNumLines = 2;
 
+    const char* kBlankLine = "                ";
 
     enum
     {
@@ -230,14 +225,10 @@ namespace Lcd
         sendCharOrCmdToLcd( value, kWriteFourBitsSendChar );
     }
 
-    std::uint8_t             mDisplayControl;
-    std::uint8_t             mDisplayMode;
-    std::uint8_t             mCurrLine;
-};
-
-
-
-
+    std::uint8_t mDisplayControl;
+    std::uint8_t mDisplayMode;
+    std::uint8_t mCurrLine;
+};    // namespace Lcd
 
 void Lcd::init()
 {
@@ -252,9 +243,6 @@ void Lcd::init()
     initHD44780U();
 }
 
-
-
-
 void Lcd::initMCP23017()
 {
     // Set output and input modes correctly
@@ -265,87 +253,90 @@ void Lcd::initMCP23017()
     // Set input/output modes
     union
     {
-        std::uint8_t modes[2];
+        std::uint8_t modes[ 2 ];
         std::uint16_t word;
     } data;
-    // Pins 8-15, GPIOA, 0b00111111 = 0x3F
-    data.modes[0] = 0x3F;
-    // Pins 0-7, GPIOB, 0b00000000 = 0x00;
-    data.modes[1] = 0x00;
 
-    // Experimentally observed a set-up timing issue: need to make sure this
-    // next transmission to MCP23017 completes before proceeding to the next one.
+    // Pins 8-15, GPIOA, 0b0011'1111 = 0x3F
+    data.modes[ 0 ] = 0x3F;
+    // Pins 0-7, GPIOB, 0b0000'0000 = 0x00;
+    data.modes[ 1 ] = 0x00;
+
+    // Experimentally observed a set-up timing issue: need to make
+    // sure this next transmission to MCP23017 completes before
+    // proceeding to the next following one.
     I2c::write( MCP23017_ADDRESS, MCP23017_IODIRA, data.word );
 
     // Set pullups
     union
     {
-        std::uint8_t pullups[2];
+        std::uint8_t pullups[ 2 ];
         std::uint16_t word;
     } data2;
+
     // Pins 8-15, GPIOA, 0b00011111 = 0x1F
-    data2.pullups[0] = 0x1F;
+    data2.pullups[ 0 ] = 0x1F;
     // Pins 1-7, GPIOB, 0b00000000 = 0x00
-    data2.pullups[1] = 0x00;
+    data2.pullups[ 1 ] = 0x00;
 
     I2c::write( MCP23017_ADDRESS, MCP23017_GPPUA, data2.word );
 }
 
-
-
-
 void Lcd::initHD44780U()
 {
-/*
-    ** Initialize and configure the HD44780U/LCD **
+    /*
+        ** Initialize and configure the HD44780U/LCD **
 
-    When the HD44780U powers up, it is configured as follows:
+        When the HD44780U powers up, it is configured as follows:
 
-    1. Display clear
-    2. Function set:
-        DL = 1; 8-bit interface data
-        N = 0; 1-line display
-        F = 0; 5x8 dot character font
-    3. Display on/off control:
-        D = 0; Display off
-        C = 0; Cursor off
-        B = 0; Blinking off
-    4. Entry mode set:
-        I/D = 1; Increment by 1
-        S = 0; No shift
+        1. Display clear
+        2. Function set:
+            DL = 1; 8-bit interface data
+            N = 0; 1-line display
+            F = 0; 5x8 dot character font
+        3. Display on/off control:
+            D = 0; Display off
+            C = 0; Cursor off
+            B = 0; Blinking off
+        4. Entry mode set:
+            I/D = 1; Increment by 1
+            S = 0; No shift
 
-    But we don't its state at program start because Arduino reset doesn't reset
-    the HD44780U.
+        But we don't know its state at program start because RPi reset
+        doesn't reset the HD44780U.
 
-    The following initialization incantation is magic as far as I'm concerned.  The
-    datasheet is ambiguous at best, so I simply follow the same steps Limor Fried
-    did in her Adafruit library...
+        The initialization incantation is magic as far as I'm concerned.
+        The datasheet is ambiguous at best, so I simply follow the same
+        steps Limor Fried does in her Adafruit library...
 
-    The trick is we have to put the HD44780U in 4-bit mode.  The appropriate start-up
-    sequence to do this is described on page 45/46 of the HD44780U datasheet.
-*/
+        The trick is we have to put the HD44780U in 4-bit mode.
+        The appropriate start-up sequence to do this is described on
+        page 45/46 of the HD44780U datasheet.
+    */
 
-    // Datasheet says to wait at least 40ms after power rises above 2.7V before sending commands.
+    // Datasheet says to wait at least 40ms after power rises above
+    // 2.7V before sending commands.
     Clock::sleep( 50ms );
 
-    // Pull RS, R/W, and Enable low to begin commands:  0b00000001 = 0x01
+    // Pull RS, R/W, and Enable low to begin commands: 0b0000'0001 = 0x01
     std::uint8_t gpioB = 0x01;
     I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
 
-    // Put the LCD into 4 bit mode; see Hitachi HD44780U datasheet p. 46, fig. 24
+    // Put the LCD into 4 bit mode; see Hitachi HD44780U
+    // datasheet p. 46, fig. 24
     // HD44780U starts in 8-bit mode
 
     // First write
     writeFourBitsToLcd( 0x03, gpioB );
 
     // Datasheet says to wait at least 4.1ms
-    Clock::sleep( 4500us );
+    Clock::sleep( 4'500us );
 
     // Second write
     writeFourBitsToLcd( 0x03, gpioB );
 
     // Datasheet says to wait at least 4.1ms
-    Clock::sleep( 4500us );
+    Clock::sleep( 4'500us );
 
     // Third write
     writeFourBitsToLcd( 0x03, gpioB );
@@ -372,39 +363,33 @@ void Lcd::initHD44780U()
     sendCommand( LCD_ENTRYMODESET | mDisplayMode );
 }
 
-
-
-
-
 void Lcd::writeFourBitsToLcd( std::uint8_t value, std::uint8_t gpioB )
 {
     // Use the lower 4 bits of value
-    gpioB &= ~( ( 1 << kByteLcdD4 ) | ( 1 << kByteLcdD5 ) | ( 1 << kByteLcdD6 ) | ( 1 << kByteLcdD7 ) );
+    gpioB &= ~( ( 1 << kByteLcdD4 ) | ( 1 << kByteLcdD5 ) | ( 1 << kByteLcdD6 )
+                | ( 1 << kByteLcdD7 ) );
     gpioB |= ( value & 0x01 ) << kByteLcdD4;
-    gpioB |= ( (value >> 1) & 0x01 ) << kByteLcdD5;
-    gpioB |= ( (value >> 2) & 0x01 ) << kByteLcdD6;
-    gpioB |= ( (value >> 3) & 0x01 ) << kByteLcdD7;
+    gpioB |= ( ( value >> 1 ) & 0x01 ) << kByteLcdD5;
+    gpioB |= ( ( value >> 2 ) & 0x01 ) << kByteLcdD6;
+    gpioB |= ( ( value >> 3 ) & 0x01 ) << kByteLcdD7;
 
     // Set enable low
     gpioB &= ~( 1 << kByteLcdEnable );
 
     I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
 
-    //  HD44780U requires us to pulse the enable pin for values to be read
+    // HD44780U requires us to pulse the enable pin for values to be read
     Clock::sleep( 1us );
     // Set enable high
-    gpioB |= ( 1 <<  kByteLcdEnable );
+    gpioB |= ( 1 << kByteLcdEnable );
     I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
 
     Clock::sleep( 1us );
     // Set enable low
-    gpioB &= ~( 1 <<  kByteLcdEnable );
+    gpioB &= ~( 1 << kByteLcdEnable );
     I2c::write( MCP23017_ADDRESS, MCP23017_GPIOB, gpioB );
     Clock::sleep( 100us );
 }
-
-
-
 
 void Lcd::sendCharOrCmdToLcd( std::uint8_t value, bool isCommand )
 {
@@ -413,46 +398,41 @@ void Lcd::sendCharOrCmdToLcd( std::uint8_t value, bool isCommand )
     I2c::read( MCP23017_ADDRESS, MCP23017_OLATB, &gpioB );
 
     // Clear the RW bit to write to the HD44780U
-    gpioB &= ~(1 << kByteLcdRW);
+    gpioB &= ~( 1 << kByteLcdRW );
     if ( isCommand )
     {
         // Clear the RS bit to send a command
-        gpioB &= ~(1 << kByteLcdRS);
+        gpioB &= ~( 1 << kByteLcdRS );
     }
     else
     {
         // Set the RS bit to send a character
-        gpioB |= (1 << kByteLcdRS);
+        gpioB |= ( 1 << kByteLcdRS );
     }
 
     // Send the high bits
-    writeFourBitsToLcd( (value >> 4), gpioB );
+    writeFourBitsToLcd( ( value >> 4 ), gpioB );
     // Send the low bits
-    writeFourBitsToLcd( (value & 0b00001111), gpioB );
+    writeFourBitsToLcd( ( value & 0b0000'1111 ), gpioB );
 }
-
-
-
-
-
 
 void Lcd::clear()
 {
-    sendCommand( LCD_CLEARDISPLAY );    // Clear display, set cursor position to zero
-    Clock::sleep( 2ms );             // Takes a while...
+    // Clear display, set cursor position to zero
+    sendCommand( LCD_CLEARDISPLAY );
+    // Takes a while...
+    Clock::sleep( 2ms );
 }
-
-
 
 void Lcd::home()
 {
-    sendCommand( LCD_RETURNHOME );      // Set cursor position to zero
-    Clock::sleep( 2ms );             // Takes a while...
+    // Set cursor position to zero
+    sendCommand( LCD_RETURNHOME );
+    // Takes a while...
+    Clock::sleep( 2ms );
 }
 
-
-
-void Lcd::setCursor(  std::uint8_t row, std::uint8_t col )
+void Lcd::setCursor( std::uint8_t row, std::uint8_t col )
 {
     int row_offsets[] = { 0x00, 0x40 };
     if ( row >= kNumLines )
@@ -461,10 +441,8 @@ void Lcd::setCursor(  std::uint8_t row, std::uint8_t col )
         row %= kNumLines;
     }
 
-    sendCommand( LCD_SETDDRAMADDR | ( col + row_offsets[row] ) );
+    sendCommand( LCD_SETDDRAMADDR | ( col + row_offsets[ row ] ) );
 }
-
-
 
 void Lcd::displayOff()
 {
@@ -472,15 +450,11 @@ void Lcd::displayOff()
     sendCommand( LCD_DISPLAYCONTROL | mDisplayControl );
 }
 
-
-
 void Lcd::displayOn()
 {
     mDisplayControl |= LCD_DISPLAYON;
     sendCommand( LCD_DISPLAYCONTROL | mDisplayControl );
 }
-
-
 
 void Lcd::cursorOff()
 {
@@ -488,15 +462,11 @@ void Lcd::cursorOff()
     sendCommand( LCD_DISPLAYCONTROL | mDisplayControl );
 }
 
-
-
 void Lcd::cursorOn()
 {
     mDisplayControl |= LCD_CURSORON;
     sendCommand( LCD_DISPLAYCONTROL | mDisplayControl );
 }
-
-
 
 void Lcd::blinkOff()
 {
@@ -504,30 +474,21 @@ void Lcd::blinkOff()
     sendCommand( LCD_DISPLAYCONTROL | mDisplayControl );
 }
 
-
-
 void Lcd::blinkOn()
 {
     mDisplayControl |= LCD_BLINKON;
     sendCommand( LCD_DISPLAYCONTROL | mDisplayControl );
 }
 
-
-
-
 void Lcd::scrollDisplayLeft()
 {
     sendCommand( LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT );
 }
 
-
-
 void Lcd::scrollDisplayRight()
 {
     sendCommand( LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT );
 }
-
-
 
 void Lcd::autoscrollOn()
 {
@@ -535,16 +496,11 @@ void Lcd::autoscrollOn()
     sendCommand( LCD_ENTRYMODESET | mDisplayMode );
 }
 
-
-
 void Lcd::autoscrollOff()
 {
     mDisplayMode &= ~LCD_ENTRYSHIFTINCREMENT;
     sendCommand( LCD_ENTRYMODESET | mDisplayMode );
 }
-
-
-
 
 void Lcd::displayTopRow( const char* str )
 {
@@ -553,7 +509,6 @@ void Lcd::displayTopRow( const char* str )
     write( str );
 }
 
-
 void Lcd::displayBottomRow( const char* str )
 {
     clearBottomRow();
@@ -561,14 +516,11 @@ void Lcd::displayBottomRow( const char* str )
     write( str );
 }
 
-
-
 void Lcd::clearTopRow()
 {
     setCursor( 0, 0 );
     write( kBlankLine );
 }
-
 
 void Lcd::clearBottomRow()
 {
@@ -576,27 +528,17 @@ void Lcd::clearBottomRow()
     write( kBlankLine );
 }
 
-
-
-
-
 size_t Lcd::write( std::uint8_t value )
 {
     sendCharToDisplay( value );
     return 1;
 }
 
-
-
-
 size_t Lcd::write( char value )
 {
     sendCharToDisplay( static_cast<std::uint8_t>( value ) );
     return 1;
 }
-
-
-
 
 size_t Lcd::write( const char* str )
 {
@@ -612,14 +554,10 @@ size_t Lcd::write( const char* str )
     return n;
 }
 
-
-
-
 size_t Lcd::write( const char* buffer, size_t size )
 {
-    return write( reinterpret_cast<const std::uint8_t*>( buffer), size );
+    return write( reinterpret_cast<const std::uint8_t*>( buffer ), size );
 }
-
 
 size_t Lcd::write( const std::uint8_t* buffer, size_t size )
 {
@@ -628,15 +566,12 @@ size_t Lcd::write( const std::uint8_t* buffer, size_t size )
     {
         while ( n < size )
         {
-             sendCharToDisplay( *buffer++ );
+            sendCharToDisplay( *buffer++ );
             ++n;
         }
     }
     return n;
 }
-
-
-
 
 void Lcd::setBacklight( std::uint8_t status )
 {
@@ -645,24 +580,24 @@ void Lcd::setBacklight( std::uint8_t status )
     // First read GPIO A & B (actually read the latches = what we set them)
     union
     {
-        std::uint8_t gpio[2];
+        std::uint8_t gpio[ 2 ];
         std::uint16_t byte;
     } data;
+
     I2c::read( MCP23017_ADDRESS, MCP23017_OLATA, &data.byte );
 
     // Clear pins 14 & 15 (GPIOA 6 & 7)
-    data.gpio[0] &= ~( ( 1 << kByteLcdGreen ) | ( 1 << kByteLcdRed ) );
+    data.gpio[ 0 ] &= ~( ( 1 << kByteLcdGreen ) | ( 1 << kByteLcdRed ) );
     // Set pins 14 & 15 (GPIOA 6 & 7) as appropriate
-    data.gpio[0] |= ( (~(status >> 1) & 0x01) << kByteLcdGreen ) | ( (~status & 0x01) << kByteLcdRed );
+    data.gpio[ 0 ] |= ( ( ~( status >> 1 ) & 0x01 ) << kByteLcdGreen )
+                      | ( ( ~status & 0x01 ) << kByteLcdRed );
 
     // Clear pin 0 (GPIOB 0), set it as needed, and write the new GPIO
-    data.gpio[1] &= ~0x01;
-    data.gpio[1] |= ~(status >> 2) & 0x01;
+    data.gpio[ 1 ] &= ~0x01;
+    data.gpio[ 1 ] |= ~( status >> 2 ) & 0x01;
 
     I2c::write( MCP23017_ADDRESS, MCP23017_GPIOA, data.byte );
 }
-
-
 
 int Lcd::readButtons()
 {
@@ -672,5 +607,5 @@ int Lcd::readButtons()
 
     // Buttons have pullups, so gpio bits record the inverse of button state
     // 0b00011111 = 0x1F; 0b10000000 = 0x80; 0b11100000 = 0xE0
-    return static_cast<std::uint8_t>(~gpioA) & 0x1F;
+    return static_cast<std::uint8_t>( ~gpioA ) & 0x1F;
 }

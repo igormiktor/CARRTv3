@@ -1,6 +1,6 @@
 /*
     PCA9685.h - Driver for PCA9685-based PWM IC for CARRTv3.
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,21 +16,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
 #ifndef PCA9685_h
 #define PCA9685_h
 
 #include <cstdint>
 
-
-
 namespace PCA9685
 {
 
     // PCA9685 I2C address
-    constexpr std::uint8_t kPCA9685_I2cAddress      = 0x40;
+    constexpr std::uint8_t kPCA9685_I2cAddress{ 0x40 };
 
     void init( std::uint8_t address );
 
@@ -40,9 +35,11 @@ namespace PCA9685
 
     void setAllPwm( std::uint8_t address, std::uint16_t on, std::uint16_t off );
 
-    void setPwm( std::uint8_t address, std::uint8_t pinNbr, std::uint16_t on, std::uint16_t off );
+    void setPwm( std::uint8_t address, std::uint8_t pinNbr, std::uint16_t on,
+                 std::uint16_t off );
 
-    void setPwmDutyOnCycle( std::uint8_t address, std::uint8_t pinNbr, float onRatio );
+    void setPwmDutyOnCycle( std::uint8_t address, std::uint8_t pinNbr,
+                            float onRatio );
 
     void setOff( std::uint8_t address, std::uint8_t pinNbr );
 
@@ -50,7 +47,6 @@ namespace PCA9685
 
     void setPin( std::uint8_t address, std::uint8_t pinNbr, bool val );
 
-};
+};    // namespace PCA9685
 
-
-#endif  // PCA9685_h
+#endif    // PCA9685_h

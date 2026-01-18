@@ -1,7 +1,8 @@
 /*
-    Lidar.h - Functions for controlling CARRT's Garmin Lidar Lite v3 range sensor
+    Lidar.h - Functions for controlling CARRT's
+    Garmin Lidar Lite v3 range sensor
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,28 +18,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
-
 #ifndef Lidar_h
 #define Lidar_h
 
 #include <climits>
 #include <cstdint>
 
-
-
-
-
 namespace Lidar
 {
     // getDistanceInCm() returns this if no valid range
-    constexpr int kNoValidDistance  = INT_MAX;
+    constexpr int kNoValidDistance{ INT_MAX };
 
-
-    constexpr int kDefaultNbrMedianSamples = 5;
-
+    constexpr int kDefaultNbrMedianSamples{ 5 };
 
     // Modes of Lidar ranging operation
     enum Configuration
@@ -52,19 +43,14 @@ namespace Lidar
         kLowSensitivityButLowerError
     };
 
-
-
     void init();
-
 
     // Lidar takes approximately 22ms to reset
     // Does not change slew angle (only Lidar internal state)
     void reset();
 
-
     // Set the Lidar configuration
     void setConfiguration( Configuration config );
-
 
     // Slew angles measured relative to 000 = straight ahead;
     // left/counter-clockwise = negative, right/clockwise = positive
@@ -73,19 +59,17 @@ namespace Lidar
     // Return the current slew angle
     int getCurrentAngle();
 
-
     // Get the range in cm from a single range ping
     // Negative value means no valid range obtained
-    int getDistanceInCm( int* uncorrectedDistInCm, bool useBiasCorrection = true );
-
+    int getDistanceInCm( int* uncorrectedDistInCm,
+                         bool useBiasCorrection = true );
 
     // Get the range in cm from the median of a set of pings
     // Negative value means no valid range obtained
-    int getMedianDistanceInCm( int* distInCm, std::uint8_t nbrMedianSamples = kDefaultNbrMedianSamples, bool useBiasCorrection = true );
+    int getMedianDistanceInCm(
+        int* distInCm, std::uint8_t nbrMedianSamples = kDefaultNbrMedianSamples,
+        bool useBiasCorrection = true );
 
-
-};
-
-
+};    // namespace Lidar
 
 #endif

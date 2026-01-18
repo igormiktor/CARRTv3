@@ -1,7 +1,7 @@
 /*
     Keypad.h - Driver for CARRT's Key Pad
 
-    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,14 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef Keypad_h
 #define Keypad_h
 
-
-
 namespace Keypad
 {
+    // clang-format off
     enum Keys
     {
         kButton_Select          = 0x01,
@@ -33,7 +31,7 @@ namespace Keypad
         kButton_Up              = 0x08,
         kButton_Left            = 0x10,
 
-        // Chords (finger feasible ones; often require holding down the buttons)
+        // Chords (finger feasible ones, require holding down two buttons)
         kChord_Left_Up          = kButton_Left | kButton_Up,
         kChord_Right_Up         = kButton_Right | kButton_Up,
         kChord_Down_Right       = kButton_Down | kButton_Right,
@@ -59,11 +57,10 @@ namespace Keypad
         kChord_D                = kChord_Down_Left,
     };
 
+    // clang-format on
 
     int readButtons();
-};
 
-
-
+};    // namespace Keypad
 
 #endif

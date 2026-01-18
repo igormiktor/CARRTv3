@@ -77,7 +77,7 @@ int main()
         struct bno055_gravity_float_t gravity_xyz;
         bno055_convert_float_gravity_xyz_msq( &gravity_xyz );
 
-
+// clang-format off
         /*
         imu::Quaternion q = bno.getQuat();
         q.normalize();
@@ -92,6 +92,8 @@ int main()
         Serial.print(-180/M_PI * euler.z());  // pitch, nose-down is positive, x-axis points right
         Serial.println(F(""));
         */
+// clang-format on
+
 #if ENABLE_QUATERNIONS
         struct bno055_quaternion_t quaternion_wxyz;
         bno055_read_quaternion_wxyz( &quaternion_wxyz );

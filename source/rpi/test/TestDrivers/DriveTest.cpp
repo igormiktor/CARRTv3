@@ -17,27 +17,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
-#include <iostream>
 #include <chrono>
+#include <iostream>
 
-#include "CarrtPigpio.h"
-
-#include "Clock.h"
 #include "CarrtError.h"
-
-#include "Motors.h"
-
+#include "CarrtPigpio.h"
+#include "Clock.h"
 #include "DebugUtils.hpp"
-
+#include "Motors.h"
 
 int main()
 {
-    const std::chrono::milliseconds     kThreeMinutesInMillis{ 3min };
-    const std::chrono::milliseconds     kRunTimeInMillis{ 5s };
-    const std::chrono::milliseconds     kPauseTimeInMillis{ 3s };
+    const std::chrono::milliseconds kThreeMinutesInMillis{ 3min };
+    const std::chrono::milliseconds kRunTimeInMillis{ 5s };
+    const std::chrono::milliseconds kPauseTimeInMillis{ 3s };
 
     try
     {
@@ -50,7 +43,7 @@ int main()
         Motors::init();
         std::cerr << "Motors initialized" << std::endl;
 
-        Clock::sleep( 2*kPauseTimeInMillis );
+        Clock::sleep( 2 * kPauseTimeInMillis );
 
         long endTime = Clock::millis() + kThreeMinutesInMillis.count();
         while ( 1 && Clock::millis() < endTime )
@@ -82,7 +75,6 @@ int main()
             Clock::sleep( kPauseTimeInMillis );
 
             std::cerr << "Motor loop end" << std::endl;
-
         }
 
         std::cerr << "Test complete" << std::endl;
@@ -98,7 +90,7 @@ int main()
         std::cerr << "Error: " << err.what() << std::endl;
     }
 
-    catch (...)
+    catch ( ... )
     {
         std::cerr << "Error of unknown type." << std::endl;
     }

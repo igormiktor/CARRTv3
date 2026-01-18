@@ -17,18 +17,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <iostream>
 
-#include "CarrtPigpio.h"
-
-#include "Lcd.h"
-#include "Clock.h"
-
 #include "CarrtError.h"
-
+#include "CarrtPigpio.h"
+#include "Clock.h"
 #include "DebugUtils.hpp"
-
+#include "Lcd.h"
 
 int main()
 {
@@ -42,7 +37,7 @@ int main()
 
         Lcd::setBacklight( Lcd::kBacklight_Off );
         Lcd::displayOn();
-    
+
         for ( int i = 1; i < 8; ++i )
         {
             Lcd::setBacklight( i );
@@ -50,7 +45,7 @@ int main()
             Lcd::displayTopRow( "ABCDEFGHIJKLMNOP" );
             Lcd::displayBottomRow( "abcdefghijklmnop" );
 
-            Clock::sleep( 2500ms );
+            Clock::sleep( 2'500ms );
 
             Lcd::clearTopRow();
             Clock::sleep( 1s );
@@ -61,55 +56,55 @@ int main()
             Lcd::setCursor( 1, 0 );
             Lcd::print( "abcdefghijklmnop" );
 
-            Clock::sleep( 2500ms );
+            Clock::sleep( 2'500ms );
 
             Lcd::clearTopRow();
             Lcd::setCursor( 0, 8 );
             Lcd::print( 'Z' );
             Lcd::displayBottomRow( "01234567890ABCDE" );
 
-            Clock::sleep( 2500ms );
+            Clock::sleep( 2'500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "255 base 10" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( 255 );
 
-            Clock::sleep( 2500ms );
+            Clock::sleep( 2'500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "255 base 8" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( 255, Lcd::kOct );
 
-            Clock::sleep( 2500ms );
+            Clock::sleep( 2'500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "255 base 16" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( 255, Lcd::kHex );
-            Clock::sleep( 2500ms );
+            Clock::sleep( 2'500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "-123456789L" );
             Lcd::setCursor( 1, 0 );
-            Lcd::print( -123456789L );
+            Lcd::print( -123'456'789L );
 
-            Clock::sleep( 2500ms );
+            Clock::sleep( 2'500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "123456789UL" );
             Lcd::setCursor( 1, 0 );
-            Lcd::print( 123456789UL );
+            Lcd::print( 123'456'789UL );
 
-            Clock::sleep( 2500ms );
+            Clock::sleep( 2'500ms );
 
             Lcd::clear();
             Lcd::displayTopRow( "2.7182818289" );
             Lcd::setCursor( 1, 0 );
             Lcd::print( 2.7182818289 );
 
-            Clock::sleep( 2500ms );
+            Clock::sleep( 2'500ms );
         }
         Lcd::setBacklight( Lcd::kBacklight_Off );
         Lcd::displayOff();
@@ -127,7 +122,7 @@ int main()
         std::cerr << "Error: " << err.what() << std::endl;
     }
 
-    catch (...)
+    catch ( ... )
     {
         std::cerr << "Error of unknown type." << std::endl;
     }

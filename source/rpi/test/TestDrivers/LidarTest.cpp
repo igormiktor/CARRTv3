@@ -17,28 +17,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 
+#include "CarrtError.h"
 #include "CarrtPigpio.h"
-
 #include "Clock.h"
+#include "DebugUtils.hpp"
+#include "I2c.h"
 #include "Keypad.h"
 #include "Lcd.h"
-#include "I2c.h"
-#include "Servo.h"
-
-#include "CarrtError.h"
-
-#include "DebugUtils.hpp"
-
 #include "Lidar.h"
-
-
-
+#include "Servo.h"
 
 bool respondToInput( const std::string& inputLine );
 void doPing();
@@ -46,13 +37,7 @@ void doUpdateLidarMode( int pingSize );
 void doInstructions();
 void doConfigScan();
 
-
-
-
 Lidar::Configuration gLidarMode;
-
-
-
 
 int main()
 {
@@ -64,7 +49,7 @@ int main()
         Lidar::init();
         gLidarMode = Lidar::kDefault;
 
-        Clock::sleep( 3000ms );
+        Clock::sleep( 3'000ms );
 
         doInstructions();
 
@@ -72,7 +57,7 @@ int main()
         while ( !stop )
         {
             try
-            {            
+            {
                 std::string inputLine{};
                 std::getline( std::cin, inputLine );
 
@@ -80,14 +65,15 @@ int main()
                 {
                     stop = respondToInput( inputLine );
                 }
-            }        
+            }
 
-            catch( const I2c::I2cError& err )
+            catch ( const I2c::I2cError& err )
             {
                 if ( err.errorCode() % 100 == -82 || err.errorCode() % 100 == -83 )
                 {
                     // Just print out message and continue
-                    std::cerr << "Continuing... Error: " << err.errorCode() << ", " << err.what() << std::endl;
+                    std::cerr << "Continuing... Error: " << err.errorCode() << ", " << err.what()
+                              << std::endl;
                 }
                 else
                 {
@@ -108,14 +94,11 @@ int main()
         std::cerr << "Error: " << err.what() << std::endl;
     }
 
-    catch (...)
+    catch ( ... )
     {
         std::cerr << "Error of unknown type." << std::endl;
     }
-
 }
-
-
 
 void doInstructions()
 {
@@ -124,8 +107,6 @@ void doInstructions()
     std::cout << "Enter c (or C) followed by nbr set a lidar configuration" << std::endl;
     std::cout << "Enter s (or S) for a configuration scan" << std::endl;
 }
-
-
 
 void doPing()
 {
@@ -152,8 +133,6 @@ void doPing()
     }
 }
 
-
-
 void doLidarModeChange( char token )
 {
     // Quick and crappy conversion of single digit '0' - '9' to numeric value
@@ -170,29 +149,22 @@ void doLidarModeChange( char token )
     }
 }
 
-
-
 void doUpdateLidarMode( int mode )
 {
-    static const char* modeStr[] =
-    {
-        "1 - Default",
-        "2 - Short range, fast",
-        "3 - Shorter range, fastest",
-        "4 - Default range, faster at short range",
-        "5 - Maximum range",
-        "6 - High sensitivity, high error",
-        "7 - Low sensitivity, low error"
-    };
-
+    static const char* modeStr[] = { "1 - Default",
+                                     "2 - Short range, fast",
+                                     "3 - Shorter range, fastest",
+                                     "4 - Default range, faster at short range",
+                                     "5 - Maximum range",
+                                     "6 - High sensitivity, high error",
+                                     "7 - Low sensitivity, low error" };
 
     gLidarMode = static_cast<Lidar::Configuration>( mode );
 
     Lidar::setConfiguration( gLidarMode );
 
-    std::cout << "Lidar mode:  " <<  modeStr[mode] << std::endl;
+    std::cout << "Lidar mode:  " << modeStr[ mode ] << std::endl;
 }
-
 
 void doConfigScan()
 {
@@ -200,7 +172,7 @@ void doConfigScan()
 
     for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
     {
-        std::cout << i <<  ",   "; 
+        std::cout << i << ",   ";
     }
     std::cout << std::endl;
 
@@ -210,14 +182,12 @@ void doConfigScan()
         Clock::sleep( 10ms );
         int rng;
         Lidar::getMedianDistanceInCm( &rng );
-        std::cout << rng <<  ",   ";
+        std::cout << rng << ",   ";
     }
     std::cout << std::endl;
 
     Lidar::setConfiguration( Lidar::kDefault );
 }
-
-
 
 bool respondToInput( const std::string& inputLine )
 {
@@ -228,7 +198,7 @@ bool respondToInput( const std::string& inputLine )
 
     if ( !token.empty() )
     {
-        switch ( token[0] )
+        switch ( token[ 0 ] )
         {
             case 'p':
             case 'P':
@@ -237,14 +207,14 @@ bool respondToInput( const std::string& inputLine )
 
             case 'c':
             case 'C':
-                std::getline( ssInput, token, ' ' );   
-                if ( token.empty() ) 
+                std::getline( ssInput, token, ' ' );
+                if ( token.empty() )
                 {
                     std::cout << "Missing mode number after 'C'" << std::endl;
                 }
                 else
                 {
-                    doLidarModeChange( token[0] );
+                    doLidarModeChange( token[ 0 ] );
                 }
                 break;
 
@@ -252,13 +222,12 @@ bool respondToInput( const std::string& inputLine )
             case 'S':
                 doConfigScan();
                 break;
-        
+
             case 'q':
-            case 'Q': 
+            case 'Q':
                 return true;
         }
     }
 
     return false;
 }
-

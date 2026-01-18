@@ -17,17 +17,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <iostream>
 
-#include "CarrtPigpio.h"
-
-#include "Lcd.h"
-#include "Clock.h"
 #include "CarrtError.h"
-
+#include "CarrtPigpio.h"
+#include "Clock.h"
 #include "DebugUtils.hpp"
-
+#include "Lcd.h"
 
 int main()
 {
@@ -56,7 +52,7 @@ int main()
         std::cerr << "Error: " << err.what() << std::endl;
     }
 
-    catch (...)
+    catch ( ... )
     {
         std::cerr << "Error of unknown type." << std::endl;
     }

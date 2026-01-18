@@ -1,36 +1,31 @@
+#include <iostream>
+
 #include "BNO055.h"
 #include "CarrtPicoDefines.h"
+#include "CarrtPicoReset.h"
+#include "Clock.h"
 #include "Core1.h"
 #include "CoreAtomic.hpp"
-#include "Clock.h"
 #include "EventManager.h"
 #include "I2C.h"
 #include "OutputUtils.hpp"
-#include "CarrtPicoReset.h"
 #include "PicoState.h"
-#include "SerialMessages.h"
-#include "SerialMessageProcessor.h"
 #include "SerialLinkPico.h"
-
-#include <iostream>
-
-#include "pico/binary_info.h"
-#include "pico/stdlib.h"
-#include "pico/multicore.h"
-#include "pico/util/queue.h"
+#include "SerialMessageProcessor.h"
+#include "SerialMessages.h"
 #include "hardware/clocks.h"
 #include "hardware/i2c.h"
 #include "hardware/timer.h"
 #include "hardware/uart.h"
-
+#include "pico/binary_info.h"
+#include "pico/multicore.h"
+#include "pico/stdlib.h"
+#include "pico/util/queue.h"
 
 bi_decl( bi_1pin_with_name( CARRTPICO_HEARTBEAT_LED, "On-board LED for blinking" ) );
-bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX", CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
+bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX",
+                              CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
-
-
-
-
 
 void checkAndReportCalibration( EventManager& events, SerialLink& link )
 {
@@ -41,10 +36,11 @@ void checkAndReportCalibration( EventManager& events, SerialLink& link )
     if ( status != oldStatus )
     {
         // Send message to RPi0 that Nav Status change and set Pico state accordingly
-        PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+        PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel,
+                                               calibData.gyro, calibData.system );
         navReadyStatus.sendOut( link );
-        PicoState::calibrationInProgress( !status ); 
-        
+        PicoState::calibrationInProgress( !status );
+
         if ( status )
         {
             output2cout( "Gone from not calibrated to CALIBRATED" );
@@ -57,14 +53,15 @@ void checkAndReportCalibration( EventManager& events, SerialLink& link )
     else
     {
         // If calibration status unchanged, just send normal calibration report
-        CalibrationInfoUpdateMsg calibStatus( calibData.mag, calibData.accel, calibData.gyro, calibData.system );
+        CalibrationInfoUpdateMsg calibStatus( calibData.mag, calibData.accel, calibData.gyro,
+                                              calibData.system );
         calibStatus.sendOut( link );
     }
 
-    output2cout( "Calib status (M, A, G, S): ", static_cast<int>( calibData.mag ), static_cast<int>( calibData.accel ), 
-        static_cast<int>( calibData.gyro ), static_cast<int>( calibData.system ) );
+    output2cout( "Calib status (M, A, G, S): ", static_cast<int>( calibData.mag ),
+                 static_cast<int>( calibData.accel ), static_cast<int>( calibData.gyro ),
+                 static_cast<int>( calibData.system ) );
 }
-
 
 void initializeBNO055( EventManager& events )
 {
@@ -75,7 +72,6 @@ void initializeBNO055( EventManager& events )
     events.queueEvent( EvtId::kBNO055BeginCalibrationEvent );
 }
 
-
 void resetBNO055( EventManager& events )
 {
     // Note this call is followed by 650ms delay before we can call init()
@@ -83,9 +79,6 @@ void resetBNO055( EventManager& events )
     PicoState::navCalibrated( false );
     Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
 }
-
-
-
 
 int main()
 {
@@ -123,13 +116,12 @@ int main()
         PicoReadyMsg picoReady( Clock::millis() );
         picoReady.sendOut( rpi0 );
 
-
         // Test only:  queue a BO055 reset in 15 seconds
-        Core1::queueEventForCore1( EvtId::kBNO055ResetEvent, 15000 );
+        Core1::queueEventForCore1( EvtId::kBNO055ResetEvent, 15'000 );
 
         bool ledState = false;
 
-        while ( true ) 
+        while ( true )
         {
             std::uint32_t timeTick{ Clock::millis() };
             EvtId eventCode{};
@@ -158,21 +150,24 @@ int main()
                             navUpdate.sendOut( rpi0 );
                         }
                         break;
-                        
+
                     case EvtId::kQuarterSecondTimerEvent:
                         // std::cout << "1/4 " << eventParam << std::endl;
                         if ( PicoState::wantQtrSecTimerMsgs() )
                         {
-                            // std::cout << "1/4 " << eventParam << ", " << PicoState::wantTimerMsgs() << std::endl;
-                            TimerEventMsg qtrSec( TimerEventMsg::k1QuarterSecondEvent, eventParam, timeTick );
+                            // std::cout << "1/4 " << eventParam << ", "
+                            //           << PicoState::wantTimerMsgs() << std::endl;
+                            TimerEventMsg qtrSec( TimerEventMsg::k1QuarterSecondEvent, eventParam,
+                                                  timeTick );
                             qtrSec.sendOut( rpi0 );
                         }
                         break;
-                        
+
                     case EvtId::kOneSecondTimerEvent:
                         if ( PicoState::want1SecTimerMsgs() )
                         {
-                            TimerEventMsg oneSec( TimerEventMsg::k1SecondEvent, eventParam, timeTick );
+                            TimerEventMsg oneSec( TimerEventMsg::k1SecondEvent, eventParam,
+                                                  timeTick );
                             oneSec.sendOut( rpi0 );
                         }
                         break;
@@ -181,11 +176,12 @@ int main()
                         gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                         ledState = !ledState;
                         break;
-                        
+
                     case EvtId::kEightSecondTimerEvent:
                         if ( PicoState::want8SecTimerMsgs() )
                         {
-                            TimerEventMsg eightSec( TimerEventMsg::k8SecondEvent, eventParam, timeTick );
+                            TimerEventMsg eightSec( TimerEventMsg::k8SecondEvent, eventParam,
+                                                    timeTick );
                             eightSec.sendOut( rpi0 );
                         }
                         break;
@@ -212,7 +208,8 @@ int main()
                 if ( Events().hasEventQueueOverflowed() )
                 {
                     output2cout( "Event queue overflowed" );
-                    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ), Clock::millis() );
+                    ErrorReportMsg errMsg( false, makePicoErrorId( kPicoMainProcessError, 1, 1 ),
+                                           Clock::millis() );
                     errMsg.sendOut( rpi0 );
                     Events().resetEventQueueOverflowFlag();
                 }
@@ -227,7 +224,6 @@ int main()
         }
     }
 
-
     catch ( const CarrtError& err )
     {
         std::cerr << "Error: " << err.errorCode() << ", " << err.what() << std::endl;
@@ -238,7 +234,7 @@ int main()
         std::cerr << "Error: " << err.what() << std::endl;
     }
 
-    catch (...)
+    catch ( ... )
     {
         std::cerr << "Error of unknown type." << std::endl;
     }

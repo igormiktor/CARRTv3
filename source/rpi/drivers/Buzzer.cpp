@@ -1,7 +1,7 @@
 /*
     Buzzer.cpp - Driver for CARRT's simple audio system
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,61 +17,50 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #include "Buzzer.h"
-
 
 #include "CarrtError.h"
 #include "CarrtPigpio.h"
 #include "CarrtPinAssignments.h"
 #include "Clock.h"
-
 #include "DebugUtils.hpp"
-
-
 
 namespace Buzzer
 {
-    constexpr unsigned int pBuzzerPin = GpioPins::kBuzzerPin;       
+    constexpr unsigned int pBuzzerPin = GpioPins::kBuzzerPin;
 
-    constexpr unsigned int kDutyCycle = 2*500000UL;
-}
+    constexpr unsigned int kDutyCycle = 2 * 500'000UL;
+}    // namespace Buzzer
 
+// Only check for PWM errors on the first call in each function
+// (assume if first call works, so will subsequent)
 
-// Only check for PWM errors on the first call in each function (assume if first call works, so will subsequent)
+void Buzzer::initBuzzer() { chirp(); }
 
-
-
-void Buzzer::initBuzzer()
+void Buzzer::beep( const std::chrono::milliseconds& durationMs,
+                   unsigned int tone )
 {
-    chirp();
-}
-
-
-void Buzzer::beep( const std::chrono::milliseconds& durationMs, unsigned int tone )
-{
-    auto err = gpioHardwarePWM( pBuzzerPin, tone, kDutyCycle );
-    if ( err )
+    if ( auto err = gpioHardwarePWM( pBuzzerPin, tone, kDutyCycle ); err )
     {
-        throw CarrtError( makeRpi0ErrorId( kBuzzerError, 1, err ), "Hardware PWM error in Buzzer module" );
+        throw CarrtError( makeRpi0ErrorId( kBuzzerError, 1, err ),
+                          "Hardware PWM error in Buzzer module" );
     }
     Clock::sleep( durationMs );
     gpioHardwarePWM( pBuzzerPin, 0, 0 );
 }
 
-
 void Buzzer::chirp()
 {
-    auto err = gpioHardwarePWM( pBuzzerPin, kBeepDefaultChirpTone, kDutyCycle );
-    if ( err )
+    if ( auto err =
+             gpioHardwarePWM( pBuzzerPin, kBeepDefaultChirpTone, kDutyCycle );
+         err )
     {
-        throw CarrtError( makeRpi0ErrorId( kBuzzerError, 2, err ), "Hardware PWM error in Buzzer module" );
+        throw CarrtError( makeRpi0ErrorId( kBuzzerError, 2, err ),
+                          "Hardware PWM error in Buzzer module" );
     }
     Clock::sleep( kBeepDefaultChirpDuration );
     gpioHardwarePWM( pBuzzerPin, 0, 0 );
 }
-
 
 void Buzzer::errorChime()
 {
@@ -82,13 +71,13 @@ void Buzzer::errorChime()
     beep( 50ms );
 }
 
-
-void Buzzer::triTone( unsigned int tone1, unsigned int tone2, unsigned int tone3 )
+void Buzzer::triTone( unsigned int tone1, unsigned int tone2,
+                      unsigned int tone3 )
 {
-    auto err = gpioHardwarePWM( pBuzzerPin, tone1, kDutyCycle );
-    if ( err )
+    if ( auto err = gpioHardwarePWM( pBuzzerPin, tone1, kDutyCycle ); err )
     {
-        throw CarrtError( makeRpi0ErrorId( kBuzzerError, 3, err ), "Hardware PWM error in Buzzer module" );
+        throw CarrtError( makeRpi0ErrorId( kBuzzerError, 3, err ),
+                          "Hardware PWM error in Buzzer module" );
     }
     Clock::sleep( 50ms );
     gpioHardwarePWM( pBuzzerPin, 0, 0 );
@@ -106,22 +95,20 @@ void Buzzer::triTone( unsigned int tone1, unsigned int tone2, unsigned int tone3
     gpioHardwarePWM( pBuzzerPin, 0, 0 );
 }
 
-
 void Buzzer::beepOn( unsigned int tone )
 {
-    auto err = gpioHardwarePWM( pBuzzerPin, tone, kDutyCycle );
-    if ( err )
+    if ( auto err = gpioHardwarePWM( pBuzzerPin, tone, kDutyCycle ); err )
     {
-        throw CarrtError( makeRpi0ErrorId( kBuzzerError, 4, err ), "Hardware PWM error in Buzzer module" );
+        throw CarrtError( makeRpi0ErrorId( kBuzzerError, 4, err ),
+                          "Hardware PWM error in Buzzer module" );
     }
 }
 
-
 void Buzzer::beepOff()
 {
-    auto err = gpioHardwarePWM( pBuzzerPin, 0, 0 );
-    if ( err )
+    if ( auto err = gpioHardwarePWM( pBuzzerPin, 0, 0 ); err )
     {
-        throw CarrtError( makeRpi0ErrorId( kBuzzerError, 5, err ), "Hardware PWM error in Buzzer module" );
+        throw CarrtError( makeRpi0ErrorId( kBuzzerError, 5, err ),
+                          "Hardware PWM error in Buzzer module" );
     }
 }

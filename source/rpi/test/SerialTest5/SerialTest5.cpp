@@ -1,23 +1,20 @@
 #include <iostream>
 #include <string>
 
-#include "SerialLinkRPi.h"
-#include "SerialMessages.h"
-#include "SerialMessageProcessor.h"
 #include "Clock.h"
-
-
 #include "DebugUtils.hpp"
 #include "OutputUtils.hpp"
+#include "SerialLinkRPi.h"
+#include "SerialMessageProcessor.h"
+#include "SerialMessages.h"
 
-
-void doDebugLinkTest( int val1_i, std::uint8_t val2_u8, float val3_f, std::uint32_t val4_u32, SerialLink& link )
+void doDebugLinkTest( int val1_i, std::uint8_t val2_u8, float val3_f, std::uint32_t val4_u32,
+                      SerialLink& link )
 {
     DebugLinkMsg cmd0( val1_i, val2_u8, val3_f, val4_u32 );
-    cmd0.sendOut( link ); 
+    cmd0.sendOut( link );
     output2cout( "Sent debug link cmd", val1_i, val2_u8, val3_f, val4_u32 );
 }
-
 
 void doTest( int i, SerialLink& link )
 {
@@ -27,35 +24,30 @@ void doTest( int i, SerialLink& link )
     switch ( j )
     {
         case 0:
-            doDebugLinkTest( -100, 200, -1.1f, 3000, link );
+            doDebugLinkTest( -100, 200, -1.1f, 3'000, link );
             break;
 
         case 1:
-            doDebugLinkTest( -1, 0, -2.71828f, 12345, link );
+            doDebugLinkTest( -1, 0, -2.71828f, 12'345, link );
             break;
 
         case 2:
-            doDebugLinkTest( 18, 254, 3.14159f, 54321, link );
+            doDebugLinkTest( 18, 254, 3.14159f, 54'321, link );
             break;
 
         case 3:
-            doDebugLinkTest( -111, 66, -6.66f, 66666, link );
+            doDebugLinkTest( -111, 66, -6.66f, 66'666, link );
             break;
     }
 }
 
-
 class EventManager
-{
+{};
 
-};
-
-
-int main() 
+int main()
 {
     Clock::initSystemClock();
-    SerialLinkRPi  pico;
-
+    SerialLinkRPi pico;
 
     std::cout << "Serial link test" << std::endl;
 
@@ -73,8 +65,8 @@ int main()
         bool timerEventsOn{ false };
         int testNbr{ 0 };
         long start{ Clock::millis() };
-        long lastTest{ start + 5000 };
-        long lastToggle{ start - 15000 };
+        long lastTest{ start + 5'000 };
+        long lastToggle{ start - 15'000 };
 
         while ( keepGoing )
         {
@@ -88,7 +80,7 @@ int main()
             long now{ Clock::millis() };
 
 #if 1
-            auto timeForTest{ (now - lastTest) / 10000 };
+            auto timeForTest{ ( now - lastTest ) / 10'000 };
             if ( timeForTest )
             {
                 doTest( testNbr++, pico );
@@ -97,11 +89,11 @@ int main()
 #endif
 
 #if 1
-            auto timeForToggle{ (now - lastToggle) / 20000 };
+            auto timeForToggle{ ( now - lastToggle ) / 20'000 };
             if ( timeForToggle )
             {
                 if ( timerEventsOn )
-                { 
+                {
                     timerEventsOn = false;
                 }
                 else
@@ -114,11 +106,11 @@ int main()
                 lastToggle = Clock::millis();
             }
 #endif
-            if ( (now - start) / 1000 > 4*60 )
+            if ( ( now - start ) / 1'000 > 4 * 60 )
             {
                 keepGoing = false;
             }
-            
+
             Clock::sleep( 10ms );
         }
 
@@ -135,14 +127,12 @@ int main()
         std::cerr << "Error: " << err.what() << std::endl;
     }
 
-    catch (...)
+    catch ( ... )
     {
         std::cerr << "Error of unknown type." << std::endl;
     }
 
-
     std::cout << "Exiting test" << std::endl;
-    
 
-    return 0; 
+    return 0;
 };
