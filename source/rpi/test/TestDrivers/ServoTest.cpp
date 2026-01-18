@@ -17,23 +17,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <iostream>
 
+#include "CarrtError.h"
 #include "CarrtPigpio.h"
-
 #include "Clock.h"
+#include "DebugUtils.hpp"
+#include "I2c.h"
 #include "Keypad.h"
 #include "Lcd.h"
-#include "I2c.h"
 #include "Servo.h"
 
-#include "CarrtError.h"
-
-#include "DebugUtils.hpp"
-
-constexpr long kThreeMinutesInMillis = 3 * 60 *1000L;
-
+constexpr long kThreeMinutesInMillis = 3 * 60 * 1'000L;
 
 int main()
 {
@@ -48,7 +43,7 @@ int main()
         Lcd::displayOn();
         Lcd::setBacklight( Lcd::kBacklight_White );
 
-        const int kMinTimeBetweenButtonChecks = 250;        // milliseconds
+        const int kMinTimeBetweenButtonChecks = 250;    // milliseconds
         long sNextTimeButtonClickAccepted = 0;
 
         Servo::init();
@@ -81,7 +76,7 @@ int main()
                             direction = 0;
                             Servo::slew( direction );
                             loopAgain = false;
-                            Clock::sleep( 1000ms );
+                            Clock::sleep( 1'000ms );
                             break;
 
                         case Keypad::kButton_Right:
@@ -156,12 +151,13 @@ int main()
                 Clock::sleep( 25ms );
             }
 
-            catch( const I2c::I2cError& err )
+            catch ( const I2c::I2cError& err )
             {
                 if ( err.errorCode() % 100 == -82 || err.errorCode() % 100 == -83 )
                 {
                     // Just continue
-                    std::cerr << "Continuing... Error: " << err.errorCode() << ", " << err.what() << std::endl;
+                    std::cerr << "Continuing... Error: " << err.errorCode() << ", " << err.what()
+                              << std::endl;
                 }
                 else
                 {
@@ -181,7 +177,7 @@ int main()
         std::cerr << "Error: " << err.what() << std::endl;
     }
 
-    catch (...)
+    catch ( ... )
     {
         std::cerr << "Error of unknown type." << std::endl;
     }

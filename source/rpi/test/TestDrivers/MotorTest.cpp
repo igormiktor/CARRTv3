@@ -1,7 +1,7 @@
 /*
     MotorTestIndividual.cpp - Testing harness for the CARRT3 motor driver.
 
-    Copyright (c) 2019 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,23 +17,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <iostream>
 
-#include "CarrtPigpio.h"
-
-#include "Clock.h"
 #include "CarrtError.h"
-
-#include "Motors.h"
-
+#include "CarrtPigpio.h"
+#include "Clock.h"
 #include "DebugUtils.hpp"
-
-
+#include "Motors.h"
 
 int main()
 {
-    const long kThreeMinutesInMillis = 3 * 60 *1000L;
+    const long kThreeMinutesInMillis = 3 * 60 * 1'000L;
 
     try
     {
@@ -48,7 +42,7 @@ int main()
 
         Clock::sleep( 3ms );
 
-        std::cerr<< "Starting motor loop" << std::endl;
+        std::cerr << "Starting motor loop" << std::endl;
         long endTime = Clock::millis() + kThreeMinutesInMillis;
         while ( 1 && Clock::millis() < endTime )
         {
@@ -110,7 +104,7 @@ int main()
         std::cerr << "Error: " << err.what() << std::endl;
     }
 
-    catch (...)
+    catch ( ... )
     {
         std::cerr << "Error of unknown type." << std::endl;
     }

@@ -17,22 +17,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <iostream>
 
+#include "CarrtError.h"
 #include "CarrtPigpio.h"
-
 #include "Clock.h"
+#include "DebugUtils.hpp"
+#include "I2c.h"
 #include "Keypad.h"
 #include "Lcd.h"
-#include "I2c.h"
 
-#include "CarrtError.h"
-
-#include "DebugUtils.hpp"
-
-const long kThreeMinutesInMillis = 3 * 60 *1000L;
-
+const long kThreeMinutesInMillis = 3 * 60 * 1'000L;
 
 int main()
 {
@@ -47,9 +42,9 @@ int main()
         Lcd::displayOn();
         Lcd::setBacklight( Lcd::kBacklight_White );
 
-        const int kMinTimeBetweenButtonChecks = 250;        // milliseconds
+        const int kMinTimeBetweenButtonChecks = 250;    // milliseconds
         long sNextTimeButtonClickAccepted = 0;
-        std::uint8_t sPreviousButtonHit{ 0 }; 
+        std::uint8_t sPreviousButtonHit{ 0 };
 
         Lcd::displayTopRow( "Button hit:" );
 
@@ -61,12 +56,13 @@ int main()
                 std::uint8_t buttonHit = Keypad::readButtons();
 
                 auto currentMillis{ Clock::millis() };
-                bool mightBeChord{ buttonHit && buttonHit != sPreviousButtonHit && currentMillis <= sNextTimeButtonClickAccepted };
+                bool mightBeChord{ buttonHit && buttonHit != sPreviousButtonHit
+                                   && currentMillis <= sNextTimeButtonClickAccepted };
                 if ( mightBeChord )
                 {
                     // Fake a chord and fake the time so we accept it
                     debugM( "Composite chord" );
-                    debugV( (int) buttonHit, (int) sPreviousButtonHit );
+                    debugV( (int)buttonHit, (int)sPreviousButtonHit );
                     buttonHit |= sPreviousButtonHit;
                     currentMillis = sNextTimeButtonClickAccepted + 1;
                 }
@@ -150,15 +146,15 @@ int main()
                 }
 
                 Clock::sleep( 25ms );
-
             }
 
-            catch( const I2c::I2cError& err )
+            catch ( const I2c::I2cError& err )
             {
                 if ( err.errorCode() % 100 == -82 || err.errorCode() % 100 == -83 )
                 {
                     // Just continue
-                    std::cerr << "Continuing... Error: " << err.errorCode() << ", " << err.what() << std::endl;
+                    std::cerr << "Continuing... Error: " << err.errorCode() << ", " << err.what()
+                              << std::endl;
                 }
                 else
                 {
@@ -178,7 +174,7 @@ int main()
         std::cerr << "Error: " << err.what() << std::endl;
     }
 
-    catch (...)
+    catch ( ... )
     {
         std::cerr << "Error of unknown type." << std::endl;
     }
