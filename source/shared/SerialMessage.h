@@ -288,7 +288,7 @@ public:
     UnknownMsg() noexcept;
     explicit UnknownMsg( TheData t ) noexcept;
     UnknownMsg( std::uint8_t, int errorCode ) noexcept;
-    UnknownMsg( MsgId id );
+    explicit UnknownMsg( MsgId id );
 
     virtual ~UnknownMsg() = default;
 
@@ -363,16 +363,12 @@ public:
 
     virtual void sendOut( SerialLink& link ) override;
 
-    virtual void takeAction( EventManager& events, SerialLink& link ) = 0;
-
     [[nodiscard]] virtual bool needsAction() const noexcept override;
 
     virtual MsgId getId() const noexcept override;
 
 protected:
     MsgId mId;
-
-    bool mNeedsAction;
 };
 
 #endif    // SerialMessage_h
