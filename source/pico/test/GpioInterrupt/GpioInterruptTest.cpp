@@ -4,6 +4,7 @@
 #include "CarrtError.h"
 #include "CarrtPicoDefines.h"
 #include "Clock.h"
+#include "Event.h"
 #include "EventManager.h"
 #include "hardware/clocks.h"
 #include "hardware/i2c.h"
@@ -99,20 +100,20 @@ void gpioInterruptCallback( uint gpio, std::uint32_t events )
 
         if ( events & GPIO_IRQ_EDGE_FALL )
         {
-            Events().queueEvent( kGpioInterruptTestFallingEvent, static_cast<int>( events ), tick );
+            Events().queueEvent( EvtId::kGpioInterruptTestFallingEvent, static_cast<int>( events ), tick );
         }
         if ( events & GPIO_IRQ_EDGE_RISE )
         {
-            Events().queueEvent( kGpioInterruptTestRisingEvent, static_cast<int>( events ), tick );
+            Events().queueEvent( EvtId::kGpioInterruptTestRisingEvent, static_cast<int>( events ), tick );
         }
         if ( !( events & GPIO_IRQ_EDGE_FALL || events & GPIO_IRQ_EDGE_RISE ) )
         {
-            Events().queueEvent( kGpioInterruptTestFailureEvent, static_cast<int>( events ), tick );
+            Events().queueEvent( EvtId::kGpioInterruptTestFailureEvent, static_cast<int>( events ), tick );
         }
     }
     else
     {
-        Events().queueEvent( kGpioInterruptWrongPinEvent, gpio );
+        Events().queueEvent( EvtId::kGpioInterruptWrongPinEvent, gpio );
     }
 
     elapsedTime = to_us_since_boot( get_absolute_time() ) - startTime;
