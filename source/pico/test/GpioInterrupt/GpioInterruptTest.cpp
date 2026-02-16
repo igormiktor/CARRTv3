@@ -32,7 +32,8 @@ uint64_t elapsedTime = 0;
 
 bool timerCallback( repeating_timer_t* )
 {
-    static int eighthSecCount = 0;
+    static int eighthSecCount{ 0 };
+    std::uint32_t tick{ Clock::millis() };
 
     ++eighthSecCount;
     eighthSecCount %= 64;
@@ -40,46 +41,26 @@ bool timerCallback( repeating_timer_t* )
     // Queue nav update events every 1/8 second
     // Event parameter counts eighth seconds ( 0, 1, 2, 3, 4, 5, 6, 7 )
     // Events().queueEvent( EvtId::kNavUpdateEvent, eighthSecCount % 8, 0,
-    //                      EventManager::kHighPriority );
+    //                      EventManager::kHighPriority, tick );
 
     if ( ( eighthSecCount % 2 ) == 0 )
     {
         // Event parameter counts quarter seconds ( 0, 1, 2, 3 )
-        // Events().queueEvent( EvtId::kQuarterSecondTimerEvent, ( eighthSecCount % 4 ) );
+        // Events().queueEvent( EvtId::kQuarterSecondTimerEvent, ( eighthSecCount % 4 ), tick );
     }
 
     if ( ( eighthSecCount % 8 ) == 0 )
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
-        Events().queueEvent( EvtId::kOneSecondTimerEvent, ( eighthSecCount / 8 ) );
+        Events().queueEvent( EvtId::kOneSecondTimerEvent, ( eighthSecCount / 8 ), tick );
     }
 
     if ( eighthSecCount == 0 )
     {
-        // Events().queueEvent( EvtId::kEightSecondTimerEvent, 0 );
+        Events().queueEvent( EvtId::kEightSecondTimerEvent, 0, tick );
     }
 
     return true;
-}
-
-void startCore1()
-{
-    // std::cout << "Started Core " << get_core_num() << std::endl;
-
-    alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
-
-    repeating_timer_t timer;
-    // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
-    if ( !alarm_pool_add_repeating_timer_ms( core1AlarmPool, -125, timerCallback, NULL, &timer ) )
-    {
-        std::cout << "Failed to add timer\n" << std::endl;
-    }
-
-    while ( 1 )
-    {
-        // tight_loop_contents();
-        sleep_ms( 100 );
-    }
 }
 
 void gpioInterruptCallback( uint gpio, std::uint32_t events )
@@ -125,6 +106,33 @@ void gpioInterruptCallback( uint gpio, std::uint32_t events )
     return;
 }
 
+void startCore1()
+{
+    // std::cout << "Started Core " << get_core_num() << std::endl;
+
+    alarm_pool_t* core1AlarmPool = alarm_pool_create( TIMER_IRQ_2, 4 );
+
+    repeating_timer_t timer;
+    // Repeating 1/8 sec timer; negative timeout means exact delay between triggers
+    if ( !alarm_pool_add_repeating_timer_ms( core1AlarmPool, -125, timerCallback, NULL, &timer ) )
+    {
+        std::cout << "Failed to add timer\n" << std::endl;
+    }
+
+    // Configure interrupt on GPIO_TEST_PIN
+    gpio_init( GPIO_TEST_PIN );
+    gpio_set_dir( GPIO_TEST_PIN, GPIO_IN );
+    gpio_pull_down( GPIO_TEST_PIN );
+    gpio_set_irq_enabled_with_callback( GPIO_TEST_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
+                                        true, gpioInterruptCallback );
+
+    while ( 1 )
+    {
+        sleep_ms( 100 );
+    }
+}
+
+
 int main()
 {
     stdio_init_all();
@@ -144,13 +152,6 @@ int main()
     gpio_init( GPIO_SIGNAL_PIN );
     gpio_set_dir( GPIO_SIGNAL_PIN, GPIO_OUT );
     gpio_put( GPIO_SIGNAL_PIN, signalPinStatus );
-
-    // Configure interrupt on GPIO_TEST_PIN
-    gpio_init( GPIO_TEST_PIN );
-    gpio_set_dir( GPIO_TEST_PIN, GPIO_IN );
-    gpio_pull_down( GPIO_TEST_PIN );
-    gpio_set_irq_enabled_with_callback( GPIO_TEST_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
-                                        true, gpioInterruptCallback );
 
     //    bool ledState = false;
     std::cout << "Event processing start time is: " << Clock::millis() << std::endl;
@@ -173,7 +174,7 @@ int main()
                     break;
 
                 case EvtId::kOneSecondTimerEvent:
-                    std::cout << "1 s " << eventParam << std::endl;
+                    std::cout << "1 s " << eventParam << ' ' << eventTime << std::endl;
                     // gpio_put( CARRTPICO_HEARTBEAT_LED, ledState );
                     // ledState = !ledState;
                     break;
@@ -182,6 +183,7 @@ int main()
                     std::cout << "8 s " << eventTime << std::endl;
                     signalPinStatus = !signalPinStatus;
                     std::cout << "Signal " << ( signalPinStatus ? "ON" : "OFF" ) << std::endl;
+                    gpio_put( GPIO_SIGNAL_PIN, signalPinStatus );
                     break;
 
                 case EvtId::kGpioInterruptTestFallingEvent:
