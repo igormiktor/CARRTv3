@@ -179,7 +179,7 @@ int main()
                     break;
 
                 case EvtId::kEightSecondTimerEvent:
-                    std::cout << "8 s " << eventParam << std::endl;
+                    std::cout << "8 s " << eventTime << std::endl;
                     signalPinStatus = !signalPinStatus;
                     std::cout << "Signal " << ( signalPinStatus ? "ON" : "OFF" ) << std::endl;
                     break;
@@ -199,13 +199,13 @@ int main()
                 case EvtId::kGpioInterruptTestFailureEvent:
                     // gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     std::cout << "GPIO neither rising nor falling (error) "
-                              << static_cast<uint>( eventParam ) << std::endl;
+                              << static_cast<int>( eventParam ) << ' ' << eventTime << std::endl;
                     break;
 
                 case EvtId::kGpioInterruptWrongPinEvent:
                     // gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
-                    std::cout << "GPIO Interrupt wrong pin " << static_cast<uint>( eventParam )
-                              << std::endl;
+                    std::cout << "GPIO Interrupt wrong pin " << static_cast<int>( eventParam )
+                              << ' ' << eventTime << std::endl;
                     break;
 
                 default:
