@@ -369,6 +369,7 @@ public:
 
 protected:
     MsgId mId;
+    bool mNeedsAction;
 };
 
 #endif    // SerialMessage_h
