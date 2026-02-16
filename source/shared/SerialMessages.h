@@ -472,9 +472,15 @@ class EncoderUpdateMsg : public SerialMessage
 public:
     using TheData = std::tuple<int, int, std::uint32_t>;
 
+    enum class Side : int
+    {
+        kLeft = 0,
+        kRight = 1
+    };
+
     EncoderUpdateMsg() noexcept;
     explicit EncoderUpdateMsg( TheData t ) noexcept;
-    EncoderUpdateMsg( int left, int right, std::uint32_t time ) noexcept;
+    EncoderUpdateMsg( Side side, int count, std::uint32_t time ) noexcept;
     explicit EncoderUpdateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;

@@ -1047,10 +1047,10 @@ EncoderUpdateMsg::EncoderUpdateMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-EncoderUpdateMsg::EncoderUpdateMsg( int left, int right,
+EncoderUpdateMsg::EncoderUpdateMsg( Side side, int count,
                                     std::uint32_t time ) noexcept
     : SerialMessage( MsgId::kEncoderUpdate ),
-      mContent( MsgId::kEncoderUpdate, std::make_tuple( left, right, time ) ),
+      mContent( MsgId::kEncoderUpdate, std::make_tuple( std::to_underlying( side ), count, time ) ),
       mNeedsAction{ true }
 {}
 
@@ -1671,7 +1671,7 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
 
             case MsgId::kEncoderUpdate:
             {
-                EncoderUpdateMsg msg( 10, -10, 654'321 );
+                EncoderUpdateMsg msg( EncoderUpdateMsg::Side::kRight, -10, 654'321 );
                 msg.sendOut( link );
             };
             break;
