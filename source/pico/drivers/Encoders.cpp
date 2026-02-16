@@ -33,19 +33,17 @@
 
 /***************************************************/
 
-
-
 namespace Encoders
 {
     void configureEncoderGpio( uint pin ) noexcept;
     void encoderCallBack( uint, std::uint32_t events );
-}
+}    // namespace Encoders
 
 /*!
  * \brief Initializes the encoder GPIO with interrupts for count
- * 
+ *
  * This function is designed/configured to be called from and run on Core1
- * 
+ *
  */
 void Encoders::initEncoders() noexcept
 {
@@ -59,13 +57,11 @@ void Encoders::initEncoders() noexcept
     irq_set_enabled( IO_IRQ_BANK0, true );
 }
 
-
-
 /*!
  * \brief Configure encoder pins as inputs with pull down and enables interrupts
  *
- * This function is designed/configured to be called from and run on Core1 
- * 
+ * This function is designed/configured to be called from and run on Core1
+ *
  * \param pin (GPIO pin number)
  */
 void Encoders::configureEncoderGpio( uint pin ) noexcept
@@ -78,7 +74,7 @@ void Encoders::configureEncoderGpio( uint pin ) noexcept
 
 /*!
  * \brief Called when either encoder pin triggers
- * 
+ *
  * \param gpio (the GPIO pin that triggered the interrupt)
  * \param events (the interrupt event type)
  */
@@ -87,8 +83,8 @@ void Encoders::encoderCallBack( uint gpio, std::uint32_t events )
     constexpr int kLeft{ 0 };
     constexpr int kRight{ 1 };
 
-    static std::uint32_t lastInterrupt[2]{ 0, 0 };
-    static EvtId encoderEvt[2]{ EvtId::kEncoderLeftEvent, EvtId::kEncoderRightEvent };
+    static std::uint32_t lastInterrupt[ 2 ]{ 0, 0 };
+    static EvtId encoderEvt[ 2 ]{ EvtId::kEncoderLeftEvent, EvtId::kEncoderRightEvent };
 
     int side;
     if ( gpio == CARRTPICO_ENCODER_LEFT_GPIO )
@@ -129,4 +125,3 @@ void Encoders::encoderCallBack( uint gpio, std::uint32_t events )
 
     return;
 }
-
