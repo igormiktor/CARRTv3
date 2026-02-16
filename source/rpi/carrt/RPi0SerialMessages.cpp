@@ -1025,8 +1025,8 @@ EncoderUpdateMsg::EncoderUpdateMsg( TheData t ) noexcept
 : SerialMessage( MsgId::kEncoderUpdate ), mContent( MsgId::kEncoderUpdate, t ), mNeedsAction{ true }
 {} 
 
-EncoderUpdateMsg::EncoderUpdateMsg( int left, int right, std::uint32_t time ) noexcept 
-: SerialMessage( MsgId::kEncoderUpdate ), mContent( MsgId::kEncoderUpdate, std::make_tuple( left, right, time ) ), mNeedsAction{ true } 
+EncoderUpdateMsg::EncoderUpdateMsg( Side side, int count, std::uint32_t time ) noexcept 
+: SerialMessage( MsgId::kEncoderUpdate ), mContent( MsgId::kEncoderUpdate, std::make_tuple( std::to_underlying( side ), count, time ) ), mNeedsAction{ true } 
 {}
 
 EncoderUpdateMsg::EncoderUpdateMsg( MsgId id ) 
