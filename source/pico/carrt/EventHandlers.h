@@ -100,7 +100,21 @@ public:
 
 // ********************** Encoder event handlers
 
-// Go here
+class EncoderLeftEventHandler : public EventHandler
+{
+public:
+    virtual void handleEvent( EventManager& events, SerialLink& link,
+                              EvtId eventCode, int eventParam,
+                              std::uint32_t eventTime ) const;
+};
+
+class EncoderRightEventHandler : public EventHandler
+{
+public:
+    virtual void handleEvent( EventManager& events, SerialLink& link,
+                              EvtId eventCode, int eventParam,
+                              std::uint32_t eventTime ) const;
+};
 
 // ********************** Pulse LED event handlers
 

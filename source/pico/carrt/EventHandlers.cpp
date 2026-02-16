@@ -189,7 +189,33 @@ void SendCalibrationInfoHandler::handleEvent( EventManager& events,
 
 // ********************** Encoder event handlers
 
-// Go here
+void EncoderLeftEventHandler::handleEvent( EventManager& events,
+                                           SerialLink& link, EvtId eventCode,
+                                           int eventParam,
+                                           std::uint32_t eventTime ) const
+{
+    if ( PicoState::wantEncoderMsgs() )
+    {
+        EncoderUpdateMsg encoderUpdateMsg( EncoderUpdateMsg::Side::kLeft, eventParam,
+                                eventTime );
+        encoderUpdateMsg.sendOut( link );
+    }
+}
+
+void EncoderRightEventHandler::handleEvent( EventManager& events,
+                                           SerialLink& link, EvtId eventCode,
+                                           int eventParam,
+                                           std::uint32_t eventTime ) const
+{
+    if ( PicoState::wantEncoderMsgs() )
+    {
+        EncoderUpdateMsg encoderUpdateMsg( EncoderUpdateMsg::Side::kRight, eventParam,
+                                eventTime );
+        encoderUpdateMsg.sendOut( link );
+    }
+}
+
+
 
 // ********************** Pulse LED event handlers
 
