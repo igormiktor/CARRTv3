@@ -173,10 +173,6 @@ int main()
                     std::cout << "8 s " << eventParam << std::endl;
                     break;
 
-                case EvtId::kIdentifyPicoCoreEvent:
-                    std::cout << "Core " << eventParam << std::endl;
-                    break;
-
                 case EvtId::kGpioInterruptTestFallingEvent:
                     gpio_put( CARRTPICO_HEARTBEAT_LED, 0 );
                     std::cout << "GPIO Falling Event " << eventTime << std::endl;
