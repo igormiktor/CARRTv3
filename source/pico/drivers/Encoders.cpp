@@ -33,85 +33,100 @@
 
 /***************************************************/
 
+
+
 namespace Encoders
 {
-    void configureEncoderGpio( uint gpio,
-                               gpio_irq_callback_t callback ) noexcept;
-};
-
-void callbackLeftEncoder( uint, std::uint32_t events )
-{
-    // This function designed/configured to be called and run on Core1
-    static std::uint32_t lastInterrupt = 0;
-
-    std::uint32_t tick = Clock::millis();
-    if ( tick - lastInterrupt < PICO_GPIO_DEBOUNCE_TIME )
-    {
-        // Debounce
-        return;
-    }
-
-    lastInterrupt = tick;
-
-    int direction = 0;
-    if ( events & GPIO_IRQ_EDGE_FALL )
-    {
-        direction = -1;
-    }
-    if ( events & GPIO_IRQ_EDGE_RISE )
-    {
-        direction = 1;
-        ;
-    }
-
-    Events().queueEvent( EvtId::kEncoderLeftEvent, direction, tick );
-
-    return;
+    void configureEncoderGpio( uint pin ) noexcept;
+    void encoderCallBack( uint, std::uint32_t events );
 }
 
-void callbackRightEncoder( uint, std::uint32_t events )
-{
-    // This function designed/configured to be called and run on Core1
-    static std::uint32_t lastInterrupt = 0;
-
-    std::uint32_t tick = Clock::millis();
-    if ( tick - lastInterrupt < PICO_GPIO_DEBOUNCE_TIME )
-    {
-        // Debounce
-        return;
-    }
-
-    lastInterrupt = tick;
-
-    int direction = 0;
-    if ( events & GPIO_IRQ_EDGE_FALL )
-    {
-        direction = -1;
-    }
-    if ( events & GPIO_IRQ_EDGE_RISE )
-    {
-        direction = 1;
-    }
-
-    Events().queueEvent( EvtId::kEncoderRightEvent, direction, tick );
-
-    return;
-}
-
+/*!
+ * \brief Initializes the encoder GPIO with interrupts for count
+ * 
+ * This function is designed/configured to be called from and run on Core1
+ * 
+ */
 void Encoders::initEncoders() noexcept
 {
-    // Call this from the core that will receive the interrupts
-    configureEncoderGpio( CARRTPICO_ENCODER_LEFT_GPIO, callbackLeftEncoder );
-    configureEncoderGpio( CARRTPICO_ENCODER_RIGHT_GPIO, callbackRightEncoder );
+    // Set the call back function (it's a generic/universal callback on Pico)
+    gpio_set_irq_callback( Encoders::encoderCallBack );
+
+    // Configure each of relevant pins
+    configureEncoderGpio( CARRTPICO_ENCODER_LEFT_GPIO );
+    configureEncoderGpio( CARRTPICO_ENCODER_RIGHT_GPIO );
+
+    irq_set_enabled( IO_IRQ_BANK0, true );
 }
 
-void Encoders::configureEncoderGpio( uint pin,
-                                     gpio_irq_callback_t callBack ) noexcept
+
+
+/*!
+ * \brief Configure encoder pins as inputs with pull down and enables interrupts
+ *
+ * This function is designed/configured to be called from and run on Core1 
+ * 
+ * \param pin (GPIO pin number)
+ */
+void Encoders::configureEncoderGpio( uint pin ) noexcept
 {
-    // Configure interrupt on "pin" with "callback"
     gpio_init( pin );
     gpio_set_dir( pin, GPIO_IN );
     gpio_pull_down( pin );
-    gpio_set_irq_enabled_with_callback(
-        pin, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, callBack );
+    gpio_set_irq_enabled( pin, ( GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE ), true );
 }
+
+/*!
+ * \brief Called when either encoder pin triggers
+ * 
+ * \param gpio (the GPIO pin that triggered the interrupt)
+ * \param events (the interrupt event type)
+ */
+void Encoders::encoderCallBack( uint gpio, std::uint32_t events )
+{
+    constexpr int kLeft{ 0 };
+    constexpr int kRight{ 1 };
+
+    static std::uint32_t lastInterrupt[2]{ 0, 0 };
+    static EvtId encoderEvt[2]{ EvtId::kEncoderLeftEvent, EvtId::kEncoderRightEvent };
+
+    int side;
+    if ( gpio == CARRTPICO_ENCODER_LEFT_GPIO )
+    {
+        side = kLeft;
+    }
+    else if ( gpio == CARRTPICO_ENCODER_RIGHT_GPIO )
+    {
+        side = kRight;
+    }
+    else
+    {
+        // Paranoid error -- only the encoder pins are configured to interrupt
+        Events().queueEvent( EvtId::kErrorEvent, gpio );    // TODO argument should be error code
+        return;
+    }
+
+    std::uint32_t tick = Clock::millis();
+    if ( tick - lastInterrupt[ side ] < PICO_GPIO_DEBOUNCE_TIME )
+    {
+        // Debounce
+        return;
+    }
+
+    lastInterrupt[ side ] = tick;
+
+    int direction = 0;
+    if ( events & GPIO_IRQ_EDGE_FALL )
+    {
+        direction = -1;
+    }
+    else if ( events & GPIO_IRQ_EDGE_RISE )
+    {
+        direction = 1;
+    }
+
+    Events().queueEvent( encoderEvt[ side ], direction, tick );
+
+    return;
+}
+
