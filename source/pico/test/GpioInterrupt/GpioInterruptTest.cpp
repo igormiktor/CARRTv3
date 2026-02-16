@@ -18,6 +18,7 @@
 
 // GPIO Interrupt pin
 #define GPIO_TEST_PIN 18    // GPIO18 (pin 24)
+#define GPIO_ON_PIN 15      // GPIO15 (pin 20)
 
 // Debounce time (in ms)
 #define GPIO_DEBOUNCE_TIME 10    // milliseconds (seems to work well)
@@ -135,6 +136,11 @@ int main()
 
     multicore_launch_core1( startCore1 );
     std::cout << "Timer start time is: " << Clock::millis() << std::endl;
+
+    // Configure the "on" pin that we'll connect manually (via Resistor) to GPIO_TEST_PIN
+    gpio_init( GPIO_ON_PIN );
+    gpio_set_dir( GPIO_ON_PIN, GPIO_OUT );
+    gpio_put( GPIO_ON_PIN, 1 );
 
     // Configure interrupt on GPIO_TEST_PIN
     gpio_init( GPIO_TEST_PIN );
