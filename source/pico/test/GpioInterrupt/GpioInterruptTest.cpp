@@ -162,11 +162,11 @@ int main()
             switch ( eventCode )
             {
                 case EvtId::kNavUpdateEvent:
-                    std::cout << "Nav " << eventParam << std::endl;
+                    // std::cout << "Nav " << eventParam << std::endl;
                     break;
 
                 case EvtId::kQuarterSecondTimerEvent:
-                    std::cout << "1/4 " << eventParam << std::endl;
+                    // std::cout << "1/4 " << eventParam << std::endl;
                     break;
 
                 case EvtId::kOneSecondTimerEvent:
