@@ -18,8 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Batteries.h"
 #include "BNO055.h"
+#include "Batteries.h"
 #include "Clock.h"
 #include "DebugUtils.hpp"
 #include "EventManager.h"
@@ -28,8 +28,7 @@
 #include "SerialMessages.h"
 
 #if DEBUG_PICO_SERIAL_MSG_HANDLING
-constexpr bool kDebugSerialMsgs{
-    static_cast<bool>( DEBUG_PICO_SERIAL_MSG_HANDLING ) };
+constexpr bool kDebugSerialMsgs{ static_cast<bool>( DEBUG_PICO_SERIAL_MSG_HANDLING ) };
 #else
 constexpr bool kDebugSerialMsgs{ false };
 #endif
@@ -53,16 +52,13 @@ UnknownMsg::UnknownMsg( std::uint8_t rcvdId, int errorCode ) noexcept
 {}
 
 UnknownMsg::UnknownMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kUnknownMessage ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kUnknownMessage ), mNeedsAction{ false }
 {
     if ( id != MsgId::kUnknownMessage )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kUnknownMessage ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kUnknownMessage ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -78,11 +74,10 @@ void UnknownMsg::readIn( SerialLink& link )
 void UnknownMsg::sendOut( SerialLink& link )
 {
     // We don't send this msg out on link; instead send error report
-    ErrorReportMsg errMsg(
-        false,
-        makePicoErrorId( kPicoSerialMessageError, std::get<0>( mContent.mMsg ),
-                         std::get<1>( mContent.mMsg ) ),
-        Clock::millis() );
+    ErrorReportMsg errMsg( false,
+                           makePicoErrorId( kPicoSerialMessageError, std::get<0>( mContent.mMsg ),
+                                            std::get<1>( mContent.mMsg ) ),
+                           Clock::millis() );
     errMsg.sendOut( link );
 }
 
@@ -211,21 +206,16 @@ void PingReplyMsg::takeAction( EventManager& events, SerialLink& link )
 /******************************************************************************/
 
 PicoReadyMsg::PicoReadyMsg() noexcept
-    : SerialMessage( MsgId::kPicoReady ),
-      mContent( MsgId::kPicoReady ),
-      mNeedsAction{ false }
+    : SerialMessage( MsgId::kPicoReady ), mContent( MsgId::kPicoReady ), mNeedsAction{ false }
 {}
 
 PicoReadyMsg::PicoReadyMsg( TheData t ) noexcept
-    : SerialMessage( MsgId::kPicoReady ),
-      mContent( MsgId::kPicoReady, t ),
-      mNeedsAction{ true }
+    : SerialMessage( MsgId::kPicoReady ), mContent( MsgId::kPicoReady, t ), mNeedsAction{ true }
 {}
 
 PicoReadyMsg::PicoReadyMsg( std::uint32_t time ) noexcept
     : SerialMessage( MsgId::kPicoReady ),
-      mContent( MsgId::kPicoReady,
-                std::make_tuple( static_cast<std::uint32_t>( time ) ) ),
+      mContent( MsgId::kPicoReady, std::make_tuple( static_cast<std::uint32_t>( time ) ) ),
       mNeedsAction{ true }
 {}
 
@@ -235,8 +225,7 @@ PicoReadyMsg::PicoReadyMsg( MsgId id )
     if ( id != MsgId::kPicoReady )
     {
         throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kPicoReady ) ),
+            makePicoErrorId( kPicoSerialMessageError, 1, std::to_underlying( MsgId::kPicoReady ) ),
             "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
@@ -247,8 +236,7 @@ void PicoReadyMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = false;
 
-    output2cout( "Error: Pico got PicoReadyMsg", getIdNum(),
-                 std::get<0>( mContent.mMsg ) );
+    output2cout( "Error: Pico got PicoReadyMsg", getIdNum(), std::get<0>( mContent.mMsg ) );
 }
 
 void PicoReadyMsg::sendOut( SerialLink& link )
@@ -283,25 +271,20 @@ PicoNavStatusUpdateMsg::PicoNavStatusUpdateMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-PicoNavStatusUpdateMsg::PicoNavStatusUpdateMsg( bool status, std::uint8_t m,
-                                                std::uint8_t a, std::uint8_t g,
-                                                std::uint8_t s ) noexcept
+PicoNavStatusUpdateMsg::PicoNavStatusUpdateMsg( bool status, std::uint8_t m, std::uint8_t a,
+                                                std::uint8_t g, std::uint8_t s ) noexcept
     : SerialMessage( MsgId::kPicoNavStatusUpdate ),
-      mContent( MsgId::kPicoNavStatusUpdate,
-                std::make_tuple( status, m, a, g, s ) ),
+      mContent( MsgId::kPicoNavStatusUpdate, std::make_tuple( status, m, a, g, s ) ),
       mNeedsAction{ true }
 {}
 
 PicoNavStatusUpdateMsg::PicoNavStatusUpdateMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kPicoNavStatusUpdate ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kPicoNavStatusUpdate ), mNeedsAction{ false }
 {
     if ( id != MsgId::kPicoNavStatusUpdate )
     {
         throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
-                                           std::to_underlying(
-                                               MsgId::kPicoNavStatusUpdate ) ),
+                                           std::to_underlying( MsgId::kPicoNavStatusUpdate ) ),
                           "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
@@ -312,8 +295,7 @@ void PicoNavStatusUpdateMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = false;
 
-    output2cout( "Error: Pico got PicoNavStatusUpdateMsg", getIdNum(),
-                 std::get<0>( mContent.mMsg ),
+    output2cout( "Error: Pico got PicoNavStatusUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ),
                  static_cast<int>( std::get<1>( mContent.mMsg ) ),
                  static_cast<int>( std::get<2>( mContent.mMsg ) ),
                  static_cast<int>( std::get<3>( mContent.mMsg ) ),
@@ -324,13 +306,12 @@ void PicoNavStatusUpdateMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Pico sent PicoNavStatusUpdateMsg", getIdNum(),
-        std::get<0>( mContent.mMsg ),
-        static_cast<int>( std::get<1>( mContent.mMsg ) ),
-        static_cast<int>( std::get<2>( mContent.mMsg ) ),
-        static_cast<int>( std::get<3>( mContent.mMsg ) ),
-        static_cast<int>( std::get<4>( mContent.mMsg ) ) );
+    debugCond2cout<kDebugSerialMsgs>( "Pico sent PicoNavStatusUpdateMsg", getIdNum(),
+                                      std::get<0>( mContent.mMsg ),
+                                      static_cast<int>( std::get<1>( mContent.mMsg ) ),
+                                      static_cast<int>( std::get<2>( mContent.mMsg ) ),
+                                      static_cast<int>( std::get<3>( mContent.mMsg ) ),
+                                      static_cast<int>( std::get<4>( mContent.mMsg ) ) );
 }
 
 void PicoNavStatusUpdateMsg::takeAction( EventManager&, SerialLink& link )
@@ -388,16 +369,13 @@ MsgControlMsg::MsgControlMsg( std::uint8_t values ) noexcept
 {}
 
 MsgControlMsg::MsgControlMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kMsgControlMsg ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kMsgControlMsg ), mNeedsAction{ false }
 {
     if ( id != MsgId::kMsgControlMsg )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kMsgControlMsg ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kMsgControlMsg ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -407,9 +385,8 @@ void MsgControlMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Pico got MsgControlMsg", getIdNum(),
-        static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    debugCond2cout<kDebugSerialMsgs>( "Pico got MsgControlMsg", getIdNum(),
+                                      static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void MsgControlMsg::sendOut( SerialLink& link )
@@ -433,20 +410,13 @@ void MsgControlMsg::takeAction( EventManager& events, SerialLink& link )
         mNeedsAction = false;
 
         output2cout( "MsgControlMsg received, new values are" );
-        output2cout( " sendQtrSecTimerMsgs",
-                     static_cast<bool>( values & kQtrSecTimerMsgMask ) );
-        output2cout( " sendQ1SecTimerMsgs",
-                     static_cast<bool>( values & k1SecTimerMsgMask ) );
-        output2cout( " sendQ8SecTimerMsgs",
-                     static_cast<bool>( values & k8SecTimerMsgMask ) );
-        output2cout( " sendNavMsgs",
-                     static_cast<bool>( values & kNavMsgMask ) );
-        output2cout( " sendNavStatusMsgs",
-                     static_cast<bool>( values & kNavStatusMask ) );
-        output2cout( " sendEncoderMsgs",
-                     static_cast<bool>( values & kEncoderMsgMask ) );
-        output2cout( " sendCalibrationMsgs",
-                     static_cast<bool>( values & kCalibrationMsgMask ) );
+        output2cout( " sendQtrSecTimerMsgs", static_cast<bool>( values & kQtrSecTimerMsgMask ) );
+        output2cout( " sendQ1SecTimerMsgs", static_cast<bool>( values & k1SecTimerMsgMask ) );
+        output2cout( " sendQ8SecTimerMsgs", static_cast<bool>( values & k8SecTimerMsgMask ) );
+        output2cout( " sendNavMsgs", static_cast<bool>( values & kNavMsgMask ) );
+        output2cout( " sendNavStatusMsgs", static_cast<bool>( values & kNavStatusMask ) );
+        output2cout( " sendEncoderMsgs", static_cast<bool>( values & kEncoderMsgMask ) );
+        output2cout( " sendCalibrationMsgs", static_cast<bool>( values & kCalibrationMsgMask ) );
     }
 }
 
@@ -468,8 +438,7 @@ void ResetPicoMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        events.queueEvent( EvtId::kPicoResetEvent, 0, 0,
-                           EventManager::kHighPriority );
+        events.queueEvent( EvtId::kPicoResetEvent, 0, 0, EventManager::kHighPriority );
         mNeedsAction = false;
 
         output2cout( "Pico got message from RPi0 to reset" );
@@ -490,24 +459,20 @@ TimerEventMsg::TimerEventMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-TimerEventMsg::TimerEventMsg( std::uint8_t which, int count,
-                              std::uint32_t time ) noexcept
+TimerEventMsg::TimerEventMsg( std::uint8_t which, int count, std::uint32_t time ) noexcept
     : SerialMessage( MsgId::kTimerEventMsg ),
       mContent( MsgId::kTimerEventMsg, std::make_tuple( which, count, time ) ),
       mNeedsAction{ true }
 {}
 
 TimerEventMsg::TimerEventMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kTimerEventMsg ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kTimerEventMsg ), mNeedsAction{ false }
 {
     if ( id != MsgId::kTimerEventMsg )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kTimerEventMsg ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kTimerEventMsg ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -518,18 +483,17 @@ void TimerEventMsg::readIn( SerialLink& link )
     mNeedsAction = false;
 
     output2cout( "Error: Pico should never receive TimerEventMsg", getIdNum(),
-                 static_cast<int>( std::get<0>( mContent.mMsg ) ),
-                 std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
+                 static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ),
+                 std::get<2>( mContent.mMsg ) );
 }
 
 void TimerEventMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Sent TimerEventMsg", getIdNum(),
-        static_cast<int>( std::get<0>( mContent.mMsg ) ),
-        std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
+    debugCond2cout<kDebugSerialMsgs>( "Sent TimerEventMsg", getIdNum(),
+                                      static_cast<int>( std::get<0>( mContent.mMsg ) ),
+                                      std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
 
 void TimerEventMsg::takeAction( EventManager&, SerialLink& link )
@@ -545,9 +509,7 @@ void TimerEventMsg::takeAction( EventManager&, SerialLink& link )
 /******************************************************************************/
 
 TimerControlMsg::TimerControlMsg() noexcept
-    : SerialMessage( MsgId::kTimerControl ),
-      mContent( MsgId::kTimerControl ),
-      mNeedsAction{ false }
+    : SerialMessage( MsgId::kTimerControl ), mContent( MsgId::kTimerControl ), mNeedsAction{ false }
 {}
 
 TimerControlMsg::TimerControlMsg( TheData t ) noexcept
@@ -563,16 +525,13 @@ TimerControlMsg::TimerControlMsg( std::uint8_t val ) noexcept
 {}
 
 TimerControlMsg::TimerControlMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kTimerControl ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kTimerControl ), mNeedsAction{ false }
 {
     if ( id != MsgId::kTimerControl )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kTimerControl ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kTimerControl ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -582,9 +541,8 @@ void TimerControlMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Pico got TimerControlMsg", getIdNum(),
-        static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    debugCond2cout<kDebugSerialMsgs>( "Pico got TimerControlMsg", getIdNum(),
+                                      static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void TimerControlMsg::sendOut( SerialLink& link )
@@ -603,12 +561,9 @@ void TimerControlMsg::takeAction( EventManager& events, SerialLink& link )
         mNeedsAction = false;
 
         output2cout( "Timer events to RPi0 turned to" );
-        output2cout( " sendQtrSecTimerMsgs",
-                     static_cast<bool>( values & kQtrSecTimerMsgMask ) );
-        output2cout( " sendQ1SecTimerMsgs",
-                     static_cast<bool>( values & k1SecTimerMsgMask ) );
-        output2cout( " sendQ8SecTimerMsgs",
-                     static_cast<bool>( values & k8SecTimerMsgMask ) );
+        output2cout( " sendQtrSecTimerMsgs", static_cast<bool>( values & kQtrSecTimerMsgMask ) );
+        output2cout( " sendQ1SecTimerMsgs", static_cast<bool>( values & k1SecTimerMsgMask ) );
+        output2cout( " sendQ8SecTimerMsgs", static_cast<bool>( values & k8SecTimerMsgMask ) );
     }
 }
 
@@ -651,8 +606,7 @@ RequestCalibrationStatusMsg::RequestCalibrationStatusMsg( MsgId id ) noexcept
     // Nothing to do
 }
 
-void RequestCalibrationStatusMsg::takeAction( EventManager& events,
-                                              SerialLink& link )
+void RequestCalibrationStatusMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -664,9 +618,8 @@ void RequestCalibrationStatusMsg::takeAction( EventManager& events,
         bool status = BNO055::calibrationGood( calibData );
 
         PicoState::navCalibrated( status );
-        PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag,
-                                               calibData.accel, calibData.gyro,
-                                               calibData.system );
+        PicoNavStatusUpdateMsg navReadyStatus( status, calibData.mag, calibData.accel,
+                                               calibData.gyro, calibData.system );
         navReadyStatus.sendOut( link );
 
         mNeedsAction = false;
@@ -687,28 +640,21 @@ CalibrationInfoUpdateMsg::CalibrationInfoUpdateMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-CalibrationInfoUpdateMsg::CalibrationInfoUpdateMsg( std::uint8_t mag,
-                                                    std::uint8_t accel,
-                                                    std::uint8_t gyro,
-                                                    std::uint8_t sys ) noexcept
+CalibrationInfoUpdateMsg::CalibrationInfoUpdateMsg( std::uint8_t mag, std::uint8_t accel,
+                                                    std::uint8_t gyro, std::uint8_t sys ) noexcept
     : SerialMessage( MsgId::kCalibrationInfoUpdate ),
-      mContent( MsgId::kCalibrationInfoUpdate,
-                std::make_tuple( mag, accel, gyro, sys ) ),
+      mContent( MsgId::kCalibrationInfoUpdate, std::make_tuple( mag, accel, gyro, sys ) ),
       mNeedsAction{ true }
 {}
 
 CalibrationInfoUpdateMsg::CalibrationInfoUpdateMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kCalibrationInfoUpdate ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kCalibrationInfoUpdate ), mNeedsAction{ false }
 {
     if ( id != MsgId::kCalibrationInfoUpdate )
     {
-        throw CarrtError(
-            makePicoErrorId(
-                kPicoSerialMessageError, 1,
-                std::to_underlying( MsgId::kCalibrationInfoUpdate ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kCalibrationInfoUpdate ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -729,16 +675,14 @@ void CalibrationInfoUpdateMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Sent sendCalibrationInfoMsg", getIdNum(),
-        static_cast<int>( std::get<0>( mContent.mMsg ) ),
-        static_cast<int>( std::get<1>( mContent.mMsg ) ),
-        static_cast<int>( std::get<2>( mContent.mMsg ) ),
-        static_cast<int>( std::get<3>( mContent.mMsg ) ) );
+    debugCond2cout<kDebugSerialMsgs>( "Sent sendCalibrationInfoMsg", getIdNum(),
+                                      static_cast<int>( std::get<0>( mContent.mMsg ) ),
+                                      static_cast<int>( std::get<1>( mContent.mMsg ) ),
+                                      static_cast<int>( std::get<2>( mContent.mMsg ) ),
+                                      static_cast<int>( std::get<3>( mContent.mMsg ) ) );
 }
 
-void CalibrationInfoUpdateMsg::takeAction( EventManager& events,
-                                           SerialLink& link )
+void CalibrationInfoUpdateMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -764,22 +708,18 @@ SetAutoCalibrateMsg::SetAutoCalibrateMsg( TheData t ) noexcept
 
 SetAutoCalibrateMsg::SetAutoCalibrateMsg( bool val ) noexcept
     : SerialMessage( MsgId::kSetAutoCalibrate ),
-      mContent( MsgId::kSetAutoCalibrate,
-                std::make_tuple( static_cast<std::uint8_t>( val ) ) ),
+      mContent( MsgId::kSetAutoCalibrate, std::make_tuple( static_cast<std::uint8_t>( val ) ) ),
       mNeedsAction{ true }
 {}
 
 SetAutoCalibrateMsg::SetAutoCalibrateMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kSetAutoCalibrate ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kSetAutoCalibrate ), mNeedsAction{ false }
 {
     if ( id != MsgId::kSetAutoCalibrate )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kSetAutoCalibrate ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kSetAutoCalibrate ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -789,9 +729,8 @@ void SetAutoCalibrateMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Got SetAutoCalibrateMsg", getIdNum(),
-        static_cast<bool>( std::get<0>( mContent.mMsg ) ) );
+    debugCond2cout<kDebugSerialMsgs>( "Got SetAutoCalibrateMsg", getIdNum(),
+                                      static_cast<bool>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void SetAutoCalibrateMsg::sendOut( SerialLink& link )
@@ -863,10 +802,9 @@ NavUpdateMsg::NavUpdateMsg( MsgId id )
 {
     if ( id != MsgId::kTimerNavUpdate )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kTimerNavUpdate ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kTimerNavUpdate ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -876,16 +814,15 @@ void NavUpdateMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = false;
 
-    output2cout( "Error: got NavUpdateMsg", getIdNum(),
-                 std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ) );
+    output2cout( "Error: got NavUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ),
+                 std::get<1>( mContent.mMsg ) );
 }
 
 void NavUpdateMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    debugCond2cout<kDebugSerialMsgs>( "Sent NavUpdateMsg", getIdNum(),
-                                      std::get<0>( mContent.mMsg ),
+    debugCond2cout<kDebugSerialMsgs>( "Sent NavUpdateMsg", getIdNum(), std::get<0>( mContent.mMsg ),
                                       std::get<1>( mContent.mMsg ) );
 }
 
@@ -913,8 +850,7 @@ NavUpdateControlMsg::NavUpdateControlMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-NavUpdateControlMsg::NavUpdateControlMsg( bool wantNavUpdates,
-                                          bool wantNavStatus ) noexcept
+NavUpdateControlMsg::NavUpdateControlMsg( bool wantNavUpdates, bool wantNavStatus ) noexcept
     : SerialMessage( MsgId::kNavUpdateControl ),
       mContent( MsgId::kNavUpdateControl,
                 std::make_tuple( static_cast<std::uint8_t>( wantNavUpdates ),
@@ -923,16 +859,13 @@ NavUpdateControlMsg::NavUpdateControlMsg( bool wantNavUpdates,
 {}
 
 NavUpdateControlMsg::NavUpdateControlMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kNavUpdateControl ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kNavUpdateControl ), mNeedsAction{ false }
 {
     if ( id != MsgId::kNavUpdateControl )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kNavUpdateControl ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kNavUpdateControl ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -942,10 +875,9 @@ void NavUpdateControlMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Got NavUpdateControlMsg", getIdNum(),
-        static_cast<bool>( std::get<0>( mContent.mMsg ) ),
-        static_cast<bool>( std::get<1>( mContent.mMsg ) ) );
+    debugCond2cout<kDebugSerialMsgs>( "Got NavUpdateControlMsg", getIdNum(),
+                                      static_cast<bool>( std::get<0>( mContent.mMsg ) ),
+                                      static_cast<bool>( std::get<1>( mContent.mMsg ) ) );
 }
 
 void NavUpdateControlMsg::sendOut( SerialLink& link )
@@ -963,8 +895,8 @@ void NavUpdateControlMsg::takeAction( EventManager& events, SerialLink& link )
         PicoState::sendNavStatusMsgs( wantNavStatus );
         mNeedsAction = false;
 
-        output2cout( "Sending Nav update events to RPi0 set to", wantNav,
-                     "Nav status update", wantNavStatus );
+        output2cout( "Sending Nav update events to RPi0 set to", wantNav, "Nav status update",
+                     wantNavStatus );
     }
 }
 
@@ -984,21 +916,17 @@ DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( TheData t ) noexcept
 
 DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( Drive driveStatus ) noexcept
     : SerialMessage( MsgId::kDrivingStatusUpdate ),
-      mContent( MsgId::kDrivingStatusUpdate,
-                std::make_tuple( std::to_underlying( driveStatus ) ) ),
+      mContent( MsgId::kDrivingStatusUpdate, std::make_tuple( std::to_underlying( driveStatus ) ) ),
       mNeedsAction{ true }
 {}
 
 DrivingStatusUpdateMsg::DrivingStatusUpdateMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kDrivingStatusUpdate ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kDrivingStatusUpdate ), mNeedsAction{ false }
 {
     if ( id != MsgId::kDrivingStatusUpdate )
     {
         throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
-                                           std::to_underlying(
-                                               MsgId::kDrivingStatusUpdate ) ),
+                                           std::to_underlying( MsgId::kDrivingStatusUpdate ) ),
                           "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
@@ -1009,9 +937,8 @@ void DrivingStatusUpdateMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Got DrivingStatusUpdateMsg", getIdNum(),
-        static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    debugCond2cout<kDebugSerialMsgs>( "Got DrivingStatusUpdateMsg", getIdNum(),
+                                      static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void DrivingStatusUpdateMsg::sendOut( SerialLink& link )
@@ -1019,16 +946,14 @@ void DrivingStatusUpdateMsg::sendOut( SerialLink& link )
     // This never sent from Pico
 }
 
-void DrivingStatusUpdateMsg::takeAction( EventManager& events,
-                                         SerialLink& link )
+void DrivingStatusUpdateMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
         std::uint8_t driveStatus = std::get<0>( mContent.mMsg );
 
         // TODO take whatever action is appropirate
-        output2cout( "RPi0 sent driving status",
-                     static_cast<int>( driveStatus ) );
+        output2cout( "RPi0 sent driving status", static_cast<int>( driveStatus ) );
         output2cout( "TODO - implement action" );
         mNeedsAction = false;
     }
@@ -1048,24 +973,20 @@ EncoderUpdateMsg::EncoderUpdateMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-EncoderUpdateMsg::EncoderUpdateMsg( Side side, int count,
-                                    std::uint32_t time ) noexcept
+EncoderUpdateMsg::EncoderUpdateMsg( Side side, int count, std::uint32_t time ) noexcept
     : SerialMessage( MsgId::kEncoderUpdate ),
       mContent( MsgId::kEncoderUpdate, std::make_tuple( std::to_underlying( side ), count, time ) ),
       mNeedsAction{ true }
 {}
 
 EncoderUpdateMsg::EncoderUpdateMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kEncoderUpdate ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kEncoderUpdate ), mNeedsAction{ false }
 {
     if ( id != MsgId::kEncoderUpdate )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kEncoderUpdate ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kEncoderUpdate ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -1083,9 +1004,8 @@ void EncoderUpdateMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Sent EncoderUpdateMsg", std::get<0>( mContent.mMsg ),
-        std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
+    debugCond2cout<kDebugSerialMsgs>( "Sent EncoderUpdateMsg", std::get<0>( mContent.mMsg ),
+                                      std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
 }
 
 void EncoderUpdateMsg::takeAction( EventManager&, SerialLink& link )
@@ -1114,21 +1034,17 @@ EncoderUpdateControlMsg::EncoderUpdateControlMsg( TheData t ) noexcept
 
 EncoderUpdateControlMsg::EncoderUpdateControlMsg( bool val ) noexcept
     : SerialMessage( MsgId::kEncoderUpdateControl ),
-      mContent( MsgId::kEncoderUpdateControl,
-                std::make_tuple( static_cast<std::uint8_t>( val ) ) ),
+      mContent( MsgId::kEncoderUpdateControl, std::make_tuple( static_cast<std::uint8_t>( val ) ) ),
       mNeedsAction{ true }
 {}
 
 EncoderUpdateControlMsg::EncoderUpdateControlMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kEncoderUpdateControl ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kEncoderUpdateControl ), mNeedsAction{ false }
 {
     if ( id != MsgId::kEncoderUpdateControl )
     {
         throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
-                                           std::to_underlying(
-                                               MsgId::kEncoderUpdateControl ) ),
+                                           std::to_underlying( MsgId::kEncoderUpdateControl ) ),
                           "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
@@ -1139,9 +1055,8 @@ void EncoderUpdateControlMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Got EncoderUpdateControlMsg", getIdNum(),
-        static_cast<bool>( std::get<0>( mContent.mMsg ) ) );
+    debugCond2cout<kDebugSerialMsgs>( "Got EncoderUpdateControlMsg", getIdNum(),
+                                      static_cast<bool>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void EncoderUpdateControlMsg::sendOut( SerialLink& link )
@@ -1149,8 +1064,7 @@ void EncoderUpdateControlMsg::sendOut( SerialLink& link )
     // This never sent from Pico
 }
 
-void EncoderUpdateControlMsg::takeAction( EventManager& events,
-                                          SerialLink& link )
+void EncoderUpdateControlMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -1184,15 +1098,12 @@ BatteryLevelRequestMsg::BatteryLevelRequestMsg( Battery whichBattery ) noexcept
 {}
 
 BatteryLevelRequestMsg::BatteryLevelRequestMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kBatteryLevelRequest ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kBatteryLevelRequest ), mNeedsAction{ false }
 {
     if ( id != MsgId::kBatteryLevelRequest )
     {
         throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
-                                           std::to_underlying(
-                                               MsgId::kBatteryLevelRequest ) ),
+                                           std::to_underlying( MsgId::kBatteryLevelRequest ) ),
                           "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
@@ -1203,9 +1114,8 @@ void BatteryLevelRequestMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Got BatteryLevelRequestMsg",
-        static_cast<int>( std::get<0>( mContent.mMsg ) ) );
+    debugCond2cout<kDebugSerialMsgs>( "Got BatteryLevelRequestMsg",
+                                      static_cast<int>( std::get<0>( mContent.mMsg ) ) );
 }
 
 void BatteryLevelRequestMsg::sendOut( SerialLink& link )
@@ -1213,15 +1123,13 @@ void BatteryLevelRequestMsg::sendOut( SerialLink& link )
     // This never sent from Pico
 }
 
-void BatteryLevelRequestMsg::takeAction( EventManager& events,
-                                         SerialLink& link )
+void BatteryLevelRequestMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
         std::uint8_t whichBattery = std::get<0>( mContent.mMsg );
 
-        output2cout( "RPi0 requested battery level for",
-                     static_cast<int>( whichBattery ) );
+        output2cout( "RPi0 requested battery level for", static_cast<int>( whichBattery ) );
 
         if ( whichBattery == std::to_underlying( Battery::kIcBattery )
              || whichBattery == std::to_underlying( Battery::kBothBatteries ) )
@@ -1229,11 +1137,9 @@ void BatteryLevelRequestMsg::takeAction( EventManager& events,
             float volts = Batteries::getIcBatteryVoltage();
             BatteryLevelUpdateMsg msg( Battery::kIcBattery, volts );
             msg.sendOut( link );
-
         }
         else if ( whichBattery == std::to_underlying( Battery::kMotorBattery )
-                  || whichBattery
-                         == std::to_underlying( Battery::kBothBatteries ) )
+                  || whichBattery == std::to_underlying( Battery::kBothBatteries ) )
         {
             float volts = Batteries::getMotorBatteryVoltage();
             BatteryLevelUpdateMsg msg( Battery::kMotorBattery, volts );
@@ -1241,12 +1147,9 @@ void BatteryLevelRequestMsg::takeAction( EventManager& events,
         }
         else
         {
-            output2cout( "Bad battery request code",
-                         static_cast<int>( whichBattery ) );
-            ErrorReportMsg err(
-                false,
-                makePicoErrorId( kPicoSerialMessageError, 2, whichBattery ),
-                Clock::millis() );
+            output2cout( "Bad battery request code", static_cast<int>( whichBattery ) );
+            ErrorReportMsg err( false, makePicoErrorId( kPicoSerialMessageError, 2, whichBattery ),
+                                Clock::millis() );
 
             err.sendOut( link );
         }
@@ -1269,8 +1172,7 @@ BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( Battery whichBattery,
-                                              float level ) noexcept
+BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( Battery whichBattery, float level ) noexcept
     : SerialMessage( MsgId::kBatteryLevelUpdate ),
       mContent( MsgId::kBatteryLevelUpdate,
                 std::make_tuple( std::to_underlying( whichBattery ), level ) ),
@@ -1278,16 +1180,13 @@ BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( Battery whichBattery,
 {}
 
 BatteryLevelUpdateMsg::BatteryLevelUpdateMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kBatteryLevelUpdate ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kBatteryLevelUpdate ), mNeedsAction{ false }
 {
     if ( id != MsgId::kBatteryLevelUpdate )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kBatteryLevelUpdate ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kBatteryLevelUpdate ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -1298,18 +1197,16 @@ void BatteryLevelUpdateMsg::readIn( SerialLink& link )
     mNeedsAction = false;
 
     output2cout( "Error: got BatteryLevelUpdateMsg", getIdNum(),
-                 static_cast<int>( std::get<0>( mContent.mMsg ) ),
-                 std::get<1>( mContent.mMsg ) );
+                 static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void BatteryLevelUpdateMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Sent BatteryLevelUpdateMsg", getIdNum(),
-        static_cast<int>( std::get<0>( mContent.mMsg ) ),
-        std::get<1>( mContent.mMsg ) );
+    debugCond2cout<kDebugSerialMsgs>( "Sent BatteryLevelUpdateMsg", getIdNum(),
+                                      static_cast<int>( std::get<0>( mContent.mMsg ) ),
+                                      std::get<1>( mContent.mMsg ) );
 }
 
 void BatteryLevelUpdateMsg::takeAction( EventManager&, SerialLink& link )
@@ -1336,8 +1233,7 @@ BatteryLowAlertMsg::BatteryLowAlertMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-BatteryLowAlertMsg::BatteryLowAlertMsg( Battery whichBattery,
-                                        float level ) noexcept
+BatteryLowAlertMsg::BatteryLowAlertMsg( Battery whichBattery, float level ) noexcept
     : SerialMessage( MsgId::kBatteryLowAlert ),
       mContent( MsgId::kBatteryLowAlert,
                 std::make_tuple( std::to_underlying( whichBattery ), level ) ),
@@ -1345,16 +1241,13 @@ BatteryLowAlertMsg::BatteryLowAlertMsg( Battery whichBattery,
 {}
 
 BatteryLowAlertMsg::BatteryLowAlertMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kBatteryLowAlert ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kBatteryLowAlert ), mNeedsAction{ false }
 {
     if ( id != MsgId::kBatteryLowAlert )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kBatteryLowAlert ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kBatteryLowAlert ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -1365,18 +1258,16 @@ void BatteryLowAlertMsg::readIn( SerialLink& link )
     mNeedsAction = false;
 
     output2cout( "Error: got BatteryLowAlertMsg", getIdNum(),
-                 static_cast<int>( std::get<0>( mContent.mMsg ) ),
-                 std::get<1>( mContent.mMsg ) );
+                 static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void BatteryLowAlertMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Sent BatteryLowAlertMsg", getIdNum(),
-        static_cast<int>( std::get<0>( mContent.mMsg ) ),
-        std::get<1>( mContent.mMsg ) );
+    debugCond2cout<kDebugSerialMsgs>( "Sent BatteryLowAlertMsg", getIdNum(),
+                                      static_cast<int>( std::get<0>( mContent.mMsg ) ),
+                                      std::get<1>( mContent.mMsg ) );
 }
 
 void BatteryLowAlertMsg::takeAction( EventManager&, SerialLink& link )
@@ -1403,25 +1294,20 @@ ErrorReportMsg::ErrorReportMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-ErrorReportMsg::ErrorReportMsg( bool val, int errorCode,
-                                std::uint32_t time ) noexcept
+ErrorReportMsg::ErrorReportMsg( bool val, int errorCode, std::uint32_t time ) noexcept
     : SerialMessage( MsgId::kErrorReportFromPico ),
       mContent( MsgId::kErrorReportFromPico,
-                std::make_tuple( static_cast<std::uint8_t>( val ), errorCode,
-                                 time ) ),
+                std::make_tuple( static_cast<std::uint8_t>( val ), errorCode, time ) ),
       mNeedsAction{ true }
 {}
 
 ErrorReportMsg::ErrorReportMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kErrorReportFromPico ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kErrorReportFromPico ), mNeedsAction{ false }
 {
     if ( id != MsgId::kErrorReportFromPico )
     {
         throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
-                                           std::to_underlying(
-                                               MsgId::kErrorReportFromPico ) ),
+                                           std::to_underlying( MsgId::kErrorReportFromPico ) ),
                           "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
@@ -1433,8 +1319,8 @@ void ErrorReportMsg::readIn( SerialLink& link )
     mNeedsAction = false;
 
     output2cout( "Error: got ErrorReportMsg", getIdNum(),
-                 static_cast<bool>( std::get<0>( mContent.mMsg ) ),
-                 std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
+                 static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ),
+                 std::get<2>( mContent.mMsg ) );
 }
 
 void ErrorReportMsg::sendOut( SerialLink& link )
@@ -1442,8 +1328,8 @@ void ErrorReportMsg::sendOut( SerialLink& link )
     mContent.sendOut( link );
 
     output2cout( "Sent ErrorReportMsg", getIdNum(),
-                 static_cast<bool>( std::get<0>( mContent.mMsg ) ),
-                 std::get<1>( mContent.mMsg ), std::get<2>( mContent.mMsg ) );
+                 static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ),
+                 std::get<2>( mContent.mMsg ) );
 }
 
 void ErrorReportMsg::takeAction( EventManager&, SerialLink& link )
@@ -1470,25 +1356,20 @@ TestPicoErrorRptMsg::TestPicoErrorRptMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-TestPicoErrorRptMsg::TestPicoErrorRptMsg( bool makeItFatal,
-                                          int errorCodeToReport ) noexcept
+TestPicoErrorRptMsg::TestPicoErrorRptMsg( bool makeItFatal, int errorCodeToReport ) noexcept
     : SerialMessage( MsgId::kTestPicoReportError ),
       mContent( MsgId::kTestPicoReportError,
-                std::make_tuple( static_cast<std::uint8_t>( makeItFatal ),
-                                 errorCodeToReport ) ),
+                std::make_tuple( static_cast<std::uint8_t>( makeItFatal ), errorCodeToReport ) ),
       mNeedsAction{ true }
 {}
 
 TestPicoErrorRptMsg::TestPicoErrorRptMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kTestPicoReportError ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kTestPicoReportError ), mNeedsAction{ false }
 {
     if ( id != MsgId::kTestPicoReportError )
     {
         throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
-                                           std::to_underlying(
-                                               MsgId::kTestPicoReportError ) ),
+                                           std::to_underlying( MsgId::kTestPicoReportError ) ),
                           "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
@@ -1499,10 +1380,9 @@ void TestPicoErrorRptMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debugCond2cout<kDebugSerialMsgs>(
-        "Got TestPicoErrorRptMsg", getIdNum(),
-        static_cast<bool>( std::get<0>( mContent.mMsg ) ),
-        std::get<1>( mContent.mMsg ) );
+    debugCond2cout<kDebugSerialMsgs>( "Got TestPicoErrorRptMsg", getIdNum(),
+                                      static_cast<bool>( std::get<0>( mContent.mMsg ) ),
+                                      std::get<1>( mContent.mMsg ) );
 }
 
 void TestPicoErrorRptMsg::sendOut( SerialLink& link )
@@ -1510,8 +1390,7 @@ void TestPicoErrorRptMsg::sendOut( SerialLink& link )
     // Pico never sends this message out (only receives)
 
     output2cout( "Error: Pico sending TestPicoErrorRptMsg", getIdNum(),
-                 static_cast<bool>( std::get<0>( mContent.mMsg ) ),
-                 std::get<1>( mContent.mMsg ) );
+                 static_cast<bool>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
 }
 
 void TestPicoErrorRptMsg::takeAction( EventManager& evtMgr, SerialLink& link )
@@ -1527,11 +1406,9 @@ void TestPicoErrorRptMsg::takeAction( EventManager& evtMgr, SerialLink& link )
 
         mNeedsAction = false;
 
-        output2cout(
-            "Pico Sent test error msg with",
-            ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal"
-                                                                : "Not Fatal" ),
-            "error code", errorCode );
+        output2cout( "Pico Sent test error msg with",
+                     ( static_cast<bool>( std::get<0>( mContent.mMsg ) ) ? "Fatal" : "Not Fatal" ),
+                     "error code", errorCode );
     }
 }
 
@@ -1549,24 +1426,20 @@ TestPicoMessagesMsg::TestPicoMessagesMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-TestPicoMessagesMsg::TestPicoMessagesMsg(
-    std::uint8_t msgIdToSendBack ) noexcept
+TestPicoMessagesMsg::TestPicoMessagesMsg( std::uint8_t msgIdToSendBack ) noexcept
     : SerialMessage( MsgId::kTestPicoMessages ),
       mContent( MsgId::kTestPicoMessages, std::make_tuple( msgIdToSendBack ) ),
       mNeedsAction{ true }
 {}
 
 TestPicoMessagesMsg::TestPicoMessagesMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kTestPicoMessages ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kTestPicoMessages ), mNeedsAction{ false }
 {
     if ( id != MsgId::kTestPicoMessages )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kTestPicoMessages ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kTestPicoMessages ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -1607,8 +1480,7 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
 
         MsgId desiredMsgId{ static_cast<MsgId>( rcvdId ) };
 
-        output2cout( "TestPicoMessages asked to send",
-                     static_cast<int>( rcvdId ) );
+        output2cout( "TestPicoMessages asked to send", static_cast<int>( rcvdId ) );
 
         switch ( desiredMsgId )
         {
@@ -1700,8 +1572,7 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
             {
                 ErrorReportMsg msg(
                     kPicoNonFatalError,
-                    makePicoErrorId( kPicoTestError, kPicoTestError,
-                                     kPicoTestError ),
+                    makePicoErrorId( kPicoTestError, kPicoTestError, kPicoTestError ),
                     Clock::millis() );
                 msg.sendOut( link );
             };
@@ -1762,15 +1633,12 @@ PicoReceivedTestMsg::PicoReceivedTestMsg( std::uint8_t msgIdReceived ) noexcept
 {}
 
 PicoReceivedTestMsg::PicoReceivedTestMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kPicoReceivedTestMsg ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kPicoReceivedTestMsg ), mNeedsAction{ false }
 {
     if ( id != MsgId::kPicoReceivedTestMsg )
     {
         throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
-                                           std::to_underlying(
-                                               MsgId::kPicoReceivedTestMsg ) ),
+                                           std::to_underlying( MsgId::kPicoReceivedTestMsg ) ),
                           "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
@@ -1818,22 +1686,18 @@ DebugLinkMsg::DebugLinkMsg( TheData t ) noexcept
 DebugLinkMsg::DebugLinkMsg( int val1_i, std::uint8_t val2_u8, float val3_f,
                             std::uint32_t val4_u32 ) noexcept
     : SerialMessage( MsgId::kDebugSerialLink ),
-      mContent( MsgId::kDebugSerialLink,
-                std::make_tuple( val1_i, val2_u8, val3_f, val4_u32 ) ),
+      mContent( MsgId::kDebugSerialLink, std::make_tuple( val1_i, val2_u8, val3_f, val4_u32 ) ),
       mNeedsAction{ false }
 {}
 
 DebugLinkMsg::DebugLinkMsg( MsgId id )
-    : SerialMessage( id ),
-      mContent( MsgId::kDebugSerialLink ),
-      mNeedsAction{ false }
+    : SerialMessage( id ), mContent( MsgId::kDebugSerialLink ), mNeedsAction{ false }
 {
     if ( id != MsgId::kDebugSerialLink )
     {
-        throw CarrtError(
-            makePicoErrorId( kPicoSerialMessageError, 1,
-                             std::to_underlying( MsgId::kDebugSerialLink ) ),
-            "Id mismatch at creation" );
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kDebugSerialLink ) ),
+                          "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
@@ -1844,8 +1708,8 @@ void DebugLinkMsg::readIn( SerialLink& link )
     mNeedsAction = true;
 
     output2cout( "Pico got DebugLinkMsg", std::get<0>( mContent.mMsg ),
-                 static_cast<int>( std::get<1>( mContent.mMsg ) ),
-                 std::get<2>( mContent.mMsg ), std::get<3>( mContent.mMsg ) );
+                 static_cast<int>( std::get<1>( mContent.mMsg ) ), std::get<2>( mContent.mMsg ),
+                 std::get<3>( mContent.mMsg ) );
 }
 
 void DebugLinkMsg::sendOut( SerialLink& link )
@@ -1853,8 +1717,8 @@ void DebugLinkMsg::sendOut( SerialLink& link )
     mContent.sendOut( link );
 
     output2cout( "Pico sent DebugLinkMsg", std::get<0>( mContent.mMsg ),
-                 static_cast<int>( std::get<1>( mContent.mMsg ) ),
-                 std::get<2>( mContent.mMsg ), std::get<3>( mContent.mMsg ) );
+                 static_cast<int>( std::get<1>( mContent.mMsg ) ), std::get<2>( mContent.mMsg ),
+                 std::get<3>( mContent.mMsg ) );
 }
 
 void DebugLinkMsg::takeAction( EventManager& events, SerialLink& link )
