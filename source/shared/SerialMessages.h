@@ -607,37 +607,6 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class BatteryLowAlertMsg : public SerialMessage
-{
-public:
-    using TheData = std::tuple<std::uint8_t, float>;
-
-    BatteryLowAlertMsg() noexcept;
-    explicit BatteryLowAlertMsg( TheData t ) noexcept;
-    BatteryLowAlertMsg( Battery whichBattery, float level ) noexcept;
-    explicit BatteryLowAlertMsg( MsgId id );
-
-    virtual void readIn( SerialLink& link ) override;
-
-    virtual void sendOut( SerialLink& link ) override;
-
-    virtual void takeAction( EventManager& events, SerialLink& link ) override;
-
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
-
-    virtual MsgId getId() const noexcept override { return mContent.mId; }
-
-private:
-    struct RawMessage<TheData> mContent;
-
-    bool mNeedsAction;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
 class ErrorReportMsg : public SerialMessage
 {
 public:

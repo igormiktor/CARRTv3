@@ -124,8 +124,7 @@ void setupMessageProcessor( SerialMessageProcessor& smp )
     //  smp.registerMessage<EncoderUpdateControlMsg>( MsgId::kEncoderUpdateControl );
     //  smp.registerMessage<BatteryLevelRequestMsg>( MsgId::kBatteryLevelRequest );
     smp.registerMessage<BatteryLevelUpdateMsg>( MsgId::kBatteryLevelUpdate );
-    smp.registerMessage<BatteryLowAlertMsg>( MsgId::kBatteryLowAlert );
-    smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
+     smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
     //  smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
     //  smp.registerMessage<TestPicoMessagesMsg>( MsgId::kTestPicoMessages );
     smp.registerMessage<PicoReceivedTestMsg>( MsgId::kPicoReceivedTestMsg );

@@ -122,10 +122,6 @@ enum class MsgId : std::uint8_t
     // voltage (float)
     kBatteryLevelUpdate,
 
-    // Pico to RPi0 alert that battery is low; 2nd byte = which battery;
-    // following 4 bytes voltage (float)
-    kBatteryLowAlert,
-
     /////// Error reports
 
     // Pico sends a bool fatal flag (bool in a std::uint8_t) and error code

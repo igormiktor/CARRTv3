@@ -1221,67 +1221,6 @@ void BatteryLevelUpdateMsg::takeAction( EventManager&, SerialLink& link )
 
 /******************************************************************************/
 
-BatteryLowAlertMsg::BatteryLowAlertMsg() noexcept
-    : SerialMessage( MsgId::kBatteryLowAlert ),
-      mContent( MsgId::kBatteryLowAlert ),
-      mNeedsAction{ false }
-{}
-
-BatteryLowAlertMsg::BatteryLowAlertMsg( TheData t ) noexcept
-    : SerialMessage( MsgId::kBatteryLowAlert ),
-      mContent( MsgId::kBatteryLowAlert, t ),
-      mNeedsAction{ true }
-{}
-
-BatteryLowAlertMsg::BatteryLowAlertMsg( Battery whichBattery, float level ) noexcept
-    : SerialMessage( MsgId::kBatteryLowAlert ),
-      mContent( MsgId::kBatteryLowAlert,
-                std::make_tuple( std::to_underlying( whichBattery ), level ) ),
-      mNeedsAction{ true }
-{}
-
-BatteryLowAlertMsg::BatteryLowAlertMsg( MsgId id )
-    : SerialMessage( id ), mContent( MsgId::kBatteryLowAlert ), mNeedsAction{ false }
-{
-    if ( id != MsgId::kBatteryLowAlert )
-    {
-        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
-                                           std::to_underlying( MsgId::kBatteryLowAlert ) ),
-                          "Id mismatch at creation" );
-    }
-    // Note that it doesn't need action until loaded with data
-}
-
-void BatteryLowAlertMsg::readIn( SerialLink& link )
-{
-    mContent.readIn( link );
-    mNeedsAction = false;
-
-    output2cout( "Error: got BatteryLowAlertMsg", getIdNum(),
-                 static_cast<int>( std::get<0>( mContent.mMsg ) ), std::get<1>( mContent.mMsg ) );
-}
-
-void BatteryLowAlertMsg::sendOut( SerialLink& link )
-{
-    mContent.sendOut( link );
-
-    debugCond2cout<kDebugSerialMsgs>( "Sent BatteryLowAlertMsg", getIdNum(),
-                                      static_cast<int>( std::get<0>( mContent.mMsg ) ),
-                                      std::get<1>( mContent.mMsg ) );
-}
-
-void BatteryLowAlertMsg::takeAction( EventManager&, SerialLink& link )
-{
-    if ( mNeedsAction )
-    {
-        // This message should only be sent, not received
-        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
-        mNeedsAction = false;
-    }
-}
-
-/******************************************************************************/
-
 ErrorReportMsg::ErrorReportMsg() noexcept
     : SerialMessage( MsgId::kErrorReportFromPico ),
       mContent( MsgId::kErrorReportFromPico ),
@@ -1557,13 +1496,6 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
             case MsgId::kBatteryLevelUpdate:
             {
                 BatteryLevelUpdateMsg msg( Battery::kBothBatteries, 5.2f );
-                msg.sendOut( link );
-            };
-            break;
-
-            case MsgId::kBatteryLowAlert:
-            {
-                BatteryLowAlertMsg msg( Battery::kIcBattery, 1.5f );
                 msg.sendOut( link );
             };
             break;

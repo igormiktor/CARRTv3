@@ -268,7 +268,6 @@ namespace
             MsgId::kBatteryLevelRequest );
     //  smp.registerMessage<BatteryLevelUpdateMsg>(
     //      MsgId::kBatteryLevelUpdate );
-    //  smp.registerMessage<BatteryLowAlertMsg>( MsgId::kBatteryLowAlert );
     //  smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
         smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
         smp.registerMessage<TestPicoMessagesMsg>( MsgId::kTestPicoMessages );
