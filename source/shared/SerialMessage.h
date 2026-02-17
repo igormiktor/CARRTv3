@@ -365,6 +365,8 @@ public:
 
 protected:
     MsgId mId;
+
+    // cppcheck-suppress unusedStructMember     // False alarm
     bool mNeedsAction;
 };
 
