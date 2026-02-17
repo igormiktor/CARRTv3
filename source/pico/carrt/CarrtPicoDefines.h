@@ -63,6 +63,28 @@
 
 // **************************************************************
 
+// Define the GPIO pin for the IC (PowerBoost) battery
+#ifndef CARRTPICO_IC_BATTERY_GPIO
+    #define CARRTPICO_IC_BATTERY_GPIO 27    // GPIO27, ADC1, Pin 32
+#endif                                      // CARRTPICO_IC_BATTERY_GPIO
+
+// Define the ADC for the IC (PowerBoost) battery
+#ifndef CARRTPICO_IC_BATTERY_ADC
+    #define CARRTPICO_IC_BATTERY_ADC 1    // GPIO27, ADC1, Pin 32
+#endif                                    // CARRTPICO_IC_BATTERY_ADC
+
+// Define the GPIO pin for the motor (9V 6xAA) battery pack
+#ifndef CARRTPICO_MOTOR_BATTERY_GPIO
+    #define CARRTPICO_MOTOR_BATTERY_GPIO 26    // GPIO26, ADC0, Pin 31
+#endif                                         // CARRTPICO_MOTOR_BATTERY_GPIO
+
+// Define the GPIO pin for the motor (9V 6xAA) battery pack
+#ifndef CARRTPICO_MOTOR_BATTERY_ADC
+    #define CARRTPICO_MOTOR_BATTERY_ADC 0    // GPIO26, ADC0, Pin 31
+#endif                                       // CARRTPICO_MOTOR_BATTERY_ADC
+
+// **************************************************************
+
 // I2C defines to Pico's I2C network
 // Uses I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
 

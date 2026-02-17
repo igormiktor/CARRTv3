@@ -4,6 +4,7 @@ add_library( pico_driver_library STATIC )
 
 target_sources( pico_driver_library
     PRIVATE
+        Batteries.cpp
         BNO055/bno055.c
         BNO055.cpp
         Encoders.cpp
@@ -11,6 +12,7 @@ target_sources( pico_driver_library
         I2C.cpp 
         SerialLinkPico.cpp
     PUBLIC FILE_SET HEADERS FILES
+        Batteries.h
         BNO055/bno055.h   
         BNO055.h
         Clock.h
@@ -27,6 +29,7 @@ target_include_directories( pico_driver_library PUBLIC "${PROJECT_SOURCE_DIR}/dr
 target_link_libraries( pico_driver_library PUBLIC 
     shared_library 
     pico_stdlib
+    hardware_adc
     hardware_i2c
     hardware_timer
     hardware_clocks

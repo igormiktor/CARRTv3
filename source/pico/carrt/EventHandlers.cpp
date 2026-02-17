@@ -19,6 +19,7 @@
 
 #include "EventHandlers.h"
 
+#include "Batteries.h"
 #include "BNO055.h"
 #include "CarrtError.h"
 #include "CarrtPicoReset.h"
@@ -76,6 +77,14 @@ void EightSecondTimerHandler::handleEvent( EventManager& events,
                                 eventTime );
         timerEvt.sendOut( link );
     }
+
+    float icVolts = Batteries::getIcBatteryVoltage();
+    BatteryLevelUpdateMsg icMsg( Battery::kIcBattery, icVolts );
+    icMsg.sendOut( link );
+
+    float motorVolts = Batteries::getMotorBatteryVoltage();
+    BatteryLevelUpdateMsg motorMsg( Battery::kMotorBattery, motorVolts );
+    motorMsg.sendOut( link );
 }
 
 // ********************** BNO055/navigation event handlers

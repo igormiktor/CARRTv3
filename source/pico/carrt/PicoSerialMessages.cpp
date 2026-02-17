@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "Batteries.h"
 #include "BNO055.h"
 #include "Clock.h"
 #include "DebugUtils.hpp"
@@ -1219,21 +1220,24 @@ void BatteryLevelRequestMsg::takeAction( EventManager& events,
     {
         std::uint8_t whichBattery = std::get<0>( mContent.mMsg );
 
-        // TODO take whatever action is appropirate
         output2cout( "RPi0 requested battery level for",
                      static_cast<int>( whichBattery ) );
-        output2cout( "TODO - implement action" );
 
         if ( whichBattery == std::to_underlying( Battery::kIcBattery )
              || whichBattery == std::to_underlying( Battery::kBothBatteries ) )
         {
-            // TODO
+            float volts = Batteries::getIcBatteryVoltage();
+            BatteryLevelUpdateMsg msg( Battery::kIcBattery, volts );
+            msg.sendOut( link );
+
         }
         else if ( whichBattery == std::to_underlying( Battery::kMotorBattery )
                   || whichBattery
                          == std::to_underlying( Battery::kBothBatteries ) )
         {
-            // TODO
+            float volts = Batteries::getMotorBatteryVoltage();
+            BatteryLevelUpdateMsg msg( Battery::kMotorBattery, volts );
+            msg.sendOut( link );
         }
         else
         {
@@ -1243,6 +1247,8 @@ void BatteryLevelRequestMsg::takeAction( EventManager& events,
                 false,
                 makePicoErrorId( kPicoSerialMessageError, 2, whichBattery ),
                 Clock::millis() );
+
+            err.sendOut( link );
         }
 
         mNeedsAction = false;
