@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "Batteries.h"
 #include "BNO055.h"
 #include "CarrtError.h"
 #include "CarrtPicoDefines.h"
@@ -207,6 +208,9 @@ namespace
         HeartBeatLed::initialize();
 
         // The encoders are set up on Core1
+
+        // Initialize ADC for batteries
+        Batteries::initBatteries();
 
         // Initialize state
         PicoState::initialize();

@@ -48,7 +48,7 @@ namespace Batteries
     constexpr float motorConversionFactor{ motorVoltageDividerFactor * adcConversionFactor };
 }    // namespace Batteries
 
-void initBatteries()
+void Batteries::initBatteries()
 {
     adc_init();
 
