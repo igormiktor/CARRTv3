@@ -38,8 +38,8 @@
 | RPi0 UART RX            | UART1 TX |  6 |  | 35 |           |        |
 | RPi0 UART TX            | UART1 RX |  7 |  | 34 |           |        |
 |                         |          |  8 |  | 33 |  |  |
-|                         |          |  9 |  | 32 | ADC1      | ADC to PowerBoost Batt Pin (via V-Divider) |
-|                         |          | 10 |  | 31 | ADC0      | ADC to 9V Batt+ (via V-Divider) |
+|                         |          |  9 |  | 32 | ADC1      | (GPIO27) ADC to PowerBoost Batt Pin (via V-Divider) |
+|                         |          | 10 |  | 31 | ADC0      | (GPIO26) ADC to 9V Batt+ (via V-Divider) |
 | I2C Bus Pico            | I2C0 SDA | 11 |  | 30 |  |  |
 | I2C Bus Pico            | I2C0 SCL | 12 |  | 29 |  |  |
 |                         |          | 13 |  | 28 |  |  |
