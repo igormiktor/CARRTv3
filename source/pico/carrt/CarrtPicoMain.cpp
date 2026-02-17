@@ -18,8 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Batteries.h"
 #include "BNO055.h"
+#include "Batteries.h"
 #include "CarrtError.h"
 #include "CarrtPicoDefines.h"
 #include "CarrtPicoReset.h"
@@ -104,8 +104,7 @@ int main()
     {
         initializeFailableHardware();
 
-        output2cout(
-            "CARRT Pico started, hardware initialized, both cores running." );
+        output2cout( "CARRT Pico started, hardware initialized, both cores running." );
 
         // Set up message processor
         SerialMessageProcessor smp( kSerialMessageHandlerReserveSize, rpi0 );
@@ -227,8 +226,7 @@ namespace
         // main event loop.  So perfect time to queue this future
         // event to trigger initialization of BNO055.
         // Note future b/cBNO055 needs nearly 1 sec to be ready to accept I2C.
-        Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent,
-                                   BNO055::kWaitAfterPowerOnReset );
+        Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
 
         // Tell Core1 to initialize the encoders
         // Core1 does it so the interrupts go to Core1
@@ -276,27 +274,22 @@ namespace
         smp.registerMessage<TestPicoMessagesMsg>( MsgId::kTestPicoMessages );
         smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
     }
+
     // clang-format on
 
     void setupEventProcessor( EventProcessor& ep )
     {
         ep.registerHandler<NullEventHandler>( EvtId::kNullEvent );
 
-        ep.registerHandler<QuarterSecondTimerHandler>(
-            EvtId::kQuarterSecondTimerEvent );
-        ep.registerHandler<OneSecondTimerHandler>(
-            EvtId::kOneSecondTimerEvent );
-        ep.registerHandler<EightSecondTimerHandler>(
-            EvtId::kEightSecondTimerEvent );
+        ep.registerHandler<QuarterSecondTimerHandler>( EvtId::kQuarterSecondTimerEvent );
+        ep.registerHandler<OneSecondTimerHandler>( EvtId::kOneSecondTimerEvent );
+        ep.registerHandler<EightSecondTimerHandler>( EvtId::kEightSecondTimerEvent );
 
         ep.registerHandler<NavUpdateHandler>( EvtId::kNavUpdateEvent );
-        ep.registerHandler<InitializeBNO055Handler>(
-            EvtId::kBNO055InitializeEvent );
+        ep.registerHandler<InitializeBNO055Handler>( EvtId::kBNO055InitializeEvent );
         ep.registerHandler<BNO055ResetHandler>( EvtId::kBNO055ResetEvent );
-        ep.registerHandler<BeginCalibrationHandler>(
-            EvtId::kBNO055BeginCalibrationEvent );
-        ep.registerHandler<SendCalibrationInfoHandler>(
-            EvtId::kSendCalibrationInfoEvent );
+        ep.registerHandler<BeginCalibrationHandler>( EvtId::kBNO055BeginCalibrationEvent );
+        ep.registerHandler<SendCalibrationInfoHandler>( EvtId::kSendCalibrationInfoEvent );
 
         ep.registerHandler<PulsePicoLedHandler>( EvtId::kPulsePicoLedEvent );
 
