@@ -743,7 +743,7 @@ void SetAutoCalibrateMsg::takeAction( EventManager& events, SerialLink& link )
     if ( mNeedsAction )
     {
         bool val = std::get<0>( mContent.mMsg );
-        PicoState::wantAutoCalibrate( val );
+        PicoState::setAutoCalibrate( val );
         mNeedsAction = false;
 
         output2cout( "Pico autocalibration set to", val );

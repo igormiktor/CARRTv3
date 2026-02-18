@@ -144,6 +144,7 @@ public:
         kNavStatusMask = 0x10,
         kEncoderMsgMask = 0x20,
         kCalibrationMsgMask = 0x40,
+        kBatteryMsgMask = 0x80,
 
         kAllMsgsOff = 0x00,
         kAllMsgsOn = 0xFF

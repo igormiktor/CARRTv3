@@ -55,6 +55,9 @@ namespace PicoState
     bool wantCalibrationMsgs() noexcept;                 // Returns value
     bool sendCalibrationMsgs( bool newVal ) noexcept;    // Returns prior value
 
+    bool wantBatteryMsgs() noexcept;                 // Returns value
+    bool sendBatteryMsgs( bool newVal ) noexcept;    // Returns prior value
+
     void allMsgsSendOn() noexcept;
     void allMsgsSendOff() noexcept;
 
@@ -68,7 +71,7 @@ namespace PicoState
 
     // Do we auto enter calibration mode whenever needed?
     bool wantAutoCalibrate() noexcept;
-    bool wantAutoCalibrate( bool newVal ) noexcept;    // Returns prior value
+    bool setAutoCalibrate( bool newVal ) noexcept;    // Returns prior value
 
 };    // namespace PicoState
 

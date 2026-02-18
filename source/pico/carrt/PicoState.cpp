@@ -31,6 +31,7 @@ namespace
     bool sSendNavStatusMsgs{ false };
     bool sSendEncoderMsgs{ false };
     bool sSendCalibrationMsgs{ false };
+    bool sSendBatteryMsgs{ false };
 
     bool sStartUpFinished{ false };
     bool sNavCalibrated{ false };
@@ -50,11 +51,13 @@ void PicoState::initialize() noexcept
     sSendNavStatusMsgs      = false;
     sSendEncoderMsgs        = false;
     sSendCalibrationMsgs    = false;
+    sSendBatteryMsgs        = false;
 
     sStartUpFinished        = false;
+
     sNavCalibrated          = false;
-    sAutoCalibrateMode      = false;
     
+    sAutoCalibrateMode      = false;
     sInCalibrationMode      = false;
 }
 // clang-format on
@@ -140,6 +143,15 @@ bool PicoState::sendCalibrationMsgs( bool newVal ) noexcept
 
 bool PicoState::wantCalibrationMsgs() noexcept { return sSendEncoderMsgs; }
 
+bool PicoState::sendBatteryMsgs( bool newVal ) noexcept
+{
+    bool oldVal = sSendBatteryMsgs;
+    sSendBatteryMsgs = newVal;
+    return oldVal;
+}
+
+bool PicoState::wantBatteryMsgs() noexcept { return sSendBatteryMsgs; }
+
 // clang-format off
 void PicoState::allMsgsSendOn() noexcept
 {
@@ -150,6 +162,7 @@ void PicoState::allMsgsSendOn() noexcept
     sSendNavStatusMsgs      = true;
     sSendEncoderMsgs        = true;
     sSendCalibrationMsgs    = true;
+    sSendBatteryMsgs        = true;
 }
 // clang-format on
 
@@ -163,6 +176,7 @@ void PicoState::allMsgsSendOff() noexcept
     sSendNavStatusMsgs      = false;
     sSendEncoderMsgs        = false;
     sSendCalibrationMsgs    = false;
+    sSendBatteryMsgs        = false;
 }
 // clang-format on
 
@@ -186,7 +200,7 @@ bool PicoState::navCalibrated( bool newVal ) noexcept
 
 bool PicoState::wantAutoCalibrate() noexcept { return sAutoCalibrateMode; }
 
-bool PicoState::wantAutoCalibrate( bool newVal ) noexcept
+bool PicoState::setAutoCalibrate( bool newVal ) noexcept
 {
     bool oldVal = sAutoCalibrateMode;
     sAutoCalibrateMode = newVal;
