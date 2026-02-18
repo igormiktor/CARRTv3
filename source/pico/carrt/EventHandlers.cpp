@@ -85,6 +85,9 @@ void EightSecondTimerHandler::handleEvent( EventManager& events,
     float motorVolts = Batteries::getMotorBatteryVoltage();
     BatteryLevelUpdateMsg motorMsg( Battery::kMotorBattery, motorVolts );
     motorMsg.sendOut( link );
+
+    // debug2cout( "IC V:", icVolts );
+    // debug2cout( "Motor V", motorVolts );
 }
 
 // ********************** BNO055/navigation event handlers

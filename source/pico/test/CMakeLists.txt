@@ -1,4 +1,5 @@
 add_subdirectory( ADCtest )
+add_subdirectory( BatteryVTest )
 add_subdirectory( BNOTest )
 add_subdirectory( BNORaw )
 add_subdirectory( GpioInterrupt )
