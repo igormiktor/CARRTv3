@@ -200,6 +200,9 @@ namespace
         stdio_init_all();
 #endif
 
+        // Initialize state
+        PicoState::initialize();
+
         // Set up Pico's I2C (to talk with BNO055)
         I2C::initI2C();
 
@@ -210,9 +213,6 @@ namespace
 
         // Initialize ADC for batteries
         Batteries::initBatteries();
-
-        // Initialize state
-        PicoState::initialize();
     }
 
     void initializeFailableHardware()
