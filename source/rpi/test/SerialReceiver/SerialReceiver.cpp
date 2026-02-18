@@ -8,12 +8,6 @@
 #include "SerialMessageProcessor.h"
 #include "SerialMessages.h"
 
-void doDebugLinkTest( SerialLink& link )
-{
-    DebugLinkMsg cmd0( 1, 2, 3.0, 4 );
-    cmd0.sendOut( link );
-}
-
 class EventManager
 {};
 
@@ -42,13 +36,25 @@ int main()
             kNavStatusMask = 0x10,
             kEncoderMsgMask = 0x20,
             kCalibrationMsgMask = 0x40,
+            kBatteryMsgMask = 0x80,
+
+            kAllMsgsOff = 0x00,
+            kAllMsgsOn = 0xFF
         */
-        MsgControlMsg desiredMsgs( MsgControlMsg::k1SecTimerMsgMask
+        
+        [[maybe_unused]]
+        std::uint8_t selectedMsgs = MsgControlMsg::k1SecTimerMsgMask
                                    | MsgControlMsg::k8SecTimerMsgMask
                                    | MsgControlMsg::kNavStatusMask 
                                    | MsgControlMsg::kEncoderMsgMask
-                                   | MsgControlMsg::kCalibrationMsgMask );
+                                   | MsgControlMsg::kCalibrationMsgMask
+                                   | MsgControlMsg::kBatteryMsgMask;
+
+        MsgControlMsg desiredMsgs( MsgControlMsg::kAllMsgsOn );
         desiredMsgs.sendOut( pico );
+
+        SetAutoCalibrateMsg autoCalib( true );
+        autoCalib.sendOut( pico );
 
         while ( true )
         {
