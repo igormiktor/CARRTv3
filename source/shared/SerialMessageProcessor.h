@@ -53,9 +53,8 @@ public:
         {
             // Need to throw because incoming serial stream can be corrupt from
             // this point onward
-            throw CarrtError(
-                makeSharedErrorId( kSerialMsgDupeError, 1, idNum ),
-                "Id dupe at registation" );
+            throw CarrtError( makeSharedErrorId( kSerialMsgDupeError, 1, idNum ),
+                              "Id dupe at registation" );
         }
         mCreators[ idNum ] = &creator<T>;
     }
@@ -74,10 +73,8 @@ public:
         }
         // If we cannot find the id, return a special message, UnknownMsg.
         output2cout( "Unknown msg received", static_cast<int>( id ) );
-        int err = makeSharedErrorId( kSerialMsgUnknownError, 1,
-                                     std::to_underlying( id ) );
-        return std::unique_ptr<SerialMessage>(
-            new UnknownMsg( std::to_underlying( id ), err ) );
+        int err = makeSharedErrorId( kSerialMsgUnknownError, 1, std::to_underlying( id ) );
+        return std::unique_ptr<SerialMessage>( new UnknownMsg( std::to_underlying( id ), err ) );
     }
 
 private:
@@ -130,6 +127,7 @@ private:
     MsgPtr createMessageFromSerialLink( MsgId id );
 
     MessageFactory mFactory;
+    // cppcheck-suppress unusedStructMember     // False alarm
     SerialLink& mLink;
 };
 

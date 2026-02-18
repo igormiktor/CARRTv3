@@ -23,28 +23,22 @@
 #include "SerialLink.h"
 #include "SerialMessage.h"
 
-MessageFactory::MessageFactory( int reserveSize )
-{
-    mCreators.reserve( reserveSize );
-}
+MessageFactory::MessageFactory( int reserveSize ) { mCreators.reserve( reserveSize ); }
 
-SerialMessageProcessor::SerialMessageProcessor( int reserveSize,
-                                                SerialLink& link )
+SerialMessageProcessor::SerialMessageProcessor( int reserveSize, SerialLink& link )
     : mFactory{ reserveSize }, mLink{ link }
 {
     // Nothing else to do
 }
 
-SerialMessageProcessor::MsgPtr
-SerialMessageProcessor::createMessageFromSerialLink( MsgId id )
+SerialMessageProcessor::MsgPtr SerialMessageProcessor::createMessageFromSerialLink( MsgId id )
 {
     auto msg = mFactory.createMessage( id );
     msg->readIn( mLink );
     return msg;
 }
 
-std::optional<SerialMessageProcessor::MsgPtr> 
-SerialMessageProcessor::receiveMessageIfAvailable()
+std::optional<SerialMessageProcessor::MsgPtr> SerialMessageProcessor::receiveMessageIfAvailable()
 {
     auto msgId = mLink.getMsgType();
     if ( msgId )
@@ -57,8 +51,7 @@ SerialMessageProcessor::receiveMessageIfAvailable()
     }
 }
 
-void SerialMessageProcessor::dispatchOneSerialMessage( EventManager& events,
-                                                       SerialLink& link )
+void SerialMessageProcessor::dispatchOneSerialMessage( EventManager& events, SerialLink& link )
 {
     auto msg{ receiveMessageIfAvailable() };
     if ( msg )
