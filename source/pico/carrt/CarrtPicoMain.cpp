@@ -233,48 +233,38 @@ namespace
         Core1::queueEventForCore1( EvtId::kInitEncoders );
     }
 
-    // clang-format off
-    [[maybe_unused]]    // Debug/test might not call (use smp in DumpByte mode)
-    void setupMessageProcessor( SerialMessageProcessor& smp )
+    // Debug/test might not call (e.g., use smp in DumpByte mode)
+    [[maybe_unused]] void setupMessageProcessor( SerialMessageProcessor& smp )
     {
-    // Only register those messages we actually can receive
-    // Messages that are only outgoing don't need to be registered
+        // Only register those messages we actually can receive
+        // Messages that are only outgoing don't need to be registered
         smp.registerMessage<PingMsg>( MsgId::kPingMsg );
         smp.registerMessage<PingReplyMsg>( MsgId::kPingReplyMsg );
-    //  smp.registerMessage<PicoReadyMsg>( MsgId::kPicoReady );
-    //  smp.registerMessage<PicoNavStatusUpdateMsg>(
-    //      MsgId::kPicoNavStatusUpdate ); 
-    //  smp.registerMessage<PicoSaysStopMsg>(
-    //      MsgId::kPicoSaysStop );
+        //  smp.registerMessage<PicoReadyMsg>( MsgId::kPicoReady );
+        //  smp.registerMessage<PicoNavStatusUpdateMsg>( MsgId::kPicoNavStatusUpdate );
+        //  smp.registerMessage<PicoSaysStopMsg>( MsgId::kPicoSaysStop );
         smp.registerMessage<MsgControlMsg>( MsgId::kMsgControlMsg );
         smp.registerMessage<ResetPicoMsg>( MsgId::kResetPicoMsg );
-    //  smp.registerMessage<TimerEventMsg>( MsgId::kTimerEventMsg );
+        //  smp.registerMessage<TimerEventMsg>( MsgId::kTimerEventMsg );
         smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
         smp.registerMessage<BeginCalibrationMsg>( MsgId::kBeginCalibration );
-        smp.registerMessage<RequestCalibrationStatusMsg>(
-            MsgId::kRequestCalibStatus );
-    //  smp.registerMessage<CalibrationInfoUpdateMsg>(
-    //      MsgId::kCalibrationInfoUpdate );
+        smp.registerMessage<RequestCalibrationStatusMsg>( MsgId::kRequestCalibStatus );
+        //  smp.registerMessage<CalibrationInfoUpdateMsg>( MsgId::kCalibrationInfoUpdate );
         smp.registerMessage<SetAutoCalibrateMsg>( MsgId::kSetAutoCalibrate );
         smp.registerMessage<ResetBNO055Msg>( MsgId::kResetBNO055 );
-    //  smp.registerMessage<NavUpdateMsg>( MsgId::kTimerNavUpdate );
+        //  smp.registerMessage<NavUpdateMsg>( MsgId::kTimerNavUpdate );
         smp.registerMessage<NavUpdateControlMsg>( MsgId::kNavUpdateControl );
-        smp.registerMessage<DrivingStatusUpdateMsg>(
-            MsgId::kDrivingStatusUpdate );
-    //  smp.registerMessage<EncoderUpdateMsg>( MsgId::kEncoderUpdate );
-        smp.registerMessage<EncoderUpdateControlMsg>(
-            MsgId::kEncoderUpdateControl );
-        smp.registerMessage<BatteryLevelRequestMsg>(
-            MsgId::kBatteryLevelRequest );
-    //  smp.registerMessage<BatteryLevelUpdateMsg>(
-    //      MsgId::kBatteryLevelUpdate );
-    //  smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
+        smp.registerMessage<DrivingStatusUpdateMsg>( MsgId::kDrivingStatusUpdate );
+        //  smp.registerMessage<EncoderUpdateMsg>( MsgId::kEncoderUpdate );
+        smp.registerMessage<EncoderUpdateControlMsg>( MsgId::kEncoderUpdateControl );
+        smp.registerMessage<BatteryLevelRequestMsg>( MsgId::kBatteryLevelRequest );
+        //  smp.registerMessage<BatteryLevelUpdateMsg>( MsgId::kBatteryLevelUpdate );
+        //  smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
         smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
         smp.registerMessage<TestPicoMessagesMsg>( MsgId::kTestPicoMessages );
+        // smp.registerMessage<PicoReceivedTestMsg>( MsgId::kPicoReceivedTestMsg );
         smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
     }
-
-    // clang-format on
 
     void setupEventProcessor( EventProcessor& ep )
     {
