@@ -70,7 +70,7 @@ target_compile_definitions( CarrtPico PUBLIC
     -DCARRT3_VERSION_MAJOR=${VERSION_MAJOR} 
     -DCARRT3_VERSION_MINOR=${VERSION_MINOR} 
     -DCARRT3_VERSION_REVISION=${VERSION_REVISION}
-    -DCARRT3_VERSION_STR="${CARRT_VERSION_STR}" 
+    -DCARRT3_VERSION_STR="${CARRT3_VERSION_STR}" 
 )
 
 # Capture the current git head hash
@@ -89,7 +89,9 @@ add_custom_command(
     COMMAND 
         echo "echo \"// This is the git HEAD sha1 hash\" >> $1" >> ${makeGitInfoHeader}
     COMMAND 
-        echo "echo \"#define CARRT_GIT_HEAD_SHA1 `git rev-parse --short HEAD`\" >> $1" >> ${makeGitInfoHeader}
+        echo "echo \"#define GIT_CURRENT_HEAD_SHA1_FULL \\\"`git rev-parse HEAD`\\\"\" >> $1" >> ${makeGitInfoHeader}
+    COMMAND 
+        echo "echo \"#define GIT_CURRENT_HEAD_SHA1_SHORT \\\"`git rev-parse --short HEAD`\\\"\" >> $1" >> ${makeGitInfoHeader}
     COMMAND 
         echo "echo \"#endif // GitHeadHash_h\" >> $1" >> ${makeGitInfoHeader}
     COMMAND 
