@@ -75,7 +75,6 @@ target_compile_definitions( CarrtPico PUBLIC
 
 # Capture the current git head hash
 set( Git_Head_Hash_h "${CMAKE_CURRENT_BINARY_DIR}/GitHeadHash.h" )
-set( Current_Git_Head "${PROJECT_SOURCE_DIR}/../../.git/refs/heads/main" )
 set( makeGitInfoHeader "${CMAKE_CURRENT_BINARY_DIR}/makeGitInfoHeader" )
 
 add_custom_command(
@@ -103,17 +102,18 @@ set_source_files_properties(
     PROPERTIES GENERATED TRUE
 )
 
+set( Git_Current_Branch "${PROJECT_SOURCE_DIR}/../../.git/refs/heads" )
 file( 
-    GLOB Branch_List "${PROJECT_SOURCE_DIR}/../../.git/refs/heads/*"
+    GLOB Git_Branch_Heads "${PROJECT_SOURCE_DIR}/../../.git/refs/heads/*"
 )
 
 add_custom_command(
     OUTPUT 
         ${Git_Head_Hash_h}
     DEPENDS 
-#        ${Current_Git_Head}
         ${makeGitInfoHeader}
-        ${Branch_List}
+        ${Git_Current_Branch}
+        ${Git_Branch_Heads}
     COMMAND 
         ${makeGitInfoHeader} ${Git_Head_Hash_h}
     VERBATIM
@@ -129,8 +129,8 @@ add_custom_target(
     BuildHashInfo
     DEPENDS 
         ${Git_Head_Hash_h}
-#        ${Current_Git_Head}
-        ${Branch_List}
+        ${Git_Current_Branch}
+        ${Git_Branch_Heads}
 )
 
 add_library( GitHeadHashLib INTERFACE )
