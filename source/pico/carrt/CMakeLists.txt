@@ -103,12 +103,17 @@ set_source_files_properties(
     PROPERTIES GENERATED TRUE
 )
 
+file( 
+    GLOB Branch_List "${PROJECT_SOURCE_DIR}/../../.git/refs/heads/*"
+)
+
 add_custom_command(
     OUTPUT 
         ${Git_Head_Hash_h}
     DEPENDS 
-        ${Current_Git_Head}
+#        ${Current_Git_Head}
         ${makeGitInfoHeader}
+        ${Branch_List}
     COMMAND 
         ${makeGitInfoHeader} ${Git_Head_Hash_h}
     VERBATIM
@@ -124,7 +129,8 @@ add_custom_target(
     BuildHashInfo
     DEPENDS 
         ${Git_Head_Hash_h}
-        ${Current_Git_Head}
+#        ${Current_Git_Head}
+        ${Branch_List}
 )
 
 add_library( GitHeadHashLib INTERFACE )
