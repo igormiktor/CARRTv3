@@ -26,7 +26,7 @@
 
 
 #include "GitHeadHash.h"
-
+#include "CarrtPicoDefines.h"
 
 
 /*
@@ -34,7 +34,8 @@
  *
  */
 
- #define CARRT_PICO_GIT_HEAD_SHA1   CARRT_GIT_HEAD_SHA1
+ #define CARRTPICO_GIT_HEAD_SHA1_FULL      GIT_CURRENT_HEAD_SHA1_FULL
+ #define CARRTPICO_GIT_HEAD_SHA1_SHORT     GIT_CURRENT_HEAD_SHA1_SHORT
 
 
 /*
@@ -43,7 +44,7 @@
  */
 
 
-#define CARRT_VERSION           " v" CARRT_VERSION_STR
+#define CARRTPICO_VERSION           "v" CARRT3_VERSION_STR
 
 
 
@@ -55,40 +56,32 @@
  */
 
 
-#if CARRT_INCLUDE_TESTS_IN_BUILD
+#if CARRTPICO_INCLUDE_TESTS_IN_BUILD
 #define CARRT_TEST_STR  "T"
 #else
 #define CARRT_TEST_STR  ""
 #endif
 
-#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
+#if CARRTPICO_INCLUDE_PROGDRIVE_IN_BUILD
 #define CARRT_PROGDRV_STR  "P"
 #else
 #define CARRT_PROGDRV_STR  ""
 #endif
 
-#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
+#if CARRTPICO_INCLUDE_GOTODRIVE_IN_BUILD
 #define CARRT_GOTODRV_STR  "G"
 #else
 #define CARRT_GOTODRV_STR  ""
 #endif
 
-#if CARRT_NAVIGATE_USING_INERTIAL
-#define CARRT_NAV_STR  "IMU"
-#elif CARRT_NAVIGATE_USING_DEADRECKONING
-#define CARRT_NAV_STR  "DR"
-#else
-#error "One of CARRT_NAVIGATE_USING_INERTIAL or CARRT_NAVIGATE_USING_DEADRECKONING must be defined."
-#endif
-
-#if CARRT_ENABLE_DEBUG_SERIAL
+#if USE_CARRTPICO_STDIO
 #define CARRT_DEBUG_STR  "D"
 #else
 #define CARRT_DEBUG_STR  ""
 #endif
 
 
-#define CARRT_FEATURES   " " CARRT_TEST_STR " " CARRT_PROGDRV_STR " " CARRT_GOTODRV_STR " " CARRT_NAV_STR " " CARRT_DEBUG_STR
+#define CARRTPICO_FEATURES   " " CARRT_TEST_STR " " CARRT_PROGDRV_STR " " CARRT_GOTODRV_STR " " CARRT_DEBUG_STR
 
 
 
@@ -160,9 +153,15 @@
         /* error default */    '9' \
     )
 
-#define CARRT_BUILD_DATE    { ' ', CARRT_BUILD_YEAR, CARRT_BUILD_MONTH_FIRST_DIGIT, CARRT_BUILD_MONTH_SECOND_DIGIT, CARRT_BUILD_DAY, 0 }
+#define CARRTPICO_BUILD_DATE    { ' ', CARRT_BUILD_YEAR, CARRT_BUILD_MONTH_FIRST_DIGIT, CARRT_BUILD_MONTH_SECOND_DIGIT, CARRT_BUILD_DAY, 0 }
 
-#define CARRT_BUILD_TIME    " " __TIME__
+#define CARRTPICO_BUILD_TIME    " " __TIME__
 
+constexpr char kCarrtPicoVersion[] = CARRTPICO_VERSION;
+constexpr char kCarrtPicoBuildDate[] = CARRTPICO_BUILD_DATE;
+constexpr char kCarrtPicoBuildTime[] = CARRTPICO_BUILD_TIME;
+constexpr char kCarrtPicoFeatures[] = CARRTPICO_FEATURES;
+constexpr char kCarrtPicoBuildHashFull[] = CARRTPICO_GIT_HEAD_SHA1_FULL;
+constexpr char kCarrtPicoBuildHashShort[] = CARRTPICO_GIT_HEAD_SHA1_SHORT;
 
 #endif  // BuildInfo_h

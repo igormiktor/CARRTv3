@@ -20,6 +20,7 @@
 
 #include "BNO055.h"
 #include "Batteries.h"
+#include "BuildInfo.h"
 #include "CarrtError.h"
 #include "CarrtPicoDefines.h"
 #include "CarrtPicoReset.h"
@@ -105,6 +106,10 @@ int main()
         initializeFailableHardware();
 
         output2cout( "CARRT Pico started, hardware initialized, both cores running." );
+        output2cout( "CARRT Pico version", kCarrtPicoVersion, "with features", kCarrtPicoFeatures );
+        output2cout( "CARRT Pico build date", kCarrtPicoBuildDate, kCarrtPicoBuildTime );
+        output2cout( "CARRT Pico Git Hash", kCarrtPicoBuildHashFull );
+        output2cout( "CARRT Pico Git Hash (short)", kCarrtPicoBuildHashShort );
 
         // Set up message processor
         SerialMessageProcessor smp( kSerialMessageHandlerReserveSize, rpi0 );
