@@ -80,12 +80,13 @@ target_link_libraries( CarrtPico PRIVATE
 
 # Capture the current git head hash
 set( Git_Head_Hash_h "${CMAKE_CURRENT_BINARY_DIR}/GitHeadHash.h" )
+set( Current_Git_Head "${PROJECT_SOURCE_DIR}/../../.git/refs/heads/main" )
 
 add_custom_command(
     OUTPUT 
         ${Git_Head_Hash_h}
     DEPENDS 
-        "${PROJECT_SOURCE_DIR}/../../.git/FETCH_HEAD"
+        ${Current_Git_Head}
     COMMAND 
         echo "// This is the git HEAD sha1 hash" > ${Git_Head_Hash_h}
     COMMAND
@@ -101,7 +102,9 @@ set_source_files_properties(
 
 add_custom_target(
     BuildHashInfo
-    DEPENDS ${Git_Head_Hash_h}
+    DEPENDS 
+        ${Git_Head_Hash_h}
+        ${Current_Git_Head}
 )
 
 add_library( GitHeadHashLib INTERFACE )
