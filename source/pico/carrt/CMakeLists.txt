@@ -64,9 +64,62 @@ pico_enable_stdio_usb( CarrtPico 0 )
 
 target_compile_options( CarrtPico PRIVATE -Wall )
 
+# Set up versioning
+set( CARRT3_VERSION_STR "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}" )
+target_compile_definitions( CarrtPico PUBLIC 
+    -DCARRT3_VERSION_MAJOR=${VERSION_MAJOR} 
+    -DCARRT3_VERSION_MINOR=${VERSION_MINOR} 
+    -DCARRT3_VERSION_REVISION=${VERSION_REVISION}
+    -DCARRT3_VERSION_STR="${CARRT_VERSION_STR}" 
+)
+
 # Add any user requested libraries
 target_link_libraries( CarrtPico PRIVATE
         CarrtPico_library
+)
+
+# Capture the current git head hash
+set( Git_Head_Hash_h "${CMAKE_CURRENT_BINARY_DIR}/GitHeadHash.h" )
+
+add_custom_command(
+    OUTPUT 
+        ${Git_Head_Hash_h}
+    DEPENDS 
+        "${PROJECT_SOURCE_DIR}/../../.git/FETCH_HEAD"
+    COMMAND 
+        echo "// This is the git HEAD sha1 hash" > ${Git_Head_Hash_h}
+    COMMAND
+        echo \\" #define _CARRT_GIT_HEAD_SHA1 \\" \\\" `git rev-parse --short HEAD` \\\" >> ${Git_Head_Hash_h}        
+    #VERBATIM
+)
+
+set_source_files_properties(
+    ${GitHead_Hash_h}
+    PROPERTIES GENERATED TRUE
+    HEADER_FILE_ONLY TRUE
+)
+
+add_custom_target(
+    BuildHashInfo
+    DEPENDS ${Git_Head_Hash_h}
+)
+
+add_library( GitHeadHashLib INTERFACE )
+target_sources( GitHeadHashLib 
+    INTERFACE 
+        FILE_SET HEADERS
+        BASE_DIRS
+            ${CMAKE_CURRENT_BINARY_DIR}
+        FILES 
+            ${Git_Head_Hash_h}
+)
+
+add_dependencies( GitHeadHashLib BuildHashInfo )
+
+# Add any user requested libraries
+target_link_libraries( CarrtPico PRIVATE
+        CarrtPico_library
+        GitHeadHashLib
 )
 
 # create map/bin/hex file etc.

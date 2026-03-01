@@ -79,6 +79,11 @@ else()
     set( DEBUGUTILS_VAL 0 )
 endif()
 
+# Versioning
+set( VERSION_MAJOR 0 )
+set( VERSION_MINOR 9 )
+set( VERSION_REVISION 0 )
+
 
 add_subdirectory( shared )
 add_subdirectory( utils )
