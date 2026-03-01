@@ -73,25 +73,45 @@ target_compile_definitions( CarrtPico PUBLIC
     -DCARRT3_VERSION_STR="${CARRT_VERSION_STR}" 
 )
 
-# Add any user requested libraries
-target_link_libraries( CarrtPico PRIVATE
-        CarrtPico_library
-)
-
 # Capture the current git head hash
 set( Git_Head_Hash_h "${CMAKE_CURRENT_BINARY_DIR}/GitHeadHash.h" )
 set( Current_Git_Head "${PROJECT_SOURCE_DIR}/../../.git/refs/heads/main" )
+set( makeGitInfoHeader "${CMAKE_CURRENT_BINARY_DIR}/makeGitInfoHeader" )
+
+add_custom_command(
+    OUTPUT 
+        ${makeGitInfoHeader}
+    COMMAND 
+        echo "#!/bin/sh" > ${makeGitInfoHeader}
+    COMMAND 
+        echo "echo \"#ifndef GitHeadHash_h\" > $1" >> ${makeGitInfoHeader}
+    COMMAND 
+        echo "echo \"#define GitHeadHash_h\" >> $1" >> ${makeGitInfoHeader}
+    COMMAND 
+        echo "echo \"// This is the git HEAD sha1 hash\" >> $1" >> ${makeGitInfoHeader}
+    COMMAND 
+        echo "echo \"#define CARRT_GIT_HEAD_SHA1 `git rev-parse --short HEAD`\" >> $1" >> ${makeGitInfoHeader}
+    COMMAND 
+        echo "echo \"#endif // GitHeadHash_h\" >> $1" >> ${makeGitInfoHeader}
+    COMMAND 
+        chmod +x ${makeGitInfoHeader}
+    VERBATIM
+)
+
+set_source_files_properties(
+    ${makeGitInfoHeader}
+    PROPERTIES GENERATED TRUE
+)
 
 add_custom_command(
     OUTPUT 
         ${Git_Head_Hash_h}
     DEPENDS 
         ${Current_Git_Head}
+        ${makeGitInfoHeader}
     COMMAND 
-        echo "// This is the git HEAD sha1 hash" > ${Git_Head_Hash_h}
-    COMMAND
-        echo \\"#define CARRT_GIT_HEAD_SHA1 \\" \\\"`git rev-parse --short HEAD`\\\" >> ${Git_Head_Hash_h}        
-    #VERBATIM
+        ${makeGitInfoHeader} ${Git_Head_Hash_h}
+    VERBATIM
 )
 
 set_source_files_properties(
