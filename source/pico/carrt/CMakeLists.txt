@@ -102,7 +102,7 @@ set_source_files_properties(
     PROPERTIES GENERATED TRUE
 )
 
-set( Git_Current_Branch "${PROJECT_SOURCE_DIR}/../../.git/refs/heads" )
+set( Git_Current_Branch "${PROJECT_SOURCE_DIR}/../../.git/HEAD" )
 file( 
     GLOB Git_Branch_Heads "${PROJECT_SOURCE_DIR}/../../.git/refs/heads/*"
 )
