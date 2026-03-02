@@ -107,9 +107,9 @@ int main()
 
         output2cout( "CARRT Pico started, hardware initialized, both cores running." );
         output2cout( "CARRT Pico version", kCarrtPicoVersion, "with features", kCarrtPicoFeatures );
-        output2cout( "CARRT Pico build date", kCarrtPicoBuildDate, kCarrtPicoBuildTime );
+        output2cout( "CARRT Pico build date", kCarrtPicoBuildDate, kCarrtPicoBuildDateVal, kCarrtPicoBuildTime );
         output2cout( "CARRT Pico Git Hash", kCarrtPicoBuildHashFull );
-        output2cout( "CARRT Pico Git Hash (short)", kCarrtPicoBuildHashShort );
+        output2cout( "CARRT Pico Git Hash (short)", kCarrtPicoBuildHashShort, kCarrtPicoBuildHashShortVal );
 
         // Set up message processor
         SerialMessageProcessor smp( kSerialMessageHandlerReserveSize, rpi0 );
