@@ -297,6 +297,8 @@ namespace
         std::uint32_t timeTick{ Clock::millis() };
         PicoReadyMsg ready( timeTick );
         ready.sendOut( link );
+
+        output2cout( "CARRT Pico is ready" );
     }
 
 }    // namespace
