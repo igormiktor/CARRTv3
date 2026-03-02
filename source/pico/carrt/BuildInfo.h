@@ -132,7 +132,7 @@ constexpr std::uint32_t getCarrtPicoBuildDateVal( const char* str )
     int i{ 0 };
     while ( *str && i < 8 )
     {
-        val = 10*val + (*str++ - '0');
+        val = 10 * val + ( *str++ - '0' );
         ++i;
     }
     return val;
@@ -169,8 +169,8 @@ constexpr std::uint32_t kCarrtPicoBuildHashShortVal{ CARRTPICO_GIT_HEAD_SHA1_SHO
 
 #undef CARRT_BUILD_MONTH_SECOND_DIGIT
 #undef CARRT_BUILD_MONTH_FIRST_DIGIT
-#undef CARRT_BUILD_YEAR 
-#undef DAY_FIRST_DIGIT 
+#undef CARRT_BUILD_YEAR
+#undef DAY_FIRST_DIGIT
 #undef CARRT_BUILD_DAY
 #undef BUILD_MONTH_IS_JAN
 #undef BUILD_MONTH_IS_FEB
@@ -183,10 +183,8 @@ constexpr std::uint32_t kCarrtPicoBuildHashShortVal{ CARRTPICO_GIT_HEAD_SHA1_SHO
 #undef BUILD_MONTH_IS_SEP
 #undef BUILD_MONTH_IS_OCT
 #undef BUILD_MONTH_IS_NOV
-#undef BUILD_MONTH_IS_DEC 
-#undef CARRT_DEBUG_STR 
-#undef CARRT_STDIO_STR 
-
-
+#undef BUILD_MONTH_IS_DEC
+#undef CARRT_DEBUG_STR
+#undef CARRT_STDIO_STR
 
 #endif    // BuildInfo_h
