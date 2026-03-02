@@ -158,7 +158,6 @@ target_compile_options( CarrtPico PRIVATE -Wall )
 # Add any user requested libraries
 target_link_libraries( CarrtPico PRIVATE
         CarrtPico_library
-        GitHeadHashLib
 )
 
 # create map/bin/hex file etc.
