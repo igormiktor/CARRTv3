@@ -50,7 +50,8 @@ add_executable( CarrtPico )
 
 target_sources( CarrtPico 
     PRIVATE 
-        CarrtPicoMain.cpp
+    BuildInfo.cpp    
+    CarrtPicoMain.cpp
 )
         
 pico_set_program_name( CarrtPico "CarrtPico" )
