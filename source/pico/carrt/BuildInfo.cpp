@@ -155,7 +155,6 @@ constexpr char kCarrtPicoBuildHashFull[]{ CARRTPICO_GIT_HEAD_SHA1_FULL };
 constexpr char kCarrtPicoBuildHashShort[]{ CARRTPICO_GIT_HEAD_SHA1_SHORT };
 constexpr std::uint32_t kCarrtPicoBuildHashShortVal{ CARRTPICO_GIT_HEAD_SHA1_SHORT_VAL };
 
-
 // Here are the accessor functions
 
 std::uint8_t CarrtPicoVersion::major() noexcept { return kCarrtPicoVersionMajor; }

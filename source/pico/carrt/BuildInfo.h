@@ -22,7 +22,6 @@
 
 #include <cstdint>
 
-
 namespace CarrtPicoVersion
 {
     std::uint8_t major() noexcept;
@@ -39,6 +38,6 @@ namespace CarrtPicoVersion
     const char* hashFull() noexcept;
     const char* hashShort() noexcept;
     std::uint32_t hashShortVal() noexcept;
-}
+}    // namespace CarrtPicoVersion
 
 #endif    // BuildInfo_h
