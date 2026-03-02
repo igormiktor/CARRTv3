@@ -225,7 +225,9 @@ void VersionRequestMsg::takeAction( EventManager& events, SerialLink& link )
         debug2cout( "Rcvd ping reply from RPi0" );
 
         // Send our version info
-        VersionSendMsg msg( CarrtPicoVersion::major(), CarrtPicoVersion::minor(), CarrtPicoVersion::revision(), CarrtPicoVersion::buildDateVal(), CarrtPicoVersion::hashShortVal() );
+        VersionSendMsg msg( CarrtPicoVersion::major(), CarrtPicoVersion::minor(),
+                            CarrtPicoVersion::revision(), CarrtPicoVersion::buildDateVal(),
+                            CarrtPicoVersion::hashShortVal() );
         msg.sendOut( link );
 
         mNeedsAction = false;
@@ -246,7 +248,8 @@ VersionSendMsg::VersionSendMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-VersionSendMsg::VersionSendMsg( std::uint8_t major, std::uint8_t minor, std::uint8_t rev, std::uint32_t buildDate, std::uint32_t hash ) noexcept
+VersionSendMsg::VersionSendMsg( std::uint8_t major, std::uint8_t minor, std::uint8_t rev,
+                                std::uint32_t buildDate, std::uint32_t hash ) noexcept
     : SerialMessage( MsgId::kVersionSendMsg ),
       mContent( MsgId::kVersionSendMsg, std::make_tuple( major, minor, rev, buildDate, hash ) ),
       mNeedsAction{ true }
@@ -270,8 +273,10 @@ void VersionSendMsg::readIn( SerialLink& link )
     mNeedsAction = false;
 
     output2cout( "Error: Pico should never receive VersionSendMsg", getIdNum(),
-                 static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ),
-                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ), std::get<4>( mContent.mMsg ) );
+                 static_cast<int>( std::get<0>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<1>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ),
+                 std::get<4>( mContent.mMsg ) );
 }
 
 void VersionSendMsg::sendOut( SerialLink& link )
@@ -279,8 +284,10 @@ void VersionSendMsg::sendOut( SerialLink& link )
     mContent.sendOut( link );
 
     debugCond2cout<kDebugSerialMsgs>( "Sent VersionSendMsg", getIdNum(),
-                 static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ),
-                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ), std::get<4>( mContent.mMsg ) );
+                                      static_cast<int>( std::get<0>( mContent.mMsg ) ),
+                                      static_cast<int>( std::get<1>( mContent.mMsg ) ),
+                                      static_cast<int>( std::get<2>( mContent.mMsg ) ),
+                                      std::get<3>( mContent.mMsg ), std::get<4>( mContent.mMsg ) );
 }
 
 void VersionSendMsg::takeAction( EventManager&, SerialLink& link )
