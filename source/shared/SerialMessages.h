@@ -55,6 +55,49 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 
+class VersionRequestMsg : public NoContentMsg
+{
+public:
+    VersionRequestMsg() noexcept;
+    explicit VersionRequestMsg( MsgId id ) noexcept;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+class VersionSendMsg : public SerialMessage
+{
+public:
+    using TheData = std::tuple<std::uint8_t, std::uint8_t, std::uint8_t, std::uint32_t, std::uint32_t>;
+
+    VersionSendMsg() noexcept;
+    explicit VersionSendMsg( TheData t ) noexcept;
+    explicit VersionSendMsg( std::uint8_t major, std::uint8_t minor, std::uint8_t rev, std::uint32_t buildDate, std::uint32_t hash ) noexcept;
+    explicit VersionSendMsg( MsgId id );
+
+    virtual void readIn( SerialLink& link ) override;
+
+    virtual void sendOut( SerialLink& link ) override;
+
+    virtual void takeAction( EventManager& events, SerialLink& link ) override;
+
+    [[nodiscard]] virtual bool needsAction() const noexcept override
+    {
+        return mNeedsAction;
+    }
+
+    virtual MsgId getId() const noexcept override { return mContent.mId; }
+
+private:
+    struct RawMessage<TheData> mContent;
+
+    bool mNeedsAction;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+
 class PicoReadyMsg : public SerialMessage
 {
 public:

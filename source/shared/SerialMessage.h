@@ -40,6 +40,10 @@ enum class MsgId : std::uint8_t
     kPingMsg,
     kPingReplyMsg,
 
+    /////// Request (from RPi0) and return (from Pico) version info
+    kVersionRequestMsg,
+    kVersionSendMsg,
+
     /////// Msgs from Pico
 
     // Pico sends once ready to start receiving messages (Pico initiates serial

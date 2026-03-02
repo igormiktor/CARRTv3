@@ -20,6 +20,7 @@
 
 #include "BNO055.h"
 #include "Batteries.h"
+#include "BuildInfo.h"
 #include "Clock.h"
 #include "DebugUtils.hpp"
 #include "EventManager.h"
@@ -199,6 +200,95 @@ void PingReplyMsg::takeAction( EventManager& events, SerialLink& link )
         // this reply to it. But meant for debugging, so just leave a
         // message in our std::cout stream
 
+        mNeedsAction = false;
+    }
+}
+
+/******************************************************************************/
+
+VersionRequestMsg::VersionRequestMsg() noexcept
+    : NoContentMsg( MsgId::kVersionRequesMsg )
+{
+    // Nothing else to do
+}
+
+VersionRequestMsg::VersionRequestMsg( MsgId id ) noexcept
+    : NoContentMsg( MsgId::kVersionRequestMsg )
+{
+    // Nothing to do
+}
+
+void VersionRequestMsg::takeAction( EventManager& events, SerialLink& link )
+{
+    if ( mNeedsAction )
+    {
+        debug2cout( "Rcvd ping reply from RPi0" );
+
+        // Send our version info
+        VersionSendMsg msg( kCarrtPicoVersionMajor, kCarrtPicoVersionMinor, kCarrtPicoVersionRevison, kCarrtPicoBuildDateVal, kCarrtPicoBuildHashShortVal );
+        msg.sendOut( link );
+
+        mNeedsAction = false;
+    }
+}
+
+/******************************************************************************/
+
+VersionSendMsg::VersionSendMsg() noexcept
+    : SerialMessage( MsgId::kVersionSendMsg ),
+      mContent( MsgId::kVersionSendMsg ),
+      mNeedsAction{ false }
+{}
+
+VersionSendMsg::VersionSendMsg( TheData t ) noexcept
+    : SerialMessage( MsgId::kVersionSendMsg ),
+      mContent( MsgId::kVersionSendMsg, t ),
+      mNeedsAction{ true }
+{}
+
+VersionSendMsg::VersionSendMsg( std::uint8_t major, std::uint8_t minor, std::uint8_t rev, std::uint32_t buildDate, std::uint32_t hash ) noexcept
+    : SerialMessage( MsgId::kVersionSendMsg ),
+      mContent( MsgId::kVersionSendMsg, std::make_tuple( major, minor, rev, buildDate, hash ) ),
+      mNeedsAction{ true }
+{}
+
+VersionSendMsg::VersionSendMsg( MsgId id )
+    : SerialMessage( id ), mContent( MsgId::kVersionSendMsg ), mNeedsAction{ false }
+{
+    if ( id != MsgId::kVersionSendMsg )
+    {
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kVersionSendMsg ) ),
+                          "Id mismatch at creation" );
+    }
+    // Note that it doesn't need action until loaded with data
+}
+
+void VersionSendMsg::readIn( SerialLink& link )
+{
+    mContent.readIn( link );
+    mNeedsAction = false;
+
+    output2cout( "Error: Pico should never receive VersionSendMsg", getIdNum(),
+                 static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ), std::get<4>( mContent.mMsg ) );
+}
+
+void VersionSendMsg::sendOut( SerialLink& link )
+{
+    mContent.sendOut( link );
+
+    debugCond2cout<kDebugSerialMsgs>( "Sent VersionSendMsg", getIdNum(),
+                 static_cast<int>( std::get<0>( mContent.mMsg ) ), static_cast<int>( std::get<1>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ), std::get<4>( mContent.mMsg ) );
+}
+
+void VersionSendMsg::takeAction( EventManager&, SerialLink& link )
+{
+    if ( mNeedsAction )
+    {
+        // This message should only be sent, not received
+        output2cout( "Error: Trying to takeAction() on local Msg", getIdNum() );
         mNeedsAction = false;
     }
 }
