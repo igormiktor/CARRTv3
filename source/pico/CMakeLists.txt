@@ -34,19 +34,19 @@ set( PICO_CXX_ENABLE_EXCEPTIONS 1 )
 
 
 option( 
-    CARRT_PICO_ENABLE_UART_STDIO
+    CARRTPICO_ENABLE_UART_STDIO
     "Enable stdio over UART.  Default: ON. Values: { OFF, ON }."
     ON
 )
 
 option(
-    CARRT_PICO_BUILD_TESTS
+    CARRTPICO_BUILD_TESTS
     "Enable building test executables. Default: ON. Values: { OFF, ON }."
     ON
 )
 
 option( 
-    CARRT_PICO_ENABLE_DEBUGUTILS
+    CARRTPICO_ENABLE_DEBUGUTILS
     "Enable DebugUtils debugging outputs.  Default: ON. Values: { OFF, ON }."
     ON
 )
@@ -55,8 +55,8 @@ option(
 # Add a special define "DEBUGCARRTPICO" when building debugging builds
 # add_compile_options( "$<$<CONFIG:DEBUG>:DEBUGCARRTPICO=1>" )
 
-set( CARRT_PICO_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" )
-# message( CARRT_PICO_DIRECTORY="${CARRT_PICO_DIRECTORY}" )
+set( CARRTPICO_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" )
+# message( CARRTPICO_DIRECTORY="${CARRTPICO_DIRECTORY}" )
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
@@ -67,22 +67,22 @@ pico_sdk_init()
 
 set( BUILDING_FOR_PICO 1 )
 
-if ( CARRT_PICO_ENABLE_UART_STDIO )
+if ( CARRTPICO_ENABLE_UART_STDIO )
     set( USE_CARRTPICO_STDIO_VAL 1 )
 else()
     set( USE_CARRTPICO_STDIO_VAL 0 )
 endif()
 
-if ( CARRT_PICO_ENABLE_DEBUGUTILS )
+if ( CARRTPICO_ENABLE_DEBUGUTILS )
     set( DEBUGUTILS_VAL 1 )
 else()
     set( DEBUGUTILS_VAL 0 )
 endif()
 
 # Versioning
-set( VERSION_MAJOR 0 )
-set( VERSION_MINOR 9 )
-set( VERSION_REVISION 0 )
+set( CARRTPICO_VERSION_MAJOR 0 )
+set( CARRTPICO_VERSION_MINOR 9 )
+set( CARRTPICO_VERSION_REVISION 0 )
 
 
 add_subdirectory( shared )
@@ -90,7 +90,7 @@ add_subdirectory( utils )
 add_subdirectory( drivers )
 add_subdirectory( carrt )
 
-if ( CARRT_PICO_BUILD_TESTS )
+if ( CARRTPICO_BUILD_TESTS )
     add_subdirectory( test )
 #    include( CTest )
 #    enable_testing()
@@ -99,10 +99,10 @@ endif()
 message( "" )
 message( "Configuration summary on host ${CMAKE_HOST_SYSTEM_NAME}:" )
 message( " - Build type is ${CMAKE_BUILD_TYPE}." )
-message( " - Preset is ${CARRT_PICO_PRESET_NAME}.")
-message( " - Building of tests is ${CARRT_PICO_BUILD_TESTS}." )
-message( " - Use of stdio over UART is ${CARRT_PICO_ENABLE_UART_STDIO}." )
-message( " - Use of DebugUtils output is ${CARRT_PICO_ENABLE_DEBUGUTILS}." )
+message( " - Preset is ${CARRTPICO_PRESET_NAME}.")
+message( " - Building of tests is ${CARRTPICO_BUILD_TESTS}." )
+message( " - Use of stdio over UART is ${CARRTPICO_ENABLE_UART_STDIO}." )
+message( " - Use of DebugUtils output is ${CARRTPICO_ENABLE_DEBUGUTILS}." )
 message( "" )
 
 

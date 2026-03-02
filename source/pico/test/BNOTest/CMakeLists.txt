@@ -20,8 +20,8 @@ pico_enable_stdio_usb( BNOTest 0 )
 # Add the standard include files to the build
 target_include_directories( BNOTest PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}
-  ${CARRT_PICO_DIRECTORY}
-  ${CARRT_PICO_DIRECTORY}/carrt  
+  ${CARRTPICO_DIRECTORY}
+  ${CARRTPICO_DIRECTORY}/carrt  
 #  ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts or any other standard includes, if required
 )
 
