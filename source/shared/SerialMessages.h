@@ -69,11 +69,13 @@ public:
 class VersionSendMsg : public SerialMessage
 {
 public:
-    using TheData = std::tuple<std::uint8_t, std::uint8_t, std::uint8_t, std::uint32_t, std::uint32_t>;
+    using TheData =
+        std::tuple<std::uint8_t, std::uint8_t, std::uint8_t, std::uint32_t, std::uint32_t>;
 
     VersionSendMsg() noexcept;
     explicit VersionSendMsg( TheData t ) noexcept;
-    explicit VersionSendMsg( std::uint8_t major, std::uint8_t minor, std::uint8_t rev, std::uint32_t buildDate, std::uint32_t hash ) noexcept;
+    explicit VersionSendMsg( std::uint8_t major, std::uint8_t minor, std::uint8_t rev,
+                             std::uint32_t buildDate, std::uint32_t hash ) noexcept;
     explicit VersionSendMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
@@ -82,10 +84,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -94,7 +93,6 @@ private:
 
     bool mNeedsAction;
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -114,10 +112,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -132,13 +127,12 @@ private:
 class PicoNavStatusUpdateMsg : public SerialMessage
 {
 public:
-    using TheData = std::tuple<bool, std::uint8_t, std::uint8_t, std::uint8_t,
-                               std::uint8_t>;
+    using TheData = std::tuple<bool, std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t>;
 
     PicoNavStatusUpdateMsg() noexcept;
     explicit PicoNavStatusUpdateMsg( TheData t ) noexcept;
-    PicoNavStatusUpdateMsg( bool status, std::uint8_t m, std::uint8_t a,
-                            std::uint8_t g, std::uint8_t s ) noexcept;
+    PicoNavStatusUpdateMsg( bool status, std::uint8_t m, std::uint8_t a, std::uint8_t g,
+                            std::uint8_t s ) noexcept;
     explicit PicoNavStatusUpdateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
@@ -147,10 +141,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -204,10 +195,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -216,8 +204,6 @@ private:
 
     bool mNeedsAction;
 };
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -255,10 +241,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -296,10 +279,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -336,13 +316,12 @@ public:
 class CalibrationInfoUpdateMsg : public SerialMessage
 {
 public:
-    using TheData =
-        std::tuple<std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t>;
+    using TheData = std::tuple<std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t>;
 
     CalibrationInfoUpdateMsg() noexcept;
     explicit CalibrationInfoUpdateMsg( TheData t ) noexcept;
-    CalibrationInfoUpdateMsg( std::uint8_t mag, std::uint8_t accel,
-                              std::uint8_t gyro, std::uint8_t sys ) noexcept;
+    CalibrationInfoUpdateMsg( std::uint8_t mag, std::uint8_t accel, std::uint8_t gyro,
+                              std::uint8_t sys ) noexcept;
     explicit CalibrationInfoUpdateMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
@@ -351,10 +330,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -382,10 +358,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -424,10 +397,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -446,8 +416,7 @@ public:
 
     NavUpdateControlMsg() noexcept;
     explicit NavUpdateControlMsg( TheData t ) noexcept;
-    NavUpdateControlMsg( bool wantNavUpdate,
-                         bool wantNavStatusUpdate ) noexcept;
+    NavUpdateControlMsg( bool wantNavUpdate, bool wantNavStatusUpdate ) noexcept;
     explicit NavUpdateControlMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
@@ -456,10 +425,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -496,10 +462,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -533,10 +496,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -564,10 +524,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -605,10 +562,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -636,10 +590,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -667,10 +618,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -698,10 +646,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -729,10 +674,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -760,10 +702,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -782,8 +721,7 @@ public:
 
     DebugLinkMsg() noexcept;
     explicit DebugLinkMsg( TheData t ) noexcept;
-    DebugLinkMsg( int val1_i, std::uint8_t val2_u8, float val3_f,
-                  std::uint32_t val4_u32 ) noexcept;
+    DebugLinkMsg( int val1_i, std::uint8_t val2_u8, float val3_f, std::uint32_t val4_u32 ) noexcept;
     explicit DebugLinkMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
@@ -792,10 +730,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
