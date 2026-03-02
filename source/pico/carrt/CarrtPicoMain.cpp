@@ -106,10 +106,13 @@ int main()
         initializeFailableHardware();
 
         output2cout( "CARRT Pico started, hardware initialized, both cores running." );
-        output2cout( "CARRT Pico version", CarrtPicoVersion::versionStr(), "with features", CarrtPicoVersion::features() );
-        output2cout( "CARRT Pico build date", CarrtPicoVersion::buildDate(), CarrtPicoVersion::buildDateVal(), CarrtPicoVersion::buildTime() );
+        output2cout( "CARRT Pico version", CarrtPicoVersion::versionStr(), "with features",
+                     CarrtPicoVersion::features() );
+        output2cout( "CARRT Pico build date", CarrtPicoVersion::buildDate(),
+                     CarrtPicoVersion::buildDateVal(), CarrtPicoVersion::buildTime() );
         output2cout( "CARRT Pico Git Hash", CarrtPicoVersion::hashFull() );
-        output2cout( "CARRT Pico Git Hash (short)", CarrtPicoVersion::hashShort(), CarrtPicoVersion::hashShortVal() );
+        output2cout( "CARRT Pico Git Hash (short)", CarrtPicoVersion::hashShort(),
+                     CarrtPicoVersion::hashShortVal() );
 
         // Set up message processor
         SerialMessageProcessor smp( kSerialMessageHandlerReserveSize, rpi0 );
