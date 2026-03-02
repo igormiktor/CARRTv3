@@ -207,7 +207,7 @@ void PingReplyMsg::takeAction( EventManager& events, SerialLink& link )
 /******************************************************************************/
 
 VersionRequestMsg::VersionRequestMsg() noexcept
-    : NoContentMsg( MsgId::kVersionRequesMsg )
+    : NoContentMsg( MsgId::kVersionRequestMsg )
 {
     // Nothing else to do
 }
@@ -225,7 +225,7 @@ void VersionRequestMsg::takeAction( EventManager& events, SerialLink& link )
         debug2cout( "Rcvd ping reply from RPi0" );
 
         // Send our version info
-        VersionSendMsg msg( kCarrtPicoVersionMajor, kCarrtPicoVersionMinor, kCarrtPicoVersionRevison, kCarrtPicoBuildDateVal, kCarrtPicoBuildHashShortVal );
+        VersionSendMsg msg( CarrtPicoVersion::major(), CarrtPicoVersion::minor(), CarrtPicoVersion::revision(), CarrtPicoVersion::buildDateVal(), CarrtPicoVersion::hashShortVal() );
         msg.sendOut( link );
 
         mNeedsAction = false;
