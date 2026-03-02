@@ -44,7 +44,7 @@
  */
 
 
-#define CARRTPICO_VERSION           "v" CARRT3_VERSION_STR
+#define CARRTPICO_VERSION           "v" CARRTPICO_VERSION_STR
 
 
 
@@ -55,33 +55,20 @@
  *
  */
 
-
-#if CARRTPICO_INCLUDE_TESTS_IN_BUILD
-#define CARRT_TEST_STR  "T"
-#else
-#define CARRT_TEST_STR  ""
-#endif
-
-#if CARRTPICO_INCLUDE_PROGDRIVE_IN_BUILD
-#define CARRT_PROGDRV_STR  "P"
-#else
-#define CARRT_PROGDRV_STR  ""
-#endif
-
-#if CARRTPICO_INCLUDE_GOTODRIVE_IN_BUILD
-#define CARRT_GOTODRV_STR  "G"
-#else
-#define CARRT_GOTODRV_STR  ""
-#endif
-
-#if USE_CARRTPICO_STDIO
+#if DEBUGCARRTPICO
 #define CARRT_DEBUG_STR  "D"
 #else
 #define CARRT_DEBUG_STR  ""
 #endif
 
+#if USE_CARRTPICO_STDIO
+#define CARRT_STDIO_STR  "S"
+#else
+#define CARRT_STDIO_STR  ""
+#endif
 
-#define CARRTPICO_FEATURES   " " CARRT_TEST_STR " " CARRT_PROGDRV_STR " " CARRT_GOTODRV_STR " " CARRT_DEBUG_STR
+
+#define CARRTPICO_FEATURES   CARRT_STDIO_STR " " CARRT_DEBUG_STR 
 
 
 
@@ -153,15 +140,33 @@
         /* error default */    '9' \
     )
 
-#define CARRTPICO_BUILD_DATE    { ' ', CARRT_BUILD_YEAR, CARRT_BUILD_MONTH_FIRST_DIGIT, CARRT_BUILD_MONTH_SECOND_DIGIT, CARRT_BUILD_DAY, 0 }
+#define CARRTPICO_BUILD_DATE     CARRT_BUILD_YEAR, CARRT_BUILD_MONTH_FIRST_DIGIT, CARRT_BUILD_MONTH_SECOND_DIGIT, CARRT_BUILD_DAY, 0 
 
-#define CARRTPICO_BUILD_TIME    " " __TIME__
+#define CARRTPICO_BUILD_TIME   __TIME__
 
-constexpr char kCarrtPicoVersion[] = CARRTPICO_VERSION;
-constexpr char kCarrtPicoBuildDate[] = CARRTPICO_BUILD_DATE;
-constexpr char kCarrtPicoBuildTime[] = CARRTPICO_BUILD_TIME;
-constexpr char kCarrtPicoFeatures[] = CARRTPICO_FEATURES;
-constexpr char kCarrtPicoBuildHashFull[] = CARRTPICO_GIT_HEAD_SHA1_FULL;
-constexpr char kCarrtPicoBuildHashShort[] = CARRTPICO_GIT_HEAD_SHA1_SHORT;
+constexpr std::uint8_t kCarrtPicoVersionMajor{ CARRTPICO_VERSION_MAJOR };
+constexpr std::uint8_t kCarrtPicoVersionMinor{ CARRTPICO_VERSION_MINOR };
+constexpr std::uint8_t kCarrtPicoVersionRevision{ CARRTPICO_VERSION_REVISION };
+
+constexpr char kCarrtPicoVersion[]{ CARRTPICO_VERSION };
+
+constexpr char kCarrtPicoBuildDate[]{ CARRTPICO_BUILD_DATE };
+constexpr char kCarrtPicoBuildTime[]{ CARRTPICO_BUILD_TIME };
+
+constexpr char kCarrtPicoFeatures[]{ CARRTPICO_FEATURES };
+constexpr char kCarrtPicoBuildHashFull[]{ CARRTPICO_GIT_HEAD_SHA1_FULL };
+constexpr char kCarrtPicoBuildHashShort[]{ CARRTPICO_GIT_HEAD_SHA1_SHORT };
+
+// Clean up
+#undef CARRTPICO_VERSION_MAJOR 
+#undef CARRTPICO_VERSION_MINOR 
+#undef CARRTPICO_VERSION_REVISION
+#undef CARRTPICO_VERSION
+#undef CARRTPICO_BUILD_DATE
+#undef CARRTPICO_BUILD_TIME
+#undef CARRTPICO_FEATURES
+#undef CARRTPICO_GIT_HEAD_SHA1_FULL
+#undef CARRTPICO_GIT_HEAD_SHA1_SHORT
+
 
 #endif  // BuildInfo_h
