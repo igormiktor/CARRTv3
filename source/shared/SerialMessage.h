@@ -199,9 +199,8 @@ public:
                 }
                 else
                 {
-                    throw CarrtError(
-                        makeSharedErrorId( kSerialMsgReadError, 1, 1 ),
-                        "Couldn't read serial message in lamba" );
+                    throw CarrtError( makeSharedErrorId( kSerialMsgReadError, 1, 1 ),
+                                      "Couldn't read serial message in lamba" );
                 }
             },
             link );
@@ -211,20 +210,16 @@ public:
     {
         // Send the ID, if we send the message
         link.put( static_cast<std::uint8_t>( mId ) );
-        forEach(
-            mMsg, []( SerialLink& lnk, auto& dataItem )
-            { lnk.put( dataItem ); }, link );
+        forEach( mMsg, []( SerialLink& lnk, auto& dataItem ) { lnk.put( dataItem ); }, link );
     }
 
     // Tuple compile-time iterator over elements
-    template<
-        size_t Index = 0,    // start iteration at 0 index
-        typename TupleT,     // the tuple type
-        size_t Size =
-            std::tuple_size_v<std::remove_reference_t<TupleT>>,    // tuple size
-        typename TCallable,    // the callable to be invoked for each tuple item
-        typename... TArgs      // other arguments to be passed to the callable
-        >
+    template<size_t Index = 0,    // start iteration at 0 index
+             typename TupleT,     // the tuple type
+             size_t Size = std::tuple_size_v<std::remove_reference_t<TupleT>>,    // tuple size
+             typename TCallable,    // the callable to be invoked for each tuple item
+             typename... TArgs      // other arguments to be passed to the callable
+             >
     void forEach( TupleT&& tuple, TCallable&& callable, TArgs&&... args )
     {
         if constexpr ( Index < Size )
@@ -298,10 +293,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return mNeedsAction;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return mNeedsAction; }
 
     virtual MsgId getId() const noexcept override { return mContent.mId; }
 
@@ -321,8 +313,7 @@ class DumpByteMsg : public SerialMessage
 {
 public:
     DumpByteMsg() noexcept
-        : SerialMessage( static_cast<MsgId>( 0 ) ),
-          mByte{ static_cast<MsgId>( 0 ) }
+        : SerialMessage( static_cast<MsgId>( 0 ) ), mByte{ static_cast<MsgId>( 0 ) }
     {}
 
     explicit DumpByteMsg( MsgId id ) noexcept
@@ -337,10 +328,7 @@ public:
 
     virtual void takeAction( EventManager& events, SerialLink& link ) override;
 
-    [[nodiscard]] virtual bool needsAction() const noexcept override
-    {
-        return false;
-    }
+    [[nodiscard]] virtual bool needsAction() const noexcept override { return false; }
 
     virtual MsgId getId() const noexcept override { return mByte; }
 
