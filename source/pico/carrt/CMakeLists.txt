@@ -94,6 +94,8 @@ add_custom_command(
     COMMAND 
         echo "echo \"#define GIT_CURRENT_HEAD_SHA1_SHORT \\\"`git rev-parse --short HEAD`\\\"\" >> $1" >> ${makeGitInfoHeader}
     COMMAND 
+        echo "echo \"#define GIT_CURRENT_HEAD_SHA1_SHORT_VAL 0x`git rev-parse --short HEAD`\" >> $1" >> ${makeGitInfoHeader}
+    COMMAND 
         echo "echo \"#endif // GitHeadHash_h\" >> $1" >> ${makeGitInfoHeader}
     COMMAND 
         chmod +x ${makeGitInfoHeader}

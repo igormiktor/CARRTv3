@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
 #include "BuildInfo.h"
 
 #include <cstdlib>
@@ -26,3 +27,4 @@
 int getCarrtPicoBuildDateVal() { return std::atoi( kCarrtPicoBuildDate ); }
 
 int getCarrtPicoBuildHashShortVal() { return std::stoi( kCarrtPicoBuildDate, nullptr, 16 ); }
+*/

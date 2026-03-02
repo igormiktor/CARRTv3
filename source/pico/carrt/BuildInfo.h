@@ -32,6 +32,7 @@
 
 #define CARRTPICO_GIT_HEAD_SHA1_FULL GIT_CURRENT_HEAD_SHA1_FULL
 #define CARRTPICO_GIT_HEAD_SHA1_SHORT GIT_CURRENT_HEAD_SHA1_SHORT
+#define CARRTPICO_GIT_HEAD_SHA1_SHORT_VAL GIT_CURRENT_HEAD_SHA1_SHORT_VAL
 
 /*
  * Convert the CARRT version number into a string using only the preprocessor
@@ -124,6 +125,21 @@
 
 #define CARRTPICO_BUILD_TIME __TIME__
 
+// constexpr function to convert YYYYMMDD to numeric value
+constexpr std::uint32_t getCarrtPicoBuildDateVal( const char* str )
+{
+    std::uint32_t val{ 0 };
+    int i{ 0 };
+    while ( *str && i < 8 )
+    {
+        val = 10*val + (*str++ - '0');
+        ++i;
+    }
+    return val;
+}
+
+// These are the version const variables that matter
+
 constexpr std::uint8_t kCarrtPicoVersionMajor{ CARRTPICO_VERSION_MAJOR };
 constexpr std::uint8_t kCarrtPicoVersionMinor{ CARRTPICO_VERSION_MINOR };
 constexpr std::uint8_t kCarrtPicoVersionRevision{ CARRTPICO_VERSION_REVISION };
@@ -132,13 +148,12 @@ constexpr char kCarrtPicoVersion[]{ CARRTPICO_VERSION };
 
 constexpr char kCarrtPicoBuildDate[]{ CARRTPICO_BUILD_DATE };
 constexpr char kCarrtPicoBuildTime[]{ CARRTPICO_BUILD_TIME };
+constexpr std::uint32_t kCarrtPicoBuildDateVal{ getCarrtPicoBuildDateVal( kCarrtPicoBuildDate ) };
 
 constexpr char kCarrtPicoFeatures[]{ CARRTPICO_FEATURES };
 constexpr char kCarrtPicoBuildHashFull[]{ CARRTPICO_GIT_HEAD_SHA1_FULL };
 constexpr char kCarrtPicoBuildHashShort[]{ CARRTPICO_GIT_HEAD_SHA1_SHORT };
-
-int getCarrtPicoBuildDateVal();
-int getCarrtPicoBuildHashShortVal();
+constexpr std::uint32_t kCarrtPicoBuildHashShortVal{ CARRTPICO_GIT_HEAD_SHA1_SHORT_VAL };
 
 // Clean up
 #undef CARRTPICO_VERSION_MAJOR
