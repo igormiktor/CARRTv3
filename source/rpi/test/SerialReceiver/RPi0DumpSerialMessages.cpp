@@ -18,6 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sstream>
+
 #include "Clock.h"
 #include "DebugUtils.hpp"
 #include "OutputUtils.hpp"
@@ -255,7 +257,7 @@ void VersionSendMsg::readIn( SerialLink& link )
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debug2cout( "Got VersionSendMsg", getIdNum(),
+    debugCond2cout<kDebugSerialMsgs>( "Got VersionSendMsg", getIdNum(),
                  static_cast<int>( std::get<0>( mContent.mMsg ) ),
                  static_cast<int>( std::get<1>( mContent.mMsg ) ),
                  static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ),
@@ -275,11 +277,14 @@ void VersionSendMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
+        std::stringstream hash;
+        hash << std::hex << std::get<4>( mContent.mMsg );
+
         output2cout( "Got VersionSendMsg", getIdNum(),
                  static_cast<int>( std::get<0>( mContent.mMsg ) ),
                  static_cast<int>( std::get<1>( mContent.mMsg ) ),
                  static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ),
-                 std::get<4>( mContent.mMsg ) );
+                 hash.str() );
         mNeedsAction = false;
     }
 }
