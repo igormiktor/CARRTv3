@@ -193,6 +193,97 @@ void PingReplyMsg::takeAction( EventManager&, SerialLink& link )
     }
 }
 
+/******************************************************************************/
+
+VersionRequestMsg::VersionRequestMsg() noexcept
+    : NoContentMsg( MsgId::kVersionRequestMsg )
+{
+    // Nothing else to do
+}
+
+VersionRequestMsg::VersionRequestMsg( MsgId id ) noexcept
+    : NoContentMsg( MsgId::kVersionRequestMsg )
+{
+    // Nothing to do
+}
+
+void VersionRequestMsg::takeAction( EventManager& events, SerialLink& link )
+{
+    if ( mNeedsAction )
+    {
+        // This shouldn't happen
+        output2cout( "Error: RPi0 got VersionRequestMsg", getIdNum() );
+        mNeedsAction = false;
+    }
+}
+
+/******************************************************************************/
+
+VersionSendMsg::VersionSendMsg() noexcept
+    : SerialMessage( MsgId::kVersionSendMsg ),
+      mContent( MsgId::kVersionSendMsg ),
+      mNeedsAction{ false }
+{}
+
+VersionSendMsg::VersionSendMsg( TheData t ) noexcept
+    : SerialMessage( MsgId::kVersionSendMsg ),
+      mContent( MsgId::kVersionSendMsg, t ),
+      mNeedsAction{ true }
+{}
+
+VersionSendMsg::VersionSendMsg( std::uint8_t major, std::uint8_t minor, std::uint8_t rev,
+                                std::uint32_t buildDate, std::uint32_t hash ) noexcept
+    : SerialMessage( MsgId::kVersionSendMsg ),
+      mContent( MsgId::kVersionSendMsg, std::make_tuple( major, minor, rev, buildDate, hash ) ),
+      mNeedsAction{ true }
+{}
+
+VersionSendMsg::VersionSendMsg( MsgId id )
+    : SerialMessage( id ), mContent( MsgId::kVersionSendMsg ), mNeedsAction{ false }
+{
+    if ( id != MsgId::kVersionSendMsg )
+    {
+        throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
+                                           std::to_underlying( MsgId::kVersionSendMsg ) ),
+                          "Id mismatch at creation" );
+    }
+    // Note that it doesn't need action until loaded with data
+}
+
+void VersionSendMsg::readIn( SerialLink& link )
+{
+    mContent.readIn( link );
+    mNeedsAction = true;
+
+    debug2cout( "Got VersionSendMsg", getIdNum(),
+                 static_cast<int>( std::get<0>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<1>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ),
+                 std::get<4>( mContent.mMsg ) );
+}
+
+void VersionSendMsg::sendOut( SerialLink& link )
+{
+    output2cout( "Error: RPi0 should never send VersionSendMsg", getIdNum(),
+                 static_cast<int>( std::get<0>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<1>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ),
+                 std::get<4>( mContent.mMsg ) );
+}
+
+void VersionSendMsg::takeAction( EventManager&, SerialLink& link )
+{
+    if ( mNeedsAction )
+    {
+        output2cout( "Got VersionSendMsg", getIdNum(),
+                 static_cast<int>( std::get<0>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<1>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ),
+                 std::get<4>( mContent.mMsg ) );
+        mNeedsAction = false;
+    }
+}
+
 /*********************************************************************************************/
 
 PicoReadyMsg::PicoReadyMsg() noexcept

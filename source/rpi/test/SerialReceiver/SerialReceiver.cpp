@@ -41,6 +41,9 @@ int main()
             kAllMsgsOff = 0x00,
             kAllMsgsOn = 0xFF
         */
+
+        VersionRequestMsg msg;
+        msg.sendOut( pico );
         
         [[maybe_unused]]
         std::uint8_t selectedMsgs = MsgControlMsg::k1SecTimerMsgMask
@@ -90,6 +93,8 @@ void setupMessageProcessor( SerialMessageProcessor& smp )
     // Messages that are only outgoing don't need to be registered
     smp.registerMessage<PingMsg>( MsgId::kPingMsg );
     smp.registerMessage<PingReplyMsg>( MsgId::kPingReplyMsg );
+    // smp.registerMessage<VersionRequestMsg>( MsgId::kVersionRequestMsg );
+    smp.registerMessage<VersionSendMsg>( MsgId::kVersionSendMsg );
     smp.registerMessage<PicoReadyMsg>( MsgId::kPicoReady );
     smp.registerMessage<PicoNavStatusUpdateMsg>( MsgId::kPicoNavStatusUpdate );
     smp.registerMessage<PicoSaysStopMsg>( MsgId::kPicoSaysStop );
