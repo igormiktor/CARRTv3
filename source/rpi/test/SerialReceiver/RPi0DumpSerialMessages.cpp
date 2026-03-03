@@ -278,7 +278,7 @@ void VersionSendMsg::takeAction( EventManager&, SerialLink& link )
     if ( mNeedsAction )
     {
         std::stringstream hash;
-        hash << std::hex << std::get<4>( mContent.mMsg );
+        hash << std::setfill('0') << std::setw(7) << std::hex << std::get<4>( mContent.mMsg );
 
         output2cout( "Got VersionSendMsg", getIdNum(),
                  static_cast<int>( std::get<0>( mContent.mMsg ) ),
