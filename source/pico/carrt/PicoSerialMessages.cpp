@@ -222,7 +222,7 @@ void VersionRequestMsg::takeAction( EventManager& events, SerialLink& link )
 {
     if ( mNeedsAction )
     {
-        debug2cout( "Rcvd ping reply from RPi0" );
+        debug2cout( "Rcvd version request msg from RPi0" );
 
         // Send our version info
         VersionSendMsg msg( CarrtPicoVersion::major(), CarrtPicoVersion::minor(),
