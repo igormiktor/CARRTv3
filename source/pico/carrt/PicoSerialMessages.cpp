@@ -1534,6 +1534,14 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
             };
             break;
 
+            case MsgId::kVersionSendMsg:
+            {
+                VersionSendMsg msg( CarrtPicoVersion::major(), CarrtPicoVersion::minor(),
+                            CarrtPicoVersion::revision(), CarrtPicoVersion::buildDateVal(),
+                            CarrtPicoVersion::hashShortVal() );
+                msg.sendOut( link );
+            }
+
             case MsgId::kPicoReady:
             {
                 PicoReadyMsg msg( 123'456 );
@@ -1616,6 +1624,7 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
 
             // Msgs never sent by Pico, so simply acknowledge them
             // with PicoReceivedTestMsg
+            case MsgId::kVersionRequestMsg:
             case MsgId::kMsgControlMsg:
             case MsgId::kTimerControl:
             case MsgId::kBeginCalibration:
