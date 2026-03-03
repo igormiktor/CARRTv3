@@ -31,6 +31,10 @@ int main()
 
     EventManager events;
 
+    // Silence the Pico
+    MsgControlMsg desiredMsgs( MsgControlMsg::kAllMsgsOff );
+    desiredMsgs.sendOut( pico );
+
     std::cout << "Tests begin" << std::endl;
 
     try
@@ -105,28 +109,30 @@ void setupMessageProcessor( SerialMessageProcessor& smp )
     // Messages that are only outgoing don't need to be registered
     smp.registerMessage<PingMsg>( MsgId::kPingMsg );
     smp.registerMessage<PingReplyMsg>( MsgId::kPingReplyMsg );
+    // smp.registerMessage<VersionRequestMsg>( MsgId::kVersionRequestMsg );
+    smp.registerMessage<VersionSendMsg>( MsgId::kVersionSendMsg );
     smp.registerMessage<PicoReadyMsg>( MsgId::kPicoReady );
     smp.registerMessage<PicoNavStatusUpdateMsg>( MsgId::kPicoNavStatusUpdate );
     smp.registerMessage<PicoSaysStopMsg>( MsgId::kPicoSaysStop );
-    //  smp.registerMessage<MsgControlMsg>( MsgId::kMsgControlMsg );
+    // smp.registerMessage<MsgControlMsg>( MsgId::kMsgControlMsg );
     smp.registerMessage<ResetPicoMsg>( MsgId::kResetPicoMsg );
     smp.registerMessage<TimerEventMsg>( MsgId::kTimerEventMsg );
-    //  smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
-    //  smp.registerMessage<BeginCalibrationMsg>( MsgId::kBeginCalibration );
-    //  smp.registerMessage<RequestCalibrationStatusMsg>( MsgId::kRequestCalibStatus );
+    // smp.registerMessage<TimerControlMsg>( MsgId::kTimerControl );
+    // smp.registerMessage<BeginCalibrationMsg>( MsgId::kBeginCalibration );
+    // smp.registerMessage<RequestCalibrationStatusMsg>( MsgId::kRequestCalibStatus );
     smp.registerMessage<CalibrationInfoUpdateMsg>( MsgId::kCalibrationInfoUpdate );
-    //  smp.registerMessage<SetAutoCalibrateMsg>( MsgId::kSetAutoCalibrate );
-    //  smp.registerMessage<ResetBNO055Msg>( MsgId::kResetBNO055 );
+    // smp.registerMessage<SetAutoCalibrateMsg>( MsgId::kSetAutoCalibrate );
+    // smp.registerMessage<ResetBNO055Msg>( MsgId::kResetBNO055 );
     smp.registerMessage<NavUpdateMsg>( MsgId::kTimerNavUpdate );
-    //  smp.registerMessage<NavUpdateControlMsg>( MsgId::kNavUpdateControl );
-    //  smp.registerMessage<DrivingStatusUpdateMsg>( MsgId::kDrivingStatusUpdate );
+    // smp.registerMessage<NavUpdateControlMsg>( MsgId::kNavUpdateControl );
+    // smp.registerMessage<DrivingStatusUpdateMsg>( MsgId::kDrivingStatusUpdate );
     smp.registerMessage<EncoderUpdateMsg>( MsgId::kEncoderUpdate );
-    //  smp.registerMessage<EncoderUpdateControlMsg>( MsgId::kEncoderUpdateControl );
-    //  smp.registerMessage<BatteryLevelRequestMsg>( MsgId::kBatteryLevelRequest );
+    // smp.registerMessage<EncoderUpdateControlMsg>( MsgId::kEncoderUpdateControl );
+    // smp.registerMessage<BatteryLevelRequestMsg>( MsgId::kBatteryLevelRequest );
     smp.registerMessage<BatteryLevelUpdateMsg>( MsgId::kBatteryLevelUpdate );
-     smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
-    //  smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
-    //  smp.registerMessage<TestPicoMessagesMsg>( MsgId::kTestPicoMessages );
+    smp.registerMessage<ErrorReportMsg>( MsgId::kErrorReportFromPico );
+    // smp.registerMessage<TestPicoErrorRptMsg>( MsgId::kTestPicoReportError );
+    // smp.registerMessage<TestPicoMessagesMsg>( MsgId::kTestPicoMessages );
     smp.registerMessage<PicoReceivedTestMsg>( MsgId::kPicoReceivedTestMsg );
     smp.registerMessage<DebugLinkMsg>( MsgId::kDebugSerialLink );
 }
