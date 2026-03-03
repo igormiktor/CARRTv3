@@ -504,6 +504,7 @@ void MsgControlMsg::takeAction( EventManager& events, SerialLink& link )
         PicoState::sendNavStatusMsgs( values & kNavStatusMask );
         PicoState::sendEncoderMsgs( values & kEncoderMsgMask );
         PicoState::sendCalibrationMsgs( values & kCalibrationMsgMask );
+        PicoState::sendBatteryMsgs( values & kBatteryMsgMask );
         mNeedsAction = false;
 
         output2cout( "MsgControlMsg received, new values are" );
@@ -514,6 +515,8 @@ void MsgControlMsg::takeAction( EventManager& events, SerialLink& link )
         output2cout( " sendNavStatusMsgs", static_cast<bool>( values & kNavStatusMask ) );
         output2cout( " sendEncoderMsgs", static_cast<bool>( values & kEncoderMsgMask ) );
         output2cout( " sendCalibrationMsgs", static_cast<bool>( values & kCalibrationMsgMask ) );
+        output2cout( " sendBatteryMsgs", static_cast<bool>( values & kBatteryMsgMask ) );
+
     }
 }
 

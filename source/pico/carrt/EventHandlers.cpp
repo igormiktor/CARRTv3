@@ -78,16 +78,19 @@ void EightSecondTimerHandler::handleEvent( EventManager& events,
         timerEvt.sendOut( link );
     }
 
-    float icVolts = Batteries::getIcBatteryVoltage();
-    BatteryLevelUpdateMsg icMsg( Battery::kIcBattery, icVolts );
-    icMsg.sendOut( link );
+    if ( PicoState::wantBatteryMsgs() )
+    {
+        float icVolts = Batteries::getIcBatteryVoltage();
+        BatteryLevelUpdateMsg icMsg( Battery::kIcBattery, icVolts );
+        icMsg.sendOut( link );
 
-    float motorVolts = Batteries::getMotorBatteryVoltage();
-    BatteryLevelUpdateMsg motorMsg( Battery::kMotorBattery, motorVolts );
-    motorMsg.sendOut( link );
+        float motorVolts = Batteries::getMotorBatteryVoltage();
+        BatteryLevelUpdateMsg motorMsg( Battery::kMotorBattery, motorVolts );
+        motorMsg.sendOut( link );
 
-    // debug2cout( "IC V:", icVolts );
-    // debug2cout( "Motor V", motorVolts );
+        // debug2cout( "IC V:", icVolts );
+        // debug2cout( "Motor V", motorVolts );
+    }
 }
 
 // ********************** BNO055/navigation event handlers
