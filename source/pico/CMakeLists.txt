@@ -84,6 +84,7 @@ set( CARRTPICO_VERSION_MAJOR 0 )
 set( CARRTPICO_VERSION_MINOR 9 )
 set( CARRTPICO_VERSION_REVISION 0 )
 
+set( WARNING_FOR_GEN_FILES "// DO NOT EDIT -- this file is generated during the build process" )
 
 add_subdirectory( shared )
 add_subdirectory( utils )
