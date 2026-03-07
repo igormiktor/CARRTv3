@@ -53,12 +53,12 @@
 
 // Define the GPIO pin for the left encoder
 #ifndef CARRTPICO_ENCODER_LEFT_GPIO
-    #define CARRTPICO_ENCODER_LEFT_GPIO 20    // GPIO20, Pin 26
+    #define CARRTPICO_ENCODER_LEFT_GPIO 15    // GPIO15, Pin 20
 #endif                                        // CARRTPICO_ENCODER_LEFT_GPIO
 
 // Define the GPIO pin for the right encoder
 #ifndef CARRTPICO_ENCODER_RIGHT_GPIO
-    #define CARRTPICO_ENCODER_RIGHT_GPIO 19    // GPIO19, Pin 25
+    #define CARRTPICO_ENCODER_RIGHT_GPIO 14    // GPIO14, Pin 19
 #endif                                         // CARRTPICO_ENCODER_RIGHT_GPIO
 
 // **************************************************************
