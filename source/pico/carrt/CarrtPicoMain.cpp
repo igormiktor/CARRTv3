@@ -86,8 +86,8 @@ namespace
     void sendReady( SerialLinkPico& link );
 }    // namespace
 
-constexpr int kSerialMessageHandlerReserveSize = 20;
-constexpr int kEventHandlerReserveSize = 24;
+constexpr int kSerialMessageHandlerReserveSize = 24;
+constexpr int kEventHandlerReserveSize = 20;
 
 ////////////////////////////////////////////////////////////////////////////////
 
