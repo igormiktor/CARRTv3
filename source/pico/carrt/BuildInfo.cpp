@@ -23,16 +23,17 @@
 #include <cstdint>
 
 #include "CarrtPicoDefines.h"
-#include "GitHeadHash.h"
+#include "GitHeadInfo.h"
 
 /*
  * Define the SHA1 hash
  *
  */
 
-#define CARRTPICO_GIT_HEAD_SHA1_FULL GIT_CURRENT_HEAD_SHA1_FULL
-#define CARRTPICO_GIT_HEAD_SHA1_SHORT GIT_CURRENT_HEAD_SHA1_SHORT
-#define CARRTPICO_GIT_HEAD_SHA1_SHORT_VAL GIT_CURRENT_HEAD_SHA1_SHORT_VAL
+#define CARRTPICO_GIT_HEAD_SHA1_FULL GIT_SHA1_FULL
+#define CARRTPICO_GIT_HEAD_SHA1_SHORT GIT_SHA1
+#define CARRTPICO_GIT_HEAD_SHA1_SHORT_VAL GIT_SHA1_VAL
+#define CARRTPICO_GIT_HEAD_DIRTY GIT_DIRTY_VAL
 
 /*
  * Convert the CARRT version number into a string using only the preprocessor
@@ -154,6 +155,7 @@ constexpr char kCarrtPicoFeatures[]{ CARRTPICO_FEATURES };
 constexpr char kCarrtPicoBuildHashFull[]{ CARRTPICO_GIT_HEAD_SHA1_FULL };
 constexpr char kCarrtPicoBuildHashShort[]{ CARRTPICO_GIT_HEAD_SHA1_SHORT };
 constexpr std::uint32_t kCarrtPicoBuildHashShortVal{ CARRTPICO_GIT_HEAD_SHA1_SHORT_VAL };
+constexpr bool kCarrtPicoBuildIsDirty{ CARRTPICO_GIT_HEAD_DIRTY };
 
 // Here are the accessor functions
 
@@ -178,3 +180,5 @@ const char* CarrtPicoVersion::hashFull() noexcept { return kCarrtPicoBuildHashFu
 const char* CarrtPicoVersion::hashShort() noexcept { return kCarrtPicoBuildHashShort; }
 
 std::uint32_t CarrtPicoVersion::hashShortVal() noexcept { return kCarrtPicoBuildHashShortVal; }
+
+bool CarrtPicoVersion::CarrtPicoBuildIsDirty() noexcept { return kCarrtPicoBuildIsDirty; }

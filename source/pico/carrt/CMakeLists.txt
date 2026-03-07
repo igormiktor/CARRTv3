@@ -2,87 +2,24 @@
 # and an executable (which is the actual CARRT Pico executable)
 
 
+# Set up automated extraction of git HEAD info
 
-# Capture the current git head hash
-set( Git_Head_Hash_h "${CMAKE_CURRENT_BINARY_DIR}/GitHeadHash.h" )
-set( makeGitInfoHeader "${CMAKE_CURRENT_BINARY_DIR}/makeGitInfoHeader" )
-
-add_custom_command(
-    OUTPUT 
-        ${makeGitInfoHeader}
-    COMMAND 
-        echo "#!/bin/sh" > ${makeGitInfoHeader}
-    COMMAND 
-        echo "echo \"#ifndef GitHeadHash_h\" > $1" >> ${makeGitInfoHeader}
-    COMMAND 
-        echo "echo \"#define GitHeadHash_h\" >> $1" >> ${makeGitInfoHeader}
-    COMMAND 
-        echo "echo \"// This is the git HEAD sha1 hash\" >> $1" >> ${makeGitInfoHeader}
-    COMMAND 
-        echo "echo \"#define GIT_CURRENT_HEAD_SHA1_FULL \\\"`git rev-parse HEAD`\\\"\" >> $1" >> ${makeGitInfoHeader}
-    COMMAND 
-        echo "echo \"#define GIT_CURRENT_HEAD_SHA1_SHORT \\\"`git rev-parse --short HEAD`\\\"\" >> $1" >> ${makeGitInfoHeader}
-    COMMAND 
-        echo "echo \"#define GIT_CURRENT_HEAD_SHA1_SHORT_VAL 0x`git rev-parse --short HEAD`\" >> $1" >> ${makeGitInfoHeader}
-    COMMAND 
-        echo "echo \"#endif // GitHeadHash_h\" >> $1" >> ${makeGitInfoHeader}
-    COMMAND 
-        chmod +x ${makeGitInfoHeader}
-    VERBATIM
+add_custom_target( git_head_info
+  COMMAND "${CMAKE_COMMAND}"
+  "-D" "SRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
+  "-D" "BIN_DIR=${CMAKE_CURRENT_BINARY_DIR}"
+  "-P" "${PROJECT_SOURCE_DIR}/support/version.cmake"
+  COMMENT "Generating git version file"
 )
-
-set_source_files_properties(
-    ${makeGitInfoHeader}
-    PROPERTIES GENERATED TRUE
-)
-
-set( Git_Current_Branch "${PROJECT_SOURCE_DIR}/../../.git/HEAD" )
-file( 
-    GLOB Git_Branch_Heads "${PROJECT_SOURCE_DIR}/../../.git/refs/heads/*"
-)
-
-add_custom_command(
-    OUTPUT 
-        ${Git_Head_Hash_h}
-    DEPENDS 
-        ${makeGitInfoHeader}
-        ${Git_Current_Branch}
-        ${Git_Branch_Heads}
-    COMMAND 
-        ${makeGitInfoHeader} ${Git_Head_Hash_h}
-    VERBATIM
-)
-
-set_source_files_properties(
-    ${GitHead_Hash_h}
-    PROPERTIES GENERATED TRUE
-    HEADER_FILE_ONLY TRUE
-)
-
-add_custom_target(
-    BuildHashInfo
-    DEPENDS 
-        ${Git_Head_Hash_h}
-        ${Git_Current_Branch}
-        ${Git_Branch_Heads}
-)
-
-add_library( GitHeadHashLib INTERFACE )
-target_sources( GitHeadHashLib 
-    INTERFACE 
-        FILE_SET HEADERS
-        BASE_DIRS
-            ${CMAKE_CURRENT_BINARY_DIR}
-        FILES 
-            ${Git_Head_Hash_h}
-)
-
-add_dependencies( GitHeadHashLib BuildHashInfo )
-
 
 # The Library
 
 add_library( CarrtPico_library STATIC )
+
+
+add_dependencies( CarrtPico_library git_head_info )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+
 
 target_sources( CarrtPico_library
     PRIVATE
@@ -121,7 +58,6 @@ target_compile_definitions( CarrtPico_library PUBLIC
 )
 
 target_link_libraries( CarrtPico_library PUBLIC
-        GitHeadHashLib
         pico_driver_library
         shared_library
         utils_library

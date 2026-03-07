@@ -40,7 +40,7 @@ else()
     OUTPUT_VARIABLE GIT_SHA1_FULL
   )
   execute_process(
-    COMMAND bash -c "git diff --quiet --exit-code &|| echo dirty"
+    COMMAND bash -c "git diff --quiet --exit-code || echo dirty"
     OUTPUT_VARIABLE GIT_DIRTY
   )
   execute_process(
