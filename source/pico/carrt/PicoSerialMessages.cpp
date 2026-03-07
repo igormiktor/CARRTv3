@@ -2,7 +2,7 @@
     PicoSerialMessages.cpp - Serial Messages for CARRT3 communications
     between the RPI and Pico.  This file contains the Pico messages.
 
-    Copyright (c) 2025 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
