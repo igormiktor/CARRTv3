@@ -41,9 +41,9 @@ bi_decl( bi_1pin_with_name( CARRTPICO_ENCODER_RIGHT_GPIO,
                             "Read right encoder, set to trigger interrupts" ) );
 
 bi_decl( bi_1pin_with_name( CARRTPICO_IC_BATTERY_GPIO,
-                            "Read IC voltage via ADC1" ) );
+                            "Read IC battery voltage via ADC1" ) );
 
 bi_decl( bi_1pin_with_name( CARRTPICO_MOTOR_BATTERY_GPIO,
-                            "Read IC voltage via ADC0" ) );
+                            "Read Motor battery voltage via ADC0" ) );
 
 
