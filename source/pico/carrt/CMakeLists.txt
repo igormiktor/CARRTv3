@@ -87,7 +87,6 @@ add_library( CarrtPico_library STATIC )
 target_sources( CarrtPico_library
     PRIVATE
         BuildInfo.cpp
-        CarrtPicoBinaryInfo.cpp 
         CarrtPicoReset.cpp
         Core1.cpp
         EventHandlers.cpp
@@ -140,7 +139,8 @@ add_executable( CarrtPico )
 
 target_sources( CarrtPico 
     PRIVATE    
-    CarrtPicoMain.cpp
+        CarrtPicoBinaryInfo.cpp 
+        CarrtPicoMain.cpp
 )
         
 pico_set_program_name( CarrtPico "CarrtPico" )
