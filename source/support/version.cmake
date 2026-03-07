@@ -57,6 +57,8 @@ else()
    OUTPUT_VARIABLE GIT_BRANCH
   )
 
+  set( WARNING_FOR_GEN_FILES "DO NOT EDIT -- this file is generated during the build process" )
+
   string( STRIP "${GIT_SHA1}" GIT_SHA1 )
   string( STRIP "${GIT_SHA1_FULL}" GIT_SHA1_FULL )
   string( STRIP "${GIT_DIRTY}" GIT_DIRTY )
