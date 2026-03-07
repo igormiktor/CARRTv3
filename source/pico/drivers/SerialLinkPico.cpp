@@ -52,15 +52,15 @@ SerialLinkPico::SerialLinkPico() noexcept
     uart_set_translate_crlf( CARRTPICO_SERIAL_LINK_UART, false );
 
     // Set the GPIO pin mux to the UART
-    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
-    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_GPIO, GPIO_FUNC_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_GPIO, GPIO_FUNC_UART );
 }
 
 SerialLinkPico::~SerialLinkPico() noexcept
 {
     // Shutdown the Serial-Link UART
-    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_NULL );
-    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_NULL );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_GPIO, GPIO_FUNC_NULL );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_GPIO, GPIO_FUNC_NULL );
     uart_deinit( CARRTPICO_SERIAL_LINK_UART );
 }
 

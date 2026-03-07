@@ -26,9 +26,9 @@
 bi_decl( bi_1pin_with_name( PICO_DEFAULT_LED_PIN,
                             "On-board LED used for blinking and signaling" ) );
 
-bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN,
+bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_GPIO,
                               "uart1 (data) TX",
-                              CARRTPICO_SERIAL_LINK_UART_RX_PIN,
+                              CARRTPICO_SERIAL_LINK_UART_RX_GPIO,
                               "uart1 (data) RX" ) );
 
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL,

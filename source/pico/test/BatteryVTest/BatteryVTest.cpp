@@ -22,8 +22,8 @@
 #define GPIO_VOUT_PIN2 15    // GPIO15 (pin 20)
 
 bi_decl( bi_1pin_with_name( CARRTPICO_HEARTBEAT_LED, "On-board LED for blinking" ) );
-bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_PIN, "uart1 (data) TX",
-                              CARRTPICO_SERIAL_LINK_UART_RX_PIN, "uart1 (data) RX" ) );
+bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_GPIO, "uart1 (data) TX",
+                              CARRTPICO_SERIAL_LINK_UART_RX_GPIO, "uart1 (data) RX" ) );
 bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL, "i2c0 SCL" ) );
 
 uint64_t elapsedTime = 0;

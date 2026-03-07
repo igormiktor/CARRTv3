@@ -81,8 +81,8 @@ int main()
     // Initialise UART for data
     uart_init( CARRTPICO_SERIAL_LINK_UART, CARRTPICO_SERIAL_LINK_UART_BAUD_RATE );
     // Set the GPIO pin mux to the UART
-    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_PIN, GPIO_FUNC_UART );
-    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_PIN, GPIO_FUNC_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_TX_GPIO, GPIO_FUNC_UART );
+    gpio_set_function( CARRTPICO_SERIAL_LINK_UART_RX_GPIO, GPIO_FUNC_UART );
 
 #if 0
     repeating_timer_t timer;
