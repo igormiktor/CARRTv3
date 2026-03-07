@@ -31,5 +31,19 @@ bi_decl( bi_2pins_with_names( CARRTPICO_SERIAL_LINK_UART_TX_GPIO,
                               CARRTPICO_SERIAL_LINK_UART_RX_GPIO,
                               "UART1 (RPi0->Pico) RX" ) );
 
-bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "i2c0 SDA", CARRTPICO_I2C_SCL,
-                              "i2c0 SCL" ) );
+bi_decl( bi_2pins_with_names( CARRTPICO_I2C_SDA, "I2C0 SDA", CARRTPICO_I2C_SCL,
+                              "I2C0 SCL" ) );
+
+bi_decl( bi_1pin_with_name( CARRTPICO_ENCODER_LEFT_GPIO,
+                            "Read left encoder, set to trigger interrupts" ) );
+
+bi_decl( bi_1pin_with_name( CARRTPICO_ENCODER_RIGHT_GPIO,
+                            "Read right encoder, set to trigger interrupts" ) );
+
+bi_decl( bi_1pin_with_name( CARRTPICO_IC_BATTERY_GPIO,
+                            "Read IC voltage via ADC1" ) );
+
+bi_decl( bi_1pin_with_name( CARRTPICO_MOTOR_BATTERY_GPIO,
+                            "Read IC voltage via ADC0" ) );
+
+
