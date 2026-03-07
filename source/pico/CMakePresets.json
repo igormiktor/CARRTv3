@@ -7,7 +7,7 @@
             "generator": "Unix Makefiles",
             "binaryDir": "build/${presetName}",
             "cacheVariables": {
-                "CARRT_PICO_PRESET_NAME": "${presetName}",
+                "CARRTPICO_PRESET_NAME": "${presetName}",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
             }
         },
@@ -18,9 +18,9 @@
             "inherits": "common",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CARRT_PICO_ENABLE_UART_STDIO": "ON",
-                "CARRT_PICO_BUILD_TESTS": "ON",
-                "CARRT_PICO_ENABLE_DEBUGUTILS": "ON"
+                "CARRTPICO_ENABLE_UART_STDIO": "ON",
+                "CARRTPICO_BUILD_TESTS": "ON",
+                "CARRTPICO_ENABLE_DEBUGUTILS": "ON"
             }
         },
         {
@@ -30,9 +30,9 @@
             "inherits": "common",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "CARRT_PICO_ENABLE_UART_STDIO": "ON",
-                "CARRT_PICO_BUILD_TESTS": "OFF",
-                "CARRT_PICO_ENABLE_DEBUGUTILS": "OFF"
+                "CARRTPICO_ENABLE_UART_STDIO": "ON",
+                "CARRTPICO_BUILD_TESTS": "OFF",
+                "CARRTPICO_ENABLE_DEBUGUTILS": "OFF"
             }
         },
         {
@@ -42,9 +42,9 @@
             "inherits": "common",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-                "CARRT_PICO_ENABLE_UART_STDIO": "ON",
-                "CARRT_PICO_BUILD_TESTS": "ON",
-                "CARRT_PICO_ENABLE_DEBUGUTILS": "ON"
+                "CARRTPICO_ENABLE_UART_STDIO": "ON",
+                "CARRTPICO_BUILD_TESTS": "ON",
+                "CARRTPICO_ENABLE_DEBUGUTILS": "ON"
             }
         }
     ]
