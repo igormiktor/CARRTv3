@@ -126,7 +126,7 @@
 
 #define CARRTPICO_BUILD_TIME __TIME__
 
-// constexpr function to convert YYYYMMDD to numeric value
+// constexpr function to convert YYYYMMDD (built as a C str) to numeric value
 constexpr std::uint32_t getCarrtPicoBuildDateVal( const char* str )
 {
     std::uint32_t val{ 0 };
