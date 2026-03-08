@@ -221,43 +221,43 @@ void VersionRequestMsg::takeAction( EventManager& events, SerialLink& link )
 
 /******************************************************************************/
 
-VersionSendMsg::VersionSendMsg() noexcept
-    : SerialMessage( MsgId::kVersionSendMsg ),
-      mContent( MsgId::kVersionSendMsg ),
+VersionMsg::VersionMsg() noexcept
+    : SerialMessage( MsgId::kVersionMsg ),
+      mContent( MsgId::kVersionMsg ),
       mNeedsAction{ false }
 {}
 
-VersionSendMsg::VersionSendMsg( TheData t ) noexcept
-    : SerialMessage( MsgId::kVersionSendMsg ),
-      mContent( MsgId::kVersionSendMsg, t ),
+VersionMsg::VersionMsg( TheData t ) noexcept
+    : SerialMessage( MsgId::kVersionMsg ),
+      mContent( MsgId::kVersionMsg, t ),
       mNeedsAction{ true }
 {}
 
-VersionSendMsg::VersionSendMsg( std::uint32_t buildDate, std::uint32_t hash, std::uint8_t major,
+VersionMsg::VersionMsg( std::uint32_t buildDate, std::uint32_t hash, std::uint8_t major,
                                 std::uint8_t minor, std::uint8_t rev, bool dirty ) noexcept
-    : SerialMessage( MsgId::kVersionSendMsg ),
-      mContent( MsgId::kVersionSendMsg, std::make_tuple( buildDate, hash, major, minor, rev, dirty ) ),
+    : SerialMessage( MsgId::kVersionMsg ),
+      mContent( MsgId::kVersionMsg, std::make_tuple( buildDate, hash, major, minor, rev, dirty ) ),
       mNeedsAction{ true }
 {}
 
-VersionSendMsg::VersionSendMsg( MsgId id )
-    : SerialMessage( id ), mContent( MsgId::kVersionSendMsg ), mNeedsAction{ false }
+VersionMsg::VersionMsg( MsgId id )
+    : SerialMessage( id ), mContent( MsgId::kVersionMsg ), mNeedsAction{ false }
 {
-    if ( id != MsgId::kVersionSendMsg )
+    if ( id != MsgId::kVersionMsg )
     {
         throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
-                                           std::to_underlying( MsgId::kVersionSendMsg ) ),
+                                           std::to_underlying( MsgId::kVersionMsg ) ),
                           "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
 
-void VersionSendMsg::readIn( SerialLink& link )
+void VersionMsg::readIn( SerialLink& link )
 {
     mContent.readIn( link );
     mNeedsAction = true;
 
-    debugCond2cout<kDebugSerialMsgs>( "Got VersionSendMsg", getIdNum(),
+    debugCond2cout<kDebugSerialMsgs>( "Got VersionMsg", getIdNum(),
                  std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ),
                  static_cast<int>( std::get<2>( mContent.mMsg ) ),
                  static_cast<int>( std::get<3>( mContent.mMsg ) ),
@@ -265,9 +265,9 @@ void VersionSendMsg::readIn( SerialLink& link )
                  static_cast<bool>( std::get<5>( mContent.mMsg ) ) );
 }
 
-void VersionSendMsg::sendOut( SerialLink& link )
+void VersionMsg::sendOut( SerialLink& link )
 {
-    output2cout( "Error: RPi0 should never send VersionSendMsg", getIdNum(),
+    output2cout( "Error: RPi0 should never send VersionMsg", getIdNum(),
                  std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ),
                  static_cast<int>( std::get<2>( mContent.mMsg ) ),
                  static_cast<int>( std::get<3>( mContent.mMsg ) ),
@@ -275,14 +275,14 @@ void VersionSendMsg::sendOut( SerialLink& link )
                  static_cast<bool>( std::get<5>( mContent.mMsg ) ) );
 }
 
-void VersionSendMsg::takeAction( EventManager&, SerialLink& link )
+void VersionMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
         std::stringstream hash;
         hash << std::setfill('0') << std::setw(7) << std::hex << std::get<1>( mContent.mMsg );
 
-        output2cout( "Got VersionSendMsg", getIdNum(),
+        output2cout( "Got VersionMsg", getIdNum(),
                  std::get<0>( mContent.mMsg ), hash.str(),
                  static_cast<int>( std::get<2>( mContent.mMsg ) ),
                  static_cast<int>( std::get<3>( mContent.mMsg ) ),

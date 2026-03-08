@@ -94,7 +94,7 @@ void setupMessageProcessor( SerialMessageProcessor& smp )
     smp.registerMessage<PingMsg>( MsgId::kPingMsg );
     smp.registerMessage<PingReplyMsg>( MsgId::kPingReplyMsg );
     // smp.registerMessage<VersionRequestMsg>( MsgId::kVersionRequestMsg );
-    smp.registerMessage<VersionSendMsg>( MsgId::kVersionSendMsg );
+    smp.registerMessage<VersionMsg>( MsgId::kVersionMsg );
     smp.registerMessage<PicoReadyMsg>( MsgId::kPicoReady );
     smp.registerMessage<PicoNavStatusUpdateMsg>( MsgId::kPicoNavStatusUpdate );
     smp.registerMessage<PicoSaysStopMsg>( MsgId::kPicoSaysStop );

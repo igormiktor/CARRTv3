@@ -42,7 +42,7 @@ enum class MsgId : std::uint8_t
 
     /////// Request (from RPi0) and return (from Pico) version info
     kVersionRequestMsg,
-    kVersionSendMsg,
+    kVersionMsg,
 
     /////// Msgs from Pico
 

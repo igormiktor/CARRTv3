@@ -225,7 +225,7 @@ void VersionRequestMsg::takeAction( EventManager& events, SerialLink& link )
         debug2cout( "Rcvd version request msg from RPi0" );
 
         // Send our version info
-        VersionSendMsg msg( CarrtPicoVersion::buildDateVal(), CarrtPicoVersion::hashShortVal(),
+        VersionMsg msg( CarrtPicoVersion::buildDateVal(), CarrtPicoVersion::hashShortVal(),
                             CarrtPicoVersion::major(), CarrtPicoVersion::minor(),
                             CarrtPicoVersion::revision(), CarrtPicoVersion::buildIsDirty() );
         msg.sendOut( link );
@@ -236,44 +236,44 @@ void VersionRequestMsg::takeAction( EventManager& events, SerialLink& link )
 
 /******************************************************************************/
 
-VersionSendMsg::VersionSendMsg() noexcept
-    : SerialMessage( MsgId::kVersionSendMsg ),
-      mContent( MsgId::kVersionSendMsg ),
+VersionMsg::VersionMsg() noexcept
+    : SerialMessage( MsgId::kVersionMsg ),
+      mContent( MsgId::kVersionMsg ),
       mNeedsAction{ false }
 {}
 
-VersionSendMsg::VersionSendMsg( TheData t ) noexcept
-    : SerialMessage( MsgId::kVersionSendMsg ),
-      mContent( MsgId::kVersionSendMsg, t ),
+VersionMsg::VersionMsg( TheData t ) noexcept
+    : SerialMessage( MsgId::kVersionMsg ),
+      mContent( MsgId::kVersionMsg, t ),
       mNeedsAction{ true }
 {}
 
-VersionSendMsg::VersionSendMsg( std::uint32_t buildDate, std::uint32_t hash, std::uint8_t major,
+VersionMsg::VersionMsg( std::uint32_t buildDate, std::uint32_t hash, std::uint8_t major,
                                 std::uint8_t minor, std::uint8_t rev, bool dirty ) noexcept
-    : SerialMessage( MsgId::kVersionSendMsg ),
-      mContent( MsgId::kVersionSendMsg,
+    : SerialMessage( MsgId::kVersionMsg ),
+      mContent( MsgId::kVersionMsg,
                 std::make_tuple( buildDate, hash, major, minor, rev, dirty ) ),
       mNeedsAction{ true }
 {}
 
-VersionSendMsg::VersionSendMsg( MsgId id )
-    : SerialMessage( id ), mContent( MsgId::kVersionSendMsg ), mNeedsAction{ false }
+VersionMsg::VersionMsg( MsgId id )
+    : SerialMessage( id ), mContent( MsgId::kVersionMsg ), mNeedsAction{ false }
 {
-    if ( id != MsgId::kVersionSendMsg )
+    if ( id != MsgId::kVersionMsg )
     {
         throw CarrtError( makePicoErrorId( kPicoSerialMessageError, 1,
-                                           std::to_underlying( MsgId::kVersionSendMsg ) ),
+                                           std::to_underlying( MsgId::kVersionMsg ) ),
                           "Id mismatch at creation" );
     }
     // Note that it doesn't need action until loaded with data
 }
 
-void VersionSendMsg::readIn( SerialLink& link )
+void VersionMsg::readIn( SerialLink& link )
 {
     mContent.readIn( link );
     mNeedsAction = false;
 
-    output2cout( "Error: Pico should never receive VersionSendMsg", getIdNum(),
+    output2cout( "Error: Pico should never receive VersionMsg", getIdNum(),
                  std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ),
                  static_cast<int>( std::get<2>( mContent.mMsg ) ),
                  static_cast<int>( std::get<3>( mContent.mMsg ) ),
@@ -281,11 +281,11 @@ void VersionSendMsg::readIn( SerialLink& link )
                  static_cast<bool>( std::get<5>( mContent.mMsg ) ) );
 }
 
-void VersionSendMsg::sendOut( SerialLink& link )
+void VersionMsg::sendOut( SerialLink& link )
 {
     mContent.sendOut( link );
 
-    debugCond2cout<kDebugSerialMsgs>( "Sent VersionSendMsg", getIdNum(),
+    debugCond2cout<kDebugSerialMsgs>( "Sent VersionMsg", getIdNum(),
                                       std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ),
                                       static_cast<int>( std::get<2>( mContent.mMsg ) ),
                                       static_cast<int>( std::get<3>( mContent.mMsg ) ),
@@ -293,7 +293,7 @@ void VersionSendMsg::sendOut( SerialLink& link )
                                       static_cast<bool>( std::get<5>( mContent.mMsg ) ) );
 }
 
-void VersionSendMsg::takeAction( EventManager&, SerialLink& link )
+void VersionMsg::takeAction( EventManager&, SerialLink& link )
 {
     if ( mNeedsAction )
     {
@@ -1539,9 +1539,9 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
             };
             break;
 
-            case MsgId::kVersionSendMsg:
+            case MsgId::kVersionMsg:
             {
-                VersionSendMsg msg( CarrtPicoVersion::buildDateVal(),
+                VersionMsg msg( CarrtPicoVersion::buildDateVal(),
                                     CarrtPicoVersion::hashShortVal(), CarrtPicoVersion::major(),
                                     CarrtPicoVersion::minor(), CarrtPicoVersion::revision(),
                                     CarrtPicoVersion::buildIsDirty() );

@@ -66,17 +66,17 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class VersionSendMsg : public SerialMessage
+class VersionMsg : public SerialMessage
 {
 public:
     using TheData =
         std::tuple<std::uint32_t, std::uint32_t, std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t>;
 
-    VersionSendMsg() noexcept;
-    explicit VersionSendMsg( TheData t ) noexcept;
-    explicit VersionSendMsg( std::uint32_t buildDate, std::uint32_t hash, std::uint8_t major, std::uint8_t minor, 
+    VersionMsg() noexcept;
+    explicit VersionMsg( TheData t ) noexcept;
+    explicit VersionMsg( std::uint32_t buildDate, std::uint32_t hash, std::uint8_t major, std::uint8_t minor, 
                              std::uint8_t rev, bool dirty ) noexcept;
-    explicit VersionSendMsg( MsgId id );
+    explicit VersionMsg( MsgId id );
 
     virtual void readIn( SerialLink& link ) override;
 
