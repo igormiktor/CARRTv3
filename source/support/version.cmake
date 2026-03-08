@@ -67,6 +67,10 @@ else()
   string (STRIP "${GIT_BRANCH}" GIT_BRANCH )
 endif()
 
+if( GIT_DIRTY_VAL )
+  message( "WARNING: Build is DIRTY" )
+endif()
+
 configure_file(
   "${SRC_DIR}/GitHeadInfo.h.in"
   "${BIN_DIR}/GitHeadInfo.h"
