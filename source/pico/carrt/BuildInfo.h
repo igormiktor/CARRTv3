@@ -39,7 +39,7 @@ namespace CarrtPicoVersion
     const char* hashShort() noexcept;
     std::uint32_t hashShortVal() noexcept;
 
-    bool CarrtPicoBuildIsDirty() noexcept;
+    bool buildIsDirty() noexcept;
     
 }    // namespace CarrtPicoVersion
 

@@ -181,4 +181,4 @@ const char* CarrtPicoVersion::hashShort() noexcept { return kCarrtPicoBuildHashS
 
 std::uint32_t CarrtPicoVersion::hashShortVal() noexcept { return kCarrtPicoBuildHashShortVal; }
 
-bool CarrtPicoVersion::CarrtPicoBuildIsDirty() noexcept { return kCarrtPicoBuildIsDirty; }
+bool CarrtPicoVersion::buildIsDirty() noexcept { return kCarrtPicoBuildIsDirty; }
