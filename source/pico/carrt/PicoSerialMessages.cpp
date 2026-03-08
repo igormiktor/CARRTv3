@@ -225,9 +225,9 @@ void VersionRequestMsg::takeAction( EventManager& events, SerialLink& link )
         debug2cout( "Rcvd version request msg from RPi0" );
 
         // Send our version info
-        VersionSendMsg msg( CarrtPicoVersion::revision(), CarrtPicoVersion::buildDateVal(),
+        VersionSendMsg msg( CarrtPicoVersion::buildDateVal(), CarrtPicoVersion::hashShortVal(),
                             CarrtPicoVersion::major(), CarrtPicoVersion::minor(),
-                            CarrtPicoVersion::hashShortVal(), CarrtPicoVersion::buildIsDirty() );
+                            CarrtPicoVersion::revision(), CarrtPicoVersion::buildIsDirty() );
         msg.sendOut( link );
 
         mNeedsAction = false;
@@ -1541,9 +1541,9 @@ void TestPicoMessagesMsg::takeAction( EventManager& evt, SerialLink& link )
 
             case MsgId::kVersionSendMsg:
             {
-                VersionSendMsg msg( CarrtPicoVersion::revision(), CarrtPicoVersion::buildDateVal(),
-                                    CarrtPicoVersion::major(), CarrtPicoVersion::minor(),
-                                    CarrtPicoVersion::hashShortVal(),
+                VersionSendMsg msg( CarrtPicoVersion::buildDateVal(),
+                                    CarrtPicoVersion::hashShortVal(), CarrtPicoVersion::major(),
+                                    CarrtPicoVersion::minor(), CarrtPicoVersion::revision(),
                                     CarrtPicoVersion::buildIsDirty() );
                 msg.sendOut( link );
             }
