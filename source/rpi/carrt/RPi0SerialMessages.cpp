@@ -271,10 +271,10 @@ VersionSendMsg::VersionSendMsg( TheData t ) noexcept
       mNeedsAction{ true }
 {}
 
-VersionSendMsg::VersionSendMsg( std::uint8_t major, std::uint8_t minor, std::uint8_t rev,
-                                std::uint32_t buildDate, std::uint32_t hash ) noexcept
+VersionSendMsg::VersionSendMsg( std::uint32_t buildDate, std::uint32_t hash, std::uint8_t major,
+                                std::uint8_t minor, std::uint8_t rev, bool dirty ) noexcept
     : SerialMessage( MsgId::kVersionSendMsg ),
-      mContent( MsgId::kVersionSendMsg, std::make_tuple( major, minor, rev, buildDate, hash ) ),
+      mContent( MsgId::kVersionSendMsg, std::make_tuple( buildDate, hash, major, minor, rev, dirty ) ),
       mNeedsAction{ true }
 {}
 
@@ -296,19 +296,21 @@ void VersionSendMsg::readIn( SerialLink& link )
     mNeedsAction = true;
 
     debugCond2cout<kDebugSerialMsgs>( "Got VersionSendMsg", getIdNum(),
-                 static_cast<int>( std::get<0>( mContent.mMsg ) ),
-                 static_cast<int>( std::get<1>( mContent.mMsg ) ),
-                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ),
-                 std::get<4>( mContent.mMsg ) );
+                 std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ),
+                 static_cast<int>( std::get<2>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<3>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<4>( mContent.mMsg ) ),
+                 static_cast<bool>( std::get<5>( mContent.mMsg ) ) );
 }
 
 void VersionSendMsg::sendOut( SerialLink& link )
 {
     output2cout( "Error: RPi0 should never send VersionSendMsg", getIdNum(),
-                 static_cast<int>( std::get<0>( mContent.mMsg ) ),
-                 static_cast<int>( std::get<1>( mContent.mMsg ) ),
-                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ),
-                 std::get<4>( mContent.mMsg ) );
+                 std::get<0>( mContent.mMsg ), std::get<1>( mContent.mMsg ),
+                 static_cast<int>( std::get<2>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<3>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<4>( mContent.mMsg ) ),
+                 static_cast<bool>( std::get<5>( mContent.mMsg ) ) );
 }
 
 void VersionSendMsg::takeAction( EventManager&, SerialLink& link )
@@ -316,13 +318,14 @@ void VersionSendMsg::takeAction( EventManager&, SerialLink& link )
     if ( mNeedsAction )
     {
         std::stringstream hash;
-        hash << std::setfill('0') << std::setw(7) << std::hex << std::get<4>( mContent.mMsg );
+        hash << std::setfill('0') << std::setw(7) << std::hex << std::get<1>( mContent.mMsg );
 
         output2cout( "Got VersionSendMsg", getIdNum(),
-                 static_cast<int>( std::get<0>( mContent.mMsg ) ),
-                 static_cast<int>( std::get<1>( mContent.mMsg ) ),
-                 static_cast<int>( std::get<2>( mContent.mMsg ) ), std::get<3>( mContent.mMsg ),
-                 hash.str() );
+                 std::get<0>( mContent.mMsg ), hash.str(),
+                 static_cast<int>( std::get<2>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<3>( mContent.mMsg ) ),
+                 static_cast<int>( std::get<4>( mContent.mMsg ) ),
+                 ( static_cast<bool>( std::get<5>( mContent.mMsg ) ) ? "dirty" : "clean" ) );
         mNeedsAction = false;
     }
 }
