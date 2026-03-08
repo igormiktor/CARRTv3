@@ -112,6 +112,10 @@ int main()
                      CarrtPicoVersion::buildTime() );
         output2cout( "CARRT Pico Git Hash", CarrtPicoVersion::hashFull() );
         output2cout( "CARRT Pico Git Hash (short)", CarrtPicoVersion::hashShort() );
+        if ( CarrtPicoVersion::buildIsDirty() )
+        {
+            output2cout( "WARNING: CARRT Pico build is DIRTY" );
+        }
 
         // Set up message processor
         SerialMessageProcessor smp( kSerialMessageHandlerReserveSize, rpi0 );
