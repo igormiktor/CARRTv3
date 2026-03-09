@@ -79,7 +79,7 @@
 
 namespace
 {
-    void initializeFailSafeHardware();
+    void initializeNoFailHardware();
     void initializeFailableHardware();
     void setupMessageProcessor( SerialMessageProcessor& smp );
     void setupEventProcessor( EventProcessor& ep );
@@ -96,7 +96,7 @@ int main()
     CoreAtomic::CAtomicInitializer theInitializationIsDone;
     PicoState::initialize();
 
-    initializeFailSafeHardware();
+    initializeNoFailHardware();
 
     // Open the serial link to RPi0
     SerialLinkPico rpi0;
@@ -202,7 +202,7 @@ int main()
 namespace
 {
 
-    void initializeFailSafeHardware()
+    void initializeNoFailHardware()
     {
         // Nothing in this function throws or even fails
 
@@ -236,7 +236,7 @@ namespace
         // If we get here, guaranteed Core1 is running and in its
         // main event loop.  So perfect time to queue this future
         // event to trigger initialization of BNO055.
-        // Note future b/cBNO055 needs nearly 1 sec to be ready to accept I2C.
+        // Note future b/c BNO055 needs nearly 1 sec to be ready to accept I2C.
         Core1::queueEventForCore1( EvtId::kBNO055InitializeEvent, BNO055::kWaitAfterPowerOnReset );
 
         // Tell Core1 to initialize the encoders
