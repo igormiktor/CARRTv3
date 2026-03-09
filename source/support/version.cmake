@@ -23,12 +23,12 @@
 
 execute_process(
   COMMAND git rev-parse --short HEAD
-  OUTPUT_VARIABLE GIT_SHA1
+  OUTPUT_VARIABLE GIT_SHA1_SHORT
   ERROR_QUIET
 )
 
-if( "${GIT_SHA1}" STREQUAL "" )
-  set( GIT_SHA1 "N/A" )
+if( "${GIT_SHA1_SHORT}" STREQUAL "" )
+  set( GIT_SHA1_SHORT "N/A" )
   set( GIT_SHA1_FULL "N/A" )
   set( GIT_DIRTY "N/A" )
   set( GIT_DIRTY_VAL "0" )
@@ -59,7 +59,7 @@ else()
 
   set( WARNING_FOR_GEN_FILES "DO NOT EDIT -- this file is generated during the build process" )
 
-  string( STRIP "${GIT_SHA1}" GIT_SHA1 )
+  string( STRIP "${GIT_SHA1_SHORT}" GIT_SHA1_SHORT )
   string( STRIP "${GIT_SHA1_FULL}" GIT_SHA1_FULL )
   string( STRIP "${GIT_DIRTY}" GIT_DIRTY )
   string( STRIP "${GIT_DIRTY_VAL}" GIT_DIRTY_VAL )
