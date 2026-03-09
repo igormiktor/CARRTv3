@@ -26,17 +26,19 @@
 #include "GitHeadInfo.h"
 
 /*
- * Define the SHA1 hash
+ * Define the SHA1 hash for CARRTPICO
+ * This isolates the impact of any changes in macro names that
+ * may occur in the cmake process that generates GitHeadInfo.h
  *
  */
 
-#define CARRTPICO_GIT_HEAD_SHA1_FULL GIT_SHA1_FULL
-#define CARRTPICO_GIT_HEAD_SHA1_SHORT GIT_SHA1_SHORT
-#define CARRTPICO_GIT_HEAD_SHA1_SHORT_VAL GIT_SHA1_SHORT_VAL
-#define CARRTPICO_GIT_HEAD_DIRTY GIT_DIRTY_VAL
+#define CARRTPICO_GIT_HEAD_SHA1_FULL       GIT_SHA1_FULL
+#define CARRTPICO_GIT_HEAD_SHA1_SHORT      GIT_SHA1_SHORT
+#define CARRTPICO_GIT_HEAD_SHA1_SHORT_VAL  GIT_SHA1_SHORT_VAL
+#define CARRTPICO_GIT_HEAD_DIRTY           GIT_DIRTY_VAL
 
 /*
- * Convert the CARRT version number into a string using only the preprocessor
+ * Convert the CARRT version number (x.y.z) into a string using only the preprocessor
  *
  */
 
