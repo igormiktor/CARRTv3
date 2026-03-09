@@ -8,7 +8,7 @@ add_custom_target( git_head_info
   COMMAND "${CMAKE_COMMAND}"
   "-D" "SRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
   "-D" "BIN_DIR=${CMAKE_CURRENT_BINARY_DIR}"
-  "-P" "${PROJECT_SOURCE_DIR}/support/version.cmake"
+  "-P" "${PROJECT_SOURCE_DIR}/cmake/version.cmake"
   COMMENT "Generating git version file"
 )
 
