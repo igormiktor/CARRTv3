@@ -25,6 +25,6 @@ class SerialMessageProcessor;
 
 namespace MainProcess
 {
-    void runMainEventLoop( EventManager& events, EventProcessor& ep,
-                           SerialMessageProcessor& smp, SerialLinkPico& rpi0 );
+    [[noreturn]] void runMainEventLoop( EventManager& events, EventProcessor& ep,
+                                        SerialMessageProcessor& smp, SerialLinkPico& rpi0 );
 }

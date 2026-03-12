@@ -46,8 +46,8 @@
 namespace MainProcess
 {
 
-    void runMainEventLoop( EventManager& events, EventProcessor& ep,
-                           SerialMessageProcessor& smp, SerialLinkPico& rpi0 );
+    void runMainEventLoop( EventManager& events, EventProcessor& ep, SerialMessageProcessor& smp,
+                           SerialLinkPico& rpi0 );
     void checkForErrors( EventManager& events, SerialLinkPico& rpi0 );
     void doHouseKeeping( EventManager& events, SerialLinkPico& rpi0 );
 
@@ -58,9 +58,8 @@ namespace MainProcess
 
 };    // namespace MainProcess
 
-void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep,
-                                    SerialMessageProcessor& smp,
-                                    SerialLinkPico& rpi0 )
+[[noreturn]] void MainProcess::runMainEventLoop( EventManager& events, EventProcessor& ep,
+                                                 SerialMessageProcessor& smp, SerialLinkPico& rpi0 )
 {
     while ( 1 )
     {
@@ -88,8 +87,7 @@ void MainProcess::doHouseKeeping( EventManager& events, SerialLinkPico& rpi0 )
         // End calibration process
         PicoState::calibrationInProgress( false );
     }
-    else if ( PicoState::wantAutoCalibrate()
-              && !PicoState::calibrationInProgress() )
+    else if ( PicoState::wantAutoCalibrate() && !PicoState::calibrationInProgress() )
     {
         // Trigger new calibration
         events.queueEvent( EvtId::kBNO055BeginCalibrationEvent );
