@@ -4,7 +4,7 @@
         {
             "name": "common",
             "hidden": true,
-            "generator": "Unix Makefiles",
+            "generator": "Ninja",
             "binaryDir": "build/${presetName}",
             "cacheVariables": {
                 "CARRTPICO_PRESET_NAME": "${presetName}",

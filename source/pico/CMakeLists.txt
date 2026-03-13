@@ -97,6 +97,7 @@ endif()
 
 message( "" )
 message( "Configuration summary on host ${CMAKE_HOST_SYSTEM_NAME}:" )
+message( " - Build backend is ${CMAKE_GENERATOR}." )
 message( " - Build type is ${CMAKE_BUILD_TYPE}." )
 message( " - Preset is ${CARRTPICO_PRESET_NAME}.")
 message( " - Building of tests is ${CARRTPICO_BUILD_TESTS}." )
