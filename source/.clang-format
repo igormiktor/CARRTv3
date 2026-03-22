@@ -123,8 +123,12 @@ IncludeCategories:
     Priority:        3
     SortPriority:    0
     CaseSensitive:   false
-  - Regex:           '.*'
+  - Regex:           'ConfigDefines.h'
     Priority:        4
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '.*'
+    Priority:        5
     SortPriority:    0
     CaseSensitive:   false
 IncludeIsMainRegex: '([-_](test|unittest))?$'
@@ -218,7 +222,11 @@ RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Always
 ShortNamespaceLines: 1
 SkipMacroDefinitionBody: false
-SortIncludes:    CaseSensitive
+SortIncludes: CaseInsensitive
+#SortIncludes:
+#  Enabled: true
+#  IgnoreCase: true
+#  IgnoreExtension: true
 SortJavaStaticImport: Before
 SortUsingDeclarations: LexicographicNumeric
 SpaceAfterCStyleCast: false
