@@ -5,12 +5,6 @@
 #include "OutputUtils.hpp"
 
 
-/*
-        -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
-        -DUSE_CARRTRPI0_STDIO=${CARRT_RPI0_ENABLE_STDIO_OUTPUT_VAL}
-        "$<$<CONFIG:DEBUG>:DEBUGRPI0=1>" 
-        -DBUILDING_FOR_RPI0=1
-*/
 
 #if 0   // Use this to test that compile definitions inherit properly in cmake build
 
