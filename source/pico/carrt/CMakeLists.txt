@@ -85,7 +85,7 @@ pico_set_program_description( CarrtPico "Main program for Pico as part of CARRTv
 pico_set_program_url( CarrtPico "https://github.com/igormiktor/CARRTv3" )
 
 
-pico_enable_stdio_uart( CarrtPico ${USE_CARRTPICO_STDIO_VAL} )
+pico_enable_stdio_uart( CarrtPico $<BOOL:${CARRTPICO_ENABLE_UART_STDIO}> )
 pico_enable_stdio_usb( CarrtPico 0 )
 
 target_compile_options( CarrtPico PRIVATE -Wall )

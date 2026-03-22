@@ -21,10 +21,10 @@ if( BUILDING_FOR_PICO )
     target_compile_options( shared_library PUBLIC -Wall )
 
     target_compile_definitions( shared_library PUBLIC 
-        -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
-        -DUSE_CARRTPICO_STDIO=${USE_CARRTPICO_STDIO_VAL}
-        "$<$<CONFIG:DEBUG>:DEBUGCARRTPICO=1>" 
-        -DBUILDING_FOR_PICO=1 
+        BUILDING_FOR_PICO=$<BOOL:${BUILDING_FOR_PICO}>
+        USE_CARRTPICO_STDIO=$<BOOL:${CARRTPICO_ENABLE_UART_STDIO}>
+        DEBUGUTILS_ON=$<BOOL:${CARRTPICO_ENABLE_DEBUGUTILS}>
+        DEBUGCARRTPICO=$<CONFIG:DEBUG>
     )
 
     target_link_libraries( shared_library PUBLIC 
@@ -37,11 +37,11 @@ if( BUILDING_FOR_RPI0 )
     target_compile_options( shared_library PUBLIC -Wall -pthread )
 
     target_compile_definitions( shared_library PUBLIC 
-        -DUSE_PIGPIOD=${PIGPIOD_VAL} 
-        -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
-        -DUSE_CARRTRPI0_STDIO=${CARRT_RPI0_ENABLE_STDIO_OUTPUT_VAL}
-        "$<$<CONFIG:DEBUG>:DEBUGRPI0=1>" 
-        -DBUILDING_FOR_RPI0=1
+        BUILDING_FOR_RPI0=$<BOOL:${BUILDING_FOR_RPI0}>        
+        USE_CARRTRPI0_STDIO=$<BOOL:${CARRT_RPI0_ENABLE_STDIO_OUTPUT}>
+        USE_PIGPIOD=$<BOOL:${CARRT_RPI_USE_PIGPIOD}>
+        DEBUGUTILS_ON=$<BOOL:${CARRT_ENABLE_DEBUGUTILS}> 
+        DEBUGRPI0=$<CONFIG:DEBUG> 
     )
 endif()
 

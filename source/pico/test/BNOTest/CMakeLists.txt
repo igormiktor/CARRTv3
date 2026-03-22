@@ -1,10 +1,10 @@
 add_executable( BNOTest
-        BNOTest.cpp
-        ../../carrt/CarrtPicoReset.cpp
-        ../../carrt/Core1.cpp
-        ../../carrt/EventManager.cpp 
-        ../../carrt/PicoSerialMessages.cpp
-        ../../carrt/PicoState.cpp
+    BNOTest.cpp
+    ../../carrt/CarrtPicoReset.cpp
+    ../../carrt/Core1.cpp
+    ../../carrt/EventManager.cpp 
+    ../../carrt/PicoSerialMessages.cpp
+    ../../carrt/PicoState.cpp
 )
         
 pico_set_program_name( BNOTest "BNOTest" )
@@ -19,29 +19,30 @@ pico_enable_stdio_usb( BNOTest 0 )
 
 # Add the standard include files to the build
 target_include_directories( BNOTest PRIVATE
-  ${CMAKE_CURRENT_LIST_DIR}
-  ${CARRTPICO_DIRECTORY}
-  ${CARRTPICO_DIRECTORY}/carrt  
+    ${CMAKE_CURRENT_LIST_DIR}
+    ${CARRTPICO_DIRECTORY}
+    ${CARRTPICO_DIRECTORY}/carrt  
 #  ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts or any other standard includes, if required
 )
 
 target_compile_options( CarrtPico PRIVATE -Wall )
 target_compile_definitions( BNOTest PRIVATE
-        -DDEBUGUTILS_ON=${DEBUGUTILS_VAL} 
-        -DUSE_CARRTPICO_STDIO=${USE_CARRTPICO_STDIO_VAL}
-        "$<$<CONFIG:DEBUG>:DEBUGCARRTPICO=1>" 
+    BUILDING_FOR_PICO=$<BOOL:${BUILDING_FOR_PICO}>
+    USE_CARRTPICO_STDIO=$<BOOL:${CARRTPICO_ENABLE_UART_STDIO}>
+    DEBUGUTILS_ON=$<BOOL:${CARRTPICO_ENABLE_DEBUGUTILS}>
+    DEBUGCARRTPICO=$<CONFIG:DEBUG>
 )
 
 # Add any user requested libraries
 target_link_libraries( BNOTest PRIVATE
-        pico_driver_library
-        shared_library
-        utils_library
-        pico_multicore
-        pico_stdlib 
-        hardware_i2c
-        hardware_timer
-        hardware_clocks
+    pico_driver_library
+    shared_library
+    utils_library
+    pico_multicore
+    pico_stdlib 
+    hardware_i2c
+    hardware_timer
+    hardware_clocks
 )
 
 # create map/bin/hex file etc.

@@ -27,6 +27,13 @@ add_executable( CarrtRpi
 
 # Compile definitions and options inhereted from link libs (shared_library is the "root")
 
-target_link_libraries( CarrtRpi PRIVATE carrt_library rpi_driver_library shared_library ${PIGPIO_LIB} -lpthread -lrt )
+target_link_libraries( CarrtRpi PRIVATE 
+    carrt_library 
+    rpi_driver_library 
+    shared_library 
+    $<IF:$<BOOL:${CARRT_RPI_USE_PIGPIOD}>,pigpiod_if2,pigpio> 
+    pthread 
+    rt 
+)
 
 

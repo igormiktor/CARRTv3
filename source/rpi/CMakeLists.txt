@@ -54,31 +54,6 @@ option(
 )
 
 
-
-if( CARRT_RPI0_ENABLE_STDIO_OUTPUT )
-    set( CARRT_RPI0_ENABLE_STDIO_OUTPUT_VAL 1 )
-else()
-    set( CARRT_RPI0_ENABLE_STDIO_OUTPUT_VAL 0 )
-endif()
-
-
-if( CARRT_ENABLE_DEBUGUTILS )
-    set( DEBUGUTILS_VAL 1 )
-else()
-    set( DEBUGUTILS_VAL 0 )
-endif()
-
-
-if( CARRT_RPI_USE_PIGPIOD )
-    set( PIGPIO_LIB "-lpigpiod_if2" )
-    set( PIGPIOD_VAL 1 )
-else()
-    set( PIGPIO_LIB "-lpigpio" )
-    set( PIGPIOD_VAL 0 )
-endif()
-
-
-
 add_subdirectory( shared )
 #add_subdirectory( utils )
 add_subdirectory( drivers )

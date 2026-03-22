@@ -52,9 +52,6 @@ option(
 )
 
 
-# Add a special define "DEBUGCARRTPICO" when building debugging builds
-# add_compile_options( "$<$<CONFIG:DEBUG>:DEBUGCARRTPICO=1>" )
-
 set( CARRTPICO_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" )
 # message( CARRTPICO_DIRECTORY="${CARRTPICO_DIRECTORY}" )
 
@@ -66,18 +63,6 @@ pico_sdk_init()
 
 
 set( BUILDING_FOR_PICO 1 )
-
-if ( CARRTPICO_ENABLE_UART_STDIO )
-    set( USE_CARRTPICO_STDIO_VAL 1 )
-else()
-    set( USE_CARRTPICO_STDIO_VAL 0 )
-endif()
-
-if ( CARRTPICO_ENABLE_DEBUGUTILS )
-    set( DEBUGUTILS_VAL 1 )
-else()
-    set( DEBUGUTILS_VAL 0 )
-endif()
 
 # Versioning
 set( CARRTPICO_VERSION_MAJOR 0 )
