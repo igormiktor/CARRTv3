@@ -24,6 +24,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <concepts>
 
 #include "CarrtError.h"
 #include "OutputUtils.hpp"
@@ -42,12 +43,9 @@ public:
     MessageFactory& operator=( const MessageFactory& ) = delete;
     MessageFactory& operator=( MessageFactory&& ) = delete;
 
-    template<typename T>
+    template<std::derived_from<SerialMessage> T>
     void registerMessage( MsgId id )
     {
-        static_assert( std::is_base_of<SerialMessage, T>::value,
-                       "MessageFactory::registerMessage(): Messages must "
-                       "derive from SerialMessage" );
         std::uint8_t idNum = std::to_underlying( id );
         if ( mCreators.find( idNum ) != mCreators.end() )
         {
