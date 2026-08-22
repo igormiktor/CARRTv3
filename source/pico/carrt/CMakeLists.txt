@@ -18,7 +18,7 @@ add_library( CarrtPico_library STATIC )
 
 
 add_dependencies( CarrtPico_library git_head_info )
-include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+target_include_directories( CarrtPico_library PUBLIC ${CMAKE_CURRENT_BINARY_DIR} )
 
 
 target_sources( CarrtPico_library
