@@ -178,17 +178,17 @@ protected:
 
         RawData() = default;
 
-        RawData( std::uint8_t* cc ) { c( cc ); }
+        explicit RawData( const std::uint8_t* cc ) { c( cc ); }
 
-        RawData( int ii ) { i( ii ); }
+        explicit RawData( int ii ) { i( ii ); } 
 
-        RawData( std::uint32_t uu ) { u( uu ); }
+        explicit RawData( std::uint32_t uu ) { u( uu ); }
 
-        RawData( float ff ) { f( ff ); }
+        explicit RawData( float ff ) { f( ff ); }
 
         std::uint8_t* c() { return mRaw.data(); }
 
-        void c( std::uint8_t* cc ) { std::memcpy( mRaw.data(), cc, 4 ); }
+        void c( const std::uint8_t* cc ) { std::memcpy( mRaw.data(), cc, 4 ); }
 
         int i() { return std::bit_cast<int>( mRaw ); }
 
