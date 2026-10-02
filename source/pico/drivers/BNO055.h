@@ -20,6 +20,8 @@
 #ifndef BNO055_h
 #define BNO055_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 #include <optional>
 #include <tuple>

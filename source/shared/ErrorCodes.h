@@ -20,6 +20,8 @@
 #ifndef ErrorCodes_h
 #define ErrorCodes_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 
 // Error code scheme....

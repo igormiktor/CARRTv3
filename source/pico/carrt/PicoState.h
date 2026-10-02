@@ -21,6 +21,8 @@
 #ifndef PicoState_h
 #define PicoState_h
 
+// clang-format Language: Cpp
+
 namespace PicoState
 {
 

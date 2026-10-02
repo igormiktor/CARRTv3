@@ -21,6 +21,8 @@
 #ifndef Core1_h
 #define Core1_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 
 enum class EvtId;

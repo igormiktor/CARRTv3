@@ -29,6 +29,8 @@
 #ifndef CriticalSection_h
 #define CriticalSection_h
 
+// clang-format Language: Cpp
+
 #include <pico/critical_section.h>
 
 #include "CarrtError.h"

@@ -20,6 +20,8 @@
 #ifndef EventManager_h
 #define EventManager_h
 
+// clang-format Language: Cpp
+
 #include <pico/stdlib.h>
 #include <pico/util/queue.h>
 

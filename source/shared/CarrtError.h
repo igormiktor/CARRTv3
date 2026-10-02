@@ -20,6 +20,8 @@
 #ifndef CarrtError_h
 #define CarrtError_h
 
+// clang-format Language: Cpp
+
 #include <stdexcept>
 
 #include "ErrorCodes.h"

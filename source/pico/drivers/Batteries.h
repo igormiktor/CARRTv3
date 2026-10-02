@@ -27,6 +27,9 @@
  * \copyright Copyright (c) 2026
  */
 
+ 
+// clang-format Language: Cpp
+
 namespace Batteries
 {
     void initBatteries();

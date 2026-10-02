@@ -20,6 +20,8 @@
 #ifndef Clock_h
 #define Clock_h
 
+// clang-format Language: Cpp
+
 #include <pico/time.h>
 
 #include <chrono>

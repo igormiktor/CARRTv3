@@ -21,6 +21,8 @@
 #ifndef SerialMessageProcessor_h
 #define SerialMessageProcessor_h
 
+// clang-format Language: Cpp
+
 #include <memory>
 #include <string>
 #include <unordered_map>

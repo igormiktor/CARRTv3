@@ -21,6 +21,8 @@
 #ifndef Event_h
 #define Event_h
 
+// clang-format Language: Cpp
+
 enum class EvtId : int
 {
     kNullEvent = 0,

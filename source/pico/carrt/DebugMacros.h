@@ -21,6 +21,7 @@
 #ifndef DebugMacros_h
 #define DebugMacros_h
 
+// clang-format Language: Cpp
 
 #include "CarrtPicoDefines.h"
 

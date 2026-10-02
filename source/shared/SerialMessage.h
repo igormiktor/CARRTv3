@@ -22,6 +22,8 @@
 #ifndef SerialMessage_h
 #define SerialMessage_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 #include <functional>
 #include <tuple>

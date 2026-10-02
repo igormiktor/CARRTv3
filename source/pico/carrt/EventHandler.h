@@ -20,6 +20,8 @@
 #ifndef EventHandler_h
 #define EventHandler_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 
 class EventManager;

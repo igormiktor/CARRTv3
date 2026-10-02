@@ -18,6 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// clang-format Language: Cpp
+
 class EventManager;
 class EventProcessor;
 class SerialLinkPico;

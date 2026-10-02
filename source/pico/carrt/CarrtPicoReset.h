@@ -20,6 +20,8 @@
 #ifndef CarrtPicoReset_h
 #define CarrtPicoReset_h
 
+// clang-format Language: Cpp
+
 class SerialLink;
 
 namespace PicoReset

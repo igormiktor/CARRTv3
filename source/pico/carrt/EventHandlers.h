@@ -20,6 +20,8 @@
 #ifndef EventHandlers_h
 #define EventHandlers_h
 
+// clang-format Language: Cpp
+
 #include "EventHandler.h"
 
 class NullEventHandler : public EventHandler

@@ -22,6 +22,8 @@
 #ifndef SerialMessages_h
 #define SerialMessages_h
 
+// clang-format Language: Cpp
+
 #include "CarrtError.h"
 #include "SerialLink.h"
 #include "SerialMessage.h"

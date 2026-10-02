@@ -20,6 +20,8 @@
 #ifndef BuildInfo_h
 #define BuildInfo_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 
 namespace CarrtPicoVersion
