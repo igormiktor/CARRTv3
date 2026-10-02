@@ -33,6 +33,8 @@
 #ifndef I2c_h
 #define I2c_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 #include <string>
 

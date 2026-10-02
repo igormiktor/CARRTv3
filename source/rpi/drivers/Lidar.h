@@ -21,6 +21,8 @@
 #ifndef Lidar_h
 #define Lidar_h
 
+// clang-format Language: Cpp
+
 #include <climits>
 #include <cstdint>
 

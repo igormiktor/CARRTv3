@@ -20,6 +20,8 @@
 #ifndef Buzzer_h
 #define Buzzer_h
 
+// clang-format Language: Cpp
+
 #include <chrono>
 
 using namespace std::chrono_literals;

@@ -21,6 +21,8 @@
 #ifndef Clock_h
 #define Clock_h
 
+// clang-format Language: Cpp
+
 #include <chrono>
 
 // Required to use chrono-related literals

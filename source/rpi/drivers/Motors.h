@@ -20,6 +20,8 @@
 #ifndef Motors_h
 #define Motors_h
 
+// clang-format Language: Cpp
+
 #include "CarrtError.h"
 
 class MotorError : public CarrtError

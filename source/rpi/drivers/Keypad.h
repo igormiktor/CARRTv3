@@ -20,6 +20,8 @@
 #ifndef Keypad_h
 #define Keypad_h
 
+// clang-format Language: Cpp
+
 namespace Keypad
 {
     // clang-format off

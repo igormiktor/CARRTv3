@@ -21,6 +21,8 @@
 #ifndef Servo_h
 #define Servo_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 
 namespace Servo

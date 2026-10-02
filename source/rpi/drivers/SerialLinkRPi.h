@@ -21,6 +21,8 @@
 #ifndef SerialLinkRPi_h
 #define SerialLinkRPi_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 #include <optional>
 

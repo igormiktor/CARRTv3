@@ -19,6 +19,8 @@
 #ifndef Lcd_h
 #define Lcd_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 #include <sstream>
 

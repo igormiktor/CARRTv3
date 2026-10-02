@@ -20,6 +20,8 @@
 #ifndef CarrtPinAssignments_h
 #define CarrtPinAssignments_h
 
+// clang-format Language: Cpp
+
 // clang-format off
 namespace GpioPins
 {

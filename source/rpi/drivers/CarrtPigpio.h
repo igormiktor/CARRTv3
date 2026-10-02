@@ -20,6 +20,8 @@
 #ifndef CarrtPigpio_h
 #define CarrtPigpio_h
 
+// clang-format Language: Cpp
+
 #ifndef USE_PIGPIOD
     #warning "USE_PIGPIOD is undefined!"
 #endif

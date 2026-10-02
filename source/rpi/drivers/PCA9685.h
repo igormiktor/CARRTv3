@@ -19,6 +19,8 @@
 #ifndef PCA9685_h
 #define PCA9685_h
 
+// clang-format Language: Cpp
+
 #include <cstdint>
 
 namespace PCA9685
