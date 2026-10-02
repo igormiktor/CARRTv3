@@ -34,7 +34,7 @@ if( BUILDING_FOR_PICO )
 endif()
 
 if( BUILDING_FOR_RPI0 )
-    target_compile_options( shared_library PUBLIC -Wall-Wsign-compare -pthread )
+    target_compile_options( shared_library PUBLIC -Wall -Wsign-compare -pthread )
 
     target_compile_definitions( shared_library PUBLIC 
         BUILDING_FOR_RPI0=$<BOOL:${BUILDING_FOR_RPI0}>        
