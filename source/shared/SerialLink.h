@@ -22,6 +22,8 @@
 #ifndef SerialLink_h
 #define SerialLink_h
 
+// clang-format Language: Cpp
+
 #include <array>
 #include <bit>
 #include <cstdint>
