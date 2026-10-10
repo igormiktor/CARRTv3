@@ -202,7 +202,7 @@ public:
                 else
                 {
                     throw CarrtError( makeSharedErrorId( kSerialMsgReadError, 1, 1 ),
-                                      "Couldn't read serial message in lamba" );
+                                      "Couldn't read serial message in lambda" );
                 }
             },
             link );
